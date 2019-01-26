@@ -1,9 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import App from './App'
+import Login from './Login'
 
-let AppContainer = props => {
-  return <App/>
+let LoginContainer = props => {
+  return <Login/>
 }
 
 const mapStateToProps = (state) => {
@@ -11,10 +11,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-AppContainer = connect(
+LoginContainer = connect(
     mapStateToProps,
     {
     }
-)(AppContainer)
+)(LoginContainer)
 
-export default AppContainer
+export default LoginContainer

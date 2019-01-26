@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import {withStyles} from '@material-ui/core'
 import ToastNotify from '../../components/notification/ToastNotify'
+import AppContainer from '../app/AppContainer'
+import WebsiteContainer from '../website/WebsiteContainer'
+import LoginContainer from '../login/LoginContainer'
 
 const styles = theme => ({
   
@@ -34,9 +37,27 @@ class Root extends Component {
         <div>
           <Switch>
             <Route
+                path='/app'
+                render={(props) => {
+                  return <AppContainer
+                      {...props}
+                  />
+                }}
+            />
+            <Route
+                path='/login'
+                render={(props) => {
+                  return <LoginContainer
+                      {...props}
+                  />
+                }}
+            />
+            <Route
                 path='/'
                 render={(props) => {
-                  return <div>aweh</div>
+                  return <WebsiteContainer
+                      {...props}
+                  />
                 }}
             />
           </Switch>
