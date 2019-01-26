@@ -3,7 +3,6 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import {withStyles} from '@material-ui/core'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
-import WebsiteContainer from '../website/WebsiteContainer'
 import LoginContainer from '../login/LoginContainer'
 
 const styles = theme => ({
@@ -55,7 +54,7 @@ class Root extends Component {
             <Route
                 path='/'
                 render={(props) => {
-                  return <WebsiteContainer
+                  return <LoginContainer
                       {...props}
                   />
                 }}
