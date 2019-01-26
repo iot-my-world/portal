@@ -21,7 +21,7 @@ const defaultTheme = {
     error: { main: '#ff111b'},
   },
   typography: {
-    fontFamily: 'Roboto',
+    fontFamily: `'Roboto'`,
     useNextVariants: true,
   },
 }
