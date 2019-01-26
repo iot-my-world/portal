@@ -44,14 +44,6 @@ class Root extends Component {
                 }}
             />
             <Route
-                path='/login'
-                render={(props) => {
-                  return <LoginContainer
-                      {...props}
-                  />
-                }}
-            />
-            <Route
                 path='/'
                 render={(props) => {
                   return <LoginContainer
