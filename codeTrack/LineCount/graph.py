@@ -38,27 +38,34 @@ if __name__ == "__main__":
                     totalFiles.append(int(row["totalFiles"]))
                     totalLines.append(int(row["totalLines"]))
 
-            graphTraces.append(go.Scatter(
-                        x=dates,
-                        y=totalLines,
-                        name=lineCount,
-                    ))
+            graphTraces.append({
+                        "x":dates,
+                        "y":totalLines,
+                        "name":lineCount.capitalize(),
+                        "type":"scatter",
+                    })
 
     fig = tools.make_subplots(
-                            rows=int(len(graphTraces)/2) + 1,
-                            cols=2
+                            rows=1,
+                            cols=1,
+                            shared_xaxes=True,
+                            shared_yaxes=True,
                             )
-    row = 0
-    col = 1
-    for i, trace in enumerate(graphTraces):
-        if ((i + 1) % 2):
-            row += 1
-            col = 1
-        else:
-            col += 1
-        fig.append_trace(trace, row, col)
+    for trace in graphTraces:
+        fig.append_trace(trace, 1, 1)
+
+    fig["layout"].update({"title":"iotTracker Codebase Tracking"})
+    fig["layout"].update({
+                            "xaxis":{
+                                "title": "Time",
+                            },
+                            "yaxis":{
+                                "title": "Line Count",
+                            },
+                        })
+    fig["layout"].update({"title":"iotTracker Codebase Tracking"})
     plotly.offline.plot(
                         fig,
-                        filename = "/Users/bernardbussy/projects/bitbucket.org/reacttimekeeper/codeTrack/LineCount/graph.html",
+                        filename = "/Users/bernardbussy/projects/gitlab/iotTracker/portal/codeTrack/LineCount/graph.html",
                         auto_open = True,
                         )
