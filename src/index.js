@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import config from 'react-global-configuration'
 import RootContainer from './views/root/RootContainer'
-import reducers from './reducers'
+import reducers from './reducers/index'
 import 'typeface-roboto'
 
 const store = createStore(

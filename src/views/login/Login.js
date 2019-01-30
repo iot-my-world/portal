@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
@@ -53,7 +54,7 @@ const style = theme => {
   }
 }
 
-let Login = props => {
+const Login = props => {
   const {
     classes
   } = props
@@ -97,7 +98,7 @@ let Login = props => {
                           />
                         </Grid>
                         <Grid item>
-                          <Button className={classes.button} variant={'primary'}>
+                          <Button className={classes.button}>
                             Login
                           </Button>
                         </Grid>
@@ -113,5 +114,10 @@ let Login = props => {
   )
 }
 
-Login = withStyles(style)(Login)
-export default Login
+let StyledLogin = withStyles(style)(Login)
+
+StyledLogin.propTypes = {
+  LoginSuccess: PropTypes.func.isRequired,
+  LoginFailure: PropTypes.func.isRequired,
+}
+export default StyledLogin
