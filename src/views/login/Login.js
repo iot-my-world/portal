@@ -5,8 +5,8 @@ import {
   Card, CardContent, Grid,
   TextField, Button,
 } from '@material-ui/core'
-import backgroundImage from '../../assets/images/websiteBackground.jpg'
-import logo from '../../assets/images/logo.png'
+import backgroundImage from 'assets/images/websiteBackground.jpg'
+import logo from 'assets/images/logo.png'
 
 const style = theme => {
   return {
