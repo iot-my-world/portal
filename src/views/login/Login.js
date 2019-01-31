@@ -62,7 +62,7 @@ const style = theme => {
       overflow: 'hidden',
     },
     progressSpinnerDialogBackdrop: {
-      backgroundColor: 'transparent',
+      // backgroundColor: 'transparent',
     },
   }
 }
