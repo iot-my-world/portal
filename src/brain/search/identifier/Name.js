@@ -1,4 +1,5 @@
 import {Name as NameIdentifier} from 'brain/search/identifier/types'
+import {isObject, isString} from 'utilities/type'
 
 export default class Name {
   static identifierType = NameIdentifier
@@ -14,14 +15,33 @@ export default class Name {
    * @private
    */
   _value = {
-    name: ''
+    name: '',
   }
 
-  constructor(name){
-
+  /**
+   * construct a new name identifier
+   * @param {string|Name|Object} [name]
+   */
+  constructor(name) {
+    if (name !== undefined) {
+      if (
+          (name instanceof Name) ||
+          (isObject(name))
+      ) {
+        this._value.name = name.name
+      } else if (isString(name)) {
+        this._value.name = name
+      } else {
+        throw new TypeError('invalid arg passed to Name identifier constructor')
+      }
+    }
   }
 
-  get value(){
+  get value() {
     return this._value
+  }
+
+  get name() {
+    return this._value.name
   }
 }
