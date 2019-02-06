@@ -5,7 +5,7 @@ export default class Service {
   static Login(usernameOrEmailAddress, password) {
     return jsonRpcRequest({
       url: config.get('brainAPIUrl'),
-      method: 'Auth.Login',
+      method: 'Permission.Login',
       request: {
         usernameOrEmailAddress,
         password,

@@ -18,7 +18,7 @@ const host = window && window.location && window.location.hostname
 
 config.set(
     {
-      brainAPIUrl: `http://${host}:9006/api`,
+      brainAPIUrl: `http://${host}:9010/api`,
       webSocketUrl: `ws://${host}:9008/ws`,
     },
 )

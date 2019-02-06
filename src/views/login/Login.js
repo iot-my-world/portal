@@ -101,11 +101,13 @@ class Login extends Component {
       password,
     } = this.state
     this.setState({activeState: events.logIn})
+
     LoginService.Login(usernameOrEmailAddress, password).then(result => {
       console.log('successful login!', result.jwt)
     }).catch(err => {
       console.log('faulty login!', err)
     }).finally(() => this.setState({activeState: events.init}))
+
   }
 
   render() {
