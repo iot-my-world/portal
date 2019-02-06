@@ -1,6 +1,5 @@
 import {
-  LoginSucceeded,
-  LoginFailed,
+  setClaims,
 } from '../actions/actionTypes'
 
 const initState = {
@@ -9,12 +8,8 @@ const initState = {
 
 export default function auth(state = initState, action) {
   switch (action.type) {
-    case LoginSucceeded:
+    case setClaims:
       console.log('login succeeded!')
-      return state
-
-    case LoginFailed:
-      console.log('login failed!')
       return state
 
     default:

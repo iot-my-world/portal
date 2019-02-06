@@ -1,11 +1,7 @@
 import {
-  LoginFailed, LoginSucceeded
+  setClaims,
 } from 'actions/actionTypes'
 
-export function LoginSuccess(){
-  return {type: LoginSucceeded}
-}
-
-export function LoginFailure(){
-  return {type: LoginFailed}
+export function SetClaims(claims){
+  return {type: setClaims, data: claims}
 }

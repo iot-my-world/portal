@@ -10,6 +10,7 @@ import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
+import {parseToken} from 'utilities/token'
 
 const style = theme => {
   return {
@@ -103,7 +104,12 @@ class Login extends Component {
     this.setState({activeState: events.logIn})
 
     LoginService.Login(usernameOrEmailAddress, password).then(result => {
-      console.log('successful login!', result.jwt)
+      try {
+        const claims = parseToken(result.jwt)
+        console.log('claims!', claims)
+      } catch (e) {
+        console.error(`error parsing claims ${e}`)
+      }
     }).catch(err => {
       console.log('faulty login!', err)
     }).finally(() => this.setState({activeState: events.init}))
@@ -199,7 +205,6 @@ class Login extends Component {
 let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
-  LoginSuccess: PropTypes.func.isRequired,
-  LoginFailure: PropTypes.func.isRequired,
+  SetClaims: PropTypes.func.isRequired,
 }
 export default StyledLogin

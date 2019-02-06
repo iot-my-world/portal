@@ -1,18 +1,16 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {
-  LoginSuccess, LoginFailure,
+  SetClaims,
 } from 'actions/auth'
 import Login from './Login'
 
 let LoginContainer = props => {
   const {
-    LoginSuccess,
-    LoginFailure,
+    SetClaims,
   } = props
   return <Login
-    LoginSuccess={LoginSuccess}
-    LoginFailure={LoginFailure}
+      SetClaims={SetClaims}
   />
 }
 
@@ -24,8 +22,7 @@ const mapStateToProps = (state) => {
 LoginContainer = connect(
     mapStateToProps,
     {
-      LoginSuccess,
-      LoginFailure,
+      SetClaims,
     }
 )(LoginContainer)
 
