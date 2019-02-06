@@ -46,7 +46,6 @@ class Claims extends Base {
             isObject(claims)
         )
     ) {
-      console.log('using this!', claims)
       try {
         this._userId = new IdIdentifier(claims.userId)
         this._issueTime = claims.issueTime

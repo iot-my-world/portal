@@ -1,15 +1,18 @@
 import {
   setClaims,
-} from '../actions/actionTypes'
+} from 'actions/actionTypes'
+import {
+  Claims,
+} from 'brain/security/auth'
 
 const initState = {
-  user: undefined,
+  claims: new Claims(),
 }
 
 export default function auth(state = initState, action) {
   switch (action.type) {
     case setClaims:
-      console.log('login succeeded!')
+      state.claims = action.data
       return state
 
     default:

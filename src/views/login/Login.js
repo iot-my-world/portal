@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
@@ -92,6 +93,36 @@ class Login extends Component {
     this.handleLogin = this.handleLogin.bind(this)
   }
 
+  componentDidMount() {
+    const {
+      history,
+      SetClaims,
+    } = this.props
+
+    // check if there is already a valid token in local storage
+    try {
+      const claims = parseToken(localStorage.getItem('jwt'))
+      // check that the token is not expired
+      if (moment().isAfter(moment.unix(claims.expirationTime))) {
+        // if it is, clear the state related to it
+        localStorage.setItem('jwt', null)
+        return
+      }
+      // if it is not, set the claims in redux
+      SetClaims(claims)
+    } catch (e) {
+      localStorage.setItem('jwt', null)
+      return
+    }
+
+    // navigate the browser to the app
+    try {
+      history.push('/app')
+    } catch (e) {
+      console.error(`error navigating the browser to the app: ${e}`)
+    }
+  }
+
   handleInputChange(field, value) {
     this.setState({[field]: value})
   }
@@ -101,14 +132,37 @@ class Login extends Component {
       usernameOrEmailAddress,
       password,
     } = this.state
+    const {
+      SetClaims,
+      history,
+    } = this.props
+
     this.setState({activeState: events.logIn})
 
     LoginService.Login(usernameOrEmailAddress, password).then(result => {
+      // parse the claims and set them in redux
       try {
         const claims = parseToken(result.jwt)
-        console.log('claims!', claims)
+        // check that the token is not expired
+        if (moment().isAfter(moment.unix(claims.expirationTime))) {
+          // if it is, clear the state related to it
+          localStorage.setItem('jwt', null)
+          return
+        }
+        // otherwise the token is not expired
+        // set the claims in redux state
+        SetClaims(claims)
+        // set the token in local storage
+        localStorage.setItem('jwt', result.jwt)
       } catch (e) {
-        console.error(`error parsing claims ${e}`)
+        console.error(`error parsing claims and setting redux: ${e}`)
+      }
+
+      // navigate the browser to the app
+      try {
+        history.push('/app')
+      } catch (e) {
+        console.error(`error navigating the browser to the app: ${e}`)
       }
     }).catch(err => {
       console.log('faulty login!', err)

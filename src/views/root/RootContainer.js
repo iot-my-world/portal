@@ -4,7 +4,7 @@ import Root from './Root'
 import {MuiThemeProvider} from '@material-ui/core'
 import {
   themeOptions, getTheme,
-} from '../../theme/options'
+} from 'theme/options'
 
 class RootContainer extends Component {
 

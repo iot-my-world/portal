@@ -8,9 +8,11 @@ import Login from './Login'
 let LoginContainer = props => {
   const {
     SetClaims,
+    ...rest
   } = props
   return <Login
       SetClaims={SetClaims}
+      {...rest}
   />
 }
 
