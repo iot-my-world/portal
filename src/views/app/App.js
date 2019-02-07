@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import {
   withStyles, Drawer, AppBar, Toolbar, List,
   Typography, Divider, IconButton, ListItemIcon,
-  ListItemText, ListItem,
+  ListItemText, ListItem, Hidden,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -79,6 +79,8 @@ const styles = theme => ({
 class MiniDrawer extends React.Component {
   state = {
     open: true,
+    mobileOpen: false,
+    desktopOpen: true,
   }
 
   handleDrawerOpen = () => {
@@ -94,7 +96,6 @@ class MiniDrawer extends React.Component {
 
     return (
         <div className={classes.root}>
-          {/*<CssBaseline />*/}
           <AppBar
               position='fixed'
               className={classNames(classes.appBar, {
@@ -117,44 +118,86 @@ class MiniDrawer extends React.Component {
               </Typography>
             </Toolbar>
           </AppBar>
-          <Drawer
-              variant='permanent'
-              className={classNames(classes.drawer, {
-                [classes.drawerOpen]: this.state.open,
-                [classes.drawerClose]: !this.state.open,
-              })}
-              classes={{
-                paper: classNames({
+          <Hidden xsDown>
+            <Drawer
+                variant='permanent'
+                className={classNames(classes.drawer, {
                   [classes.drawerOpen]: this.state.open,
                   [classes.drawerClose]: !this.state.open,
-                }),
-              }}
-              open={this.state.open}
-          >
-            <div className={classes.toolbar}>
-              <IconButton onClick={this.handleDrawerClose}>
-                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-              </IconButton>
-            </div>
-            <Divider />
-            <List>
-              {['Inbox', 'Starred', 'Send email', 'Drafts', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                  <ListItem button key={text}>
-                    <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {['All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam'].map((text, index) => (
-                  <ListItem button key={text}>
-                    <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItem>
-              ))}
-            </List>
-          </Drawer>
+                })}
+                classes={{
+                  paper: classNames({
+                    [classes.drawerOpen]: this.state.open,
+                    [classes.drawerClose]: !this.state.open,
+                  }),
+                }}
+                open={this.state.open}
+            >
+              <div className={classes.toolbar}>
+                <IconButton onClick={this.handleDrawerClose}>
+                  {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </IconButton>
+              </div>
+              <Divider />
+              <List>
+                {['Inbox', 'Starred', 'Send email', 'Drafts', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                    <ListItem button key={text}>
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+              </List>
+              <Divider />
+              <List>
+                {['All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam'].map((text, index) => (
+                    <ListItem button key={text}>
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+              </List>
+            </Drawer>
+          </Hidden>
+          <Hidden smUp>
+            <Drawer
+                variant='temporary'
+                className={classNames(classes.drawer, {
+                  [classes.drawerOpen]: this.state.open,
+                  [classes.drawerClose]: !this.state.open,
+                })}
+                classes={{
+                  paper: classNames({
+                    [classes.drawerOpen]: this.state.open,
+                    [classes.drawerClose]: !this.state.open,
+                  }),
+                }}
+                open={this.state.open}
+            >
+              <div className={classes.toolbar}>
+                <IconButton onClick={this.handleDrawerClose}>
+                  {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </IconButton>
+              </div>
+              <Divider />
+              <List>
+                {['Inbox', 'Starred', 'Send email', 'Drafts', 'Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                    <ListItem button key={text}>
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+              </List>
+              <Divider />
+              <List>
+                {['All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam', 'All mail', 'Trash', 'Spam'].map((text, index) => (
+                    <ListItem button key={text}>
+                      <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+              </List>
+            </Drawer>
+          </Hidden>
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Typography paragraph>

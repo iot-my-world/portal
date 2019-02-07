@@ -22,6 +22,7 @@ class RootContainer extends Component {
       SetClaims,
       claims,
     } = this.props
+    console.log('the theme is:', this.theme)
     return <MuiThemeProvider theme={this.theme}>
       <Root
           SetClaims={SetClaims}
