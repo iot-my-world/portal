@@ -1,7 +1,7 @@
 import uuid from 'uuid/v1'
 
 const methodsWithoutAuthorization = [
-  'Login.Login',
+  'Auth.Login',
 ]
 
 export default function jsonRpcRequest({url, method, request}) {
@@ -11,7 +11,6 @@ export default function jsonRpcRequest({url, method, request}) {
     'Content-Type': 'application/json',
   })
 
-  console.log('method ', method)
   if (!methodsWithoutAuthorization.includes(method)) {
     const accessToken = sessionStorage.getItem('access_token')
     if (accessToken) {
