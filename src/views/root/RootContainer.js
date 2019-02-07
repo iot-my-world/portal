@@ -5,6 +5,9 @@ import {MuiThemeProvider} from '@material-ui/core'
 import {
   themeOptions, getTheme,
 } from 'theme/options'
+import {
+  SetClaims,
+} from 'actions/auth'
 
 class RootContainer extends Component {
 
@@ -15,20 +18,28 @@ class RootContainer extends Component {
   theme = getTheme(this.state.chosenThemeOption)
 
   render () {
+    const {
+      SetClaims,
+      claims,
+    } = this.props
     return <MuiThemeProvider theme={this.theme}>
-      <Root/>
+      <Root
+          SetClaims={SetClaims}
+          claims={claims}
+      />
     </MuiThemeProvider>
   }
 }
 
 function mapStateToProps(state) {
   return {
+    claims: state.auth.claims,
   }
 }
 
 export default connect(
     mapStateToProps,
     {
-
+      SetClaims,
     },
 )(RootContainer)

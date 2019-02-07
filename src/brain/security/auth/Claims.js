@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {Id as IdIdentifier} from 'brain/search/identifier'
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
@@ -76,6 +77,14 @@ class Claims extends Base {
 
   get partyId() {
     return this._partyId
+  }
+
+  /**
+   * Whether these claims are expired or not
+   * @returns {boolean}
+   */
+  get notExpired(){
+    return moment.utc().isBefore(moment.unix(this._expirationTime).utc())
   }
 
 }

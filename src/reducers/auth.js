@@ -12,8 +12,10 @@ const initState = {
 export default function auth(state = initState, action) {
   switch (action.type) {
     case setClaims:
-      state.claims = action.data
-      return state
+      return {
+        ...state,
+        claims: action.data,
+      }
 
     default:
       return state
