@@ -167,14 +167,16 @@ class MiniDrawer extends React.Component {
               <Divider/>
               {roots.map((rootGroup, groupIdx) => {
                 return <React.Fragment key={`${groupIdx}`}>
-                  {rootGroup.map((root, rootIdx) => {
-                        return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                            <ListItemIcon>
-                              {root.icon}
-                            </ListItemIcon>
-                          <ListItemText primary={root.text}/>
-                        </ListItem>
-                  })}
+                  <List>
+                    {rootGroup.map((root, rootIdx) => {
+                          return <ListItem button key={`${groupIdx}${rootIdx}`}>
+                              <ListItemIcon>
+                                {root.icon}
+                              </ListItemIcon>
+                            <ListItemText primary={root.text}/>
+                          </ListItem>
+                    })}
+                  </List>
                   <Divider/>
                 </React.Fragment>
               })}
@@ -205,14 +207,16 @@ class MiniDrawer extends React.Component {
               <Divider/>
               {roots.map((rootGroup, groupIdx) => {
                 return <React.Fragment key={`${groupIdx}`}>
-                  {rootGroup.map((root, rootIdx) => {
-                    return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                      <ListItemIcon>
-                        {root.icon}
-                      </ListItemIcon>
-                      <ListItemText primary={root.text}/>
-                    </ListItem>
-                  })}
+                  <List>
+                    {rootGroup.map((root, rootIdx) => {
+                      return <ListItem button key={`${groupIdx}${rootIdx}`}>
+                        <ListItemIcon>
+                          {root.icon}
+                        </ListItemIcon>
+                        <ListItemText primary={root.text}/>
+                      </ListItem>
+                    })}
+                  </List>
                   <Divider/>
                 </React.Fragment>
               })}
