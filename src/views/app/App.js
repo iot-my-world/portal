@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {
@@ -9,8 +9,10 @@ import {
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import InboxIcon from '@material-ui/icons/MoveToInbox'
-import MailIcon from '@material-ui/icons/Mail'
+import LockIcon from '@material-ui/icons/Lock'
+import PeopleIcon from '@material-ui/icons/People'
+import PersonIcon from '@material-ui/icons/Person'
+import DomainIcon from '@material-ui/icons/Domain'
 
 const drawerWidth = 200
 
@@ -79,28 +81,27 @@ const styles = theme => ({
 const roots = [
   [
     {
-      text: 'hello',
-      icon: <InboxIcon/>,
-    },
-    {
-      text: 'hello',
-      icon: <MailIcon/>,
+      text: 'Logout',
+      icon: <LockIcon/>,
     },
   ],
   [
     {
-      text: 'goodbye',
-      icon: <InboxIcon/>,
+      text: 'Company',
+      icon: <DomainIcon/>,
     },
     {
-      text: 'happy',
-      icon: <MailIcon/>,
+      text: 'Client',
+      icon: <PeopleIcon/>,
     },
-
+    {
+      text: 'User',
+      icon: <PersonIcon/>,
+    },
   ],
 ]
 
-class MiniDrawer extends React.Component {
+class App extends Component {
   state = {
     open: true,
     mobileOpen: false,
@@ -231,9 +232,9 @@ class MiniDrawer extends React.Component {
   }
 }
 
-MiniDrawer.propTypes = {
+App.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles, {withTheme: true})(MiniDrawer)
+export default withStyles(styles, {withTheme: true})(App)
