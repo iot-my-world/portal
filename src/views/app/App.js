@@ -102,18 +102,43 @@ const roots = [
 ]
 
 class App extends Component {
-  state = {
-    open: true,
-    mobileOpen: false,
-    desktopOpen: true,
+  constructor(props) {
+    super(props)
+    this.renderMobileDrawerAndToolbar = this.renderMobileDrawerAndToolbar.bind(this)
+    this.renderDesktopDrawerAndToolbar = this.renderDesktopDrawerAndToolbar.bind(this)
+    this.renderDesktopDrawer = this.renderDesktopDrawer.bind(this)
+    this.toggleMobileDrawer = this.toggleMobileDrawer.bind(this)
+
+    this.handleDrawerOpen = this.handleDrawerOpen.bind(this)
+    this.handleDrawerClose = this.handleDrawerClose.bind(this)
+    this.openMobileDrawer = this.openMobileDrawer.bind(this)
+    this.closeMobileDrawer = this.closeMobileDrawer.bind(this)
+
+    this.state = {
+      open: true,
+      mobileOpen: false,
+      desktopOpen: true,
+    }
   }
 
-  handleDrawerOpen = () => {
+  handleDrawerOpen() {
     this.setState({open: true})
   }
 
-  handleDrawerClose = () => {
+  handleDrawerClose() {
     this.setState({open: false})
+  }
+
+  openMobileDrawer() {
+    this.setState({mobileOpen: true})
+  }
+
+  closeMobileDrawer() {
+    this.setState({mobileOpen: false})
+  }
+
+  toggleMobileDrawer(){
+
   }
 
   render() {
@@ -121,107 +146,11 @@ class App extends Component {
 
     return (
         <div className={classes.root}>
-          <AppBar
-              position='fixed'
-              className={classNames(classes.appBar, {
-                [classes.appBarShift]: this.state.open,
-              })}
-          >
-            <Toolbar disableGutters={!this.state.open}>
-              <IconButton
-                  color='inherit'
-                  aria-label='Open drawer'
-                  onClick={this.handleDrawerOpen}
-                  className={classNames(classes.menuButton, {
-                    [classes.hide]: this.state.open,
-                  })}
-              >
-                <MenuIcon/>
-              </IconButton>
-              <Typography variant='h6' color='inherit' noWrap>
-                Mini variant drawer
-              </Typography>
-            </Toolbar>
-          </AppBar>
           <Hidden xsDown>
-            <Drawer
-                variant='permanent'
-                className={classNames(classes.drawer, {
-                  [classes.drawerOpen]: this.state.open,
-                  [classes.drawerClose]: !this.state.open,
-                })}
-                classes={{
-                  paper: classNames({
-                    [classes.drawerOpen]: this.state.open,
-                    [classes.drawerClose]: !this.state.open,
-                  }),
-                }}
-                open={this.state.open}
-            >
-              <div className={classes.toolbar}>
-                <IconButton onClick={this.handleDrawerClose}>
-                  {theme.direction === 'rtl' ?
-                      <ChevronRightIcon/> :
-                      <ChevronLeftIcon/>}
-                </IconButton>
-              </div>
-              <Divider/>
-              {roots.map((rootGroup, groupIdx) => {
-                return <React.Fragment key={`${groupIdx}`}>
-                  <List>
-                    {rootGroup.map((root, rootIdx) => {
-                          return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                              <ListItemIcon>
-                                {root.icon}
-                              </ListItemIcon>
-                            <ListItemText primary={root.text}/>
-                          </ListItem>
-                    })}
-                  </List>
-                  <Divider/>
-                </React.Fragment>
-              })}
-            </Drawer>
+            {this.renderDesktopDrawerAndToolbar()}
           </Hidden>
           <Hidden smUp>
-            <Drawer
-                variant='temporary'
-                className={classNames(classes.drawer, {
-                  [classes.drawerOpen]: this.state.open,
-                  [classes.drawerClose]: !this.state.open,
-                })}
-                classes={{
-                  paper: classNames({
-                    [classes.drawerOpen]: this.state.open,
-                    [classes.drawerClose]: !this.state.open,
-                  }),
-                }}
-                open={this.state.open}
-            >
-              <div className={classes.toolbar}>
-                <IconButton onClick={this.handleDrawerClose}>
-                  {theme.direction === 'rtl' ?
-                      <ChevronRightIcon/> :
-                      <ChevronLeftIcon/>}
-                </IconButton>
-              </div>
-              <Divider/>
-              {roots.map((rootGroup, groupIdx) => {
-                return <React.Fragment key={`${groupIdx}`}>
-                  <List>
-                    {rootGroup.map((root, rootIdx) => {
-                      return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                        <ListItemIcon>
-                          {root.icon}
-                        </ListItemIcon>
-                        <ListItemText primary={root.text}/>
-                      </ListItem>
-                    })}
-                  </List>
-                  <Divider/>
-                </React.Fragment>
-              })}
-            </Drawer>
+            {this.renderMobileDrawerAndToolbar()}
           </Hidden>
           <main className={classes.content}>
             <div className={classes.toolbar}/>
@@ -229,6 +158,144 @@ class App extends Component {
           </main>
         </div>
     )
+  }
+
+  renderDesktopDrawerAndToolbar(){
+    const {classes, theme} = this.props
+
+    return <React.Fragment>
+      <AppBar
+          position='fixed'
+          className={classNames(classes.appBar, {
+            [classes.appBarShift]: this.state.open,
+          })}
+      >
+        <Toolbar disableGutters={!this.state.open}>
+          <IconButton
+              color='inherit'
+              aria-label='Open drawer'
+              onClick={this.handleDrawerOpen}
+              className={classNames(classes.menuButton, {
+                [classes.hide]: this.state.open,
+              })}
+          >
+            <MenuIcon/>
+          </IconButton>
+          <Typography variant='h6' color='inherit' noWrap>
+            Mini variant drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+          variant='permanent'
+          className={classNames(classes.drawer, {
+            [classes.drawerOpen]: this.state.open,
+            [classes.drawerClose]: !this.state.open,
+          })}
+          classes={{
+            paper: classNames({
+              [classes.drawerOpen]: this.state.open,
+              [classes.drawerClose]: !this.state.open,
+            }),
+          }}
+          open={this.state.open}
+      >
+        <div className={classes.toolbar}>
+          <IconButton onClick={this.handleDrawerClose}>
+            {theme.direction === 'rtl' ?
+                <ChevronRightIcon/> :
+                <ChevronLeftIcon/>}
+          </IconButton>
+        </div>
+        <Divider/>
+        {roots.map((rootGroup, groupIdx) => {
+          return <React.Fragment key={`${groupIdx}`}>
+            <List>
+              {rootGroup.map((root, rootIdx) => {
+                return <ListItem button key={`${groupIdx}${rootIdx}`}>
+                  <ListItemIcon>
+                    {root.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={root.text}/>
+                </ListItem>
+              })}
+            </List>
+            <Divider/>
+          </React.Fragment>
+        })}
+      </Drawer>
+    </React.Fragment>
+  }
+
+  renderMobileDrawerAndToolbar() {
+    const {classes, theme} = this.props
+
+    return <React.Fragment>
+      <AppBar
+          position='fixed'
+          className={classNames(classes.appBar, {
+            [classes.appBarShift]: this.state.open,
+          })}
+      >
+        <Toolbar disableGutters={!this.state.open}>
+          <IconButton
+              color='inherit'
+              aria-label='Open drawer'
+              onClick={this.handleDrawerOpen}
+              className={classNames(classes.menuButton, {
+                [classes.hide]: this.state.open,
+              })}
+          >
+            <MenuIcon/>
+          </IconButton>
+          <Typography variant='h6' color='inherit' noWrap>
+            Mini variant drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+          variant='temporary'
+          className={classNames(classes.drawer, {
+            [classes.drawerOpen]: this.state.open,
+            [classes.drawerClose]: !this.state.open,
+          })}
+          classes={{
+            paper: classNames({
+              [classes.drawerOpen]: this.state.open,
+              [classes.drawerClose]: !this.state.open,
+            }),
+          }}
+          open={this.state.open}
+      >
+        <div className={classes.toolbar}>
+          <IconButton onClick={this.handleDrawerClose}>
+            {theme.direction === 'rtl' ?
+                <ChevronRightIcon/> :
+                <ChevronLeftIcon/>}
+          </IconButton>
+        </div>
+        <Divider/>
+        {roots.map((rootGroup, groupIdx) => {
+          return <React.Fragment key={`${groupIdx}`}>
+            <List>
+              {rootGroup.map((root, rootIdx) => {
+                return <ListItem button key={`${groupIdx}${rootIdx}`}>
+                  <ListItemIcon>
+                    {root.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={root.text}/>
+                </ListItem>
+              })}
+            </List>
+            <Divider/>
+          </React.Fragment>
+        })}
+      </Drawer>
+    </React.Fragment>
+  }
+
+  renderDesktopDrawer() {
+
   }
 }
 
