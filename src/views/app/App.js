@@ -17,7 +17,7 @@ import AppRoutes from './Routes'
 const drawerWidth = 200
 
 const styles = theme => ({
-  root: {
+  route: {
     display: 'flex',
   },
   appBar: {
@@ -81,31 +81,31 @@ const styles = theme => ({
   },
 })
 
-const Routes = AppRoutes.map((rootSection, rootSectionIdx) => {
+const Routes = AppRoutes.map((routeSection, routeSectionIdx) => {
   let routes = []
-  rootSection.forEach(
-      (rootGroupOrRoot, rootGroupOrRootIdx) => {
-        if (rootGroupOrRoot.group) {
+  routeSection.forEach(
+      (routeGroupOrRoute, routeGroupOrRouteIdx) => {
+        if (routeGroupOrRoute.group) {
           let embeddedRoutes = []
-          rootGroupOrRoot.roots.forEach(
-              (root, rootIdx) => {
-                if (root.component !== undefined) {
+          routeGroupOrRoute.routes.forEach(
+              (route, routeIdx) => {
+                if (route.component !== undefined) {
                   embeddedRoutes.push(<Route
-                      key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
+                      key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
                       exact
-                      path={root.path}
-                      render={() => <div>{root.path}</div>}
+                      path={route.path}
+                      render={() => <div>{route.path}</div>}
                   />)
                 }
               })
           routes = [...routes, ...embeddedRoutes]
         } else {
-          if (rootGroupOrRoot.component !== undefined) {
+          if (routeGroupOrRoute.component !== undefined) {
             routes.push(<Route
-                key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
+                key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
                 exact
-                path={rootGroupOrRoot.path}
-                render={() => <div>{rootGroupOrRoot.path}</div>}
+                path={routeGroupOrRoute.path}
+                render={() => <div>{routeGroupOrRoute.path}</div>}
             />)
           }
         }
@@ -127,13 +127,13 @@ class App extends Component {
     this.changePath = this.changePath.bind(this)
 
     let menuState = {}
-    AppRoutes.forEach((rootSection, rootSectionIdx) => {
-      if (!menuState.hasOwnProperty(`${rootSectionIdx}`)) {
-        menuState[`${rootSectionIdx}`] = {}
+    AppRoutes.forEach((routeSection, routeSectionIdx) => {
+      if (!menuState.hasOwnProperty(`${routeSectionIdx}`)) {
+        menuState[`${routeSectionIdx}`] = {}
       }
-      rootSection.forEach((rootGroupOrRoot, rootGroupOrRootIdx) => {
-        if (rootGroupOrRoot.group) {
-          menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] = false
+      routeSection.forEach((routeGroupOrRoute, routeGroupOrRouteIdx) => {
+        if (routeGroupOrRoute.group) {
+          menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] = false
         }
       })
     })
@@ -155,12 +155,12 @@ class App extends Component {
     this.setState({mobileDrawerOpen: !this.state.mobileDrawerOpen})
   }
 
-  toggleMenuState(rootSectionIdx, rootGroupOrRootIdx) {
+  toggleMenuState(routeSectionIdx, routeGroupOrRouteIdx) {
     let {
       menuState,
     } = this.state
-    menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] =
-        !menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`]
+    menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] =
+        !menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`]
     this.setState(menuState)
   }
 
@@ -176,7 +176,7 @@ class App extends Component {
     const {classes} = this.props
 
     return (
-        <div className={classes.root}>
+        <div className={classes.route}>
           <Hidden smDown>
             {this.renderDesktopDrawerAndToolbar()}
           </Hidden>
@@ -312,38 +312,38 @@ class App extends Component {
 
     const {menuState} = this.state
     return <React.Fragment>
-      {AppRoutes.map((rootSection, rootSectionIdx) => {
-        return <React.Fragment key={`${rootSectionIdx}`}>
+      {AppRoutes.map((routeSection, routeSectionIdx) => {
+        return <React.Fragment key={`${routeSectionIdx}`}>
           <List>
-            {rootSection.map((rootGroupOrRoot, rootGroupOrRootIdx) => {
-              if (rootGroupOrRoot.group) {
+            {routeSection.map((routeGroupOrRoute, routeGroupOrRouteIdx) => {
+              if (routeGroupOrRoute.group) {
                 return <React.Fragment
-                    key={`${rootSectionIdx}${rootGroupOrRootIdx}`}>
+                    key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}>
                   <ListItem button onClick={() => this.toggleMenuState(
-                      rootSectionIdx, rootGroupOrRootIdx)}>
+                      routeSectionIdx, routeGroupOrRouteIdx)}>
                     <ListItemIcon>
-                      {rootGroupOrRoot.icon}
+                      {routeGroupOrRoute.icon}
                     </ListItemIcon>
-                    <ListItemText inset primary={rootGroupOrRoot.text}/>
-                    {menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] ?
+                    <ListItemText inset primary={routeGroupOrRoute.text}/>
+                    {menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] ?
                         <ExpandLess/> :
                         <ExpandMore/>}
                   </ListItem>
                   <Collapse
-                      in={menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`]}
+                      in={menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`]}
                       timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                      {rootGroupOrRoot.roots.map((root, rootIdx) => {
+                      {routeGroupOrRoute.routes.map((route, routeIdx) => {
                         return <ListItem
                             button
                             className={classes.nested}
-                            key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
-                            onClick={() => this.changePath(root.path)}
+                            key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
+                            onClick={() => this.changePath(route.path)}
                         >
                           <ListItemIcon>
-                            {root.icon}
+                            {route.icon}
                           </ListItemIcon>
-                          <ListItemText inset primary={root.text}/>
+                          <ListItemText inset primary={route.text}/>
                         </ListItem>
                       })}
                     </List>
@@ -352,13 +352,13 @@ class App extends Component {
               } else {
                 return <ListItem
                     button
-                    key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
-                    onClick={() => this.changePath(rootGroupOrRoot.path)}
+                    key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
+                    onClick={() => this.changePath(routeGroupOrRoute.path)}
                 >
                   <ListItemIcon>
-                    {rootGroupOrRoot.icon}
+                    {routeGroupOrRoute.icon}
                   </ListItemIcon>
-                  <ListItemText primary={rootGroupOrRoot.text}/>
+                  <ListItemText primary={routeGroupOrRoute.text}/>
                 </ListItem>
               }
             })}

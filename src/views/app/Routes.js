@@ -9,31 +9,31 @@ import ClientContainer from 'views/party/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
 
 const AppRoots = [
-  // each array in this roots array  is a group which will
+  // each array in this routes array  is a group which will
   // be separated by a divider
 
   [
-    // each array contains root 'objects' or root 'objectGroup'
+    // each array contains route 'objects' or route 'objectGroup'
     // the difference is that objectGroups contain group: true
 
-    { // this is an individual root
+    { // this is an individual route
       text: 'Home',
       icon: <HomeIcon/>,
       path: '/app',
     },
 
-    { // this is an individual root
+    { // this is an individual route
       text: 'Logout',
       icon: <LockIcon/>,
       path: '/logout',
     },
 
-    { // this is a root group
+    { // this is a route group
       group: true,
       text: 'Party',
       icon: <PeopleIcon/>,
-      roots: [
-        { // this is an individual root
+      routes: [
+        { // this is an individual route
           text: 'Company',
           icon: <DomainIcon/>,
           path: '/app/party/company',
@@ -58,17 +58,17 @@ const AppRoots = [
   // -------- divider here --------
 
   // [
-  //   { // this is an individual root
+  //   { // this is an individual route
   //     text: 'Client',
   //     icon: <PeopleIcon/>,
   //   },
   //
-  //   { // this is a root group
+  //   { // this is a route group
   //     group: true,
   //     text: 'Party',
   //     icon: <PeopleIcon/>,
-  //     roots: [
-  //       { // this is an individual root
+  //     routes: [
+  //       { // this is an individual route
   //         text: 'Company',
   //         icon: <DomainIcon/>,
   //       },
