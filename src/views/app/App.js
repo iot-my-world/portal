@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import {
   withStyles, Drawer, AppBar, Toolbar, List,
   Typography, Divider, IconButton, ListItemIcon,
-  ListItemText, ListItem, Hidden,
+  ListItemText, ListItem, Hidden, Collapse,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -13,6 +13,9 @@ import LockIcon from '@material-ui/icons/Lock'
 import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
+import ExpandLess from '@material-ui/icons/ExpandLess'
+import ExpandMore from '@material-ui/icons/ExpandMore'
+import StarBorder from '@material-ui/icons/StarBorder'
 
 const drawerWidth = 200
 
@@ -76,27 +79,96 @@ const styles = theme => ({
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
   },
+  nested: {
+    paddingLeft: theme.spacing.unit * 4,
+  },
 })
 
 const roots = [
+  // each array in this roots array  is a group which will
+  // be separated by a divider
+
   [
-    {
+    // each array contains root 'objects' or root 'objectGroup'
+    // the difference is that objectGroups contain group: true
+
+    { // this is an individual root
       text: 'Logout',
       icon: <LockIcon/>,
     },
-  ],
-  [
-    {
-      text: 'Company',
-      icon: <DomainIcon/>,
+
+    { // this is a root group
+      group: true,
+      text: 'Party',
+      icon: <PeopleIcon/>,
+      roots: [
+        { // this is an individual root
+          text: 'Company',
+          icon: <DomainIcon/>,
+        },
+        {
+          text: 'Client',
+          icon: <PeopleIcon/>,
+        },
+        {
+          text: 'User',
+          icon: <PersonIcon/>,
+        },
+      ],
     },
-    {
+
+    { // this is an individual root
+      text: 'Test',
+      icon: <PeopleIcon/>,
+    },
+
+    { // this is a root group
+      group: true,
+      text: 'Party',
+      icon: <PeopleIcon/>,
+      roots: [
+        { // this is an individual root
+          text: 'Company',
+          icon: <DomainIcon/>,
+        },
+        {
+          text: 'Client',
+          icon: <PeopleIcon/>,
+        },
+        {
+          text: 'User',
+          icon: <PersonIcon/>,
+        },
+      ],
+    },
+  ],
+
+  // -------- divider here --------
+
+  [
+    { // this is an individual root
       text: 'Client',
       icon: <PeopleIcon/>,
     },
-    {
-      text: 'User',
-      icon: <PersonIcon/>,
+
+    { // this is a root group
+      group: true,
+      text: 'Party',
+      icon: <PeopleIcon/>,
+      roots: [
+        { // this is an individual root
+          text: 'Company',
+          icon: <DomainIcon/>,
+        },
+        {
+          text: 'Client',
+          icon: <PeopleIcon/>,
+        },
+        {
+          text: 'User',
+          icon: <PersonIcon/>,
+        },
+      ],
     },
   ],
 ]
@@ -104,52 +176,60 @@ const roots = [
 class App extends Component {
   constructor(props) {
     super(props)
-    this.renderMobileDrawerAndToolbar = this.renderMobileDrawerAndToolbar.bind(this)
-    this.renderDesktopDrawerAndToolbar = this.renderDesktopDrawerAndToolbar.bind(this)
-    this.renderDesktopDrawer = this.renderDesktopDrawer.bind(this)
+    this.renderMobileDrawerAndToolbar =
+        this.renderMobileDrawerAndToolbar.bind(this)
+    this.renderDesktopDrawerAndToolbar =
+        this.renderDesktopDrawerAndToolbar.bind(this)
     this.toggleMobileDrawer = this.toggleMobileDrawer.bind(this)
+    this.toggleDesktopDrawer = this.toggleDesktopDrawer.bind(this)
+    this.toggleMenuState = this.toggleMenuState.bind(this)
 
-    this.handleDrawerOpen = this.handleDrawerOpen.bind(this)
-    this.handleDrawerClose = this.handleDrawerClose.bind(this)
-    this.openMobileDrawer = this.openMobileDrawer.bind(this)
-    this.closeMobileDrawer = this.closeMobileDrawer.bind(this)
+    let menuState = {}
+    roots.forEach((rootSection, rootSectionIdx) => {
+      if (!menuState.hasOwnProperty(`${rootSectionIdx}`)) {
+        menuState[`${rootSectionIdx}`] = {}
+      }
+      rootSection.forEach((rootGroupOrRoot, rootGroupOrRootIdx) => {
+        if (rootGroupOrRoot.group) {
+          menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] = false
+        }
+      })
+    })
 
     this.state = {
       open: true,
-      mobileOpen: false,
-      desktopOpen: true,
+      mobileDrawerOpen: false,
+      desktopDrawerOpen: true,
+      menuState,
     }
   }
 
-  handleDrawerOpen() {
-    this.setState({open: true})
+  toggleDesktopDrawer() {
+    this.setState({desktopDrawerOpen: !this.state.desktopDrawerOpen})
   }
 
-  handleDrawerClose() {
-    this.setState({open: false})
+  toggleMobileDrawer() {
+    this.setState({mobileDrawerOpen: !this.state.mobileDrawerOpen})
   }
 
-  openMobileDrawer() {
-    this.setState({mobileOpen: true})
-  }
-
-  closeMobileDrawer() {
-    this.setState({mobileOpen: false})
-  }
-
-  toggleMobileDrawer(){
-
+  toggleMenuState(rootSectionIdx, rootGroupOrRootIdx) {
+    let {
+      menuState,
+    } = this.state
+    menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] =
+        !menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`]
+    this.setState(menuState)
   }
 
   render() {
-    const {classes, theme} = this.props
+    const {classes} = this.props
 
     return (
         <div className={classes.root}>
-          <Hidden xsDown>
+          <Hidden smDown>
             {this.renderDesktopDrawerAndToolbar()}
           </Hidden>
-          <Hidden smUp>
+          <Hidden mdUp>
             {this.renderMobileDrawerAndToolbar()}
           </Hidden>
           <main className={classes.content}>
@@ -160,23 +240,27 @@ class App extends Component {
     )
   }
 
-  renderDesktopDrawerAndToolbar(){
+  renderDesktopDrawerAndToolbar() {
     const {classes, theme} = this.props
+    const {
+      desktopDrawerOpen,
+      menuState,
+    } = this.state
 
     return <React.Fragment>
       <AppBar
           position='fixed'
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: this.state.open,
+            [classes.appBarShift]: desktopDrawerOpen,
           })}
       >
-        <Toolbar disableGutters={!this.state.open}>
+        <Toolbar disableGutters={!desktopDrawerOpen}>
           <IconButton
               color='inherit'
               aria-label='Open drawer'
-              onClick={this.handleDrawerOpen}
+              onClick={this.toggleDesktopDrawer}
               className={classNames(classes.menuButton, {
-                [classes.hide]: this.state.open,
+                [classes.hide]: desktopDrawerOpen,
               })}
           >
             <MenuIcon/>
@@ -189,35 +273,70 @@ class App extends Component {
       <Drawer
           variant='permanent'
           className={classNames(classes.drawer, {
-            [classes.drawerOpen]: this.state.open,
-            [classes.drawerClose]: !this.state.open,
+            [classes.drawerOpen]: desktopDrawerOpen,
+            [classes.drawerClose]: !desktopDrawerOpen,
           })}
           classes={{
             paper: classNames({
-              [classes.drawerOpen]: this.state.open,
-              [classes.drawerClose]: !this.state.open,
+              [classes.drawerOpen]: desktopDrawerOpen,
+              [classes.drawerClose]: !desktopDrawerOpen,
             }),
           }}
-          open={this.state.open}
+          open={desktopDrawerOpen}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={this.handleDrawerClose}>
+          <IconButton onClick={this.toggleDesktopDrawer}>
             {theme.direction === 'rtl' ?
                 <ChevronRightIcon/> :
                 <ChevronLeftIcon/>}
           </IconButton>
         </div>
         <Divider/>
-        {roots.map((rootGroup, groupIdx) => {
-          return <React.Fragment key={`${groupIdx}`}>
+        {roots.map((rootSection, rootSectionIdx) => {
+          return <React.Fragment key={`${rootSectionIdx}`}>
             <List>
-              {rootGroup.map((root, rootIdx) => {
-                return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                  <ListItemIcon>
-                    {root.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={root.text}/>
-                </ListItem>
+              {rootSection.map((rootGroupOrRoot, rootGroupOrRootIdx) => {
+                if (rootGroupOrRoot.group) {
+                  return <React.Fragment
+                      key={`${rootSectionIdx}${rootGroupOrRootIdx}`}>
+                    <ListItem button onClick={() => this.toggleMenuState(
+                        rootSectionIdx, rootGroupOrRootIdx)}>
+                      <ListItemIcon>
+                        {rootGroupOrRoot.icon}
+                      </ListItemIcon>
+                      <ListItemText inset primary={rootGroupOrRoot.text}/>
+                      {menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] ?
+                          <ExpandLess/> :
+                          <ExpandMore/>}
+                    </ListItem>
+                    <Collapse
+                        in={menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`]}
+                        timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        {rootGroupOrRoot.roots.map((root, rootIdx) => {
+                          return <ListItem
+                              button
+                              className={classes.nested}
+                              key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
+                          >
+                            <ListItemIcon>
+                              {root.icon}
+                            </ListItemIcon>
+                            <ListItemText inset primary={root.text}/>
+                          </ListItem>
+                        })}
+                      </List>
+                    </Collapse>
+                  </React.Fragment>
+                } else {
+                  return <ListItem button
+                                   key={`${rootSectionIdx}${rootGroupOrRootIdx}`}>
+                    <ListItemIcon>
+                      {rootGroupOrRoot.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={rootGroupOrRoot.text}/>
+                  </ListItem>
+                }
               })}
             </List>
             <Divider/>
@@ -229,21 +348,22 @@ class App extends Component {
 
   renderMobileDrawerAndToolbar() {
     const {classes, theme} = this.props
+    const {mobileDrawerOpen, menuState} = this.state
 
     return <React.Fragment>
       <AppBar
           position='fixed'
           className={classNames(classes.appBar, {
-            [classes.appBarShift]: this.state.open,
+            [classes.appBarShift]: mobileDrawerOpen,
           })}
       >
-        <Toolbar disableGutters={!this.state.open}>
+        <Toolbar disableGutters={!mobileDrawerOpen}>
           <IconButton
               color='inherit'
               aria-label='Open drawer'
-              onClick={this.handleDrawerOpen}
+              onClick={this.toggleMobileDrawer}
               className={classNames(classes.menuButton, {
-                [classes.hide]: this.state.open,
+                [classes.hide]: mobileDrawerOpen,
               })}
           >
             <MenuIcon/>
@@ -255,36 +375,67 @@ class App extends Component {
       </AppBar>
       <Drawer
           variant='temporary'
+          // keep mounted for better open performance on mobile
+          ModalProps={{keepMounted: true}}
           className={classNames(classes.drawer, {
-            [classes.drawerOpen]: this.state.open,
-            [classes.drawerClose]: !this.state.open,
+            [classes.drawerOpen]: mobileDrawerOpen,
+            [classes.drawerClose]: !mobileDrawerOpen,
           })}
           classes={{
             paper: classNames({
-              [classes.drawerOpen]: this.state.open,
-              [classes.drawerClose]: !this.state.open,
+              [classes.drawerOpen]: mobileDrawerOpen,
+              [classes.drawerClose]: !mobileDrawerOpen,
             }),
           }}
-          open={this.state.open}
+          open={mobileDrawerOpen}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={this.handleDrawerClose}>
+          <IconButton onClick={this.toggleMobileDrawer}>
             {theme.direction === 'rtl' ?
                 <ChevronRightIcon/> :
                 <ChevronLeftIcon/>}
           </IconButton>
         </div>
         <Divider/>
-        {roots.map((rootGroup, groupIdx) => {
-          return <React.Fragment key={`${groupIdx}`}>
+        {roots.map((rootSection, rootSectionIdx) => {
+          return <React.Fragment key={`${rootSectionIdx}`}>
             <List>
-              {rootGroup.map((root, rootIdx) => {
-                return <ListItem button key={`${groupIdx}${rootIdx}`}>
-                  <ListItemIcon>
-                    {root.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={root.text}/>
-                </ListItem>
+              {rootSection.map((rootGroupOrRoot, rootGroupOrRootIdx) => {
+                if (rootGroupOrRoot.group) {
+                  return <React.Fragment
+                      key={`${rootSectionIdx}${rootGroupOrRootIdx}`}>
+                    <ListItem button onClick={() => this.toggleMenuState(
+                        rootSectionIdx, rootGroupOrRootIdx)}>
+                      <ListItemIcon>
+                        <DomainIcon/>
+                      </ListItemIcon>
+                      <ListItemText inset primary="Inbox"/>
+                      {menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`] ?
+                          <ExpandLess/> :
+                          <ExpandMore/>}
+                    </ListItem>
+                    <Collapse
+                        in={menuState[`${rootSectionIdx}`][`${rootGroupOrRootIdx}`]}
+                        timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        <ListItem button className={classes.nested}>
+                          <ListItemIcon>
+                            <StarBorder/>
+                          </ListItemIcon>
+                          <ListItemText inset primary="Starred"/>
+                        </ListItem>
+                      </List>
+                    </Collapse>
+                  </React.Fragment>
+                } else {
+                  return <ListItem button
+                                   key={`${rootSectionIdx}${rootGroupOrRootIdx}`}>
+                    <ListItemIcon>
+                      {rootGroupOrRoot.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={rootGroupOrRoot.text}/>
+                  </ListItem>
+                }
               })}
             </List>
             <Divider/>
@@ -292,10 +443,6 @@ class App extends Component {
         })}
       </Drawer>
     </React.Fragment>
-  }
-
-  renderDesktopDrawer() {
-
   }
 }
 
