@@ -7,6 +7,7 @@ import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
 import {parseToken} from 'utilities/token/index'
 import {Claims} from 'brain/security/auth'
+import {Logout} from 'actions/auth'
 
 const styles = theme => ({})
 
@@ -15,6 +16,7 @@ class Root extends Component {
     super(props)
     this.updateDimensions = this.updateDimensions.bind(this)
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
+    this.logout = this.logout.bind(this)
     this.state = {
       screenHeight: window.innerHeight,
       screenWidth: window.innerWidth,
@@ -36,6 +38,14 @@ class Root extends Component {
     } catch (e) {
       localStorage.setItem('jwt', null)
     }
+  }
+
+  logout(){
+    const {
+      Logout,
+    } = this.props
+    localStorage.removeItem('jwt')
+    Logout()
   }
 
   componentDidMount() {
@@ -73,6 +83,14 @@ class Root extends Component {
             />
             <Route
                 exact
+                path='/logout'
+                render={() => {
+                  this.logout()
+                  return <Redirect to="/"/>
+                }}
+            />
+            <Route
+                exact
                 path='/'
                 render={(props) => {
                   if (claims.notExpired) {
@@ -98,6 +116,7 @@ class Root extends Component {
 
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
+  Logout: PropTypes.func.isRequired,
   claims: PropTypes.instanceOf(Claims),
 }
 

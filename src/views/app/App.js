@@ -95,6 +95,7 @@ const roots = [
     { // this is an individual root
       text: 'Logout',
       icon: <LockIcon/>,
+      path: '/logout'
     },
 
     { // this is a root group
@@ -105,14 +106,17 @@ const roots = [
         { // this is an individual root
           text: 'Company',
           icon: <DomainIcon/>,
+          path: 'party/company'
         },
         {
           text: 'Client',
           icon: <PeopleIcon/>,
+          path: 'party/client'
         },
         {
           text: 'User',
           icon: <PersonIcon/>,
+          path: 'party/user'
         },
       ],
     },

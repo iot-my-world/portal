@@ -1,5 +1,6 @@
 import {
   setClaims,
+  logout,
 } from 'actions/actionTypes'
 import {
   Claims,
@@ -16,6 +17,9 @@ export default function auth(state = initState, action) {
         ...state,
         claims: action.data,
       }
+
+    case logout:
+      return initState
 
     default:
       return state

@@ -6,7 +6,7 @@ import {
   themeOptions, getTheme,
 } from 'theme/options'
 import {
-  SetClaims,
+  SetClaims, Logout,
 } from 'actions/auth'
 
 class RootContainer extends Component {
@@ -20,12 +20,14 @@ class RootContainer extends Component {
   render () {
     const {
       SetClaims,
+      Logout,
       claims,
     } = this.props
 
     return <MuiThemeProvider theme={this.theme}>
       <Root
           SetClaims={SetClaims}
+          Logout={Logout}
           claims={claims}
       />
     </MuiThemeProvider>
@@ -42,5 +44,6 @@ export default connect(
     mapStateToProps,
     {
       SetClaims,
+      Logout,
     },
 )(RootContainer)
