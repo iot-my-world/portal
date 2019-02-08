@@ -162,7 +162,7 @@ class Login extends Component {
             <img className={classes.logo} src={logo} alt={'logo'}/>
             <Typography className={classes.title} color={'primary'}
                         variant={'h3'}>
-              TRIPSYNC
+              SpotNav
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>

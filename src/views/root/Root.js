@@ -13,12 +13,11 @@ const styles = theme => ({})
 class Root extends Component {
   constructor(props) {
     super(props)
-    this.updateDimensions = this.updateDimensions.bind(this)
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
     this.logout = this.logout.bind(this)
+
     this.state = {
-      screenHeight: window.innerHeight,
-      screenWidth: window.innerWidth,
+      loggedIn: this.determineLoggedIn(),
     }
   }
 
@@ -30,12 +29,15 @@ class Root extends Component {
       const claims = parseToken(localStorage.getItem('jwt'))
       if (claims.notExpired) {
         SetClaims(claims)
+        return true
       } else {
         // if the token is expired clear the token state
         localStorage.setItem('jwt', null)
+        return false
       }
     } catch (e) {
       localStorage.setItem('jwt', null)
+      return false
     }
   }
 
@@ -45,21 +47,13 @@ class Root extends Component {
     } = this.props
     localStorage.removeItem('jwt')
     Logout()
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.updateDimensions)
-    this.determineLoggedIn()
-  }
-
-  updateDimensions() {
-    this.setState({
-      screenHeight: window.innerHeight,
-      screenWidth: window.innerWidth,
-    })
+    this.setState({loggedIn: false})
   }
 
   render() {
+    const {
+      loggedIn,
+    } = this.state
     const {
       claims,
     } = this.props
@@ -71,7 +65,7 @@ class Root extends Component {
             <Route
                 path='/app'
                 render={(props) => {
-                  if (claims.notExpired) {
+                  if (loggedIn || claims.notExpired) {
                     return <AppContainer
                         {...props}
                     />
@@ -92,7 +86,7 @@ class Root extends Component {
                 exact
                 path='/'
                 render={(props) => {
-                  if (claims.notExpired) {
+                  if (loggedIn || claims.notExpired) {
                     return <Redirect to='/app'/>
                   } else {
                     return <LoginContainer
@@ -100,10 +94,6 @@ class Root extends Component {
                     />
                   }
                 }}
-            />
-            <Route
-                path='/'
-                render={() => <Redirect to='/'/>}
             />
           </Switch>
         </div>

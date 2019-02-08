@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import {Route, Switch} from 'react-router-dom'
 import classNames from 'classnames'
 import {
   withStyles, Drawer, AppBar, Toolbar, List,
@@ -15,6 +16,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
+import HomeIcon from '@material-ui/icons/Home'
 
 const drawerWidth = 200
 
@@ -92,6 +94,12 @@ const roots = [
     // the difference is that objectGroups contain group: true
 
     { // this is an individual root
+      text: 'Home',
+      icon: <HomeIcon/>,
+      path: '/app',
+    },
+
+    { // this is an individual root
       text: 'Logout',
       icon: <LockIcon/>,
       path: '/logout',
@@ -105,42 +113,17 @@ const roots = [
         { // this is an individual root
           text: 'Company',
           icon: <DomainIcon/>,
-          path: 'party/company',
+          path: '/app/party/company',
         },
         {
           text: 'Client',
           icon: <PeopleIcon/>,
-          path: 'party/client',
+          path: '/app/party/client',
         },
         {
           text: 'User',
           icon: <PersonIcon/>,
-          path: 'party/user',
-        },
-      ],
-    },
-
-    { // this is an individual root
-      text: 'Test',
-      icon: <PeopleIcon/>,
-    },
-
-    { // this is a root group
-      group: true,
-      text: 'Party',
-      icon: <PeopleIcon/>,
-      roots: [
-        { // this is an individual root
-          text: 'Company',
-          icon: <DomainIcon/>,
-        },
-        {
-          text: 'Client',
-          icon: <PeopleIcon/>,
-        },
-        {
-          text: 'User',
-          icon: <PersonIcon/>,
+          path: '/app/party/user',
         },
       ],
     },
@@ -148,32 +131,32 @@ const roots = [
 
   // -------- divider here --------
 
-  [
-    { // this is an individual root
-      text: 'Client',
-      icon: <PeopleIcon/>,
-    },
-
-    { // this is a root group
-      group: true,
-      text: 'Party',
-      icon: <PeopleIcon/>,
-      roots: [
-        { // this is an individual root
-          text: 'Company',
-          icon: <DomainIcon/>,
-        },
-        {
-          text: 'Client',
-          icon: <PeopleIcon/>,
-        },
-        {
-          text: 'User',
-          icon: <PersonIcon/>,
-        },
-      ],
-    },
-  ],
+  // [
+  //   { // this is an individual root
+  //     text: 'Client',
+  //     icon: <PeopleIcon/>,
+  //   },
+  //
+  //   { // this is a root group
+  //     group: true,
+  //     text: 'Party',
+  //     icon: <PeopleIcon/>,
+  //     roots: [
+  //       { // this is an individual root
+  //         text: 'Company',
+  //         icon: <DomainIcon/>,
+  //       },
+  //       {
+  //         text: 'Client',
+  //         icon: <PeopleIcon/>,
+  //       },
+  //       {
+  //         text: 'User',
+  //         icon: <PersonIcon/>,
+  //       },
+  //     ],
+  //   },
+  // ],
 ]
 
 class App extends Component {
@@ -187,6 +170,7 @@ class App extends Component {
     this.toggleMobileDrawer = this.toggleMobileDrawer.bind(this)
     this.toggleDesktopDrawer = this.toggleDesktopDrawer.bind(this)
     this.toggleMenuState = this.toggleMenuState.bind(this)
+    this.changePath = this.changePath.bind(this)
 
     let menuState = {}
     roots.forEach((rootSection, rootSectionIdx) => {
@@ -205,6 +189,7 @@ class App extends Component {
       mobileDrawerOpen: false,
       desktopDrawerOpen: true,
       menuState,
+      path: '/app',
     }
   }
 
@@ -225,6 +210,14 @@ class App extends Component {
     this.setState(menuState)
   }
 
+  changePath(path) {
+    const {
+      history,
+    } = this.props
+    history.push(path)
+    this.setState({path})
+  }
+
   render() {
     const {classes} = this.props
 
@@ -238,7 +231,33 @@ class App extends Component {
           </Hidden>
           <main className={classes.content}>
             <div className={classes.toolbar}/>
-            <div>content</div>
+            <div>
+              <Switch>
+                {roots.map((rootSection, rootSectionIdx) => {
+                  return rootSection.map(
+                      (rootGroupOrRoot, rootGroupOrRootIdx) => {
+                        if (rootGroupOrRoot.group) {
+                          return rootGroupOrRoot.roots.map(
+                              (root, rootIdx) => {
+                                return <Route
+                                    key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
+                                    exact
+                                    path={root.path}
+                                    render={() => <div>{root.path}</div>}
+                                />
+                              })
+                        } else {
+                          return <Route
+                              key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
+                              exact
+                              path={rootGroupOrRoot.path}
+                              render={() => <div>{rootGroupOrRoot.path}</div>}
+                          />
+                        }
+                      })
+                })}
+              </Switch>
+            </div>
           </main>
         </div>
     )
@@ -357,7 +376,6 @@ class App extends Component {
   renderDrawerMenus() {
     const {
       classes,
-      history,
     } = this.props
 
     const {menuState} = this.state
@@ -388,7 +406,7 @@ class App extends Component {
                             button
                             className={classes.nested}
                             key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
-                            onClick={() => history.push(root.path)}
+                            onClick={() => this.changePath(root.path)}
                         >
                           <ListItemIcon>
                             {root.icon}
@@ -403,7 +421,7 @@ class App extends Component {
                 return <ListItem
                     button
                     key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
-                    onClick={() => history.push(rootGroupOrRoot.path)}
+                    onClick={() => this.changePath(rootGroupOrRoot.path)}
                 >
                   <ListItemIcon>
                     {rootGroupOrRoot.icon}
