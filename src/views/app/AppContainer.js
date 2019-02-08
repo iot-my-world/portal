@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import App from './App'
 
 let AppContainer = props => {
-  return <App/>
+  return <App {...props}/>
 }
 
 const mapStateToProps = (state) => {

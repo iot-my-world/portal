@@ -6,14 +6,7 @@ import {
 import Login from './Login'
 
 let LoginContainer = props => {
-  const {
-    SetClaims,
-    ...rest
-  } = props
-  return <Login
-      SetClaims={SetClaims}
-      {...rest}
-  />
+  return <Login {...props} />
 }
 
 const mapStateToProps = (state) => {

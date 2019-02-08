@@ -231,5 +231,9 @@ let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
+  /**
+   * react-router function
+   */
+  history: PropTypes.object.isRequired,
 }
 export default StyledLogin

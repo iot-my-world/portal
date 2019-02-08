@@ -7,7 +7,6 @@ import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
 import {parseToken} from 'utilities/token/index'
 import {Claims} from 'brain/security/auth'
-import {Logout} from 'actions/auth'
 
 const styles = theme => ({})
 
@@ -77,7 +76,7 @@ class Root extends Component {
                         {...props}
                     />
                   } else {
-                    return <Redirect to="/"/>
+                    return <Redirect to='/'/>
                   }
                 }}
             />
@@ -86,7 +85,7 @@ class Root extends Component {
                 path='/logout'
                 render={() => {
                   this.logout()
-                  return <Redirect to="/"/>
+                  return <Redirect to='/'/>
                 }}
             />
             <Route
@@ -94,7 +93,7 @@ class Root extends Component {
                 path='/'
                 render={(props) => {
                   if (claims.notExpired) {
-                    return <Redirect to="/app"/>
+                    return <Redirect to='/app'/>
                   } else {
                     return <LoginContainer
                         {...props}
@@ -104,7 +103,7 @@ class Root extends Component {
             />
             <Route
                 path='/'
-                render={() => <Redirect to="/"/>}
+                render={() => <Redirect to='/'/>}
             />
           </Switch>
         </div>
