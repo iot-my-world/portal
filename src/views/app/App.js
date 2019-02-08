@@ -164,12 +164,19 @@ class App extends Component {
     this.setState(menuState)
   }
 
-  changePath(path) {
+  changePath(path, usedMobileDrawer) {
     const {
       history,
     } = this.props
     history.push(path)
-    this.setState({path})
+    if (usedMobileDrawer) {
+      this.setState({
+        mobileDrawerOpen: false,
+        path,
+      })
+    } else {
+      this.setState({path})
+    }
   }
 
   render() {
@@ -300,12 +307,12 @@ class App extends Component {
           </IconButton>
         </div>
         <Divider/>
-        {this.renderDrawerMenus()}
+        {this.renderDrawerMenus(true)}
       </Drawer>
     </React.Fragment>
   }
 
-  renderDrawerMenus() {
+  renderDrawerMenus(usedMobileDrawer) {
     const {
       classes,
     } = this.props
@@ -338,7 +345,7 @@ class App extends Component {
                             button
                             className={classes.nested}
                             key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
-                            onClick={() => this.changePath(route.path)}
+                            onClick={() => this.changePath(route.path, usedMobileDrawer)}
                         >
                           <ListItemIcon>
                             {route.icon}
@@ -353,7 +360,7 @@ class App extends Component {
                 return <ListItem
                     button
                     key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                    onClick={() => this.changePath(routeGroupOrRoute.path)}
+                    onClick={() => this.changePath(routeGroupOrRoute.path, usedMobileDrawer)}
                 >
                   <ListItemIcon>
                     {routeGroupOrRoute.icon}
