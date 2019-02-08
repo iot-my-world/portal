@@ -10,13 +10,9 @@ import {
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import LockIcon from '@material-ui/icons/Lock'
-import PeopleIcon from '@material-ui/icons/People'
-import PersonIcon from '@material-ui/icons/Person'
-import DomainIcon from '@material-ui/icons/Domain'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
-import HomeIcon from '@material-ui/icons/Home'
+import AppRoutes from './Routes'
 
 const drawerWidth = 200
 
@@ -85,79 +81,37 @@ const styles = theme => ({
   },
 })
 
-const roots = [
-  // each array in this roots array  is a group which will
-  // be separated by a divider
-
-  [
-    // each array contains root 'objects' or root 'objectGroup'
-    // the difference is that objectGroups contain group: true
-
-    { // this is an individual root
-      text: 'Home',
-      icon: <HomeIcon/>,
-      path: '/app',
-    },
-
-    { // this is an individual root
-      text: 'Logout',
-      icon: <LockIcon/>,
-      path: '/logout',
-    },
-
-    { // this is a root group
-      group: true,
-      text: 'Party',
-      icon: <PeopleIcon/>,
-      roots: [
-        { // this is an individual root
-          text: 'Company',
-          icon: <DomainIcon/>,
-          path: '/app/party/company',
-        },
-        {
-          text: 'Client',
-          icon: <PeopleIcon/>,
-          path: '/app/party/client',
-        },
-        {
-          text: 'User',
-          icon: <PersonIcon/>,
-          path: '/app/party/user',
-        },
-      ],
-    },
-  ],
-
-  // -------- divider here --------
-
-  // [
-  //   { // this is an individual root
-  //     text: 'Client',
-  //     icon: <PeopleIcon/>,
-  //   },
-  //
-  //   { // this is a root group
-  //     group: true,
-  //     text: 'Party',
-  //     icon: <PeopleIcon/>,
-  //     roots: [
-  //       { // this is an individual root
-  //         text: 'Company',
-  //         icon: <DomainIcon/>,
-  //       },
-  //       {
-  //         text: 'Client',
-  //         icon: <PeopleIcon/>,
-  //       },
-  //       {
-  //         text: 'User',
-  //         icon: <PersonIcon/>,
-  //       },
-  //     ],
-  //   },
-  // ],
-]
+const Routes = AppRoutes.map((rootSection, rootSectionIdx) => {
+  let routes = []
+  rootSection.forEach(
+      (rootGroupOrRoot, rootGroupOrRootIdx) => {
+        if (rootGroupOrRoot.group) {
+          let embeddedRoutes = []
+          rootGroupOrRoot.roots.forEach(
+              (root, rootIdx) => {
+                if (root.component !== undefined) {
+                  embeddedRoutes.push(<Route
+                      key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
+                      exact
+                      path={root.path}
+                      render={() => <div>{root.path}</div>}
+                  />)
+                }
+              })
+          routes = [...routes, ...embeddedRoutes]
+        } else {
+          if (rootGroupOrRoot.component !== undefined) {
+            routes.push(<Route
+                key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
+                exact
+                path={rootGroupOrRoot.path}
+                render={() => <div>{rootGroupOrRoot.path}</div>}
+            />)
+          }
+        }
+      })
+  return routes
+})
 
 class App extends Component {
   constructor(props) {
@@ -173,7 +127,7 @@ class App extends Component {
     this.changePath = this.changePath.bind(this)
 
     let menuState = {}
-    roots.forEach((rootSection, rootSectionIdx) => {
+    AppRoutes.forEach((rootSection, rootSectionIdx) => {
       if (!menuState.hasOwnProperty(`${rootSectionIdx}`)) {
         menuState[`${rootSectionIdx}`] = {}
       }
@@ -233,29 +187,7 @@ class App extends Component {
             <div className={classes.toolbar}/>
             <div>
               <Switch>
-                {roots.map((rootSection, rootSectionIdx) => {
-                  return rootSection.map(
-                      (rootGroupOrRoot, rootGroupOrRootIdx) => {
-                        if (rootGroupOrRoot.group) {
-                          return rootGroupOrRoot.roots.map(
-                              (root, rootIdx) => {
-                                return <Route
-                                    key={`${rootSectionIdx}${rootGroupOrRootIdx}${rootIdx}`}
-                                    exact
-                                    path={root.path}
-                                    render={() => <div>{root.path}</div>}
-                                />
-                              })
-                        } else {
-                          return <Route
-                              key={`${rootSectionIdx}${rootGroupOrRootIdx}`}
-                              exact
-                              path={rootGroupOrRoot.path}
-                              render={() => <div>{rootGroupOrRoot.path}</div>}
-                          />
-                        }
-                      })
-                })}
+                {Routes}
               </Switch>
             </div>
           </main>
@@ -380,7 +312,7 @@ class App extends Component {
 
     const {menuState} = this.state
     return <React.Fragment>
-      {roots.map((rootSection, rootSectionIdx) => {
+      {AppRoutes.map((rootSection, rootSectionIdx) => {
         return <React.Fragment key={`${rootSectionIdx}`}>
           <List>
             {rootSection.map((rootGroupOrRoot, rootGroupOrRootIdx) => {
