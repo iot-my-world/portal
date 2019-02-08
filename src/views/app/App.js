@@ -94,7 +94,7 @@ const Routes = AppRoutes.map((routeSection, routeSectionIdx) => {
                       key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
                       exact
                       path={route.path}
-                      render={() => <div>{route.path}</div>}
+                      render={props => <route.component {...props}/>}
                   />)
                 }
               })

@@ -41,7 +41,7 @@ class Root extends Component {
     }
   }
 
-  logout(){
+  logout() {
     const {
       Logout,
     } = this.props
@@ -64,7 +64,7 @@ class Root extends Component {
           <Switch>
             <Route
                 path='/app'
-                render={(props) => {
+                render={props => {
                   if (loggedIn || claims.notExpired) {
                     return <AppContainer
                         {...props}
@@ -85,7 +85,7 @@ class Root extends Component {
             <Route
                 exact
                 path='/'
-                render={(props) => {
+                render={props => {
                   if (loggedIn || claims.notExpired) {
                     return <Redirect to='/app'/>
                   } else {
