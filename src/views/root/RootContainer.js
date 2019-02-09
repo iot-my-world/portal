@@ -6,7 +6,7 @@ import {
   themeOptions, getTheme,
 } from 'theme/options'
 import {
-  SetClaims, Logout,
+  SetClaims,
 } from 'actions/auth'
 
 class RootContainer extends Component {
@@ -44,6 +44,5 @@ export default connect(
     mapStateToProps,
     {
       SetClaims,
-      Logout,
     },
 )(RootContainer)

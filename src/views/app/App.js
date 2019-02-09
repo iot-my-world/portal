@@ -215,8 +215,15 @@ class App extends Component {
   changePath(route, usedMobileDrawer) {
     const {
       history,
+      Logout,
     } = this.props
-    history.push(route.path)
+
+    if (route.path === '/logout') {
+      Logout()
+      history.push(route.path)
+      return
+    }
+
     if (usedMobileDrawer) {
       this.setState({
         mobileDrawerOpen: false,
@@ -225,6 +232,7 @@ class App extends Component {
     } else {
       this.setState({route})
     }
+    history.push(route.path)
   }
 
   render() {
@@ -415,7 +423,7 @@ class App extends Component {
                 return <ListItem
                     button
                     key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                    onClick={() => this.changePath(routeGroupOrRoute.path,
+                    onClick={() => this.changePath(routeGroupOrRoute,
                         usedMobileDrawer)}
                 >
                   <ListItemIcon>
@@ -440,6 +448,10 @@ App.propTypes = {
    * react-router function
    */
   history: PropTypes.object.isRequired,
+  /**
+   * Logout action creator
+   */
+  Logout: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)

@@ -40,11 +40,7 @@ class Root extends Component {
   }
 
   logout() {
-    const {
-      Logout,
-    } = this.props
     localStorage.removeItem('jwt')
-    Logout()
     this.loggedIn = false
   }
 
@@ -98,7 +94,6 @@ class Root extends Component {
 
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  Logout: PropTypes.func.isRequired,
   claims: PropTypes.instanceOf(Claims),
 }
 
