@@ -75,10 +75,11 @@ const styles = theme => ({
   contentRoot: {
     flexGrow: 1,
     width: '100%',
-    height: '100%',
+    height: '100vh',
     padding: theme.spacing.unit * 3,
     display: 'grid',
     overflow: 'scroll',
+    gridTemplateRows: 'auto 1fr',
     backgroundColor: theme.palette.background.main,
   },
   nested: {
@@ -88,7 +89,7 @@ const styles = theme => ({
     display: 'grid',
     width: '100%',
     gridTemplateColumns: '1fr',
-    gridTemplateRows: '1fr',
+    gridTemplateRows: 'auto',
   },
   contentInnerWrapper: {
   },

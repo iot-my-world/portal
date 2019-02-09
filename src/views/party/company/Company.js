@@ -33,6 +33,7 @@ class Company extends Component {
             </Typography>
             <Table
                 data={[{a:1, b:2}]}
+                defaultPageSize={5}
                 columns={[
                   {
                     Header: 'A',
