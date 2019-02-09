@@ -118,10 +118,10 @@ class Login extends Component {
           // set the claims in redux state
           SetClaims(claims)
           // and set the token in local storage
-          localStorage.setItem('jwt', result.jwt)
+          sessionStorage.setItem('jwt', result.jwt)
         } else {
           // if the token is expired clear the token state
-          localStorage.setItem('jwt', null)
+          sessionStorage.setItem('jwt', null)
           console.error('given token is expired!')
           return
         }

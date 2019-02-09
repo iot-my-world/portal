@@ -8,6 +8,7 @@ import {
   Table,
 } from 'components/table'
 import {Company as CompanyEntity} from 'brain/party/company'
+import {FullPageLoader} from 'components/loader'
 
 const styles = theme => ({
   formField: {
@@ -32,6 +33,7 @@ const events = {
 class Company extends Component {
 
   state = {
+    isLoading: false,
     activeState: states.nop,
     selected: new CompanyEntity(),
   }
@@ -41,6 +43,7 @@ class Company extends Component {
     this.renderControls = this.renderControls.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleSaveNew = this.handleSaveNew.bind(this)
   }
 
   handleChange(event) {
@@ -51,7 +54,35 @@ class Company extends Component {
     this.setState({selected})
   }
 
+  handleSaveNew() {
+    const {
+      selected,
+    } = this.state
+    try {
+
+      this.setState({isLoading: true})
+      selected.validate('Create').then(result => {
+        console.log('result', result)
+      }).catch(error => {
+
+      }).finally(() => {
+        this.setState({isLoading: false})
+      })
+      // selected.create().then(result => {
+      // }).catch(error => {
+      // }).finally(() => {
+      //   this.setState({isLoading: false})
+      // })
+    } catch (e) {
+      console.error(`error creating new company ${e}`)
+    }
+  }
+
   render() {
+    const {
+      isLoading,
+    } = this.state
+
     return <Grid
         container
         direction='column'
@@ -81,6 +112,7 @@ class Company extends Component {
           </CardContent>
         </Card>
       </Grid>
+      <FullPageLoader open={isLoading}/>
     </Grid>
   }
 
@@ -165,6 +197,7 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
+              onClick={this.handleSaveNew}
           >
             Save New
           </Button>

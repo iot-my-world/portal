@@ -21,4 +21,25 @@ export default class RecordHandler {
       }).catch(error => reject(error))
     })
   }
+
+  /**
+   * Validate a company
+   * @param {Company} company
+   * @param {string} ignoreReasonsMethod
+   * @constructor
+   */
+  static Validate(company, ignoreReasonsMethod) {
+    return new Promise((resolve, reject) => {
+      jsonRpcRequest({
+        url: config.get('brainAPIUrl'),
+        method: 'CompanyRecordHandler.Validate',
+        request: {
+          company: company.toPOJO(),
+          ignoreReasonsMethod,
+        },
+      }).then(result => {
+        resolve(result)
+      }).catch(error => reject(error))
+    })
+  }
 }

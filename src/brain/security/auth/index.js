@@ -1,4 +1,4 @@
-import Claims from './Claims'
+import Claims from './claims/Claims'
 
 export {
   Claims,

@@ -68,4 +68,8 @@ export default class Company extends Base {
     return CompanyRecordHandler.Create(this)
   }
 
+  validate(ignoreReasonsMethod = '') {
+    return CompanyRecordHandler.Validate(this, ignoreReasonsMethod)
+  }
+
 }

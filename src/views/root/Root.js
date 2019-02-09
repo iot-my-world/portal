@@ -24,23 +24,23 @@ class Root extends Component {
       SetClaims,
     } = this.props
     try {
-      const claims = parseToken(localStorage.getItem('jwt'))
+      const claims = parseToken(sessionStorage.getItem('jwt'))
       if (claims.notExpired) {
         SetClaims(claims)
         return true
       } else {
         // if the token is expired clear the token state
-        localStorage.setItem('jwt', null)
+        sessionStorage.setItem('jwt', null)
         return false
       }
     } catch (e) {
-      localStorage.setItem('jwt', null)
+      sessionStorage.setItem('jwt', null)
       return false
     }
   }
 
   logout() {
-    localStorage.removeItem('jwt')
+    sessionStorage.removeItem('jwt')
     this.loggedIn = false
   }
 

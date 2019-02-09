@@ -12,7 +12,7 @@ export default function jsonRpcRequest({url, method, request}) {
   })
 
   if (!methodsWithoutAuthorization.includes(method)) {
-    const accessToken = sessionStorage.getItem('access_token')
+    const accessToken = sessionStorage.getItem('jwt')
     if (accessToken) {
       header.append('Authorization', accessToken)
     } else {
