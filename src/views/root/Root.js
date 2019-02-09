@@ -16,9 +16,7 @@ class Root extends Component {
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
     this.logout = this.logout.bind(this)
 
-    this.state = {
-      loggedIn: this.determineLoggedIn(),
-    }
+    this.loggedIn = this.determineLoggedIn()
   }
 
   determineLoggedIn() {
@@ -47,13 +45,10 @@ class Root extends Component {
     } = this.props
     localStorage.removeItem('jwt')
     Logout()
-    this.setState({loggedIn: false})
+    this.loggedIn = false
   }
 
   render() {
-    const {
-      loggedIn,
-    } = this.state
     const {
       claims,
     } = this.props
@@ -64,7 +59,7 @@ class Root extends Component {
           <Route
               path='/app'
               render={props => {
-                if (loggedIn || claims.notExpired) {
+                if (this.loggedIn || claims.notExpired) {
                   return <AppContainer
                       {...props}
                   />
@@ -85,7 +80,7 @@ class Root extends Component {
               exact
               path='/'
               render={props => {
-                if (loggedIn || claims.notExpired) {
+                if (this.loggedIn || claims.notExpired) {
                   return <Redirect to='/app'/>
                 } else {
                   return <LoginContainer
