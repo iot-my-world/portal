@@ -8,7 +8,13 @@ import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
 
-const AppRoots = [
+const HomeRoute = {
+  text: 'Home',
+  icon: <HomeIcon/>,
+  path: '/app',
+}
+
+const AppRoutes = [
   // each array in this routes array  is a group which will
   // be separated by a divider
 
@@ -16,11 +22,8 @@ const AppRoots = [
     // each array contains route 'objects' or route 'objectGroup'
     // the difference is that objectGroups contain group: true
 
-    { // this is an individual route
-      text: 'Home',
-      icon: <HomeIcon/>,
-      path: '/app',
-    },
+    // this is an individual route
+    HomeRoute,
 
     { // this is an individual route
       text: 'Logout',
@@ -85,4 +88,7 @@ const AppRoots = [
   // ],
 ]
 
-export default AppRoots
+export default AppRoutes
+export {
+  HomeRoute,
+}

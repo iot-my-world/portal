@@ -12,7 +12,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
-import AppRoutes from './Routes'
+import AppRoutes, {HomeRoute} from './Routes'
 
 const drawerWidth = 200
 
@@ -143,7 +143,7 @@ class App extends Component {
       mobileDrawerOpen: false,
       desktopDrawerOpen: true,
       menuState,
-      path: '/app',
+      route: HomeRoute,
     }
   }
 
@@ -164,18 +164,18 @@ class App extends Component {
     this.setState(menuState)
   }
 
-  changePath(path, usedMobileDrawer) {
+  changePath(route, usedMobileDrawer) {
     const {
       history,
     } = this.props
-    history.push(path)
+    history.push(route.path)
     if (usedMobileDrawer) {
       this.setState({
         mobileDrawerOpen: false,
-        path,
+        route,
       })
     } else {
-      this.setState({path})
+      this.setState({route})
     }
   }
 
@@ -204,7 +204,10 @@ class App extends Component {
 
   renderDesktopDrawerAndToolbar() {
     const {classes, theme} = this.props
-    const {desktopDrawerOpen} = this.state
+    const {
+      desktopDrawerOpen,
+      route,
+    } = this.state
 
     return <React.Fragment>
       <AppBar
@@ -225,7 +228,7 @@ class App extends Component {
             <MenuIcon/>
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
-            Mini variant drawer
+            {route.text}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -258,7 +261,10 @@ class App extends Component {
 
   renderMobileDrawerAndToolbar() {
     const {classes, theme} = this.props
-    const {mobileDrawerOpen} = this.state
+    const {
+      mobileDrawerOpen,
+      route,
+    } = this.state
 
     return <React.Fragment>
       <AppBar
@@ -279,7 +285,7 @@ class App extends Component {
             <MenuIcon/>
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
-            Mini variant drawer
+            {route.text}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -345,7 +351,7 @@ class App extends Component {
                             button
                             className={classes.nested}
                             key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
-                            onClick={() => this.changePath(route.path, usedMobileDrawer)}
+                            onClick={() => this.changePath(route, usedMobileDrawer)}
                         >
                           <ListItemIcon>
                             {route.icon}
