@@ -2,13 +2,19 @@ import React, {Component} from 'react'
 // import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
-    Button,
+  Button, TextField,
 } from '@material-ui/core'
 import {
   Table,
 } from 'components/table'
+import {Company as CompanyEntity} from 'brain/party/company'
 
-const styles = theme => ({})
+const styles = theme => ({
+  formField: {
+    height: '60px',
+    width: '150px',
+  },
+})
 
 const states = {
   nop: 0,
@@ -20,19 +26,50 @@ const states = {
 const events = {
   selectExisting: states.viewingExisting,
   startCreateNew: states.editingNew,
+  cancelCreateNew: states.nop,
 }
 
 class Company extends Component {
+
+  state = {
+    activeState: states.nop,
+    selected: new CompanyEntity(),
+  }
+
+  constructor(props) {
+    super(props)
+    this.renderControls = this.renderControls.bind(this)
+    this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  handleChange(event) {
+    let {
+      selected,
+    } = this.state
+    selected[event.target.id] = event.target.value
+    this.setState({selected})
+  }
+
   render() {
-    return <Grid container direction='row'>
-      <Grid item>
+    return <Grid
+        container
+        direction='column'
+        spacing={8}
+    >
+      <Grid item xl={12}>
         <Card>
           <CardContent>
-            <Typography variant={'body1'}>
-              Select Company to View or Update
-            </Typography>
+            {this.renderCompanyDetails()}
+          </CardContent>
+          {this.renderControls()}
+        </Card>
+      </Grid>
+      <Grid item xl={12}>
+        <Card>
+          <CardContent>
             <Table
-                data={[{a:1, b:2}]}
+                data={[{a: 1, b: 2}]}
                 defaultPageSize={5}
                 columns={[
                   {
@@ -46,16 +83,112 @@ class Company extends Component {
       </Grid>
     </Grid>
   }
+
+  renderCompanyDetails() {
+    const {
+      activeState,
+    } = this.state
+    const {
+      classes,
+    } = this.props
+
+    switch (activeState) {
+      case states.nop:
+        return <Typography variant={'body1'}>
+          Select Company or <Button
+            size='small'
+            color='primary'
+            variant='contained'
+            onClick={() => this.setState({
+              activeState: events.startCreateNew,
+              selected: new CompanyEntity(),
+            })}
+        >
+          Create New
+        </Button>
+        </Typography>
+
+      case states.editingNew:
+        const {
+          selected,
+        } = this.state
+        return <React.Fragment>
+          <Typography variant={'body1'}>
+            New Company Creation
+          </Typography>
+          <Grid
+              container
+              direction='column'
+              spacing={8}
+          >
+            <Grid item>
+              <TextField
+                  className={classes.formField}
+                  id='name'
+                  label='Name'
+                  value={selected.name}
+                  onChange={this.handleChange}
+                  // disabled={disableFields}
+                  // helperText={invalidFields['number']}
+                  // error={!!invalidFields['number']}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                  className={classes.formField}
+                  id='adminEmail'
+                  label='Admin Email'
+                  value={selected.adminEmail}
+                  onChange={this.handleChange}
+                  // disabled={disableFields}
+                  // helperText={invalidFields['number']}
+                  // error={!!invalidFields['number']}
+              />
+            </Grid>
+          </Grid>
+        </React.Fragment>
+
+      default:
+    }
+
+  }
+
+  renderControls() {
+    const {
+      activeState,
+    } = this.state
+
+    switch (activeState) {
+      case states.editingNew:
+        return <CardActions>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+          >
+            Save New
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={() => this.setState(
+                  {activeState: events.cancelCreateNew})}
+          >
+            Cancel
+          </Button>
+        </CardActions>
+
+      case states.nop:
+      default:
+    }
+  }
 }
 
 Company = withStyles(styles)(Company)
 
-Company.propTypes = {
+Company.propTypes = {}
 
-}
-
-Company.defaultProps = {
-  
-}
+Company.defaultProps = {}
 
 export default Company
