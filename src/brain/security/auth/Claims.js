@@ -54,7 +54,7 @@ class Claims extends Base {
         this._partyType = claims.partyType
         this._partyId = new IdIdentifier(claims.partyId)
       } catch (e) {
-        console.error(`error constructing claims object: ${e}`)
+        throw new Error(`error constructing claims object: ${e}`)
       }
     }
   }
