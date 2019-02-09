@@ -19,6 +19,7 @@ const defaultTheme = {
     primary: { main: '#32485c' },
     secondary: { main: '#cbbe34' },
     error: { main: '#ff111b'},
+    background: { main: '#cbcbcb'},
   },
   typography: {
     fontFamily: `'Roboto'`,

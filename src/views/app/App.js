@@ -72,12 +72,25 @@ const styles = theme => ({
     padding: '0 8px',
     ...theme.mixins.toolbar,
   },
-  content: {
+  contentRoot: {
     flexGrow: 1,
+    width: '100%',
+    height: '100%',
     padding: theme.spacing.unit * 3,
+    display: 'grid',
+    overflow: 'scroll',
+    backgroundColor: theme.palette.background.main,
   },
   nested: {
     paddingLeft: theme.spacing.unit * 4,
+  },
+  contentOuterWrapper: {
+    display: 'grid',
+    width: '100%',
+    gridTemplateColumns: '1fr',
+    gridTemplateRows: '1fr',
+  },
+  contentInnerWrapper: {
   },
 })
 
@@ -222,14 +235,16 @@ class App extends Component {
           <Hidden mdUp>
             {this.renderMobileDrawerAndToolbar()}
           </Hidden>
-          <main className={classes.content}>
+          <div className={classes.contentRoot}>
             <div className={classes.toolbar}/>
-            <div>
-              <Switch>
-                {AppContentRoutes}
-              </Switch>
+            <div className={classes.contentOuterWrapper}>
+              <div className={classes.contentInnerWrapper}>
+                <Switch>
+                  {AppContentRoutes}
+                </Switch>
+              </div>
             </div>
-          </main>
+          </div>
         </div>
     )
   }
