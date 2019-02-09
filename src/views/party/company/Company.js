@@ -9,6 +9,7 @@ import {
 } from 'components/table'
 import {Company as CompanyEntity} from 'brain/party/company'
 import {FullPageLoader} from 'components/loader'
+import {ReasonsInvalid} from 'brain/validate'
 
 const styles = theme => ({
   formField: {
@@ -38,6 +39,8 @@ class Company extends Component {
     selected: new CompanyEntity(),
   }
 
+  reasonsInvalid = new ReasonsInvalid()
+
   constructor(props) {
     super(props)
     this.renderControls = this.renderControls.bind(this)
@@ -62,17 +65,19 @@ class Company extends Component {
 
       this.setState({isLoading: true})
       selected.validate('Create').then(result => {
-        console.log('result', result)
+        if (result.reasonsInvalid.length > 0) {
+          this.reasonsInvalid = new ReasonsInvalid(result.reasonsInvalid)
+          this.setState({isLoading: false})
+        } else {
+          selected.create().then(result => {
+          }).catch(error => {
+          }).finally(() => {
+            this.setState({isLoading: false})
+          })
+        }
       }).catch(error => {
-
-      }).finally(() => {
         this.setState({isLoading: false})
       })
-      // selected.create().then(result => {
-      // }).catch(error => {
-      // }).finally(() => {
-      //   this.setState({isLoading: false})
-      // })
     } catch (e) {
       console.error(`error creating new company ${e}`)
     }
@@ -124,6 +129,8 @@ class Company extends Component {
       classes,
     } = this.props
 
+    const fieldValidations = this.reasonsInvalid.toMap()
+
     switch (activeState) {
       case states.nop:
         return <Typography variant={'body1'}>
@@ -161,8 +168,12 @@ class Company extends Component {
                   value={selected.name}
                   onChange={this.handleChange}
                   // disabled={disableFields}
-                  // helperText={invalidFields['number']}
-                  // error={!!invalidFields['number']}
+                  helperText={
+                    fieldValidations.name
+                        ? fieldValidations.name.help
+                        : undefined
+                  }
+                  error={!!fieldValidations.name}
               />
             </Grid>
             <Grid item>
@@ -173,8 +184,12 @@ class Company extends Component {
                   value={selected.adminEmail}
                   onChange={this.handleChange}
                   // disabled={disableFields}
-                  // helperText={invalidFields['number']}
-                  // error={!!invalidFields['number']}
+                  helperText={
+                    fieldValidations.adminEmail
+                        ? fieldValidations.adminEmail.help
+                        : undefined
+                  }
+                  error={!!fieldValidations.adminEmail}
               />
             </Grid>
           </Grid>

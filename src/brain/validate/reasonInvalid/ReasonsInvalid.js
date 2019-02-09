@@ -34,4 +34,25 @@ export default class ReasonsInvalid {
   get reasonsInvalid() {
     return this._reasonsInvalid
   }
+
+  /**
+   * check for reason invalid with given field name
+   * @param {string} field
+   * @returns {undefined|ReasonInvalid}
+   */
+  errorOnField(field){
+    for (let reasonInvalid of this._reasonsInvalid) {
+      if (reasonInvalid.field === field) {
+        return reasonInvalid
+      }
+    }
+  }
+
+  toMap(){
+    let map = {}
+    for (let reasonInvalid of this._reasonsInvalid) {
+      map[reasonInvalid.field] = reasonInvalid
+    }
+    return map
+  }
 }
