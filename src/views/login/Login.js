@@ -137,7 +137,8 @@ class Login extends Component {
       }
     }).catch(err => {
       console.log('faulty login!', err)
-    }).finally(() => this.setState({activeState: events.init}))
+      this.setState({activeState: events.init})
+    })
 
   }
 
