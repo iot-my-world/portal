@@ -81,7 +81,7 @@ const styles = theme => ({
   },
 })
 
-const Routes = AppRoutes.map((routeSection, routeSectionIdx) => {
+const AppContentRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
   let routes = []
   routeSection.forEach(
       (routeGroupOrRoute, routeGroupOrRouteIdx) => {
@@ -105,7 +105,39 @@ const Routes = AppRoutes.map((routeSection, routeSectionIdx) => {
                 key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
                 exact
                 path={routeGroupOrRoute.path}
-                render={() => <div>{routeGroupOrRoute.path}</div>}
+                render={props => <routeGroupOrRoute.component {...props}/>}
+            />)
+          }
+        }
+      })
+  return routes
+})
+
+const AppHeaderRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
+  let routes = []
+  routeSection.forEach(
+      (routeGroupOrRoute, routeGroupOrRouteIdx) => {
+        if (routeGroupOrRoute.group) {
+          let embeddedRoutes = []
+          routeGroupOrRoute.routes.forEach(
+              (route, routeIdx) => {
+                if (route.component !== undefined) {
+                  embeddedRoutes.push(<Route
+                      key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
+                      exact
+                      path={route.path}
+                      render={() => route.text}
+                  />)
+                }
+              })
+          routes = [...routes, ...embeddedRoutes]
+        } else {
+          if (routeGroupOrRoute.component !== undefined) {
+            routes.push(<Route
+                key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
+                exact
+                path={routeGroupOrRoute.path}
+                render={() => () => routeGroupOrRoute.text}
             />)
           }
         }
@@ -194,7 +226,7 @@ class App extends Component {
             <div className={classes.toolbar}/>
             <div>
               <Switch>
-                {Routes}
+                {AppContentRoutes}
               </Switch>
             </div>
           </main>
@@ -204,10 +236,7 @@ class App extends Component {
 
   renderDesktopDrawerAndToolbar() {
     const {classes, theme} = this.props
-    const {
-      desktopDrawerOpen,
-      route,
-    } = this.state
+    const {desktopDrawerOpen} = this.state
 
     return <React.Fragment>
       <AppBar
@@ -228,7 +257,9 @@ class App extends Component {
             <MenuIcon/>
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
-            {route.text}
+            <Switch>
+              {AppHeaderRoutes}
+            </Switch>
           </Typography>
         </Toolbar>
       </AppBar>
@@ -261,10 +292,7 @@ class App extends Component {
 
   renderMobileDrawerAndToolbar() {
     const {classes, theme} = this.props
-    const {
-      mobileDrawerOpen,
-      route,
-    } = this.state
+    const {mobileDrawerOpen} = this.state
 
     return <React.Fragment>
       <AppBar
@@ -285,7 +313,9 @@ class App extends Component {
             <MenuIcon/>
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
-            {route.text}
+            <Switch>
+              {AppHeaderRoutes}
+            </Switch>
           </Typography>
         </Toolbar>
       </AppBar>
@@ -351,7 +381,8 @@ class App extends Component {
                             button
                             className={classes.nested}
                             key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
-                            onClick={() => this.changePath(route, usedMobileDrawer)}
+                            onClick={() => this.changePath(route,
+                                usedMobileDrawer)}
                         >
                           <ListItemIcon>
                             {route.icon}
@@ -366,7 +397,8 @@ class App extends Component {
                 return <ListItem
                     button
                     key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                    onClick={() => this.changePath(routeGroupOrRoute.path, usedMobileDrawer)}
+                    onClick={() => this.changePath(routeGroupOrRoute.path,
+                        usedMobileDrawer)}
                 >
                   <ListItemIcon>
                     {routeGroupOrRoute.icon}
