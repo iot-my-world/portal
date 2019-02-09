@@ -19,6 +19,7 @@ const drawerWidth = 200
 const styles = theme => ({
   route: {
     display: 'flex',
+    height: '100vh',
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -65,6 +66,18 @@ const styles = theme => ({
       width: theme.spacing.unit * 9 + 1,
     },
   },
+  contentRoot: {
+    flexGrow: 1,
+    width: '100%',
+    // height: '100%',
+    padding: theme.spacing.unit * 2,
+    paddingTop: '0',
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr',
+    gridTemplateColumns: '1fr',
+    backgroundColor: theme.palette.background.main,
+    overflow: 'scroll',
+  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -72,26 +85,15 @@ const styles = theme => ({
     padding: '0 8px',
     ...theme.mixins.toolbar,
   },
-  contentRoot: {
-    flexGrow: 1,
-    width: '100%',
-    height: '100vh',
-    padding: theme.spacing.unit * 3,
-    display: 'grid',
-    overflow: 'scroll',
-    gridTemplateRows: 'auto 1fr',
-    backgroundColor: theme.palette.background.main,
-  },
   nested: {
     paddingLeft: theme.spacing.unit * 4,
   },
-  contentOuterWrapper: {
+  contentWrapper: {
     display: 'grid',
-    width: '100%',
     gridTemplateColumns: '1fr',
-    gridTemplateRows: 'auto',
-  },
-  contentInnerWrapper: {
+    gridTemplateRows: '1fr',
+    overflow: 'scroll',
+    paddingTop: theme.spacing.unit * 2,
   },
 })
 
@@ -238,10 +240,10 @@ class App extends Component {
           </Hidden>
           <div className={classes.contentRoot}>
             <div className={classes.toolbar}/>
-            <div className={classes.contentOuterWrapper}>
-              <div className={classes.contentInnerWrapper}>
+            <div className={classes.contentWrapper}>
+              <div>
                 <Switch>
-                  {AppContentRoutes}
+                {AppContentRoutes}
                 </Switch>
               </div>
             </div>

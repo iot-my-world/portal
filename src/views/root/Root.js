@@ -60,43 +60,41 @@ class Root extends Component {
 
     return <BrowserRouter>
       <div>
-        <div>
-          <Switch>
-            <Route
-                path='/app'
-                render={props => {
-                  if (loggedIn || claims.notExpired) {
-                    return <AppContainer
-                        {...props}
-                    />
-                  } else {
-                    return <Redirect to='/'/>
-                  }
-                }}
-            />
-            <Route
-                exact
-                path='/logout'
-                render={() => {
-                  this.logout()
+        <Switch>
+          <Route
+              path='/app'
+              render={props => {
+                if (loggedIn || claims.notExpired) {
+                  return <AppContainer
+                      {...props}
+                  />
+                } else {
                   return <Redirect to='/'/>
-                }}
-            />
-            <Route
-                exact
-                path='/'
-                render={props => {
-                  if (loggedIn || claims.notExpired) {
-                    return <Redirect to='/app'/>
-                  } else {
-                    return <LoginContainer
-                        {...props}
-                    />
-                  }
-                }}
-            />
-          </Switch>
-        </div>
+                }
+              }}
+          />
+          <Route
+              exact
+              path='/logout'
+              render={() => {
+                this.logout()
+                return <Redirect to='/'/>
+              }}
+          />
+          <Route
+              exact
+              path='/'
+              render={props => {
+                if (loggedIn || claims.notExpired) {
+                  return <Redirect to='/app'/>
+                } else {
+                  return <LoginContainer
+                      {...props}
+                  />
+                }
+              }}
+          />
+        </Switch>
         <ToastNotify/>
       </div>
     </BrowserRouter>
