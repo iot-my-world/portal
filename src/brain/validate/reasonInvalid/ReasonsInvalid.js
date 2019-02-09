@@ -40,7 +40,7 @@ export default class ReasonsInvalid {
    * @param {string} field
    * @returns {undefined|ReasonInvalid}
    */
-  errorOnField(field){
+  errorOnField(field) {
     for (let reasonInvalid of this._reasonsInvalid) {
       if (reasonInvalid.field === field) {
         return reasonInvalid
@@ -48,11 +48,25 @@ export default class ReasonsInvalid {
     }
   }
 
-  toMap(){
+  /**
+   * Converts array of invalid fields
+   * to a map of field: ReasonInvalid
+   * Typical usage: toMap().field.help
+   * @returns {{field: ReasonInvalid}}
+   */
+  toMap() {
     let map = {}
     for (let reasonInvalid of this._reasonsInvalid) {
       map[reasonInvalid.field] = reasonInvalid
     }
     return map
+  }
+
+  /**
+   * Clears reasons invalid on field
+   * @param {string} field
+   */
+  clearField(field) {
+    this._reasonsInvalid = this._reasonsInvalid.filter(r => r.field !== field)
   }
 }

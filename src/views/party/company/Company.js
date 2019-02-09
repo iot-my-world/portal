@@ -54,6 +54,7 @@ class Company extends Component {
       selected,
     } = this.state
     selected[event.target.id] = event.target.value
+    this.reasonsInvalid.clearField(event.target.id)
     this.setState({selected})
   }
 
