@@ -69,4 +69,12 @@ export default class ReasonsInvalid {
   clearField(field) {
     this._reasonsInvalid = this._reasonsInvalid.filter(r => r.field !== field)
   }
+
+  /**
+   * The number of reasons invalid
+   * @returns {number}
+   */
+  get count(){
+    return this._reasonsInvalid.length
+  }
 }

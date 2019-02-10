@@ -24,10 +24,10 @@ export default class Base {
                   (this[field] === null)
               ) &&
               // and the data at the field has a forPost method
-              (isFunction(this[field].forPost))
+              (isFunction(this[field].toPOJO))
           ) {
             // then set the field equal to it's forPost output
-            retObj[fieldName] = this[field].forPost()
+            retObj[fieldName] = this[field].toPOJO()
           } else {
             // otherwise, parse the data at the field if the field is listed in
             retObj[fieldName] = this[field]

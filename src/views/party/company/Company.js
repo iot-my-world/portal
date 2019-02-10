@@ -27,8 +27,12 @@ const states = {
 
 const events = {
   selectExisting: states.viewingExisting,
+
   startCreateNew: states.editingNew,
   cancelCreateNew: states.nop,
+  createNewSuccess: states.viewingExisting,
+
+  startEditExisting: states.editingExisting,
 }
 
 class Company extends Component {
@@ -69,13 +73,17 @@ class Company extends Component {
     try {
 
       this.setState({isLoading: true})
-      selected.validate('Create').then(result => {
-        if (result.reasonsInvalid.length > 0) {
-          this.reasonsInvalid = new ReasonsInvalid(result.reasonsInvalid)
+      selected.validate('Create').then(reasonsInvalid => {
+        if (reasonsInvalid.count > 0) {
+          this.reasonsInvalid = reasonsInvalid
           this.setState({isLoading: false})
         } else {
-          selected.create().then(result => {
+          selected.create().then(newCompany => {
             NotificationSuccess('Successfully Created Company')
+            this.setState({
+              selected: newCompany,
+              activeState: events.createNewSuccess,
+            })
           }).catch(error => {
             console.error('Error Creating Company', error)
             NotificationFailure('Error Creating Company')
@@ -133,6 +141,7 @@ class Company extends Component {
 
   renderCompanyDetails() {
     const {
+      isLoading,
       activeState,
     } = this.state
     const {
@@ -140,6 +149,9 @@ class Company extends Component {
     } = this.props
 
     const fieldValidations = this.reasonsInvalid.toMap()
+    const disableFields = (activeState === states.viewingExisting) ||
+        isLoading
+
 
     switch (activeState) {
       case states.nop:
@@ -157,12 +169,16 @@ class Company extends Component {
         </Button>
         </Typography>
 
+      case states.viewingExisting:
       case states.editingNew:
         const {
           selected,
         } = this.state
         return <React.Fragment>
           <Typography variant={'body1'}>
+            {(()=>{
+
+            })()}
             New Company Creation
           </Typography>
           <Grid
@@ -177,7 +193,7 @@ class Company extends Component {
                   label='Name'
                   value={selected.name}
                   onChange={this.handleChange}
-                  // disabled={disableFields}
+                  disabled={disableFields}
                   helperText={
                     fieldValidations.name
                         ? fieldValidations.name.help
@@ -193,7 +209,7 @@ class Company extends Component {
                   label='Admin Email'
                   value={selected.adminEmailAddress}
                   onChange={this.handleChange}
-                  // disabled={disableFields}
+                  disabled={disableFields}
                   helperText={
                     fieldValidations.adminEmailAddress
                         ? fieldValidations.adminEmailAddress.help
@@ -216,6 +232,31 @@ class Company extends Component {
     } = this.state
 
     switch (activeState) {
+      case states.viewingExisting:
+        return <CardActions>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={() => this.setState({
+                activeState: events.startEditExisting,
+              })}
+          >
+            Edit
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={() => this.setState({
+                activeState: events.startCreateNew,
+                selected: new CompanyEntity(),
+              })}
+          >
+            Create New
+          </Button>
+        </CardActions>
+
       case states.editingNew:
         return <CardActions>
           <Button
