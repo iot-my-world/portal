@@ -1,9 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import User from './Maps'
+import Maps from './Maps'
 
 let FunctionalContainer = props => {
-  return <User {...props}/>
+  return <Maps {...props}/>
 }
 
 const mapStateToProps = (state) => {
