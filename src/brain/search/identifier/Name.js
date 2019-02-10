@@ -1,7 +1,8 @@
 import {Name as NameIdentifier} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
+import Base from 'brain/Base'
 
-export default class Name {
+export default class Name extends Base {
   static identifierType = NameIdentifier
 
   /**
@@ -23,6 +24,7 @@ export default class Name {
    * @param {string|Name|Object} [name]
    */
   constructor(name) {
+    super()
     if (name !== undefined) {
       if (
           (name instanceof Name) ||

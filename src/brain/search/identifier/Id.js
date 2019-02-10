@@ -1,7 +1,8 @@
 import {Id as IdIdentifier} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
+import Base from 'brain/Base'
 
-export default class Id {
+export default class Id extends Base {
   static identifierType = IdIdentifier
 
   /**
@@ -23,6 +24,7 @@ export default class Id {
    * @param {string|Id|Object} [id]
    */
   constructor(id) {
+    super()
     if (id !== undefined) {
       if (
           (id instanceof Id) ||

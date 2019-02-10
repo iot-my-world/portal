@@ -1,3 +1,7 @@
-import Table from './Table'
+import Table from './reactTable/Table'
+import BEPTable from './bepTable/BEPTable'
 
-export {Table}
+export {
+  Table,
+  BEPTable,
+}
