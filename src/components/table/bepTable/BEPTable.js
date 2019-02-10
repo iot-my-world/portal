@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Table from 'components/table/reactTable/Table'
 import {withStyles} from '@material-ui/core'
+import {
+  Text
+} from './filters'
 
 const styles = theme => ({
 })
