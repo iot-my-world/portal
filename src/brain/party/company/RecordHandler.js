@@ -1,5 +1,7 @@
 import {jsonRpcRequest} from 'utilities/network'
 import config from 'react-global-configuration'
+import Company from './Company'
+import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 export default class RecordHandler {
 
@@ -17,7 +19,7 @@ export default class RecordHandler {
           company: company.toPOJO(),
         },
       }).then(result => {
-        resolve(result)
+        resolve(new Company(result.company))
       }).catch(error => reject(error))
     })
   }
@@ -38,7 +40,7 @@ export default class RecordHandler {
           method,
         },
       }).then(result => {
-        resolve(result)
+        resolve(new ReasonsInvalid(result.reasonsInvalid))
       }).catch(error => reject(error))
     })
   }

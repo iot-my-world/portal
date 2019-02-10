@@ -153,7 +153,7 @@ const AppHeaderRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
                 key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
                 exact
                 path={routeGroupOrRoute.path}
-                render={() => () => routeGroupOrRoute.text}
+                render={() => routeGroupOrRoute.text}
             />)
           }
         }
