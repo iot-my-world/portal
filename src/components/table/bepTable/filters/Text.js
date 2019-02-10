@@ -10,13 +10,16 @@ import {
 const styles = (theme) => ({})
 
 class Text extends Component {
-  state = {
-    criterion: new TextCriterion(),
-  }
 
   constructor(props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
+    this.state = {
+      criterion: new TextCriterion({
+        field: props.field,
+        text: '',
+      }),
+    }
   }
 
   handleChange(event) {
@@ -44,7 +47,11 @@ class Text extends Component {
 
 Text = withStyles(styles)(Text)
 
-Text.propTypes = {}
+Text.propTypes = {
+  field: PropTypes.string.isRequired,
+  config: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+}
 
 Text.defaultProps = {}
 
