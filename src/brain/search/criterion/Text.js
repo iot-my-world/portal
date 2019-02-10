@@ -62,4 +62,8 @@ export default class Text extends Base {
     this._value.text = newVal
   }
 
+  get blank() {
+    return this._value.text === ''
+  }
+
 }
