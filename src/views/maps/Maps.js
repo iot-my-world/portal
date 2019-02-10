@@ -12,14 +12,14 @@ class Maps extends Component {
   }
 }
 
-Maps = withStyles(styles)(Maps)
+// Maps = withStyles(styles)(Maps)
 
-Maps.propTypes = {
-
-}
-
-Maps.defaultProps = {
-
-}
+// Maps.propTypes = {
+//
+// }
+//
+// Maps.defaultProps = {
+//
+// }
 
 export default Maps

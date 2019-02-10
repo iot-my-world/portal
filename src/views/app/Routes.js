@@ -7,7 +7,7 @@ import HomeIcon from '@material-ui/icons/Home'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
-import Maps from 'views/maps/Maps'
+import MapsContainer from 'views/maps/MapsContainer'
 
 const HomeRoute = {
   text: 'Home',
@@ -61,7 +61,7 @@ const AppRoutes = [
       text: 'MapsTest',
       icon: <PersonIcon/>,
       path: '/app/maps',
-      component: Maps,
+      component: MapsContainer,
     },
   ],
 
