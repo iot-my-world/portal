@@ -124,12 +124,21 @@ class Company extends Component {
         <Card>
           <CardContent>
             <BEPTable
-                data={[{a: 1, b: 2}]}
+                data={[]}
                 defaultPageSize={5}
                 columns={[
                   {
-                    Header: 'A',
-                    accessor: 'a',
+                    Header: 'Name',
+                    accessor: 'name',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Admin Email',
+                    accessor: 'adminEmailAddress',
                     config: {
                       filter: {
                         type: Text,
