@@ -57,6 +57,7 @@ export default class RecordHandler {
         method: 'CompanyRecordHandler.Collect',
         request: {
           criteria: criteria.map(criterion => criterion.toPOJO()),
+          query: query.toPOJO(),
         },
       }).then(result => {
         resolve(result)
