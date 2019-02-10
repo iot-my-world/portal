@@ -1,7 +1,7 @@
 import {isObject} from 'utilities/type'
 import Base from 'brain/Base'
 
-export class Query extends Base {
+export default class Query extends Base {
 
   static SortOrderDescending = 'desc'
   static SortOrderAscending = 'asc'

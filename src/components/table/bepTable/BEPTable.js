@@ -12,6 +12,7 @@ import {
 import {
   Text as TextCriterionType,
 } from 'brain/search/criterion/types'
+import {Query} from 'brain/search'
 
 const styles = theme => ({
   processingDisplay: {
@@ -67,6 +68,7 @@ class BEPTable extends Component {
   }
 
   criteria = {}
+  query = new Query()
   columns = []
 
   constructor(props) {
@@ -76,6 +78,9 @@ class BEPTable extends Component {
     this.constructTable = this.constructTable.bind(this)
     this.constructColumns = this.constructColumns.bind(this)
     this.handleFilterChange = this.handleFilterChange.bind(this)
+    this.handleQuerySortChange = this.handleQuerySortChange.bind(this)
+    this.handleQueryLimitChange = this.handleQueryLimitChange.bind(this)
+    this.handleQueryOffsetChange = this.handleQueryOffsetChange.bind(this)
   }
 
   componentDidMount() {
@@ -171,12 +176,44 @@ class BEPTable extends Component {
     onCriteriaChange(updatedCriteria)
   }
 
+  handleQuerySortChange(updatedSortObjects) {
+    const {
+      onQueryChange,
+    } = this.props
+    this.query.sortBy = []
+    this.query.order = []
+
+    for (let sortObj of updatedSortObjects) {
+      this.query.sortBy.push(sortObj.id)
+      this.query.order.push(
+          sortObj.desc ? Query.SortOrderDescending : Query.SortOrderAscending)
+    }
+    onQueryChange(new Query(this.query))
+  }
+
+  handleQueryLimitChange(newPageSize) {
+    const {
+      onQueryChange,
+    } = this.props
+    this.query.limit = newPageSize
+    onQueryChange(new Query(this.query))
+  }
+
+  handleQueryOffsetChange(newPageIndex) {
+    const {
+      onQueryChange,
+    } = this.props
+    this.query.offset = newPageIndex * this.query.limit
+    onQueryChange(new Query(this.query))
+  }
+
   render() {
     const {
       activeState,
     } = this.state
     const {
       classes,
+      totalNoRecords,
       ...rest
     } = this.props
 
@@ -186,6 +223,12 @@ class BEPTable extends Component {
             {...rest}
             filterable
             columns={this.columns}
+            manual={true}
+            pages={Math.ceil(totalNoRecords / this.query.limit)}
+            defaultPageSize={this.query.limit}
+            onSortedChange={this.handleQuerySortChange}
+            onPageSizeChange={this.handleQueryLimitChange}
+            onPageChange={this.handleQueryOffsetChange}
         />
       case Object.values(processingStates).includes(activeState):
         return this.renderProcessing()
@@ -316,6 +359,11 @@ BEPTable.propTypes = {
    * i.e. sort, page no. or page size
    */
   onQueryChange: PropTypes.func.isRequired,
+  /**
+   * Indicates total number of given records on back-end.
+   * Used to calculate total no of pages
+   */
+  totalNoRecords: PropTypes.number.isRequired,
   ...Table.propTypes,
 }
 

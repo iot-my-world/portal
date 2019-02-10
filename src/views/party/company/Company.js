@@ -14,6 +14,7 @@ import {
 import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
+import {Query} from 'brain/search'
 
 const styles = theme => ({
   formField: {
@@ -54,7 +55,7 @@ class Company extends Component {
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
-
+  collectQuery = new Query()
   records = []
   totalNoRecords = 0
 
@@ -65,6 +66,7 @@ class Company extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaChange = this.handleCriteriaChange.bind(this)
+    this.handleQueryChange = this.handleQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.collectTimeout = () => {
     }
@@ -128,7 +130,7 @@ class Company extends Component {
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    CompanyRecordHandler.Collect(this.collectCriteria, {}).then(response => {
+    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery).then(response => {
       this.records = response.records
       this.totalNoRecords = response.total
     }).catch(error => {
@@ -141,6 +143,11 @@ class Company extends Component {
 
   handleCriteriaChange(newCriteria) {
     this.collectCriteria = newCriteria
+    this.collectTimeout = setTimeout(this.collect, 500)
+  }
+
+  handleQueryChange(newQuery) {
+    this.collectQuery = newQuery
     this.collectTimeout = setTimeout(this.collect, 500)
   }
 
@@ -167,9 +174,13 @@ class Company extends Component {
         <Card>
           <CardContent>
             <BEPTable
-                data={this.records}
-                defaultPageSize={5}
                 loading={recordCollectionInProgress}
+                totalNoRecords={this.totalNoRecords}
+                noDataText={'No Companies Found'}
+                data={this.records}
+                onCriteriaChange={this.handleCriteriaChange}
+                onQueryChange={this.handleQueryChange}
+
                 columns={[
                   {
                     Header: 'Name',
@@ -190,8 +201,6 @@ class Company extends Component {
                     },
                   },
                 ]}
-                onCriteriaChange={this.handleCriteriaChange}
-                onQueryChange={() => console.log('newQuery!')}
             />
           </CardContent>
         </Card>

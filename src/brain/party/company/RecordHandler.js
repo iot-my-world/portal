@@ -47,7 +47,7 @@ export default class RecordHandler {
 
   /**
    * @param {array} criteria
-   * @param query
+   * @param {Query} query
    * @constructor
    */
   static Collect(criteria, query) {
