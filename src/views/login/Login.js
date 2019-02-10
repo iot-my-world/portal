@@ -95,13 +95,18 @@ class Login extends Component {
     super(props)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
+    this.errorMessage = this.errorMessage.bind(this)
   }
 
-  handleInputChange(field, value) {
-    this.setState({[field]: value})
+  handleInputChange(event) {
+    this.setState({
+      [event.target.id]: event.target.value,
+      activeState: events.init,
+    })
   }
 
-  handleLogin() {
+  handleLogin(submitEvent) {
+    submitEvent.preventDefault()
     const {
       usernameOrEmailAddress,
       password,
@@ -153,6 +158,21 @@ class Login extends Component {
 
   }
 
+  errorMessage() {
+    const {
+      activeState,
+    } = this.state
+
+    switch (activeState) {
+      case states.incorrectCredentials:
+        return 'Incorrect Credentials'
+      case states.unableToContactServer:
+        return 'Unable To Contact Server'
+      default:
+        return undefined
+    }
+  }
+
   render() {
     const {
       classes,
@@ -162,6 +182,9 @@ class Login extends Component {
       usernameOrEmailAddress,
       password,
     } = this.state
+
+    const errorState = (activeState === states.incorrectCredentials) ||
+        (activeState === states.unableToContactServer)
 
     return <div
         className={classes.fullPageBackground}
@@ -182,7 +205,7 @@ class Login extends Component {
               <Grid item>
                 <Card>
                   <CardContent>
-                    <form>
+                    <form onSubmit={this.handleLogin}>
                       <Grid container direction={'column'} alignItems={'center'}
                             spacing={8}>
                         <Grid item>
@@ -192,8 +215,8 @@ class Login extends Component {
                                 label='Username or Email Address'
                                 autoComplete='username'
                                 value={usernameOrEmailAddress}
-                                onChange={e => this.handleInputChange(
-                                    'usernameOrEmailAddress', e.target.value)}
+                                onChange={this.handleInputChange}
+                                error={errorState}
                             />
                           </FormControl>
                         </Grid>
@@ -205,19 +228,25 @@ class Login extends Component {
                                 type='password'
                                 autoComplete='current-password'
                                 value={password}
-                                onChange={e => this.handleInputChange(
-                                    'password', e.target.value)}
+                                onChange={this.handleInputChange}
+                                error={errorState}
                             />
                           </FormControl>
                         </Grid>
                         <Grid item>
                           <Button
                               className={classes.button}
-                              onClick={this.handleLogin}
+                              type={'submit'}
                           >
                             Login
                           </Button>
                         </Grid>
+                        {errorState &&
+                        <Grid item>
+                          <Typography color={'error'}>
+                            {this.errorMessage()}
+                          </Typography>
+                        </Grid>}
                       </Grid>
                     </form>
                   </CardContent>
