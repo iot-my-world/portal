@@ -7,7 +7,10 @@ import {
 import {
   BEPTable,
 } from 'components/table'
-import {Company as CompanyEntity} from 'brain/party/company'
+import {
+  Company as CompanyEntity,
+  RecordHandler as CompanyRecordHandler,
+} from 'brain/party/company'
 import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
@@ -46,12 +49,22 @@ class Company extends Component {
 
   reasonsInvalid = new ReasonsInvalid()
 
+  collectCriteria = []
+
   constructor(props) {
     super(props)
     this.renderControls = this.renderControls.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
+    this.handleCriteriaChange = this.handleCriteriaChange.bind(this)
+    this.collect = this.collect.bind(this)
+    this.collectTimeout = () => {
+    }
+  }
+
+  componentDidMount() {
+    this.collect()
   }
 
   handleChange(event) {
@@ -102,6 +115,26 @@ class Company extends Component {
     }
   }
 
+  collect() {
+    const {
+      NotificationFailure,
+    } = this.props
+
+    CompanyRecordHandler.Collect(this.collectCriteria, {}).then(response => {
+      console.log('response!', response)
+    }).catch(error => {
+      console.error(`error collecting records: ${error}`)
+      NotificationFailure('Failed To Fetch Companies')
+    }).finally(() => {
+
+    })
+  }
+
+  handleCriteriaChange(newCriteria) {
+    this.collectCriteria = newCriteria
+    this.collectTimeout = setTimeout(this.collect, 150)
+  }
+
   render() {
     const {
       isLoading,
@@ -146,7 +179,9 @@ class Company extends Component {
                     },
                   },
                 ]}
-                onCriteriaChange={(criteria)=>console.log('new criteria!', criteria)}
+                onCriteriaChange={(criteria) => console.log('new criteria!',
+                    criteria)}
+                onQueryChange={() => console.log('newQuery!')}
             />
           </CardContent>
         </Card>
@@ -167,7 +202,6 @@ class Company extends Component {
     const fieldValidations = this.reasonsInvalid.toMap()
     const disableFields = (activeState === states.viewingExisting) ||
         isLoading
-
 
     switch (activeState) {
       case states.nop:
@@ -192,7 +226,7 @@ class Company extends Component {
         } = this.state
         return <React.Fragment>
           <Typography variant={'body1'}>
-            {(()=>{
+            {(() => {
 
             })()}
             New Company Creation
