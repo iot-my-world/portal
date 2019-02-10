@@ -137,6 +137,7 @@ class Company extends Component {
                     },
                   },
                 ]}
+                onCriteriaChange={(criteria)=>console.log('new criteria!', criteria)}
             />
           </CardContent>
         </Card>

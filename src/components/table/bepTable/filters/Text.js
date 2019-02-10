@@ -26,8 +26,18 @@ class Text extends Component {
     let {
       criterion,
     } = this.state
+    const {
+      onChange,
+    } = this.props
+
     criterion.text = event.target.value
     this.setState({criterion})
+
+    if (criterion.blank) {
+      onChange(criterion.field, undefined)
+    } else {
+      onChange(criterion.field, criterion)
+    }
   }
 
   render() {

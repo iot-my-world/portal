@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import Table from 'components/table/reactTable/Table'
 import {
   withStyles, CircularProgress, Typography,
@@ -158,7 +158,17 @@ class BEPTable extends Component {
   }
 
   handleFilterChange(field, newFilter) {
-
+    const {
+      onCriteriaChange,
+    } = this.props
+    this.criteria[field] = newFilter
+    let updatedCriteria = []
+    for (field in this.criteria) {
+      if (this.criteria[field] !== undefined) {
+        updatedCriteria.push(this.criteria[field])
+      }
+    }
+    onCriteriaChange(updatedCriteria)
   }
 
   render() {
@@ -294,7 +304,19 @@ class BEPTable extends Component {
 
 BEPTable = withStyles(styles)(BEPTable)
 
-BEPTable.propTypes = {}
+BEPTable.propTypes = {
+  /**
+   * function which will be called with an array of new
+   * criteria objects when any of the filters are changed
+   */
+  onCriteriaChange: PropTypes.func.isRequired,
+  /**
+   * function which will be called with new query object
+   * when any of the query parameters are changes.
+   * i.e. sort, page no. or page size
+   */
+  onQueryChange: PropTypes.func.isRequired,
+}
 
 BEPTable.defaultProps = {}
 
