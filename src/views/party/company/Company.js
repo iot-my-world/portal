@@ -5,11 +5,12 @@ import {
   Button, TextField,
 } from '@material-ui/core'
 import {
-  Table,
+  BEPTable,
 } from 'components/table'
 import {Company as CompanyEntity} from 'brain/party/company'
 import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
+import {Text} from 'brain/search/criterion/types'
 
 const styles = theme => ({
   formField: {
@@ -122,13 +123,18 @@ class Company extends Component {
       <Grid item xl={12}>
         <Card>
           <CardContent>
-            <Table
+            <BEPTable
                 data={[{a: 1, b: 2}]}
                 defaultPageSize={5}
                 columns={[
                   {
                     Header: 'A',
                     accessor: 'a',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
                   },
                 ]}
             />

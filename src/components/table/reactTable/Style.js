@@ -1,4 +1,4 @@
-import {HexToRGBA} from 'utilities/color'
+import {HexToRGBA} from 'utilities/color/index'
 
 const tableStyle = (theme) => {
   return {
