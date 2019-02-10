@@ -316,6 +316,7 @@ BEPTable.propTypes = {
    * i.e. sort, page no. or page size
    */
   onQueryChange: PropTypes.func.isRequired,
+  ...Table.propTypes,
 }
 
 BEPTable.defaultProps = {}

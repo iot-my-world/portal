@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
-  Button, TextField,
+  Button, TextField, CircularProgress,
 } from '@material-ui/core'
 import {
   BEPTable,
@@ -19,6 +19,9 @@ const styles = theme => ({
   formField: {
     height: '60px',
     width: '150px',
+  },
+  progress: {
+    margin: 2,
   },
 })
 
@@ -42,6 +45,7 @@ const events = {
 class Company extends Component {
 
   state = {
+    recordCollectionInProgress: false,
     isLoading: false,
     activeState: states.nop,
     selected: new CompanyEntity(),
@@ -50,6 +54,9 @@ class Company extends Component {
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
+
+  records = []
+  totalNoRecords = 0
 
   constructor(props) {
     super(props)
@@ -120,24 +127,27 @@ class Company extends Component {
       NotificationFailure,
     } = this.props
 
+    this.setState({recordCollectionInProgress: true})
     CompanyRecordHandler.Collect(this.collectCriteria, {}).then(response => {
-      console.log('response!', response)
+      this.records = response.records
+      this.totalNoRecords = response.total
     }).catch(error => {
       console.error(`error collecting records: ${error}`)
       NotificationFailure('Failed To Fetch Companies')
     }).finally(() => {
-
+      this.setState({recordCollectionInProgress: false})
     })
   }
 
   handleCriteriaChange(newCriteria) {
     this.collectCriteria = newCriteria
-    this.collectTimeout = setTimeout(this.collect, 150)
+    this.collectTimeout = setTimeout(this.collect, 500)
   }
 
   render() {
     const {
       isLoading,
+      recordCollectionInProgress,
     } = this.state
 
     return <Grid
@@ -157,8 +167,9 @@ class Company extends Component {
         <Card>
           <CardContent>
             <BEPTable
-                data={[]}
+                data={this.records}
                 defaultPageSize={5}
+                loading={recordCollectionInProgress}
                 columns={[
                   {
                     Header: 'Name',
@@ -179,8 +190,7 @@ class Company extends Component {
                     },
                   },
                 ]}
-                onCriteriaChange={(criteria) => console.log('new criteria!',
-                    criteria)}
+                onCriteriaChange={this.handleCriteriaChange}
                 onQueryChange={() => console.log('newQuery!')}
             />
           </CardContent>
@@ -204,6 +214,7 @@ class Company extends Component {
         isLoading
 
     switch (activeState) {
+
       case states.nop:
         return <Typography variant={'body1'}>
           Select Company or <Button
@@ -218,6 +229,9 @@ class Company extends Component {
           Create New
         </Button>
         </Typography>
+
+      case states.collectingRecords:
+        return <CircularProgress className={classes.progress}/>
 
       case states.viewingExisting:
       case states.editingNew:
