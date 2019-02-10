@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
@@ -62,6 +62,10 @@ class Company extends Component {
     const {
       selected,
     } = this.state
+    const {
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
     try {
 
       this.setState({isLoading: true})
@@ -71,16 +75,21 @@ class Company extends Component {
           this.setState({isLoading: false})
         } else {
           selected.create().then(result => {
+            NotificationSuccess('Successfully Created Company')
           }).catch(error => {
+            console.error('Error Creating Company', error)
+            NotificationFailure('Error Creating Company')
           }).finally(() => {
             this.setState({isLoading: false})
           })
         }
       }).catch(error => {
+        console.error('Error Validating Company', error)
+        NotificationFailure('Error Validating Company')
         this.setState({isLoading: false})
       })
-    } catch (e) {
-      console.error(`error creating new company ${e}`)
+    } catch (error) {
+      console.error('Error Creating Company', error)
     }
   }
 
@@ -180,17 +189,17 @@ class Company extends Component {
             <Grid item>
               <TextField
                   className={classes.formField}
-                  id='adminEmail'
+                  id='adminEmailAddress'
                   label='Admin Email'
-                  value={selected.adminEmail}
+                  value={selected.adminEmailAddress}
                   onChange={this.handleChange}
                   // disabled={disableFields}
                   helperText={
-                    fieldValidations.adminEmail
-                        ? fieldValidations.adminEmail.help
+                    fieldValidations.adminEmailAddress
+                        ? fieldValidations.adminEmailAddress.help
                         : undefined
                   }
-                  error={!!fieldValidations.adminEmail}
+                  error={!!fieldValidations.adminEmailAddress}
               />
             </Grid>
           </Grid>
@@ -236,7 +245,16 @@ class Company extends Component {
 
 Company = withStyles(styles)(Company)
 
-Company.propTypes = {}
+Company.propTypes = {
+  /**
+   * Success Action Creator
+   */
+  NotificationSuccess: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
+}
 
 Company.defaultProps = {}
 

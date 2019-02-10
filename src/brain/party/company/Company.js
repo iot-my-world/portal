@@ -19,7 +19,7 @@ export default class Company extends Base {
    * @type {string}
    * @private
    */
-  _adminEmail = ''
+  _adminEmailAddress = ''
 
   /**
    * construct a new Company Object
@@ -37,7 +37,7 @@ export default class Company extends Base {
       try {
         this._id = company.id
         this._name = company.name
-        this._adminEmail = company.adminEmail
+        this._adminEmailAddress = company.adminEmailAddress
       } catch (e) {
         throw new Error(`error constructing company object: ${e}`)
       }
@@ -56,20 +56,20 @@ export default class Company extends Base {
     this._name = newVal
   }
 
-  get adminEmail() {
-    return this._adminEmail
+  get adminEmailAddress() {
+    return this._adminEmailAddress
   }
 
-  set adminEmail(newVal) {
-    this._adminEmail = newVal
+  set adminEmailAddress(newVal) {
+    this._adminEmailAddress = newVal
   }
 
   create() {
     return CompanyRecordHandler.Create(this)
   }
 
-  validate(ignoreReasonsMethod = '') {
-    return CompanyRecordHandler.Validate(this, ignoreReasonsMethod)
+  validate(method = '') {
+    return CompanyRecordHandler.Validate(this, method)
   }
 
 }

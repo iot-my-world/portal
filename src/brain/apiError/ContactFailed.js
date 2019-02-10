@@ -21,6 +21,7 @@ export default class ContactFailed extends Error {
    */
   constructor(error, method) {
     super()
+    this._method = method
     this._error = error
   }
 
