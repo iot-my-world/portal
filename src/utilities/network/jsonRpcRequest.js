@@ -1,4 +1,5 @@
 import uuid from 'uuid/v1'
+import {MethodFailed, ContactFailed} from 'brain/apiError'
 
 const methodsWithoutAuthorization = [
   'Auth.Login',
@@ -20,13 +21,13 @@ export default function jsonRpcRequest({url, method, request}) {
     }
   }
 
-  let body = JSON.stringify({
+  const body = {
     jsonrpc: '2.0',
     method: method,
     params: [request],
     id: id,
-  })
-  console.debug(method + ' jsonRpcRequest.body: ', JSON.parse(body))
+  }
+  console.debug(`API Request: ${body.method} -->`, body.params[0])
 
   return new Promise((resolve, reject) => {
     fetch(
@@ -34,22 +35,21 @@ export default function jsonRpcRequest({url, method, request}) {
           method: 'POST',
           headers: header,
           mode: 'cors',
-          body: body,
+          body: JSON.stringify(body),
         },
     ).then(responseObject => {
       return responseObject.json()
     }).then(response => {
-      console.debug(method + ' jsonRpcRequest.response: ', response)
       if (response.result) {
-        console.log(method + ' - success', response.result)
+        console.debug(`API Response Success: ${body.method} -->`, response.result)
         resolve(response.result)
       } else {
-        reject(response.error)
-        console.error(method + ' - error: ', response.error)
+        console.error(`API Response Error: ${body.method} -->`, response.error)
+        reject(new MethodFailed(response.error, body.method))
       }
     }).catch(error => {
-      reject(error)
-      console.error(method + ' jsonRpcRequest.error: ', error)
+      console.error(`API Failed: ${body.method} -->`, error)
+      reject(new ContactFailed(error, body.method))
     })
   })
 }

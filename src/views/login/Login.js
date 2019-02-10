@@ -11,6 +11,7 @@ import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
+import {MethodFailed, ContactFailed} from 'brain/apiError'
 
 const style = theme => {
   return {
@@ -71,11 +72,15 @@ const style = theme => {
 const states = {
   nop: 0,
   loggingIn: 1,
+  incorrectCredentials: 2,
+  unableToContactServer: 3,
 }
 
 const events = {
   init: states.nop,
   logIn: states.loggingIn,
+  loginFail: states.incorrectCredentials,
+  serverContactError: states.unableToContactServer,
 }
 
 class Login extends Component {
@@ -136,8 +141,14 @@ class Login extends Component {
         console.error(`error navigating the browser to the app: ${e}`)
       }
     }).catch(err => {
-      console.log('faulty login!', err)
-      this.setState({activeState: events.init})
+      switch (true) {
+        case err instanceof MethodFailed:
+          this.setState({activeState: events.loginFail})
+          break
+        case err instanceof ContactFailed:
+        default:
+          this.setState({activeState: events.serverContactError})
+      }
     })
 
   }
