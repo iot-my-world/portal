@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
-  Button, TextField, CircularProgress,
+  Button, TextField,
 } from '@material-ui/core'
 import {
   BEPTable,
@@ -65,8 +65,7 @@ class Company extends Component {
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
-    this.handleCriteriaChange = this.handleCriteriaChange.bind(this)
-    this.handleQueryChange = this.handleQueryChange.bind(this)
+    this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.collectTimeout = () => {
     }
@@ -130,25 +129,24 @@ class Company extends Component {
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery).then(response => {
-      this.records = response.records
-      this.totalNoRecords = response.total
-    }).catch(error => {
-      console.error(`error collecting records: ${error}`)
-      NotificationFailure('Failed To Fetch Companies')
-    }).finally(() => {
-      this.setState({recordCollectionInProgress: false})
-    })
+    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
+        .then(response => {
+          this.records = response.records
+          this.totalNoRecords = response.total
+        })
+        .catch(error => {
+          console.error(`error collecting records: ${error}`)
+          NotificationFailure('Failed To Fetch Companies')
+        })
+        .finally(() => {
+          this.setState({recordCollectionInProgress: false})
+        })
   }
 
-  handleCriteriaChange(newCriteria) {
-    this.collectCriteria = newCriteria
-    this.collectTimeout = setTimeout(this.collect, 500)
-  }
-
-  handleQueryChange(newQuery) {
-    this.collectQuery = newQuery
-    this.collectTimeout = setTimeout(this.collect, 500)
+  handleCriteriaQueryChange(criteria, query) {
+    this.collectCriteria = criteria
+    this.collectQuery = query
+    this.collectTimeout = setTimeout(this.collect, 300)
   }
 
   render() {
@@ -178,8 +176,7 @@ class Company extends Component {
                 totalNoRecords={this.totalNoRecords}
                 noDataText={'No Companies Found'}
                 data={this.records}
-                onCriteriaChange={this.handleCriteriaChange}
-                onQueryChange={this.handleQueryChange}
+                onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
                 columns={[
                   {
@@ -238,9 +235,6 @@ class Company extends Component {
           Create New
         </Button>
         </Typography>
-
-      case states.collectingRecords:
-        return <CircularProgress className={classes.progress}/>
 
       case states.viewingExisting:
       case states.editingNew:
