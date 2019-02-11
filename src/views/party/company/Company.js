@@ -277,40 +277,38 @@ class Company extends Component {
     switch (activeState) {
 
       case states.nop:
-        return <React.Fragment>
-          <Grid
-              container
-              direction='column'
-              spacing={8}
-              alignItems={'center'}
-          >
-            <Grid item>
-              <Typography
-                  variant={'body1'}
-                  align={'center'}
-                  color={'primary'}
-              >
-                Select A Company to View or Edit
-              </Typography>
-            </Grid>
-            <Grid item>
-              <DomainIcon className={classes.companyIcon}/>
-            </Grid>
-            <Grid item>
-              <Button
-                  size='small'
-                  color='primary'
-                  variant='contained'
-                  onClick={() => this.setState({
-                    activeState: events.startCreateNew,
-                    selected: new CompanyEntity(),
-                  })}
-              >
-                Create New
-              </Button>
-            </Grid>
+        return <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems={'center'}
+        >
+          <Grid item>
+            <Typography
+                variant={'body1'}
+                align={'center'}
+                color={'primary'}
+            >
+              Select A Company to View or Edit
+            </Typography>
           </Grid>
-        </React.Fragment>
+          <Grid item>
+            <DomainIcon className={classes.companyIcon}/>
+          </Grid>
+          <Grid item>
+            <Button
+                size='small'
+                color='primary'
+                variant='contained'
+                onClick={() => this.setState({
+                  activeState: events.startCreateNew,
+                  selected: new CompanyEntity(),
+                })}
+            >
+              Create New
+            </Button>
+          </Grid>
+        </Grid>
 
       case states.viewingExisting:
       case states.editingNew:
@@ -318,62 +316,64 @@ class Company extends Component {
         const {
           selected,
         } = this.state
-        return <React.Fragment>
-          <Typography
-              variant={'body1'}
-              align={'center'}
-          >
-            {(() => {
-              switch (activeState) {
-                case states.editingNew:
-                  return 'New Company Creation'
-                case states.editingExisting:
-                  return 'Editing Company'
-                case states.viewingExisting:
-                default:
-              }
-            })()}
-          </Typography>
-          <Grid
-              container
-              direction='column'
-              spacing={8}
-              alignItems={'center'}
-          >
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id='name'
-                  label='Name'
-                  value={selected.name}
-                  onChange={this.handleChange}
-                  disabled={disableFields}
-                  helperText={
-                    fieldValidations.name
-                        ? fieldValidations.name.help
-                        : undefined
-                  }
-                  error={!!fieldValidations.name}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id='adminEmailAddress'
-                  label='Admin Email'
-                  value={selected.adminEmailAddress}
-                  onChange={this.handleChange}
-                  disabled={disableFields}
-                  helperText={
-                    fieldValidations.adminEmailAddress
-                        ? fieldValidations.adminEmailAddress.help
-                        : undefined
-                  }
-                  error={!!fieldValidations.adminEmailAddress}
-              />
-            </Grid>
+        return <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems={'center'}
+        >
+          <Grid item>
+            <Typography
+                variant={'body1'}
+                align={'center'}
+                color={'primary'}
+            >
+              {(() => {
+                switch (activeState) {
+                  case states.editingNew:
+                    return 'Creating New'
+                  case states.editingExisting:
+                    return 'Editing'
+                  case states.viewingExisting:
+                    return 'Details'
+                  default:
+                }
+              })()}
+            </Typography>
           </Grid>
-        </React.Fragment>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='name'
+                label='Name'
+                value={selected.name}
+                onChange={this.handleChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.name
+                      ? fieldValidations.name.help
+                      : undefined
+                }
+                error={!!fieldValidations.name}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='adminEmailAddress'
+                label='Admin Email'
+                value={selected.adminEmailAddress}
+                onChange={this.handleChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.adminEmailAddress
+                      ? fieldValidations.adminEmailAddress.help
+                      : undefined
+                }
+                error={!!fieldValidations.adminEmailAddress}
+            />
+          </Grid>
+        </Grid>
 
       default:
     }
