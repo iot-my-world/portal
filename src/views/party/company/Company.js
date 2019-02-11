@@ -4,6 +4,7 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
+import DomainIcon from '@material-ui/icons/Domain'
 import {
   BEPTable,
 } from 'components/table'
@@ -15,7 +16,7 @@ import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
-import DomainIcon from '@material-ui/icons/Domain'
+import PartyRegistrar from 'brain/party/registrar/Registrar'
 
 const styles = theme => ({
   formField: {
@@ -25,8 +26,7 @@ const styles = theme => ({
   progress: {
     margin: 2,
   },
-  detailCard: {
-  },
+  detailCard: {},
   companyIcon: {
     fontSize: 100,
     color: theme.palette.primary.main,
@@ -78,6 +78,7 @@ class Company extends Component {
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
+    this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -169,6 +170,26 @@ class Company extends Component {
       selectedRowIdx: rowIdx,
       selected: new CompanyEntity(rowRecordObj),
       activeState: events.selectExisting,
+    })
+  }
+
+  handleInviteAdmin() {
+    const {
+      selected,
+    } = this.state
+    const {
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    this.setState({isLoading: true})
+    PartyRegistrar.InviteCompanyAdminUser(selected.identifier).then(() => {
+      NotificationSuccess('Successfully Invited Company Admin User')
+    }).catch(error => {
+      console.error('Failed to Invite Company Admin User', error)
+      NotificationFailure('Failed to Invite Company Admin User')
+    }).finally(() => {
+      this.setState({isLoading: false})
     })
   }
 
@@ -403,6 +424,7 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
+              onClick={this.handleInviteAdmin}
           >
             Invite Admin
           </Button>

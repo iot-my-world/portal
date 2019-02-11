@@ -1,5 +1,5 @@
 import moment from 'moment'
-import {Id as IdIdentifier} from 'brain/search/identifier/index'
+import {IdIdentifier} from 'brain/search/identifier/index'
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 

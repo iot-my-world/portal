@@ -1,6 +1,7 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import {IdIdentifier, AdminEmailAddressIdentifier} from 'brain/search/identifier'
 
 export default class Company extends Base {
   /**
@@ -72,4 +73,14 @@ export default class Company extends Base {
     return CompanyRecordHandler.Validate(this, method)
   }
 
+  get identifier() {
+    if (this._id !== '') {
+      return new IdIdentifier(this._id)
+    } else if (this._adminEmailAddress !== '') {
+      return new AdminEmailAddressIdentifier(this._adminEmailAddress)
+    } else {
+      throw new Error(
+          `cannot create identifier for company if id and adminEmailAddress are both blank`)
+    }
+  }
 }
