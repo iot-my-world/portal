@@ -403,6 +403,13 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
+          >
+            Invite Admin
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
               onClick={() => this.setState({
                 activeState: events.startCreateNew,
                 selected: new CompanyEntity(),
