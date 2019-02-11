@@ -15,6 +15,7 @@ import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
+import DomainIcon from '@material-ui/icons/Domain'
 
 const styles = theme => ({
   formField: {
@@ -23,6 +24,12 @@ const styles = theme => ({
   },
   progress: {
     margin: 2,
+  },
+  detailCard: {
+  },
+  companyIcon: {
+    fontSize: 100,
+    color: theme.palette.primary.main,
   },
 })
 
@@ -34,6 +41,8 @@ const states = {
 }
 
 const events = {
+  init: states.nop,
+
   selectExisting: states.viewingExisting,
 
   startCreateNew: states.editingNew,
@@ -48,8 +57,9 @@ class Company extends Component {
   state = {
     recordCollectionInProgress: false,
     isLoading: false,
-    activeState: states.nop,
+    activeState: events.init,
     selected: new CompanyEntity(),
+    selectedRowIdx: -1,
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -67,6 +77,7 @@ class Company extends Component {
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -93,7 +104,6 @@ class Company extends Component {
       NotificationFailure,
     } = this.props
     try {
-
       this.setState({isLoading: true})
       selected.validate('Create').then(reasonsInvalid => {
         if (reasonsInvalid.count > 0) {
@@ -147,26 +157,49 @@ class Company extends Component {
     this.collectCriteria = criteria
     this.collectQuery = query
     this.collectTimeout = setTimeout(this.collect, 300)
+    this.setState({
+      activeState: events.init,
+      selected: new CompanyEntity(),
+      selectedRowIdx: -1,
+    })
+  }
+
+  handleSelect(rowRecordObj, rowIdx) {
+    this.setState({
+      selectedRowIdx: rowIdx,
+      selected: new CompanyEntity(rowRecordObj),
+      activeState: events.selectExisting,
+    })
   }
 
   render() {
     const {
       isLoading,
       recordCollectionInProgress,
+      selectedRowIdx,
     } = this.state
+    const {
+      theme,
+      classes,
+    } = this.props
 
     return <Grid
         container
         direction='column'
         spacing={8}
+        alignItems='center'
     >
       <Grid item xl={12}>
-        <Card>
-          <CardContent>
-            {this.renderCompanyDetails()}
-          </CardContent>
-          {this.renderControls()}
-        </Card>
+        <Grid container>
+          <Grid item>
+            <Card className={classes.detailCard}>
+              <CardContent>
+                {this.renderCompanyDetails()}
+              </CardContent>
+              {this.renderControls()}
+            </Card>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xl={12}>
         <Card>
@@ -198,6 +231,28 @@ class Company extends Component {
                     },
                   },
                 ]}
+
+                getTdProps={(state, rowInfo) => {
+                  const rowIndex = rowInfo ? rowInfo.index : undefined
+                  return {
+                    onClick: (e, handleOriginal) => {
+                      if (rowInfo) {
+                        this.handleSelect(rowInfo.original, rowInfo.index)
+                      }
+                      if (handleOriginal) {
+                        handleOriginal()
+                      }
+                    },
+                    style: {
+                      background: rowIndex === selectedRowIdx ?
+                          theme.palette.secondary.light :
+                          'white',
+                      color: rowIndex === selectedRowIdx ?
+                          theme.palette.secondary.contrastText :
+                          theme.palette.primary.main,
+                    },
+                  }
+                }}
             />
           </CardContent>
         </Card>
@@ -222,36 +277,68 @@ class Company extends Component {
     switch (activeState) {
 
       case states.nop:
-        return <Typography variant={'body1'}>
-          Select Company or <Button
-            size='small'
-            color='primary'
-            variant='contained'
-            onClick={() => this.setState({
-              activeState: events.startCreateNew,
-              selected: new CompanyEntity(),
-            })}
-        >
-          Create New
-        </Button>
-        </Typography>
+        return <React.Fragment>
+          <Grid
+              container
+              direction='column'
+              spacing={8}
+              alignItems={'center'}
+          >
+            <Grid item>
+              <Typography
+                  variant={'body1'}
+                  align={'center'}
+                  color={'primary'}
+              >
+                Select A Company to View or Edit
+              </Typography>
+            </Grid>
+            <Grid item>
+              <DomainIcon className={classes.companyIcon}/>
+            </Grid>
+            <Grid item>
+              <Button
+                  size='small'
+                  color='primary'
+                  variant='contained'
+                  onClick={() => this.setState({
+                    activeState: events.startCreateNew,
+                    selected: new CompanyEntity(),
+                  })}
+              >
+                Create New
+              </Button>
+            </Grid>
+          </Grid>
+        </React.Fragment>
 
       case states.viewingExisting:
       case states.editingNew:
+      case states.editingExisting:
         const {
           selected,
         } = this.state
         return <React.Fragment>
-          <Typography variant={'body1'}>
+          <Typography
+              variant={'body1'}
+              align={'center'}
+          >
             {(() => {
-
+              switch (activeState) {
+                case states.editingNew:
+                  return 'New Company Creation'
+                case states.editingExisting:
+                  return 'Editing Company'
+                case states.viewingExisting:
+                default:
+              }
             })()}
-            New Company Creation
           </Typography>
           <Grid
               container
               direction='column'
               spacing={8}
+              alignItems={'center'}
           >
             <Grid item>
               <TextField
@@ -299,6 +386,7 @@ class Company extends Component {
     } = this.state
 
     switch (activeState) {
+
       case states.viewingExisting:
         return <CardActions>
           <Button
@@ -351,7 +439,7 @@ class Company extends Component {
   }
 }
 
-Company = withStyles(styles)(Company)
+Company = withStyles(styles, {withTheme: true})(Company)
 
 Company.propTypes = {
   /**
