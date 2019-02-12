@@ -6,7 +6,7 @@ import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
 import {parseToken} from 'utilities/token/index'
-import {Claims} from 'brain/security/auth'
+import {LoginClaims} from 'brain/security/auth'
 
 const styles = theme => ({})
 
@@ -94,7 +94,7 @@ class Root extends Component {
 
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  claims: PropTypes.instanceOf(Claims),
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 export default withStyles(styles)(Root)

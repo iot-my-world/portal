@@ -3,7 +3,7 @@ import {IdIdentifier} from 'brain/search/identifier/index'
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 
-class Claims extends Base {
+class LoginClaims extends Base {
   /**
    * @type {IdIdentifier}
    * @private
@@ -35,26 +35,26 @@ class Claims extends Base {
   _partyId = new IdIdentifier()
 
   /**
-   * construct a Claims Object
-   * @param {Claims|Object} [claims]
+   * construct a LoginClaims Object
+   * @param {LoginClaims|Object} [loginClaims]
    */
-  constructor(claims) {
+  constructor(loginClaims) {
     super()
     if (
-        (claims !== undefined) &&
+        (loginClaims !== undefined) &&
         (
-            (claims instanceof Claims) ||
-            isObject(claims)
+            (loginClaims instanceof LoginClaims) ||
+            isObject(loginClaims)
         )
     ) {
       try {
-        this._userId = new IdIdentifier(claims.userId)
-        this._issueTime = claims.issueTime
-        this._expirationTime = claims.expirationTime
-        this._partyType = claims.partyType
-        this._partyId = new IdIdentifier(claims.partyId)
+        this._userId = new IdIdentifier(loginClaims.userId)
+        this._issueTime = loginClaims.issueTime
+        this._expirationTime = loginClaims.expirationTime
+        this._partyType = loginClaims.partyType
+        this._partyId = new IdIdentifier(loginClaims.partyId)
       } catch (e) {
-        throw new Error(`error constructing claims object: ${e}`)
+        throw new Error(`error constructing loginClaims object: ${e}`)
       }
     }
   }
@@ -80,7 +80,7 @@ class Claims extends Base {
   }
 
   /**
-   * Whether these claims are expired or not
+   * Whether these loginClaims are expired or not
    * @returns {boolean}
    */
   get notExpired(){
@@ -89,4 +89,4 @@ class Claims extends Base {
 
 }
 
-export default Claims
+export default LoginClaims

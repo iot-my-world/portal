@@ -1,5 +1,5 @@
-import Claims from './claims/Claims'
+import LoginClaims from './claims/LoginClaims'
 
 export {
-  Claims,
+  LoginClaims,
 }

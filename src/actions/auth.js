@@ -6,8 +6,8 @@ import {
 /**
  * Called after a log in or refresh to load
  * latest claims into state
- * @param {Claims} claims
- * @returns {{type: number, data: Claims}}
+ * @param {LoginClaims} claims
+ * @returns {{type: number, data: LoginClaims}}
  * @constructor
  */
 export function SetClaims(claims) {
