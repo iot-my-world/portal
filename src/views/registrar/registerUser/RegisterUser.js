@@ -10,7 +10,6 @@ import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
-import {MethodFailed, ContactFailed} from 'brain/apiError'
 import {User as UserEntity} from 'brain/party/user'
 
 const style = theme => {
@@ -87,6 +86,7 @@ const events = {
 class RegisterUser extends Component {
 
   state = {
+    isLoading: false,
     activeState: events.init,
     user: new UserEntity(),
     confirmPassword: '',
@@ -107,7 +107,7 @@ class RegisterUser extends Component {
       activeState,
     } = this.state
     if (event.target.id === 'confirmPassword') {
-        this.setState({confirmPassword: event.target.value})
+      this.setState({confirmPassword: event.target.value})
     } else {
       user[event.target.id] = event.target.value
       // this.reasonsInvalid.clearField(event.target.id)
@@ -129,9 +129,30 @@ class RegisterUser extends Component {
       user,
       confirmPassword,
     } = this.state
+    const {
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    // confirm that password is entered correctly
     if (user.password !== confirmPassword) {
       this.setState({activeState: events.passwordsDoNotMatch})
       return
+    }
+
+    // if so attempt to validate and then register
+    try {
+      this.setState({isLoading: true})
+      user.validate('Create').then(reasonsInvalid => {
+        console.log('Validate Success!', reasonsInvalid)
+      }).catch(error => {
+        console.error('Error Validating User', error)
+        NotificationFailure('Error Validating User')
+        this.setState({isLoading: false})
+      })
+    } catch (error) {
+      console.error('Error Registering User', error)
+      NotificationFailure('Error Registering User')
     }
   }
 
@@ -177,6 +198,7 @@ class RegisterUser extends Component {
       activeState,
       user,
       confirmPassword,
+      isLoading,
     } = this.state
 
     const errorState = (activeState === states.incorrectCredentials) ||
@@ -279,7 +301,9 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={confirmPassword}
                                 onChange={this.handleChange}
-                                helperText={passwordsDoNotMatch ? 'do not match' : undefined}
+                                helperText={passwordsDoNotMatch ?
+                                    'do not match' :
+                                    undefined}
                                 error={passwordsDoNotMatch}
                             />
                           </FormControl>
@@ -308,7 +332,7 @@ class RegisterUser extends Component {
         </div>
       </div>
       <Dialog
-          open={activeState === states.loggingIn}
+          open={isLoading}
           BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
           PaperProps={{classes: {root: classes.progressSpinnerDialog}}}
           className={classes.progressSpinnerDialog}
