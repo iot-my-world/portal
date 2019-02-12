@@ -7,15 +7,22 @@ import {
 import {
   BEPTable,
 } from 'components/table'
-import {Company as CompanyEntity} from 'brain/party/company'
+import {
+  Company as CompanyEntity,
+  RecordHandler as CompanyRecordHandler,
+} from 'brain/party/company'
 import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
+import {Query} from 'brain/search'
 
 const styles = theme => ({
   formField: {
     height: '60px',
     width: '150px',
+  },
+  progress: {
+    margin: 2,
   },
 })
 
@@ -39,6 +46,7 @@ const events = {
 class Company extends Component {
 
   state = {
+    recordCollectionInProgress: false,
     isLoading: false,
     activeState: states.nop,
     selected: new CompanyEntity(),
@@ -46,12 +54,25 @@ class Company extends Component {
 
   reasonsInvalid = new ReasonsInvalid()
 
+  collectCriteria = []
+  collectQuery = new Query()
+  records = []
+  totalNoRecords = 0
+
   constructor(props) {
     super(props)
     this.renderControls = this.renderControls.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
+    this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
+    this.collect = this.collect.bind(this)
+    this.collectTimeout = () => {
+    }
+  }
+
+  componentDidMount() {
+    this.collect()
   }
 
   handleChange(event) {
@@ -102,9 +123,36 @@ class Company extends Component {
     }
   }
 
+  collect() {
+    const {
+      NotificationFailure,
+    } = this.props
+
+    this.setState({recordCollectionInProgress: true})
+    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
+        .then(response => {
+          this.records = response.records
+          this.totalNoRecords = response.total
+        })
+        .catch(error => {
+          console.error(`error collecting records: ${error}`)
+          NotificationFailure('Failed To Fetch Companies')
+        })
+        .finally(() => {
+          this.setState({recordCollectionInProgress: false})
+        })
+  }
+
+  handleCriteriaQueryChange(criteria, query) {
+    this.collectCriteria = criteria
+    this.collectQuery = query
+    this.collectTimeout = setTimeout(this.collect, 300)
+  }
+
   render() {
     const {
       isLoading,
+      recordCollectionInProgress,
     } = this.state
 
     return <Grid
@@ -124,8 +172,12 @@ class Company extends Component {
         <Card>
           <CardContent>
             <BEPTable
-                data={[]}
-                defaultPageSize={5}
+                loading={recordCollectionInProgress}
+                totalNoRecords={this.totalNoRecords}
+                noDataText={'No Companies Found'}
+                data={this.records}
+                onCriteriaQueryChange={this.handleCriteriaQueryChange}
+
                 columns={[
                   {
                     Header: 'Name',
@@ -146,7 +198,6 @@ class Company extends Component {
                     },
                   },
                 ]}
-                onCriteriaChange={(criteria)=>console.log('new criteria!', criteria)}
             />
           </CardContent>
         </Card>
@@ -168,8 +219,8 @@ class Company extends Component {
     const disableFields = (activeState === states.viewingExisting) ||
         isLoading
 
-
     switch (activeState) {
+
       case states.nop:
         return <Typography variant={'body1'}>
           Select Company or <Button
@@ -192,7 +243,7 @@ class Company extends Component {
         } = this.state
         return <React.Fragment>
           <Typography variant={'body1'}>
-            {(()=>{
+            {(() => {
 
             })()}
             New Company Creation

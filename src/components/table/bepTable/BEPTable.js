@@ -12,6 +12,7 @@ import {
 import {
   Text as TextCriterionType,
 } from 'brain/search/criterion/types'
+import {Query} from 'brain/search'
 
 const styles = theme => ({
   processingDisplay: {
@@ -64,9 +65,11 @@ class BEPTable extends Component {
   state = {
     activeState: events.init,
     errors: {},
+    page: 0,
   }
 
   criteria = {}
+  query = new Query()
   columns = []
 
   constructor(props) {
@@ -76,6 +79,10 @@ class BEPTable extends Component {
     this.constructTable = this.constructTable.bind(this)
     this.constructColumns = this.constructColumns.bind(this)
     this.handleFilterChange = this.handleFilterChange.bind(this)
+    this.handleQuerySortChange = this.handleQuerySortChange.bind(this)
+    this.handleQueryLimitChange = this.handleQueryLimitChange.bind(this)
+    this.handleQueryOffsetChange = this.handleQueryOffsetChange.bind(this)
+    this.criteriaToArray = this.criteriaToArray.bind(this)
   }
 
   componentDidMount() {
@@ -150,33 +157,74 @@ class BEPTable extends Component {
             break
 
           default:
-            throw new TypeError(`invalid column.filter.config.type: ${col.config.filter.type}`)
+            throw new TypeError(
+                `invalid column.filter.config.type: ${col.config.filter.type}`)
         }
       }
       this.columns.push(col)
     }
   }
 
-  handleFilterChange(field, newFilter) {
-    const {
-      onCriteriaChange,
-    } = this.props
-    this.criteria[field] = newFilter
+  criteriaToArray() {
     let updatedCriteria = []
-    for (field in this.criteria) {
+    for (let field in this.criteria) {
       if (this.criteria[field] !== undefined) {
         updatedCriteria.push(this.criteria[field])
       }
     }
-    onCriteriaChange(updatedCriteria)
+    return updatedCriteria
+  }
+
+  handleFilterChange(field, newFilter) {
+    const {
+      onCriteriaQueryChange,
+    } = this.props
+    this.criteria[field] = newFilter
+    this.query.offset = 0
+    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+    this.setState({page: 0})
+  }
+
+  handleQuerySortChange(updatedSortObjects) {
+    const {
+      onCriteriaQueryChange,
+    } = this.props
+    this.query.sortBy = []
+    this.query.order = []
+
+    for (let sortObj of updatedSortObjects) {
+      this.query.sortBy.push(sortObj.id)
+      this.query.order.push(
+          sortObj.desc ? Query.SortOrderDescending : Query.SortOrderAscending)
+    }
+    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+  }
+
+  handleQueryLimitChange(newPageSize) {
+    const {
+      onCriteriaQueryChange,
+    } = this.props
+    this.query.limit = newPageSize
+    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+  }
+
+  handleQueryOffsetChange(newPageIndex) {
+    const {
+      onCriteriaQueryChange,
+    } = this.props
+    this.query.offset = newPageIndex * this.query.limit
+    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+    this.setState({page: newPageIndex})
   }
 
   render() {
     const {
       activeState,
+      page,
     } = this.state
     const {
       classes,
+      totalNoRecords,
       ...rest
     } = this.props
 
@@ -186,6 +234,13 @@ class BEPTable extends Component {
             {...rest}
             filterable
             columns={this.columns}
+            manual={true}
+            page={page}
+            pages={Math.ceil(totalNoRecords / this.query.limit)}
+            defaultPageSize={this.query.limit}
+            onSortedChange={this.handleQuerySortChange}
+            onPageSizeChange={this.handleQueryLimitChange}
+            onPageChange={this.handleQueryOffsetChange}
         />
       case Object.values(processingStates).includes(activeState):
         return this.renderProcessing()
@@ -306,16 +361,18 @@ BEPTable = withStyles(styles)(BEPTable)
 
 BEPTable.propTypes = {
   /**
-   * function which will be called with an array of new
-   * criteria objects when any of the filters are changed
+   * function which will be called with criteria array and
+   * query object when any of the query parameters or filters are
+   * changed.
+   * onCriteriaQueryChange(criteria, query)
    */
-  onCriteriaChange: PropTypes.func.isRequired,
+  onCriteriaQueryChange: PropTypes.func.isRequired,
   /**
-   * function which will be called with new query object
-   * when any of the query parameters are changes.
-   * i.e. sort, page no. or page size
+   * Indicates total number of given records on back-end.
+   * Used to calculate total no of pages
    */
-  onQueryChange: PropTypes.func.isRequired,
+  totalNoRecords: PropTypes.number.isRequired,
+  ...Table.propTypes,
 }
 
 BEPTable.defaultProps = {}

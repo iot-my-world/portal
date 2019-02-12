@@ -44,4 +44,24 @@ export default class RecordHandler {
       }).catch(error => reject(error))
     })
   }
+
+  /**
+   * @param {array} criteria
+   * @param {Query} query
+   * @constructor
+   */
+  static Collect(criteria, query) {
+    return new Promise((resolve, reject) => {
+      jsonRpcRequest({
+        url: config.get('brainAPIUrl'),
+        method: 'CompanyRecordHandler.Collect',
+        request: {
+          criteria: criteria.map(criterion => criterion.toPOJO()),
+          query: query.toPOJO(),
+        },
+      }).then(result => {
+        resolve(result)
+      }).catch(error => reject(error))
+    })
+  }
 }
