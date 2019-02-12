@@ -4,7 +4,7 @@ import {
   withStyles, Typography,
   Card, CardContent, Grid,
   TextField, Button, Dialog,
-  FormControl,
+  FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
@@ -27,13 +27,14 @@ const style = theme => {
     },
     root: {
       height: '100%',
-      display: 'grid',
-      gridTemplateRows: '1fr 2fr',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     contentWrapper: {
       display: 'grid',
       justifyItems: 'center',
-      gridTemplateRows: 'auto auto 1fr',
+      gridTemplateRows: 'auto auto',
     },
     titleInnerWrapper: {
       display: 'grid',
@@ -204,6 +205,10 @@ class Login extends Component {
             <Grid container>
               <Grid item>
                 <Card>
+                  <CardHeader
+                      title={'Login'}
+                      titleTypographyProps={{color: 'primary', align: 'center'}}
+                  />
                   <CardContent>
                     <form onSubmit={this.handleLogin}>
                       <Grid container direction={'column'} alignItems={'center'}

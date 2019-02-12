@@ -4,13 +4,14 @@ import {
   withStyles, Typography,
   Card, CardContent, Grid,
   TextField, Button, Dialog,
-  FormControl,
+  FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
+import {User as UserEntity} from 'brain/party/user'
 
 const style = theme => {
   return {
@@ -26,8 +27,9 @@ const style = theme => {
     },
     root: {
       height: '100%',
-      display: 'grid',
-      gridTemplateRows: '1fr 2fr',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     contentWrapper: {
       display: 'grid',
@@ -77,22 +79,40 @@ const states = {
 const events = {
   init: states.nop,
   errorParsingLinkToJWT: states.invalidURL,
-  jwtExpired: states.urlExpired
+  jwtExpired: states.urlExpired,
 }
 
 class RegisterUser extends Component {
 
   state = {
     activeState: events.init,
+    user: new UserEntity(),
+    confirmPassword: '',
   }
   registrationClaims
 
   constructor(props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
+    this.handleRegister = this.handleRegister.bind(this)
   }
 
   handleChange(event) {
+    let {
+      user,
+      confirmPassword,
+    } = this.state
+    if (event.target.id === 'confirmPassword') {
+      this.setState({confirmPassword: event.target.value})
+    } else {
+      user[event.target.id] = event.target.value
+      // this.reasonsInvalid.clearField(event.target.id)
+      this.setState({user})
+    }
+  }
+
+  handleRegister() {
+
   }
 
   componentDidMount() {
@@ -135,8 +155,8 @@ class RegisterUser extends Component {
     } = this.props
     const {
       activeState,
-      usernameOrEmailAddress,
-      password,
+      user,
+      confirmPassword,
     } = this.state
 
     const errorState = (activeState === states.incorrectCredentials) ||
@@ -147,7 +167,6 @@ class RegisterUser extends Component {
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
-        <div/>
         <div className={classes.contentWrapper}>
           <div className={classes.titleInnerWrapper}>
             <img className={classes.logo} src={logo} alt={'logo'}/>
@@ -160,17 +179,57 @@ class RegisterUser extends Component {
             <Grid container>
               <Grid item>
                 <Card>
+                  <CardHeader
+                      title={'User Registration'}
+                      titleTypographyProps={{color: 'primary', align: 'center'}}
+                  />
                   <CardContent>
-                    <form onSubmit={this.handleLogin}>
+                    <form onSubmit={this.handleRegister}>
                       <Grid container direction={'column'} alignItems={'center'}
                             spacing={8}>
                         <Grid item>
                           <FormControl className={classes.formField}>
                             <TextField
-                                id='usernameOrEmailAddress'
-                                label='Username or Email Address'
+                                id='name'
+                                label='Name'
+                                autoComplete='name'
+                                value={user.name}
+                                onChange={this.handleChange}
+                                error={errorState}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item>
+                          <FormControl className={classes.formField}>
+                            <TextField
+                                id='surname'
+                                label='Surname'
+                                autoComplete='surname'
+                                value={user.surname}
+                                onChange={this.handleChange}
+                                error={errorState}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item>
+                          <FormControl className={classes.formField}>
+                            <TextField
+                                id='username'
+                                label='Username'
                                 autoComplete='username'
-                                value={usernameOrEmailAddress}
+                                value={user.username}
+                                onChange={this.handleChange}
+                                error={errorState}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item>
+                          <FormControl className={classes.formField}>
+                            <TextField
+                                id='emailAddress'
+                                label='Email Address'
+                                autoComplete='emailAddress'
+                                value={user.emailAddress}
                                 onChange={this.handleChange}
                                 error={errorState}
                             />
@@ -183,7 +242,20 @@ class RegisterUser extends Component {
                                 label='Password'
                                 type='password'
                                 autoComplete='current-password'
-                                value={password}
+                                value={user.password}
+                                onChange={this.handleChange}
+                                error={errorState}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item>
+                          <FormControl className={classes.formField}>
+                            <TextField
+                                id='confirmPassword'
+                                label='Confirm Password'
+                                type='password'
+                                autoComplete='current-password'
+                                value={confirmPassword}
                                 onChange={this.handleChange}
                                 error={errorState}
                             />
@@ -194,7 +266,7 @@ class RegisterUser extends Component {
                               className={classes.button}
                               type={'submit'}
                           >
-                            RegisterUser
+                            Register
                           </Button>
                         </Grid>
                         {errorState &&
