@@ -74,12 +74,14 @@ const states = {
   nop: 0,
   invalidURL: 1,
   urlExpired: 2,
+  passwordsDoNotMatch: 3,
 }
 
 const events = {
   init: states.nop,
   errorParsingLinkToJWT: states.invalidURL,
   jwtExpired: states.urlExpired,
+  passwordsDoNotMatch: states.passwordsDoNotMatch,
 }
 
 class RegisterUser extends Component {
@@ -100,19 +102,37 @@ class RegisterUser extends Component {
   handleChange(event) {
     let {
       user,
-      confirmPassword,
+    } = this.state
+    const {
+      activeState,
     } = this.state
     if (event.target.id === 'confirmPassword') {
-      this.setState({confirmPassword: event.target.value})
+        this.setState({confirmPassword: event.target.value})
     } else {
       user[event.target.id] = event.target.value
       // this.reasonsInvalid.clearField(event.target.id)
       this.setState({user})
     }
+    if (
+        (activeState === states.passwordsDoNotMatch) &&
+        (
+            (event.target.id === 'confirmPassword') ||
+            (event.target.id === 'password')
+        )
+    ) {
+      this.setState({activeState: events.init})
+    }
   }
 
   handleRegister() {
-
+    const {
+      user,
+      confirmPassword,
+    } = this.state
+    if (user.password !== confirmPassword) {
+      this.setState({activeState: events.passwordsDoNotMatch})
+      return
+    }
   }
 
   componentDidMount() {
@@ -162,6 +182,8 @@ class RegisterUser extends Component {
     const errorState = (activeState === states.incorrectCredentials) ||
         (activeState === states.unableToContactServer)
 
+    const passwordsDoNotMatch = activeState === states.passwordsDoNotMatch
+
     return <div
         className={classes.fullPageBackground}
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
@@ -184,7 +206,7 @@ class RegisterUser extends Component {
                       titleTypographyProps={{color: 'primary', align: 'center'}}
                   />
                   <CardContent>
-                    <form onSubmit={this.handleRegister}>
+                    <form>
                       <Grid container direction={'column'} alignItems={'center'}
                             spacing={8}>
                         <Grid item>
@@ -244,7 +266,7 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={user.password}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                error={passwordsDoNotMatch}
                             />
                           </FormControl>
                         </Grid>
@@ -257,14 +279,15 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={confirmPassword}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                helperText={passwordsDoNotMatch ? 'do not match' : undefined}
+                                error={passwordsDoNotMatch}
                             />
                           </FormControl>
                         </Grid>
                         <Grid item>
                           <Button
                               className={classes.button}
-                              type={'submit'}
+                              onClick={this.handleRegister}
                           >
                             Register
                           </Button>

@@ -1,8 +1,10 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
-import {IdIdentifier} from 'brain/search/identifier'
-import AdminEmailAddressIdentifier
-  from 'brain/search/identifier/AdminEmailAddress'
+import {
+  UsernameIdentifier,
+  EmailAddressIdentifier,
+  IdIdentifier,
+} from 'brain/search/identifier'
 import UserRecordHandler from './RecordHandler'
 
 export default class User extends Base {
@@ -76,7 +78,7 @@ export default class User extends Base {
       try {
         this._id = user.id
         this._name = user.name
-        this._adminEmailAddress = user.adminEmailAddress
+        this._emailAddress = user.emailAddress
       } catch (e) {
         throw new Error(`error constructing user object: ${e}`)
       }
@@ -95,7 +97,7 @@ export default class User extends Base {
     this._name = newVal
   }
 
-  get surname(){
+  get surname() {
     return this._surname
   }
 
@@ -103,7 +105,7 @@ export default class User extends Base {
     this._surname = newVal
   }
 
-  get username(){
+  get username() {
     return this._username
   }
 
@@ -111,12 +113,20 @@ export default class User extends Base {
     this._username = newVal
   }
 
-  get adminEmailAddress() {
-    return this._adminEmailAddress
+  get emailAddress() {
+    return this._emailAddress
   }
 
-  set adminEmailAddress(newVal) {
-    this._adminEmailAddress = newVal
+  set emailAddress(newVal) {
+    this._emailAddress = newVal
+  }
+
+  get password() {
+    return this._password
+  }
+
+  set password(newVal) {
+    this._password = newVal
   }
 
   create() {
@@ -130,8 +140,10 @@ export default class User extends Base {
   get identifier() {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
-    } else if (this._adminEmailAddress !== '') {
-      return new AdminEmailAddressIdentifier(this._adminEmailAddress)
+    } else if (this._emailAddress !== '') {
+      return new EmailAddressIdentifier(this._emailAddress)
+    } else if (this._username !== '') {
+      return new UsernameIdentifier(this._username)
     } else {
       throw new Error(
           `cannot create identifier for user if id, username and email address are all blank`)
