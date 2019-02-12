@@ -122,6 +122,7 @@ class RegisterUser extends Component {
     }
     console.log('registration claims!', registrationClaims)
     if (registrationClaims.notExpired) {
+      sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
     } else {
       this.setState({activeState: events.jwtExpired})

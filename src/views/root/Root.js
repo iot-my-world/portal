@@ -8,7 +8,6 @@ import LoginContainer from '../login/LoginContainer'
 import RegisterUserContainer from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
 import {LoginClaims} from 'brain/security/auth/claims/index'
-import {Logout} from 'actions/auth'
 
 const styles = theme => ({})
 
