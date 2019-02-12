@@ -8,6 +8,9 @@ import {
 import {
   SetClaims,
 } from 'actions/auth'
+import {
+  Logout,
+} from 'actions/auth'
 
 class RootContainer extends Component {
 
@@ -17,19 +20,10 @@ class RootContainer extends Component {
 
   theme = getTheme(this.state.chosenThemeOption)
 
-  render () {
-    const {
-      SetClaims,
-      Logout,
-      claims,
-    } = this.props
+  render() {
 
     return <MuiThemeProvider theme={this.theme}>
-      <Root
-          SetClaims={SetClaims}
-          Logout={Logout}
-          claims={claims}
-      />
+      <Root{...this.props}/>
     </MuiThemeProvider>
   }
 }
@@ -44,5 +38,6 @@ export default connect(
     mapStateToProps,
     {
       SetClaims,
+      Logout,
     },
 )(RootContainer)

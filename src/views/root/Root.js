@@ -5,8 +5,10 @@ import PropTypes from 'prop-types'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
+import RegisterUserContainer from 'views/registrar/registerUser/RegisterUser'
 import {parseToken} from 'utilities/token/index'
 import {LoginClaims} from 'brain/security/auth'
+import {Logout} from 'actions/auth'
 
 const styles = theme => ({})
 
@@ -40,8 +42,10 @@ class Root extends Component {
   }
 
   logout() {
+    const {Logout} = this.props
     sessionStorage.removeItem('jwt')
     this.loggedIn = false
+    Logout()
   }
 
   render() {
@@ -62,6 +66,13 @@ class Root extends Component {
                 } else {
                   return <Redirect to='/'/>
                 }
+              }}
+          />
+          <Route
+              path='/register'
+              render={props => {
+                this.logout()
+                return <RegisterUserContainer {...props}/>
               }}
           />
           <Route
