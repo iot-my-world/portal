@@ -2,8 +2,17 @@ import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
+import {Login} from './types'
 
 class LoginClaims extends Base {
+  static type = Login
+
+  /**
+   * @type {string}
+   * @private
+   */
+  _type = LoginClaims.type
+
   /**
    * @type {IdIdentifier}
    * @private
@@ -57,6 +66,10 @@ class LoginClaims extends Base {
         throw new Error(`error constructing loginClaims object: ${e}`)
       }
     }
+  }
+
+  get type(){
+    return this._type
   }
 
   get userId() {

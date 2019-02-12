@@ -5,9 +5,9 @@ import PropTypes from 'prop-types'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
-import RegisterUserContainer from 'views/registrar/registerUser/RegisterUser'
+import RegisterUserContainer from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
-import {LoginClaims} from 'brain/security/auth'
+import {LoginClaims} from 'brain/security/auth/claims/index'
 import {Logout} from 'actions/auth'
 
 const styles = theme => ({})

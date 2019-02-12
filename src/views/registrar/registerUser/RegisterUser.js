@@ -120,6 +120,7 @@ class RegisterUser extends Component {
       this.setState({activeState: events.errorParsingLinkToJWT})
       return
     }
+    console.log('registration claims!', registrationClaims)
     if (registrationClaims.notExpired) {
       this.registrationClaims = registrationClaims
     } else {

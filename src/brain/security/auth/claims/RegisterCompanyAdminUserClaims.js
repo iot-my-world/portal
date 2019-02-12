@@ -2,8 +2,16 @@ import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
+import {RegisterCompanyAdminUser} from 'brain/security/auth/claims/types'
 
 class RegisterCompanyAdminUserClaims extends Base {
+  static type = RegisterCompanyAdminUser
+
+  /**
+   * @type {string}
+   * @private
+   */
+  _type = RegisterCompanyAdminUserClaims.type
 
   /**
    * @type {number}
@@ -32,7 +40,8 @@ class RegisterCompanyAdminUserClaims extends Base {
     if (
         (registerCompanyAdminUserClaims !== undefined) &&
         (
-            (registerCompanyAdminUserClaims instanceof RegisterCompanyAdminUserClaims) ||
+            (registerCompanyAdminUserClaims instanceof
+                RegisterCompanyAdminUserClaims) ||
             isObject(registerCompanyAdminUserClaims)
         )
     ) {
@@ -41,9 +50,14 @@ class RegisterCompanyAdminUserClaims extends Base {
         this._expirationTime = registerCompanyAdminUserClaims.expirationTime
         this._partyId = new IdIdentifier(registerCompanyAdminUserClaims.partyId)
       } catch (e) {
-        throw new Error(`error constructing registerCompanyAdminUserClaims object: ${e}`)
+        throw new Error(
+            `error constructing registerCompanyAdminUserClaims object: ${e}`)
       }
     }
+  }
+
+  get type() {
+    return this._type
   }
 
   get issueTime() {
@@ -62,7 +76,7 @@ class RegisterCompanyAdminUserClaims extends Base {
    * Whether these registerCompanyAdminUserClaims are expired or not
    * @returns {boolean}
    */
-  get notExpired(){
+  get notExpired() {
     return moment.utc().isBefore(moment.unix(this._expirationTime).utc())
   }
 
