@@ -11,6 +11,7 @@ import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
 import {User as UserEntity} from 'brain/party/user'
+import {ReasonsInvalid} from 'brain/validate'
 
 const style = theme => {
   return {
@@ -91,6 +92,7 @@ class RegisterUser extends Component {
     user: new UserEntity(),
     confirmPassword: '',
   }
+  reasonsInvalid = new ReasonsInvalid()
   registrationClaims
 
   constructor(props) {
@@ -106,6 +108,7 @@ class RegisterUser extends Component {
     const {
       activeState,
     } = this.state
+    this.reasonsInvalid.clearField(event.target.id)
     if (event.target.id === 'confirmPassword') {
       this.setState({confirmPassword: event.target.value})
     } else {
@@ -142,9 +145,14 @@ class RegisterUser extends Component {
 
     // if so attempt to validate and then register
     try {
-      // this.setState({isLoading: true})
+      this.setState({isLoading: true})
       user.validate('Create').then(reasonsInvalid => {
-        console.log('Validate Success!', reasonsInvalid)
+        if (reasonsInvalid.count > 0) {
+          this.reasonsInvalid = reasonsInvalid
+          this.setState({isLoading: false})
+        } else {
+
+        }
       }).catch(error => {
         console.error('Error Validating User', error)
         NotificationFailure('Error Validating User')
@@ -201,6 +209,8 @@ class RegisterUser extends Component {
       isLoading,
     } = this.state
 
+    const fieldValidations = this.reasonsInvalid.toMap()
+
     const errorState = (activeState === states.incorrectCredentials) ||
         (activeState === states.unableToContactServer)
 
@@ -239,7 +249,12 @@ class RegisterUser extends Component {
                                 autoComplete='name'
                                 value={user.name}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                helperText={
+                                  fieldValidations.name
+                                      ? fieldValidations.name.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.name}
                             />
                           </FormControl>
                         </Grid>
@@ -251,7 +266,12 @@ class RegisterUser extends Component {
                                 autoComplete='surname'
                                 value={user.surname}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                helperText={
+                                  fieldValidations.surname
+                                      ? fieldValidations.surname.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.surname}
                             />
                           </FormControl>
                         </Grid>
@@ -263,7 +283,12 @@ class RegisterUser extends Component {
                                 autoComplete='username'
                                 value={user.username}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                helperText={
+                                  fieldValidations.username
+                                      ? fieldValidations.username.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.username}
                             />
                           </FormControl>
                         </Grid>
@@ -275,7 +300,12 @@ class RegisterUser extends Component {
                                 autoComplete='emailAddress'
                                 value={user.emailAddress}
                                 onChange={this.handleChange}
-                                error={errorState}
+                                helperText={
+                                  fieldValidations.emailAddress
+                                      ? fieldValidations.emailAddress.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.emailAddress}
                             />
                           </FormControl>
                         </Grid>
@@ -288,7 +318,15 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={user.password}
                                 onChange={this.handleChange}
-                                error={passwordsDoNotMatch}
+                                helperText={
+                                  fieldValidations.password
+                                      ? fieldValidations.password.help
+                                      : undefined
+                                }
+                                error={
+                                  (!!fieldValidations.password)
+                                  || passwordsDoNotMatch
+                                }
                             />
                           </FormControl>
                         </Grid>
@@ -304,7 +342,10 @@ class RegisterUser extends Component {
                                 helperText={passwordsDoNotMatch ?
                                     'do not match' :
                                     undefined}
-                                error={passwordsDoNotMatch}
+                                error={
+                                  (!!fieldValidations.password)
+                                  || passwordsDoNotMatch
+                                }
                             />
                           </FormControl>
                         </Grid>
