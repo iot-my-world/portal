@@ -142,7 +142,7 @@ class RegisterUser extends Component {
 
     // if so attempt to validate and then register
     try {
-      this.setState({isLoading: true})
+      // this.setState({isLoading: true})
       user.validate('Create').then(reasonsInvalid => {
         console.log('Validate Success!', reasonsInvalid)
       }).catch(error => {

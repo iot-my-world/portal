@@ -8,12 +8,6 @@ class RegisterCompanyAdminUserClaims extends Base {
   static type = RegisterCompanyAdminUser
 
   /**
-   * @type {string}
-   * @private
-   */
-  _type = RegisterCompanyAdminUserClaims.type
-
-  /**
    * @type {number}
    * @private
    */
@@ -54,10 +48,6 @@ class RegisterCompanyAdminUserClaims extends Base {
             `error constructing registerCompanyAdminUserClaims object: ${e}`)
       }
     }
-  }
-
-  get type() {
-    return this._type
   }
 
   get issueTime() {

@@ -46,4 +46,8 @@ export default class Id extends Base {
   get id() {
     return this._value.id
   }
+
+  toPOJO(){
+    return this._value
+  }
 }

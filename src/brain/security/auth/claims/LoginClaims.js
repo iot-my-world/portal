@@ -8,12 +8,6 @@ class LoginClaims extends Base {
   static type = Login
 
   /**
-   * @type {string}
-   * @private
-   */
-  _type = LoginClaims.type
-
-  /**
    * @type {IdIdentifier}
    * @private
    */
@@ -68,10 +62,6 @@ class LoginClaims extends Base {
     }
   }
 
-  get type(){
-    return this._type
-  }
-
   get userId() {
     return this._userId
   }
@@ -99,7 +89,6 @@ class LoginClaims extends Base {
   get notExpired(){
     return moment.utc().isBefore(moment.unix(this._expirationTime).utc())
   }
-
 }
 
 export default LoginClaims

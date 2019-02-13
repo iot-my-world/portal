@@ -8,6 +8,9 @@ import {
 import UserRecordHandler from './RecordHandler'
 
 export default class User extends Base {
+  static ignoreInPost = [
+  ]
+
   /**
    * @type {string}
    * @private
@@ -45,10 +48,10 @@ export default class User extends Base {
   _password = ''
 
   /**
-   * @type {string}
+   * @type {string[]}
    * @private
    */
-  _roles = ''
+  _roles = []
 
   /**
    * @type {string}

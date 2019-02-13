@@ -17,10 +17,10 @@ export function parseToken(jwt) {
 
     switch (tokenPOJO.type) {
       case LoginClaims.type:
-        return new LoginClaims(tokenPOJO)
+        return new LoginClaims(tokenPOJO.value)
 
       case RegisterCompanyAdminUserClaims.type:
-        return new RegisterCompanyAdminUserClaims(tokenPOJO)
+        return new RegisterCompanyAdminUserClaims(tokenPOJO.value)
 
       default:
         throw new TypeError(
