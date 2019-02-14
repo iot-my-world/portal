@@ -26,6 +26,18 @@ class RegisterCompanyAdminUserClaims extends Base {
   _partyId = new IdIdentifier()
 
   /**
+   * @type {string}
+   * @private
+   */
+  _partyType = ''
+
+  /**
+   * @type {string}
+   * @private
+   */
+  _emailAddress = ''
+
+  /**
    * construct a RegisterCompanyAdminUserClaims Object
    * @param {RegisterCompanyAdminUserClaims|Object} [registerCompanyAdminUserClaims]
    */
@@ -43,6 +55,8 @@ class RegisterCompanyAdminUserClaims extends Base {
         this._issueTime = registerCompanyAdminUserClaims.issueTime
         this._expirationTime = registerCompanyAdminUserClaims.expirationTime
         this._partyId = new IdIdentifier(registerCompanyAdminUserClaims.partyId)
+        this._partyType = registerCompanyAdminUserClaims.partyType
+        this._emailAddress = registerCompanyAdminUserClaims.emailAddress
       } catch (e) {
         throw new Error(
             `error constructing registerCompanyAdminUserClaims object: ${e}`)
@@ -60,6 +74,14 @@ class RegisterCompanyAdminUserClaims extends Base {
 
   get partyId() {
     return this._partyId
+  }
+
+  get partyType(){
+    return this._partyType
+  }
+
+  get emailAddress(){
+    return this._emailAddress
   }
 
   /**

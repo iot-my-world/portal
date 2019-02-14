@@ -50,4 +50,8 @@ export default class Id extends Base {
   toPOJO(){
     return this._value
   }
+
+  toWrapped(){
+    return super.toPOJO()
+  }
 }

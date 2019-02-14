@@ -11,7 +11,23 @@ export default class Registrar {
       url: config.get('brainAPIUrl'),
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        partyIdentifier: partyIdentifier.toPOJO(),
+        partyIdentifier: partyIdentifier.toWrapped(),
+      },
+    })
+  }
+
+  /**
+   * @param {User} user
+   * @param {string} password
+   * @constructor
+   */
+  static RegisterCompanyAdminUser(user, password) {
+    return jsonRpcRequest({
+      url: config.get('brainAPIUrl'),
+      method: 'PartyRegistrar.RegisterCompanyAdminUser',
+      request: {
+        user: user.toPOJO(),
+        password: password,
       },
     })
   }

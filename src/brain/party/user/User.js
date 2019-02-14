@@ -6,6 +6,7 @@ import {
   IdIdentifier,
 } from 'brain/search/identifier'
 import UserRecordHandler from './RecordHandler'
+import PartyRegistrar from 'brain/party/registrar/Registrar'
 
 export default class User extends Base {
   static ignoreInPost = [
@@ -132,12 +133,32 @@ export default class User extends Base {
     this._password = newVal
   }
 
+  get partyType(){
+    return this._partyType
+  }
+
+  set partyType(newVal) {
+    this._partyType = newVal
+  }
+
+  get partyId(){
+    return this._partyId
+  }
+
+  set partyId(newVal){
+    this._partyId = newVal
+  }
+
   create() {
     return UserRecordHandler.Create(this)
   }
 
   validate(method = '') {
     return UserRecordHandler.Validate(this, method)
+  }
+
+  registerAsAdmin(){
+    return PartyRegistrar.RegisterCompanyAdminUser(this, this._password)
   }
 
   get identifier() {

@@ -15,6 +15,8 @@ export function parseToken(jwt) {
     const payloadString = atob(payloadData)
     const tokenPOJO = JSON.parse(payloadString)
 
+    console.log('token pojo:', tokenPOJO)
+
     switch (tokenPOJO.type) {
       case LoginClaims.type:
         return new LoginClaims(tokenPOJO.value)

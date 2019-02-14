@@ -12,6 +12,10 @@ import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
 import {User as UserEntity} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
+import ErrorIcon from '@material-ui/icons/ErrorOutline'
+import {
+  RegisterCompanyAdminUser, RegisterClientAdminUser, Login,
+} from 'brain/security/auth/claims/types'
 
 const style = theme => {
   return {
@@ -67,21 +71,30 @@ const style = theme => {
     progressSpinnerDialogBackdrop: {
       // backgroundColor: 'transparent',
     },
+    errorIcon: {
+      fontSize: 100,
+      color: theme.palette.error.main,
+    },
   }
 }
 
 const states = {
   nop: 0,
-  invalidURL: 1,
-  urlExpired: 2,
-  passwordsDoNotMatch: 3,
+  parsingToken: 1,
+  invalidURL: 2,
+  tokenExpired: 3,
+  passwordsDoNotMatch: 4,
+  passwordBlank: 5,
 }
 
 const events = {
-  init: states.nop,
+  init: states.parsingToken,
   errorParsingLinkToJWT: states.invalidURL,
-  jwtExpired: states.urlExpired,
+  jwtExpired: states.tokenExpired,
   passwordsDoNotMatch: states.passwordsDoNotMatch,
+  passwordBlank: states.passwordBlank,
+  tokenParsed: states.nop,
+  reInit: states.nop,
 }
 
 class RegisterUser extends Component {
@@ -99,6 +112,10 @@ class RegisterUser extends Component {
     super(props)
     this.handleChange = this.handleChange.bind(this)
     this.handleRegister = this.handleRegister.bind(this)
+    this.renderTokenExpired = this.renderTokenExpired.bind(this)
+    this.renderParsingToken = this.renderParsingToken.bind(this)
+    this.handleBackToSite = this.handleBackToSite.bind(this)
+    this.passwordMessage = this.passwordMessage.bind(this)
   }
 
   handleChange(event) {
@@ -117,13 +134,16 @@ class RegisterUser extends Component {
       this.setState({user})
     }
     if (
-        (activeState === states.passwordsDoNotMatch) &&
+        (
+            (activeState === states.passwordsDoNotMatch) ||
+            (activeState === states.passwordBlank)
+        ) &&
         (
             (event.target.id === 'confirmPassword') ||
             (event.target.id === 'password')
         )
     ) {
-      this.setState({activeState: events.init})
+      this.setState({activeState: events.reInit})
     }
   }
 
@@ -141,6 +161,8 @@ class RegisterUser extends Component {
     if (user.password !== confirmPassword) {
       this.setState({activeState: events.passwordsDoNotMatch})
       return
+    } else if (user.password === "") {
+      this.setState({activeState: events.passwordBlank})
     }
 
     // if so attempt to validate and then register
@@ -151,7 +173,15 @@ class RegisterUser extends Component {
           this.reasonsInvalid = reasonsInvalid
           this.setState({isLoading: false})
         } else {
-
+          user.registerAsAdmin().then(() => {
+            NotificationSuccess('Successfully Registered User')
+            this.setState({isLoading: false})
+            this.handleBackToSite()
+          }).catch(error => {
+            console.error('Error Registering User', error)
+            NotificationFailure('Error Registering User')
+            this.setState({isLoading: false})
+          })
         }
       }).catch(error => {
         console.error('Error Validating User', error)
@@ -164,10 +194,22 @@ class RegisterUser extends Component {
     }
   }
 
+  handleBackToSite() {
+    const {
+      history,
+    } = this.props
+    sessionStorage.setItem('jwt', null)
+    history.push('/')
+  }
+
   componentDidMount() {
     const {
       location,
     } = this.props
+    const {
+      user,
+    } = this.state
+
     let jwt
     let registrationClaims
     try {
@@ -189,12 +231,33 @@ class RegisterUser extends Component {
       this.setState({activeState: events.errorParsingLinkToJWT})
       return
     }
-    console.log('registration claims!', registrationClaims)
     if (registrationClaims.notExpired) {
       sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
+      user.emailAddress = registrationClaims.emailAddress
+      user.partyType = registrationClaims.partyType
+      user.partyId = registrationClaims.partyId
+      this.setState({
+        user,
+        activeState: events.tokenParsed
+      })
     } else {
+      sessionStorage.setItem('jwt', null)
       this.setState({activeState: events.jwtExpired})
+    }
+  }
+
+  passwordMessage(){
+    const {
+      activeState,
+    } = this.state
+    switch (activeState) {
+      case states.passwordsDoNotMatch:
+        return "do not match"
+      case states.passwordBlank:
+        return "cannot be blank"
+      default:
+        return undefined
     }
   }
 
@@ -209,12 +272,22 @@ class RegisterUser extends Component {
       isLoading,
     } = this.state
 
+    switch (activeState) {
+      case states.tokenExpired:
+        return this.renderTokenExpired()
+      case states.parsingToken:
+        return this.renderParsingToken()
+      default:
+    }
+
+    if (activeState === states.tokenExpired) {
+      return this.renderTokenExpired()
+    }
+
     const fieldValidations = this.reasonsInvalid.toMap()
 
     const errorState = (activeState === states.incorrectCredentials) ||
         (activeState === states.unableToContactServer)
-
-    const passwordsDoNotMatch = activeState === states.passwordsDoNotMatch
 
     return <div
         className={classes.fullPageBackground}
@@ -298,8 +371,8 @@ class RegisterUser extends Component {
                                 id='emailAddress'
                                 label='Email Address'
                                 autoComplete='emailAddress'
-                                value={user.emailAddress}
-                                onChange={this.handleChange}
+                                value={this.registrationClaims.emailAddress}
+                                disabled={true}
                                 helperText={
                                   fieldValidations.emailAddress
                                       ? fieldValidations.emailAddress.help
@@ -318,15 +391,8 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={user.password}
                                 onChange={this.handleChange}
-                                helperText={
-                                  fieldValidations.password
-                                      ? fieldValidations.password.help
-                                      : undefined
-                                }
-                                error={
-                                  (!!fieldValidations.password)
-                                  || passwordsDoNotMatch
-                                }
+                                helperText={this.passwordMessage()}
+                                error={!!this.passwordMessage()}
                             />
                           </FormControl>
                         </Grid>
@@ -339,13 +405,8 @@ class RegisterUser extends Component {
                                 autoComplete='current-password'
                                 value={confirmPassword}
                                 onChange={this.handleChange}
-                                helperText={passwordsDoNotMatch ?
-                                    'do not match' :
-                                    undefined}
-                                error={
-                                  (!!fieldValidations.password)
-                                  || passwordsDoNotMatch
-                                }
+                                helperText={this.passwordMessage()}
+                                error={!!this.passwordMessage()}
                             />
                           </FormControl>
                         </Grid>
@@ -381,6 +442,76 @@ class RegisterUser extends Component {
         <Spinner isLoading/>
       </Dialog>
     </div>
+  }
+
+  renderTokenExpired() {
+    const {
+      classes,
+    } = this.props
+    return <div
+        className={classes.fullPageBackground}
+        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+    >
+      <div className={classes.root}>
+        <div className={classes.contentWrapper}>
+          <div className={classes.titleInnerWrapper}>
+            <img className={classes.logo} src={logo} alt={'logo'}/>
+            <Typography className={classes.title} color={'primary'}
+                        variant={'h3'}>
+              SpotNav
+            </Typography>
+          </div>
+          <div className={classes.loginCardWrapper}>
+            <Grid container>
+              <Grid item>
+                <Card>
+                  <CardHeader
+                      title={'Expired'}
+                      titleTypographyProps={{color: 'error', align: 'center'}}
+                  />
+                  <CardContent>
+                    <Grid
+                        container
+                        direction='column'
+                        spacing={8}
+                        alignItems={'center'}
+                    >
+                      <Grid item>
+                        <ErrorIcon className={classes.errorIcon}/>
+                      </Grid>
+                      <Grid item>
+                        <Typography>
+                          Please contact your administrator to get a new
+                          registration link
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                            className={classes.button}
+                            onClick={this.handleBackToSite}
+                        >
+                          Back To Site
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  renderParsingToken() {
+    const {
+      classes,
+    } = this.props
+    return <div
+        className={classes.fullPageBackground}
+        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+    />
   }
 }
 

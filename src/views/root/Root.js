@@ -26,7 +26,10 @@ class Root extends Component {
     } = this.props
     try {
       const claims = parseToken(sessionStorage.getItem('jwt'))
-      if (claims.notExpired) {
+      if (
+          claims.notExpired &&
+          (claims.type === LoginClaims.type)
+      ) {
         SetClaims(claims)
         return true
       } else {
