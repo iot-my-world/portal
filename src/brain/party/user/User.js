@@ -158,7 +158,9 @@ export default class User extends Base {
   }
 
   registerAsAdmin(){
-    return PartyRegistrar.RegisterCompanyAdminUser(this, this._password)
+    const password = this._password
+    this._password = ''
+    return PartyRegistrar.RegisterCompanyAdminUser(this, password)
   }
 
   get identifier() {

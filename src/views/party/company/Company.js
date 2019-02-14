@@ -47,7 +47,7 @@ const events = {
 
   startCreateNew: states.editingNew,
   cancelCreateNew: states.nop,
-  createNewSuccess: states.viewingExisting,
+  createNewSuccess: states.nop,
 
   startEditExisting: states.editingExisting,
 }
@@ -60,14 +60,14 @@ class Company extends Component {
     activeState: events.init,
     selected: new CompanyEntity(),
     selectedRowIdx: -1,
+    records: [],
+    totalNoRecords: 0,
   }
 
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
   collectQuery = new Query()
-  records = []
-  totalNoRecords = 0
 
   constructor(props) {
     super(props)
@@ -111,12 +111,10 @@ class Company extends Component {
           this.reasonsInvalid = reasonsInvalid
           this.setState({isLoading: false})
         } else {
-          selected.create().then(newCompany => {
+          selected.create().then(() => {
             NotificationSuccess('Successfully Created Company')
-            this.setState({
-              selected: newCompany,
-              activeState: events.createNewSuccess,
-            })
+            this.setState({activeState: events.createNewSuccess})
+            this.collect()
           }).catch(error => {
             console.error('Error Creating Company', error)
             NotificationFailure('Error Creating Company')
@@ -142,8 +140,10 @@ class Company extends Component {
     this.setState({recordCollectionInProgress: true})
     CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
         .then(response => {
-          this.records = response.records
-          this.totalNoRecords = response.total
+          this.setState({
+            records: response.records,
+            totalNoRecords: response.total,
+          })
         })
         .catch(error => {
           console.error(`error collecting records: ${error}`)
@@ -198,6 +198,8 @@ class Company extends Component {
       isLoading,
       recordCollectionInProgress,
       selectedRowIdx,
+      records,
+      totalNoRecords,
     } = this.state
     const {
       theme,
@@ -227,9 +229,9 @@ class Company extends Component {
           <CardContent>
             <BEPTable
                 loading={recordCollectionInProgress}
-                totalNoRecords={this.totalNoRecords}
+                totalNoRecords={totalNoRecords}
                 noDataText={'No Companies Found'}
-                data={this.records}
+                data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
                 columns={[
@@ -433,6 +435,7 @@ class Company extends Component {
               color='primary'
               variant='contained'
               onClick={() => this.setState({
+                selectedRowIdx: -1,
                 activeState: events.startCreateNew,
                 selected: new CompanyEntity(),
               })}

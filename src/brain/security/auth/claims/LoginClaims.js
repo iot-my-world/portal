@@ -1,10 +1,10 @@
 import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
-import Base from 'brain/Base'
+import ClaimsBase from 'brain/security/auth/claims/Base'
 import {isObject} from 'utilities/type/index'
 import {Login} from './types'
 
-class LoginClaims extends Base {
+class LoginClaims extends ClaimsBase {
   static type = Login
 
   /**

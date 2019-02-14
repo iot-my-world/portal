@@ -13,9 +13,9 @@ import {parseToken} from 'utilities/token'
 import {User as UserEntity} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
-import {
-  RegisterCompanyAdminUser, RegisterClientAdminUser, Login,
-} from 'brain/security/auth/claims/types'
+// import {
+//   RegisterCompanyAdminUser, RegisterClientAdminUser, Login,
+// } from 'brain/security/auth/claims/types'
 
 const style = theme => {
   return {
@@ -55,6 +55,9 @@ const style = theme => {
       justifySelf: 'start',
       color: '#ffffff',
     },
+    cardHeaderRoot: {
+      paddingBottom: 0,
+    },
     formField: {
       width: '200px',
     },
@@ -89,7 +92,6 @@ const states = {
 
 const events = {
   init: states.parsingToken,
-  errorParsingLinkToJWT: states.invalidURL,
   jwtExpired: states.tokenExpired,
   passwordsDoNotMatch: states.passwordsDoNotMatch,
   passwordBlank: states.passwordBlank,
@@ -216,19 +218,19 @@ class RegisterUser extends Component {
       jwt = (new URLSearchParams(location.search)).get('t')
       if (!jwt) {
         console.error(`jwt is null`)
-        this.setState({activeState: events.errorParsingLinkToJWT})
+        this.handleBackToSite()
         return
       }
     } catch (e) {
       console.error(`error parsing url: ${e}`)
-      this.setState({activeState: events.errorParsingLinkToJWT})
+      this.handleBackToSite()
       return
     }
     try {
       registrationClaims = parseToken(jwt)
     } catch (e) {
       console.error(`error parsing token to claims: ${e}`)
-      this.setState({activeState: events.errorParsingLinkToJWT})
+      this.handleBackToSite()
       return
     }
     if (registrationClaims.notExpired) {
@@ -307,6 +309,7 @@ class RegisterUser extends Component {
               <Grid item>
                 <Card>
                   <CardHeader
+                      classes={{root: classes.cardHeaderRoot}}
                       title={'User Registration'}
                       titleTypographyProps={{color: 'primary', align: 'center'}}
                   />
@@ -466,6 +469,7 @@ class RegisterUser extends Component {
               <Grid item>
                 <Card>
                   <CardHeader
+                      classes={{root: classes.cardHeaderRoot}}
                       title={'Expired'}
                       titleTypographyProps={{color: 'error', align: 'center'}}
                   />

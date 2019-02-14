@@ -12,6 +12,7 @@ import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
+import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const style = theme => {
   return {
@@ -66,6 +67,9 @@ const style = theme => {
     },
     progressSpinnerDialogBackdrop: {
       // backgroundColor: 'transparent',
+    },
+    cardHeaderRoot: {
+      paddingBottom: 0,
     },
   }
 }
@@ -124,7 +128,10 @@ class Login extends Component {
       try {
         const claims = parseToken(result.jwt)
 
-        if (claims.notExpired) {
+        if (
+            claims.notExpired &&
+            (claims.type === LoginClaims.type)
+        ) {
           // otherwise the token is not expired
           // set the claims in redux state
           SetClaims(claims)
@@ -208,6 +215,7 @@ class Login extends Component {
                   <CardHeader
                       title={'Login'}
                       titleTypographyProps={{color: 'primary', align: 'center'}}
+                      classes={{root: classes.cardHeaderRoot}}
                   />
                   <CardContent>
                     <form onSubmit={this.handleLogin}>
