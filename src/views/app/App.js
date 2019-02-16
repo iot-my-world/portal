@@ -12,7 +12,10 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
+import LoadingScreen from './LoadingScreen'
 import AppRoutes, {HomeRoute} from './Routes'
+import PermissionHandler from 'brain/security/permission/handler/Handler'
+import {LoginClaims} from 'brain/security/auth/claims'
 
 const drawerWidth = 200
 
@@ -161,9 +164,20 @@ const AppHeaderRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
   return routes
 })
 
+const states = {
+  nop: 0,
+  loading: 1,
+}
+
+const events = {
+  init: states.loading,
+  doneLoading: states.nop,
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
+    this.setup = this.setup.bind(this)
     this.renderMobileDrawerAndToolbar =
         this.renderMobileDrawerAndToolbar.bind(this)
     this.renderDesktopDrawerAndToolbar =
@@ -192,7 +206,64 @@ class App extends Component {
       desktopDrawerOpen: true,
       menuState,
       route: HomeRoute,
+      activeState: events.init,
     }
+  }
+
+  componentDidMount() {
+    this.setup()
+  }
+
+  componentDidUpdate(prevProps, prevState, snapShot) {
+    const {
+      claims: prevClaims,
+      appDoneLoading: prevAppDoneLoading,
+    } = prevProps
+    const {
+      claims,
+      appDoneLoading,
+    } = this.props
+
+    if (
+        (prevClaims.notExpired !== claims.notExpired) &&
+        claims.notExpired
+    ) {
+      this.setup()
+      return
+    }
+
+    if (
+        (prevAppDoneLoading !== appDoneLoading)
+        && appDoneLoading
+    ) {
+      this.setState({activeState: events.doneLoading})
+    }
+  }
+
+  async setup() {
+    const {
+      claims,
+      SetViewPermissions,
+      AppDoneLoading,
+    } = this.props
+
+    // catch in case setup starts before claims are set
+    // when the claims are set later on componentDidUpdate will catch
+    // and start setup again
+    if (!claims.notExpired) {
+      return
+    }
+
+    try {
+      const response = await PermissionHandler.GetAllUsersViewPermissions(
+          claims.userId)
+      SetViewPermissions(response.permission)
+    } catch (e) {
+      console.error('error getting view permissions', e)
+    }
+
+    // all data for the app is done loading, indicate
+    AppDoneLoading()
   }
 
   toggleDesktopDrawer() {
@@ -236,10 +307,19 @@ class App extends Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {
+      classes,
+    } = this.props
+    const {
+      activeState,
+    } = this.state
 
-    return (
-        <div className={classes.route}>
+    switch (activeState) {
+      case states.loading:
+        return <LoadingScreen/>
+
+      default:
+        return <div className={classes.route}>
           <Hidden smDown>
             {this.renderDesktopDrawerAndToolbar()}
           </Hidden>
@@ -251,13 +331,13 @@ class App extends Component {
             <div className={classes.contentWrapper}>
               <div>
                 <Switch>
-                {AppContentRoutes}
+                  {AppContentRoutes}
                 </Switch>
               </div>
             </div>
           </div>
         </div>
-    )
+    }
   }
 
   renderDesktopDrawerAndToolbar() {
@@ -452,6 +532,22 @@ App.propTypes = {
    * Logout action creator
    */
   Logout: PropTypes.func.isRequired,
+  /**
+   * app.doneLoading piece of redux state
+   */
+  appDoneLoading: PropTypes.bool.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * AppDoneLoading action creator
+   */
+  AppDoneLoading: PropTypes.func.isRequired,
+  /**
+   * SetViewPermissions action creator
+   */
+  SetViewPermissions: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)

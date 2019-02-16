@@ -13,7 +13,6 @@ import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
-import PermissionHandler from 'brain/security/permission/handler/Handler'
 
 const style = theme => {
   return {
@@ -72,11 +71,6 @@ const style = theme => {
     cardHeaderRoot: {
       paddingBottom: 0,
     },
-    loadingAppCardContent: {
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      justifyItems: 'center'
-    }
   }
 }
 
@@ -85,7 +79,6 @@ const states = {
   loggingIn: 1,
   incorrectCredentials: 2,
   unableToContactServer: 3,
-  loadingApp: 4,
 }
 
 const events = {
@@ -93,14 +86,12 @@ const events = {
   logIn: states.loggingIn,
   loginFail: states.incorrectCredentials,
   serverContactError: states.unableToContactServer,
-  startLoadingAppContent: states.loadingApp,
 }
 
 class Login extends Component {
 
   state = {
     activeState: events.init,
-    // activeState: events.startLoadingAppContent,
     usernameOrEmailAddress: '',
     password: '',
   }
@@ -110,7 +101,6 @@ class Login extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
     this.errorMessage = this.errorMessage.bind(this)
-    this.loginCard = this.loginCard.bind(this)
   }
 
   handleInputChange(event) {
@@ -171,21 +161,9 @@ class Login extends Component {
       return
     }
 
-    this.setState({activeState: events.startLoadingAppContent})
-
-    // [3] get the view permissions
-    try {
-      const response = await PermissionHandler.GetAllUsersViewPermissions(claims.userId)
-      console.log('response!', response)
-    } catch (e) {
-      console.error('error getting view permissions', e)
-    }
-
-    // Load App Content
-
     // Finally set the claims which will cause root to navigate
     // to the app
-    // SetClaims(claims)
+    SetClaims(claims)
   }
 
   errorMessage() {
@@ -203,7 +181,7 @@ class Login extends Component {
     }
   }
 
-  loginCard() {
+  render() {
     const {
       classes,
     } = this.props
@@ -215,89 +193,6 @@ class Login extends Component {
 
     const errorState = (activeState === states.incorrectCredentials) ||
         (activeState === states.unableToContactServer)
-
-    switch (activeState) {
-      case states.loadingApp:
-        return <Card>
-          <CardHeader
-              title={'Loading App'}
-              titleTypographyProps={{color: 'primary', align: 'center'}}
-              classes={{root: classes.cardHeaderRoot}}
-          />
-          <CardContent>
-            <div className={classes.loadingAppCardContent}>
-              <Spinner isLoading/>
-            </div>
-          </CardContent>
-        </Card>
-      case states.nop:
-      case states.loggingIn:
-      case states.incorrectCredentials:
-      case states.unableToContactServer:
-      default:
-        return <Card>
-          <CardHeader
-              title={'Login'}
-              titleTypographyProps={{color: 'primary', align: 'center'}}
-              classes={{root: classes.cardHeaderRoot}}
-          />
-          <CardContent>
-            <form onSubmit={this.handleLogin}>
-              <Grid container direction={'column'} alignItems={'center'}
-                    spacing={8}>
-                <Grid item>
-                  <FormControl className={classes.formField}>
-                    <TextField
-                        id='usernameOrEmailAddress'
-                        label='Username or Email Address'
-                        autoComplete='username'
-                        value={usernameOrEmailAddress}
-                        onChange={this.handleInputChange}
-                        error={errorState}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item>
-                  <FormControl className={classes.formField}>
-                    <TextField
-                        id='password'
-                        label='Password'
-                        type='password'
-                        autoComplete='current-password'
-                        value={password}
-                        onChange={this.handleInputChange}
-                        error={errorState}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item>
-                  <Button
-                      className={classes.button}
-                      type={'submit'}
-                  >
-                    Login
-                  </Button>
-                </Grid>
-                {errorState &&
-                <Grid item>
-                  <Typography color={'error'}>
-                    {this.errorMessage()}
-                  </Typography>
-                </Grid>}
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-    }
-  }
-
-  render() {
-    const {
-      classes,
-    } = this.props
-    const {
-      activeState,
-    } = this.state
 
     return <div
         className={classes.fullPageBackground}
@@ -313,7 +208,59 @@ class Login extends Component {
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
-            {this.loginCard()}
+            <Card>
+              <CardHeader
+                  title={'Login'}
+                  titleTypographyProps={{color: 'primary', align: 'center'}}
+                  classes={{root: classes.cardHeaderRoot}}
+              />
+              <CardContent>
+                <form onSubmit={this.handleLogin}>
+                  <Grid container direction={'column'} alignItems={'center'}
+                        spacing={8}>
+                    <Grid item>
+                      <FormControl className={classes.formField}>
+                        <TextField
+                            id='usernameOrEmailAddress'
+                            label='Username or Email Address'
+                            autoComplete='username'
+                            value={usernameOrEmailAddress}
+                            onChange={this.handleInputChange}
+                            error={errorState}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <FormControl className={classes.formField}>
+                        <TextField
+                            id='password'
+                            label='Password'
+                            type='password'
+                            autoComplete='current-password'
+                            value={password}
+                            onChange={this.handleInputChange}
+                            error={errorState}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                          className={classes.button}
+                          type={'submit'}
+                      >
+                        Login
+                      </Button>
+                    </Grid>
+                    {errorState &&
+                    <Grid item>
+                      <Typography color={'error'}>
+                        {this.errorMessage()}
+                      </Typography>
+                    </Grid>}
+                  </Grid>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
