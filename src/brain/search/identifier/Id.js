@@ -1,8 +1,8 @@
 import {Id as IdIdentifier} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
-import Base from 'brain/Base'
+import BaseIdentifier from './Base'
 
-export default class Id extends Base {
+export default class Id extends BaseIdentifier {
   static identifierType = IdIdentifier
 
   /**
@@ -39,19 +39,7 @@ export default class Id extends Base {
     }
   }
 
-  get value() {
-    return this._value
-  }
-
   get id() {
     return this._value.id
-  }
-
-  toPOJO(){
-    return this._value
-  }
-
-  toWrapped(){
-    return super.toPOJO()
   }
 }

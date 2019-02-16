@@ -1,8 +1,8 @@
 import {AdminEmailAddress as AdminEmailAddressIdentifier} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
-import Base from 'brain/Base'
+import BaseIdentifier from './Base'
 
-export default class AdminEmailAddress extends Base {
+export default class AdminEmailAddress extends BaseIdentifier {
   static identifierType = AdminEmailAddressIdentifier
 
   /**
@@ -37,10 +37,6 @@ export default class AdminEmailAddress extends Base {
         throw new TypeError('invalid arg passed to AdminEmailAddress identifier constructor')
       }
     }
-  }
-
-  get value() {
-    return this._value
   }
 
   get adminEmailAddress() {

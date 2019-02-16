@@ -13,6 +13,7 @@ import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import PermissionHandler from 'brain/security/permission/handler/Handler'
 
 const style = theme => {
   return {
@@ -98,8 +99,8 @@ const events = {
 class Login extends Component {
 
   state = {
-    // activeState: events.init,
-    activeState: events.startLoadingAppContent,
+    activeState: events.init,
+    // activeState: events.startLoadingAppContent,
     usernameOrEmailAddress: '',
     password: '',
   }
@@ -171,6 +172,14 @@ class Login extends Component {
     }
 
     this.setState({activeState: events.startLoadingAppContent})
+
+    // [3] get the view permissions
+    try {
+      const response = await PermissionHandler.GetAllUsersViewPermissions(claims.userId)
+      console.log('response!', response)
+    } catch (e) {
+      console.error('error getting view permissions', e)
+    }
 
     // Load App Content
 
