@@ -71,6 +71,11 @@ const style = theme => {
     cardHeaderRoot: {
       paddingBottom: 0,
     },
+    loadingAppCardContent: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      justifyItems: 'center'
+    }
   }
 }
 
@@ -79,6 +84,7 @@ const states = {
   loggingIn: 1,
   incorrectCredentials: 2,
   unableToContactServer: 3,
+  loadingApp: 4,
 }
 
 const events = {
@@ -86,12 +92,14 @@ const events = {
   logIn: states.loggingIn,
   loginFail: states.incorrectCredentials,
   serverContactError: states.unableToContactServer,
+  startLoadingAppContent: states.loadingApp,
 }
 
 class Login extends Component {
 
   state = {
-    activeState: events.init,
+    // activeState: events.init,
+    activeState: events.startLoadingAppContent,
     usernameOrEmailAddress: '',
     password: '',
   }
@@ -101,6 +109,7 @@ class Login extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
     this.errorMessage = this.errorMessage.bind(this)
+    this.loginCard = this.loginCard.bind(this)
   }
 
   handleInputChange(event) {
@@ -110,7 +119,7 @@ class Login extends Component {
     })
   }
 
-  handleLogin(submitEvent) {
+  async handleLogin(submitEvent) {
     submitEvent.preventDefault()
     const {
       usernameOrEmailAddress,
@@ -118,52 +127,56 @@ class Login extends Component {
     } = this.state
     const {
       SetClaims,
-      history,
     } = this.props
 
     this.setState({activeState: events.logIn})
 
-    LoginService.Login(usernameOrEmailAddress, password).then(result => {
-      // parse the claims and set them in redux
-      try {
-        const claims = parseToken(result.jwt)
-
-        if (
-            claims.notExpired &&
-            (claims.type === LoginClaims.type)
-        ) {
-          // otherwise the token is not expired
-          // set the claims in redux state
-          SetClaims(claims)
-          // and set the token in local storage
-          sessionStorage.setItem('jwt', result.jwt)
-        } else {
-          // if the token is expired clear the token state
-          sessionStorage.setItem('jwt', null)
-          console.error('given token is expired!')
-          return
-        }
-      } catch (e) {
-        console.error(`error parsing claims and setting redux: ${e}`)
-      }
-
-      // navigate the browser to the app
-      try {
-        history.push('/app')
-      } catch (e) {
-        console.error(`error navigating the browser to the app: ${e}`)
-      }
-    }).catch(err => {
+    // [1] Login
+    let loginResult
+    try {
+      loginResult = await LoginService.Login(usernameOrEmailAddress, password)
+    } catch (error) {
       switch (true) {
-        case err instanceof MethodFailed:
+        case error instanceof MethodFailed:
           this.setState({activeState: events.loginFail})
           break
-        case err instanceof ContactFailed:
+        case error instanceof ContactFailed:
         default:
           this.setState({activeState: events.serverContactError})
       }
-    })
+      return
+    }
 
+    // [2] If login was successful
+    let claims
+    try {
+      claims = parseToken(loginResult.jwt)
+
+      if (
+          claims.notExpired &&
+          (claims.type === LoginClaims.type)
+      ) {
+        // and set the token in local storage
+        sessionStorage.setItem('jwt', loginResult.jwt)
+      } else {
+        // if the token is expired clear the token state
+        sessionStorage.setItem('jwt', null)
+        console.error('given token is expired!')
+        return
+      }
+    } catch (e) {
+      console.error(`error parsing claims and setting redux: ${e}`)
+      this.setState({activeState: events.loginFail})
+      return
+    }
+
+    this.setState({activeState: events.startLoadingAppContent})
+
+    // Load App Content
+
+    // Finally set the claims which will cause root to navigate
+    // to the app
+    // SetClaims(claims)
   }
 
   errorMessage() {
@@ -181,7 +194,7 @@ class Login extends Component {
     }
   }
 
-  render() {
+  loginCard() {
     const {
       classes,
     } = this.props
@@ -194,12 +207,94 @@ class Login extends Component {
     const errorState = (activeState === states.incorrectCredentials) ||
         (activeState === states.unableToContactServer)
 
+    switch (activeState) {
+      case states.loadingApp:
+        return <Card>
+          <CardHeader
+              title={'Loading App'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <div className={classes.loadingAppCardContent}>
+              <Spinner isLoading/>
+            </div>
+          </CardContent>
+        </Card>
+      case states.nop:
+      case states.loggingIn:
+      case states.incorrectCredentials:
+      case states.unableToContactServer:
+      default:
+        return <Card>
+          <CardHeader
+              title={'Login'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <form onSubmit={this.handleLogin}>
+              <Grid container direction={'column'} alignItems={'center'}
+                    spacing={8}>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='usernameOrEmailAddress'
+                        label='Username or Email Address'
+                        autoComplete='username'
+                        value={usernameOrEmailAddress}
+                        onChange={this.handleInputChange}
+                        error={errorState}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='password'
+                        label='Password'
+                        type='password'
+                        autoComplete='current-password'
+                        value={password}
+                        onChange={this.handleInputChange}
+                        error={errorState}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <Button
+                      className={classes.button}
+                      type={'submit'}
+                  >
+                    Login
+                  </Button>
+                </Grid>
+                {errorState &&
+                <Grid item>
+                  <Typography color={'error'}>
+                    {this.errorMessage()}
+                  </Typography>
+                </Grid>}
+              </Grid>
+            </form>
+          </CardContent>
+        </Card>
+    }
+  }
+
+  render() {
+    const {
+      classes,
+    } = this.props
+    const {
+      activeState,
+    } = this.state
+
     return <div
         className={classes.fullPageBackground}
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
-        <div/>
         <div className={classes.contentWrapper}>
           <div className={classes.titleInnerWrapper}>
             <img className={classes.logo} src={logo} alt={'logo'}/>
@@ -209,63 +304,7 @@ class Login extends Component {
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
-            <Grid container>
-              <Grid item>
-                <Card>
-                  <CardHeader
-                      title={'Login'}
-                      titleTypographyProps={{color: 'primary', align: 'center'}}
-                      classes={{root: classes.cardHeaderRoot}}
-                  />
-                  <CardContent>
-                    <form onSubmit={this.handleLogin}>
-                      <Grid container direction={'column'} alignItems={'center'}
-                            spacing={8}>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='usernameOrEmailAddress'
-                                label='Username or Email Address'
-                                autoComplete='username'
-                                value={usernameOrEmailAddress}
-                                onChange={this.handleInputChange}
-                                error={errorState}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='password'
-                                label='Password'
-                                type='password'
-                                autoComplete='current-password'
-                                value={password}
-                                onChange={this.handleInputChange}
-                                error={errorState}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <Button
-                              className={classes.button}
-                              type={'submit'}
-                          >
-                            Login
-                          </Button>
-                        </Grid>
-                        {errorState &&
-                        <Grid item>
-                          <Typography color={'error'}>
-                            {this.errorMessage()}
-                          </Typography>
-                        </Grid>}
-                      </Grid>
-                    </form>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            {this.loginCard()}
           </div>
         </div>
       </div>
@@ -285,9 +324,5 @@ let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  /**
-   * react-router function
-   */
-  history: PropTypes.object.isRequired,
 }
 export default StyledLogin
