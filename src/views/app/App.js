@@ -13,7 +13,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import LoadingScreen from './LoadingScreen'
-import AppRoutes, {HomeRoute} from './Routes'
+import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
 import {LoginClaims} from 'brain/security/auth/claims'
 
@@ -100,69 +100,71 @@ const styles = theme => ({
   },
 })
 
-const AppContentRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
-  let routes = []
-  routeSection.forEach(
-      (routeGroupOrRoute, routeGroupOrRouteIdx) => {
-        if (routeGroupOrRoute.group) {
-          let embeddedRoutes = []
-          routeGroupOrRoute.routes.forEach(
-              (route, routeIdx) => {
-                if (route.component !== undefined) {
-                  embeddedRoutes.push(<Route
-                      key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
-                      exact
-                      path={route.path}
-                      render={props => <route.component {...props}/>}
-                  />)
-                }
-              })
-          routes = [...routes, ...embeddedRoutes]
-        } else {
-          if (routeGroupOrRoute.component !== undefined) {
-            routes.push(<Route
-                key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                exact
-                path={routeGroupOrRoute.path}
-                render={props => <routeGroupOrRoute.component {...props}/>}
-            />)
-          }
-        }
-      })
-  return routes
-})
+const buildContentRoutes = appRoutes => appRoutes.map(
+    (routeSection, routeSectionIdx) => {
+      let routes = []
+      routeSection.forEach(
+          (routeGroupOrRoute, routeGroupOrRouteIdx) => {
+            if (routeGroupOrRoute.group) {
+              let embeddedRoutes = []
+              routeGroupOrRoute.routes.forEach(
+                  (route, routeIdx) => {
+                    if (route.component !== undefined) {
+                      embeddedRoutes.push(<Route
+                          key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
+                          exact
+                          path={route.path}
+                          render={props => <route.component {...props}/>}
+                      />)
+                    }
+                  })
+              routes = [...routes, ...embeddedRoutes]
+            } else {
+              if (routeGroupOrRoute.component !== undefined) {
+                routes.push(<Route
+                    key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
+                    exact
+                    path={routeGroupOrRoute.path}
+                    render={props => <routeGroupOrRoute.component {...props}/>}
+                />)
+              }
+            }
+          })
+      return routes
+    })
 
-const AppHeaderRoutes = AppRoutes.map((routeSection, routeSectionIdx) => {
-  let routes = []
-  routeSection.forEach(
-      (routeGroupOrRoute, routeGroupOrRouteIdx) => {
-        if (routeGroupOrRoute.group) {
-          let embeddedRoutes = []
-          routeGroupOrRoute.routes.forEach(
-              (route, routeIdx) => {
-                if (route.component !== undefined) {
-                  embeddedRoutes.push(<Route
-                      key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
-                      exact
-                      path={route.path}
-                      render={() => route.text}
-                  />)
-                }
-              })
-          routes = [...routes, ...embeddedRoutes]
-        } else {
-          if (routeGroupOrRoute.component !== undefined) {
-            routes.push(<Route
-                key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                exact
-                path={routeGroupOrRoute.path}
-                render={() => routeGroupOrRoute.text}
-            />)
-          }
-        }
-      })
-  return routes
-})
+const buildAppHeaderRoutes = appRoutes => appRoutes.map(
+    (routeSection, routeSectionIdx) => {
+      let routes = []
+      routeSection.forEach(
+          (routeGroupOrRoute, routeGroupOrRouteIdx) => {
+            if (routeGroupOrRoute.group) {
+              let embeddedRoutes = []
+              routeGroupOrRoute.routes.forEach(
+                  (route, routeIdx) => {
+                    if (route.component !== undefined) {
+                      embeddedRoutes.push(<Route
+                          key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
+                          exact
+                          path={route.path}
+                          render={() => route.text}
+                      />)
+                    }
+                  })
+              routes = [...routes, ...embeddedRoutes]
+            } else {
+              if (routeGroupOrRoute.component !== undefined) {
+                routes.push(<Route
+                    key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
+                    exact
+                    path={routeGroupOrRoute.path}
+                    render={() => routeGroupOrRoute.text}
+                />)
+              }
+            }
+          })
+      return routes
+    })
 
 const states = {
   nop: 0,
@@ -188,26 +190,18 @@ class App extends Component {
     this.toggleMenuState = this.toggleMenuState.bind(this)
     this.changePath = this.changePath.bind(this)
 
-    let menuState = {}
-    AppRoutes.forEach((routeSection, routeSectionIdx) => {
-      if (!menuState.hasOwnProperty(`${routeSectionIdx}`)) {
-        menuState[`${routeSectionIdx}`] = {}
-      }
-      routeSection.forEach((routeGroupOrRoute, routeGroupOrRouteIdx) => {
-        if (routeGroupOrRoute.group) {
-          menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] = false
-        }
-      })
-    })
-
     this.state = {
       open: true,
       mobileDrawerOpen: false,
       desktopDrawerOpen: true,
-      menuState,
+      menuState: {},
       route: HomeRoute,
       activeState: events.init,
     }
+
+    this.appRoutes = []
+    this.appContentRoutes = []
+    this.appHeaderRoutes = []
   }
 
   componentDidMount() {
@@ -239,6 +233,7 @@ class App extends Component {
       this.setState({activeState: events.doneLoading})
     }
   }
+
   async setup() {
     const {
       claims,
@@ -254,12 +249,37 @@ class App extends Component {
       return
     }
 
+    let viewPermissions = []
     try {
       const response = await PermissionHandler.GetAllUsersViewPermissions(
           claims.userId)
+      // update view permissions in state
       SetViewPermissions(response.permission)
+      viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+    }
+
+    try {
+      // build app routes
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions)
+      console.log('app routes!', this.appRoutes)
+      this.appContentRoutes = buildContentRoutes(this.appRoutes)
+      this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
+      let menuState = {}
+      this.appRoutes.forEach((routeSection, routeSectionIdx) => {
+        if (!menuState.hasOwnProperty(`${routeSectionIdx}`)) {
+          menuState[`${routeSectionIdx}`] = {}
+        }
+        routeSection.forEach((routeGroupOrRoute, routeGroupOrRouteIdx) => {
+          if (routeGroupOrRoute.group) {
+            menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] = false
+          }
+        })
+      })
+      this.setState({menuState})
+    } catch (e) {
+      console.error('error building app routes', e)
     }
 
     // all data for the app is done loading, indicate
@@ -331,7 +351,7 @@ class App extends Component {
             <div className={classes.contentWrapper}>
               <div>
                 <Switch>
-                  {AppContentRoutes}
+                  {this.appContentRoutes}
                 </Switch>
               </div>
             </div>
@@ -364,7 +384,7 @@ class App extends Component {
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
             <Switch>
-              {AppHeaderRoutes}
+              {this.appHeaderRoutes}
             </Switch>
           </Typography>
         </Toolbar>
@@ -420,7 +440,7 @@ class App extends Component {
           </IconButton>
           <Typography variant='h6' color='inherit' noWrap>
             <Switch>
-              {AppHeaderRoutes}
+              {this.appHeaderRoutes}
             </Switch>
           </Typography>
         </Toolbar>
@@ -461,7 +481,7 @@ class App extends Component {
 
     const {menuState} = this.state
     return <React.Fragment>
-      {AppRoutes.map((routeSection, routeSectionIdx) => {
+      {this.appRoutes.map((routeSection, routeSectionIdx) => {
         return <React.Fragment key={`${routeSectionIdx}`}>
           <List>
             {routeSection.map((routeGroupOrRoute, routeGroupOrRouteIdx) => {
