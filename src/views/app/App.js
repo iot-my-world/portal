@@ -263,7 +263,6 @@ class App extends Component {
     try {
       // build app routes
       this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions)
-      console.log('app routes!', this.appRoutes)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
