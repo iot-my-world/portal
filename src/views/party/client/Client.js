@@ -17,6 +17,7 @@ import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
+import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const styles = theme => ({
   formField: {
@@ -79,12 +80,28 @@ class Client extends Component {
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
+    this.handleCreateNew = this.handleCreateNew.bind(this)
     this.collectTimeout = () => {
     }
   }
 
   componentDidMount() {
     this.collect()
+  }
+
+  handleCreateNew() {
+    const {
+      claims,
+    } = this.props
+    let newClientEntity = new ClientEntity()
+    newClientEntity.parentId = claims.partyId
+    newClientEntity.parentPartyType = claims.partyType
+
+    this.setState({
+      selectedRowIdx: -1,
+      activeState: events.startCreateNew,
+      selected: newClientEntity,
+    })
   }
 
   handleChange(event) {
@@ -323,10 +340,7 @@ class Client extends Component {
                 size='small'
                 color='primary'
                 variant='contained'
-                onClick={() => this.setState({
-                  activeState: events.startCreateNew,
-                  selected: new ClientEntity(),
-                })}
+                onClick={this.handleCreateNew}
             >
               Create New
             </Button>
@@ -482,6 +496,10 @@ Client.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 Client.defaultProps = {}

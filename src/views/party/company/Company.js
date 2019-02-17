@@ -17,6 +17,7 @@ import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
+import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const styles = theme => ({
   formField: {
@@ -86,6 +87,21 @@ class Company extends Component {
 
   componentDidMount() {
     this.collect()
+  }
+
+  handleCreateNew() {
+    const {
+      claims,
+    } = this.props
+    let newCompanyEntity = new CompanyEntity()
+    newCompanyEntity.parentId = claims.partyId
+    newCompanyEntity.parentPartyType = claims.partyType
+
+    this.setState({
+      selectedRowIdx: -1,
+      activeState: events.startCreateNew,
+      selected: newCompanyEntity,
+    })
   }
 
   handleChange(event) {
@@ -285,25 +301,6 @@ class Company extends Component {
     </Grid>
   }
 
-  handleCreateNew() {
-    const {
-      claims,
-    } = this.props
-    console.log('handle create new!!!')
-    let newCompanyEntity = new CompanyEntity()
-    newCompanyEntity.parentId = claims.partyId
-    newCompanyEntity.parentPartyType = claims.partyType
-
-    console.log('create new!', newCompanyEntity)
-    console.log('claims!', claims)
-
-    this.setState({
-      selectedRowIdx: -1,
-      activeState: events.startCreateNew,
-      selected: newCompanyEntity,
-    })
-  }
-
   renderCompanyDetails() {
     const {
       isLoading,
@@ -495,6 +492,10 @@ Company.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 Company.defaultProps = {}
