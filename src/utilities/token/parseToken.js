@@ -1,5 +1,5 @@
 import {
-  LoginClaims, RegisterCompanyAdminUserClaims,
+  LoginClaims, RegisterCompanyAdminUserClaims, RegisterClientAdminUserClaims,
 } from 'brain/security/auth/claims/index'
 import {isString} from 'utilities/type/type'
 
@@ -20,6 +20,9 @@ export function parseToken(jwt) {
 
       case RegisterCompanyAdminUserClaims.type:
         return new RegisterCompanyAdminUserClaims(tokenPOJO.value)
+
+      case RegisterClientAdminUserClaims.type:
+        return new RegisterClientAdminUserClaims(tokenPOJO.value)
 
       default:
         throw new TypeError(

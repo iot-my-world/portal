@@ -7,6 +7,9 @@ import {
 } from 'brain/search/identifier'
 import UserRecordHandler from './RecordHandler'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
+import {
+  Client, Company,
+} from 'brain/party/types'
 
 export default class User extends Base {
   static ignoreInPost = [
@@ -160,7 +163,14 @@ export default class User extends Base {
   registerAsAdmin(){
     const password = this._password
     this._password = ''
-    return PartyRegistrar.RegisterCompanyAdminUser(this, password)
+    switch (this._partyType) {
+      case Company:
+        return PartyRegistrar.RegisterCompanyAdminUser(this, password)
+      case Client:
+        return PartyRegistrar.RegisterClientAdminUser(this, password)
+      default:
+        throw new TypeError(`invalid party type, cannot register admin user: ${this._partyType}`)
+    }
   }
 
   get identifier() {

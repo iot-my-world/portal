@@ -13,9 +13,6 @@ import {parseToken} from 'utilities/token'
 import {User as UserEntity} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
-// import {
-//   RegisterCompanyAdminUser, RegisterClientAdminUser, Login,
-// } from 'brain/security/auth/claims/types'
 
 const style = theme => {
   return {
@@ -149,7 +146,7 @@ class RegisterUser extends Component {
     }
   }
 
-  handleRegister() {
+  async handleRegister() {
     const {
       user,
       confirmPassword,
@@ -163,36 +160,36 @@ class RegisterUser extends Component {
     if (user.password !== confirmPassword) {
       this.setState({activeState: events.passwordsDoNotMatch})
       return
-    } else if (user.password === "") {
+    } else if (user.password === '') {
       this.setState({activeState: events.passwordBlank})
     }
 
-    // if so attempt to validate and then register
+    // validate the new user for create
+    let reasonsInvalid
     try {
       this.setState({isLoading: true})
-      user.validate('Create').then(reasonsInvalid => {
-        if (reasonsInvalid.count > 0) {
-          this.reasonsInvalid = reasonsInvalid
-          this.setState({isLoading: false})
-        } else {
-          user.registerAsAdmin().then(() => {
-            NotificationSuccess('Successfully Registered User')
-            this.setState({isLoading: false})
-            this.handleBackToSite()
-          }).catch(error => {
-            console.error('Error Registering User', error)
-            NotificationFailure('Error Registering User')
-            this.setState({isLoading: false})
-          })
-        }
-      }).catch(error => {
-        console.error('Error Validating User', error)
-        NotificationFailure('Error Validating User')
+      reasonsInvalid = await user.validate('Create')
+    } catch (error) {
+      console.error('Error Validating User', error)
+      NotificationFailure('Error Validating User')
+      this.setState({isLoading: false})
+    }
+
+    // if no reasons invalid then register
+    try {
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
         this.setState({isLoading: false})
-      })
+      } else {
+        await user.registerAsAdmin()
+        NotificationSuccess('Successfully Registered User')
+        this.setState({isLoading: false})
+        this.handleBackToSite()
+      }
     } catch (error) {
       console.error('Error Registering User', error)
       NotificationFailure('Error Registering User')
+      this.setState({isLoading: false})
     }
   }
 
@@ -242,7 +239,7 @@ class RegisterUser extends Component {
       user.partyId = registrationClaims.partyId
       this.setState({
         user,
-        activeState: events.tokenParsed
+        activeState: events.tokenParsed,
       })
     } else {
       sessionStorage.setItem('jwt', null)
@@ -250,15 +247,15 @@ class RegisterUser extends Component {
     }
   }
 
-  passwordMessage(){
+  passwordMessage() {
     const {
       activeState,
     } = this.state
     switch (activeState) {
       case states.passwordsDoNotMatch:
-        return "do not match"
+        return 'do not match'
       case states.passwordBlank:
-        return "cannot be blank"
+        return 'cannot be blank'
       default:
         return undefined
     }
