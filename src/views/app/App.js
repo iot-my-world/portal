@@ -239,7 +239,6 @@ class App extends Component {
       this.setState({activeState: events.doneLoading})
     }
   }
-
   async setup() {
     const {
       claims,
@@ -251,6 +250,7 @@ class App extends Component {
     // when the claims are set later on componentDidUpdate will catch
     // and start setup again
     if (!claims.notExpired) {
+
       return
     }
 
