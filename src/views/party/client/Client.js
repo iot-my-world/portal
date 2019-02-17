@@ -4,14 +4,14 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
-import DomainIcon from '@material-ui/icons/Domain'
+import PeopleIcon from '@material-ui/icons/People'
 import {
   BEPTable,
 } from 'components/table'
 import {
-  Company as CompanyEntity,
-  RecordHandler as CompanyRecordHandler,
-} from 'brain/party/company'
+  Client as ClientEntity,
+  RecordHandler as ClientRecordHandler,
+} from 'brain/party/client'
 import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
@@ -27,7 +27,7 @@ const styles = theme => ({
     margin: 2,
   },
   detailCard: {},
-  companyIcon: {
+  clientIcon: {
     fontSize: 100,
     color: theme.palette.primary.main,
   },
@@ -52,13 +52,13 @@ const events = {
   startEditExisting: states.editingExisting,
 }
 
-class Company extends Component {
+class Client extends Component {
 
   state = {
     recordCollectionInProgress: false,
     isLoading: false,
     activeState: events.init,
-    selected: new CompanyEntity(),
+    selected: new ClientEntity(),
     selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
@@ -72,7 +72,7 @@ class Company extends Component {
   constructor(props) {
     super(props)
     this.renderControls = this.renderControls.bind(this)
-    this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
+    this.renderClientDetails = this.renderClientDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
@@ -112,23 +112,23 @@ class Company extends Component {
           this.setState({isLoading: false})
         } else {
           selected.create().then(() => {
-            NotificationSuccess('Successfully Created Company')
+            NotificationSuccess('Successfully Created Client')
             this.setState({activeState: events.createNewSuccess})
             this.collect()
           }).catch(error => {
-            console.error('Error Creating Company', error)
-            NotificationFailure('Error Creating Company')
+            console.error('Error Creating Client', error)
+            NotificationFailure('Error Creating Client')
           }).finally(() => {
             this.setState({isLoading: false})
           })
         }
       }).catch(error => {
-        console.error('Error Validating Company', error)
-        NotificationFailure('Error Validating Company')
+        console.error('Error Validating Client', error)
+        NotificationFailure('Error Validating Client')
         this.setState({isLoading: false})
       })
     } catch (error) {
-      console.error('Error Creating Company', error)
+      console.error('Error Creating Client', error)
     }
   }
 
@@ -138,7 +138,7 @@ class Company extends Component {
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
+    ClientRecordHandler.Collect(this.collectCriteria, this.collectQuery)
         .then(response => {
           this.setState({
             records: response.records,
@@ -147,7 +147,7 @@ class Company extends Component {
         })
         .catch(error => {
           console.error(`error collecting records: ${error}`)
-          NotificationFailure('Failed To Fetch Companies')
+          NotificationFailure('Failed To Fetch Clients')
         })
         .finally(() => {
           this.setState({recordCollectionInProgress: false})
@@ -160,7 +160,7 @@ class Company extends Component {
     this.collectTimeout = setTimeout(this.collect, 300)
     this.setState({
       activeState: events.init,
-      selected: new CompanyEntity(),
+      selected: new ClientEntity(),
       selectedRowIdx: -1,
     })
   }
@@ -168,7 +168,7 @@ class Company extends Component {
   handleSelect(rowRecordObj, rowIdx) {
     this.setState({
       selectedRowIdx: rowIdx,
-      selected: new CompanyEntity(rowRecordObj),
+      selected: new ClientEntity(rowRecordObj),
       activeState: events.selectExisting,
     })
   }
@@ -183,11 +183,11 @@ class Company extends Component {
     } = this.props
 
     this.setState({isLoading: true})
-    PartyRegistrar.InviteCompanyAdminUser(selected.identifier).then(() => {
-      NotificationSuccess('Successfully Invited Company Admin User')
+    PartyRegistrar.InviteClientAdminUser(selected.identifier).then(() => {
+      NotificationSuccess('Successfully Invited Client Admin User')
     }).catch(error => {
-      console.error('Failed to Invite Company Admin User', error)
-      NotificationFailure('Failed to Invite Company Admin User')
+      console.error('Failed to Invite Client Admin User', error)
+      NotificationFailure('Failed to Invite Client Admin User')
     }).finally(() => {
       this.setState({isLoading: false})
     })
@@ -217,7 +217,7 @@ class Company extends Component {
           <Grid item>
             <Card className={classes.detailCard}>
               <CardContent>
-                {this.renderCompanyDetails()}
+                {this.renderClientDetails()}
               </CardContent>
               {this.renderControls()}
             </Card>
@@ -230,7 +230,7 @@ class Company extends Component {
             <BEPTable
                 loading={recordCollectionInProgress}
                 totalNoRecords={totalNoRecords}
-                noDataText={'No Companies Found'}
+                noDataText={'No Clients Found'}
                 data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
@@ -284,7 +284,7 @@ class Company extends Component {
     </Grid>
   }
 
-  renderCompanyDetails() {
+  renderClientDetails() {
     const {
       isLoading,
       activeState,
@@ -312,11 +312,11 @@ class Company extends Component {
                 align={'center'}
                 color={'primary'}
             >
-              Select A Company to View or Edit
+              Select A Client to View or Edit
             </Typography>
           </Grid>
           <Grid item>
-            <DomainIcon className={classes.companyIcon}/>
+            <PeopleIcon className={classes.clientIcon}/>
           </Grid>
           <Grid item>
             <Button
@@ -325,7 +325,7 @@ class Company extends Component {
                 variant='contained'
                 onClick={() => this.setState({
                   activeState: events.startCreateNew,
-                  selected: new CompanyEntity(),
+                  selected: new ClientEntity(),
                 })}
             >
               Create New
@@ -437,7 +437,7 @@ class Company extends Component {
               onClick={() => this.setState({
                 selectedRowIdx: -1,
                 activeState: events.startCreateNew,
-                selected: new CompanyEntity(),
+                selected: new ClientEntity(),
               })}
           >
             Create New
@@ -471,9 +471,9 @@ class Company extends Component {
   }
 }
 
-Company = withStyles(styles, {withTheme: true})(Company)
+Client = withStyles(styles, {withTheme: true})(Client)
 
-Company.propTypes = {
+Client.propTypes = {
   /**
    * Success Action Creator
    */
@@ -484,6 +484,6 @@ Company.propTypes = {
   NotificationFailure: PropTypes.func.isRequired,
 }
 
-Company.defaultProps = {}
+Client.defaultProps = {}
 
-export default Company
+export default Client
