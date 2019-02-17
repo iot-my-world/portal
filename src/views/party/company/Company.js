@@ -79,6 +79,7 @@ class Company extends Component {
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
+    this.handleCreateNew = this.handleCreateNew.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -284,6 +285,25 @@ class Company extends Component {
     </Grid>
   }
 
+  handleCreateNew() {
+    const {
+      claims,
+    } = this.props
+    console.log('handle create new!!!')
+    let newCompanyEntity = new CompanyEntity()
+    newCompanyEntity.parentId = claims.partyId
+    newCompanyEntity.parentPartyType = claims.partyType
+
+    console.log('create new!', newCompanyEntity)
+    console.log('claims!', claims)
+
+    this.setState({
+      selectedRowIdx: -1,
+      activeState: events.startCreateNew,
+      selected: newCompanyEntity,
+    })
+  }
+
   renderCompanyDetails() {
     const {
       isLoading,
@@ -323,10 +343,7 @@ class Company extends Component {
                 size='small'
                 color='primary'
                 variant='contained'
-                onClick={() => this.setState({
-                  activeState: events.startCreateNew,
-                  selected: new CompanyEntity(),
-                })}
+                onClick={this.handleCreateNew}
             >
               Create New
             </Button>
@@ -434,11 +451,7 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                selectedRowIdx: -1,
-                activeState: events.startCreateNew,
-                selected: new CompanyEntity(),
-              })}
+              onClick={this.handleCreateNew}
           >
             Create New
           </Button>

@@ -228,6 +228,7 @@ class RegisterUser extends Component {
     }
     try {
       registrationClaims = parseToken(jwt)
+      console.log('registration claims:', registrationClaims)
     } catch (e) {
       console.error(`error parsing token to claims: ${e}`)
       this.handleBackToSite()

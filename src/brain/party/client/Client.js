@@ -1,12 +1,12 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
-import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
   IdIdentifier,
   AdminEmailAddressIdentifier,
 } from 'brain/search/identifier'
 
-export default class Company extends Base {
+export default class Client extends Base {
   /**
    * @type {string}
    * @private
@@ -38,26 +38,26 @@ export default class Company extends Base {
   _parentId = new IdIdentifier()
 
   /**
-   * construct a new Company Object
-   * @param {Company|Object} [company]
+   * construct a new Client Object
+   * @param {Client|Object} [client]
    */
-  constructor(company) {
+  constructor(client) {
     super()
     if (
-        (company !== undefined) &&
+        (client !== undefined) &&
         (
-            (company instanceof Company) ||
-            isObject(company)
+            (client instanceof Client) ||
+            isObject(client)
         )
     ) {
       try {
-        this._id = company.id
-        this._name = company.name
-        this._adminEmailAddress = company.adminEmailAddress
-        this._parentPartyType = company.parentPartyType
-        this._parentId = new IdIdentifier(company.parentId)
+        this._id = client.id
+        this._name = client.name
+        this._adminEmailAddress = client.adminEmailAddress
+        this._parentPartyType = client.parentPartyType
+        this._parentId = new IdIdentifier(client.parentId)
       } catch (e) {
-        throw new Error(`error constructing company object: ${e}`)
+        throw new Error(`error constructing client object: ${e}`)
       }
     }
   }
@@ -99,11 +99,11 @@ export default class Company extends Base {
   }
 
   create() {
-    return CompanyRecordHandler.Create(this)
+    return ClientRecordHandler.Create(this)
   }
 
   validate(method = '') {
-    return CompanyRecordHandler.Validate(this, method)
+    return ClientRecordHandler.Validate(this, method)
   }
 
   get identifier() {
@@ -113,7 +113,7 @@ export default class Company extends Base {
       return new AdminEmailAddressIdentifier(this._adminEmailAddress)
     } else {
       throw new Error(
-          `cannot create identifier for company if id and adminEmailAddress are both blank`)
+          `cannot create identifier for client if id and adminEmailAddress are both blank`)
     }
   }
 }
