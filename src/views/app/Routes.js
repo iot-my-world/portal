@@ -11,7 +11,6 @@ import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
 import MapsContainer from 'views/maps/MapsContainer'
-
 import {
   Party, PartyCompany, PartyClient, PartyUser,
 } from 'brain/security/permission/view/permission'
@@ -93,6 +92,10 @@ const AppRoutes = [
         },
       ],
     },
+  ],
+
+  // -------- divider here --------
+  [
     {
       text: 'MapsTest',
       icon: <PersonIcon/>,
@@ -100,8 +103,6 @@ const AppRoutes = [
       component: MapsContainer,
     },
   ],
-
-  // -------- divider here --------
 
   // [
   //   { // this is an individual route
@@ -202,7 +203,6 @@ const appRouteBuilder = (partyType, viewPermissions) => {
   return appRoutes
 }
 
-export default AppRoutes
 export {
   HomeRoute,
   appRouteBuilder,
