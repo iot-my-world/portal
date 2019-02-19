@@ -1,4 +1,6 @@
-import {Claims} from 'brain/security/auth'
+import {
+  LoginClaims, RegisterCompanyAdminUserClaims, RegisterClientAdminUserClaims,
+} from 'brain/security/auth/claims/index'
 import {isString} from 'utilities/type/type'
 
 export function parseToken(jwt) {
@@ -8,8 +10,23 @@ export function parseToken(jwt) {
 
   if (jwt) {
     // Extract Claims Section of Token and parse json claims
-    const payloadData = jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.'))
+    const payloadData = jwt.substring(jwt.indexOf('.') + 1,
+        jwt.lastIndexOf('.'))
     const payloadString = atob(payloadData)
-    return new Claims(JSON.parse(payloadString))
+    const tokenPOJO = JSON.parse(payloadString)
+    switch (tokenPOJO.type) {
+      case LoginClaims.type:
+        return new LoginClaims(tokenPOJO.value)
+
+      case RegisterCompanyAdminUserClaims.type:
+        return new RegisterCompanyAdminUserClaims(tokenPOJO.value)
+
+      case RegisterClientAdminUserClaims.type:
+        return new RegisterClientAdminUserClaims(tokenPOJO.value)
+
+      default:
+        throw new TypeError(
+            `invalid claims object type in token: ${tokenPOJO.type}`)
+    }
   }
 }

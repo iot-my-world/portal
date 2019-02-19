@@ -1,9 +1,12 @@
 import moment from 'moment'
-import {Id as IdIdentifier} from 'brain/search/identifier/index'
-import Base from 'brain/Base'
+import {IdIdentifier} from 'brain/search/identifier/index'
+import ClaimsBase from 'brain/security/auth/claims/Base'
 import {isObject} from 'utilities/type/index'
+import {Login} from './types'
 
-class Claims extends Base {
+class LoginClaims extends ClaimsBase {
+  static type = Login
+
   /**
    * @type {IdIdentifier}
    * @private
@@ -35,26 +38,26 @@ class Claims extends Base {
   _partyId = new IdIdentifier()
 
   /**
-   * construct a Claims Object
-   * @param {Claims|Object} [claims]
+   * construct a LoginClaims Object
+   * @param {LoginClaims|Object} [loginClaims]
    */
-  constructor(claims) {
+  constructor(loginClaims) {
     super()
     if (
-        (claims !== undefined) &&
+        (loginClaims !== undefined) &&
         (
-            (claims instanceof Claims) ||
-            isObject(claims)
+            (loginClaims instanceof LoginClaims) ||
+            isObject(loginClaims)
         )
     ) {
       try {
-        this._userId = new IdIdentifier(claims.userId)
-        this._issueTime = claims.issueTime
-        this._expirationTime = claims.expirationTime
-        this._partyType = claims.partyType
-        this._partyId = new IdIdentifier(claims.partyId)
+        this._userId = new IdIdentifier(loginClaims.userId)
+        this._issueTime = loginClaims.issueTime
+        this._expirationTime = loginClaims.expirationTime
+        this._partyType = loginClaims.partyType
+        this._partyId = new IdIdentifier(loginClaims.partyId)
       } catch (e) {
-        throw new Error(`error constructing claims object: ${e}`)
+        throw new Error(`error constructing loginClaims object: ${e}`)
       }
     }
   }
@@ -80,13 +83,12 @@ class Claims extends Base {
   }
 
   /**
-   * Whether these claims are expired or not
+   * Whether these loginClaims are expired or not
    * @returns {boolean}
    */
   get notExpired(){
     return moment.utc().isBefore(moment.unix(this._expirationTime).utc())
   }
-
 }
 
-export default Claims
+export default LoginClaims

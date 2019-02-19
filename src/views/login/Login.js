@@ -4,7 +4,7 @@ import {
   withStyles, Typography,
   Card, CardContent, Grid,
   TextField, Button, Dialog,
-  FormControl,
+  FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
@@ -12,6 +12,7 @@ import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
+import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const style = theme => {
   return {
@@ -27,13 +28,14 @@ const style = theme => {
     },
     root: {
       height: '100%',
-      display: 'grid',
-      gridTemplateRows: '1fr 2fr',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     contentWrapper: {
       display: 'grid',
       justifyItems: 'center',
-      gridTemplateRows: 'auto auto 1fr',
+      gridTemplateRows: 'auto auto',
     },
     titleInnerWrapper: {
       display: 'grid',
@@ -65,6 +67,9 @@ const style = theme => {
     },
     progressSpinnerDialogBackdrop: {
       // backgroundColor: 'transparent',
+    },
+    cardHeaderRoot: {
+      paddingBottom: 0,
     },
   }
 }
@@ -105,7 +110,7 @@ class Login extends Component {
     })
   }
 
-  handleLogin(submitEvent) {
+  async handleLogin(submitEvent) {
     submitEvent.preventDefault()
     const {
       usernameOrEmailAddress,
@@ -113,49 +118,52 @@ class Login extends Component {
     } = this.state
     const {
       SetClaims,
-      history,
     } = this.props
 
     this.setState({activeState: events.logIn})
 
-    LoginService.Login(usernameOrEmailAddress, password).then(result => {
-      // parse the claims and set them in redux
-      try {
-        const claims = parseToken(result.jwt)
-
-        if (claims.notExpired) {
-          // otherwise the token is not expired
-          // set the claims in redux state
-          SetClaims(claims)
-          // and set the token in local storage
-          sessionStorage.setItem('jwt', result.jwt)
-        } else {
-          // if the token is expired clear the token state
-          sessionStorage.setItem('jwt', null)
-          console.error('given token is expired!')
-          return
-        }
-      } catch (e) {
-        console.error(`error parsing claims and setting redux: ${e}`)
-      }
-
-      // navigate the browser to the app
-      try {
-        history.push('/app')
-      } catch (e) {
-        console.error(`error navigating the browser to the app: ${e}`)
-      }
-    }).catch(err => {
+    // [1] Login
+    let loginResult
+    try {
+      loginResult = await LoginService.Login(usernameOrEmailAddress, password)
+    } catch (error) {
       switch (true) {
-        case err instanceof MethodFailed:
+        case error instanceof MethodFailed:
           this.setState({activeState: events.loginFail})
           break
-        case err instanceof ContactFailed:
+        case error instanceof ContactFailed:
         default:
           this.setState({activeState: events.serverContactError})
       }
-    })
+      return
+    }
 
+    // [2] If login was successful
+    let claims
+    try {
+      claims = parseToken(loginResult.jwt)
+
+      if (
+          claims.notExpired &&
+          (claims.type === LoginClaims.type)
+      ) {
+        // and set the token in local storage
+        sessionStorage.setItem('jwt', loginResult.jwt)
+      } else {
+        // if the token is expired clear the token state
+        sessionStorage.setItem('jwt', null)
+        console.error('given token is expired!')
+        return
+      }
+    } catch (e) {
+      console.error(`error parsing claims and setting redux: ${e}`)
+      this.setState({activeState: events.loginFail})
+      return
+    }
+
+    // Finally set the claims which will cause root to navigate
+    // to the app
+    SetClaims(claims)
   }
 
   errorMessage() {
@@ -191,7 +199,6 @@ class Login extends Component {
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
-        <div/>
         <div className={classes.contentWrapper}>
           <div className={classes.titleInnerWrapper}>
             <img className={classes.logo} src={logo} alt={'logo'}/>
@@ -201,58 +208,59 @@ class Login extends Component {
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
-            <Grid container>
-              <Grid item>
-                <Card>
-                  <CardContent>
-                    <form onSubmit={this.handleLogin}>
-                      <Grid container direction={'column'} alignItems={'center'}
-                            spacing={8}>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='usernameOrEmailAddress'
-                                label='Username or Email Address'
-                                autoComplete='username'
-                                value={usernameOrEmailAddress}
-                                onChange={this.handleInputChange}
-                                error={errorState}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='password'
-                                label='Password'
-                                type='password'
-                                autoComplete='current-password'
-                                value={password}
-                                onChange={this.handleInputChange}
-                                error={errorState}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <Button
-                              className={classes.button}
-                              type={'submit'}
-                          >
-                            Login
-                          </Button>
-                        </Grid>
-                        {errorState &&
-                        <Grid item>
-                          <Typography color={'error'}>
-                            {this.errorMessage()}
-                          </Typography>
-                        </Grid>}
-                      </Grid>
-                    </form>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            <Card>
+              <CardHeader
+                  title={'Login'}
+                  titleTypographyProps={{color: 'primary', align: 'center'}}
+                  classes={{root: classes.cardHeaderRoot}}
+              />
+              <CardContent>
+                <form onSubmit={this.handleLogin}>
+                  <Grid container direction={'column'} alignItems={'center'}
+                        spacing={8}>
+                    <Grid item>
+                      <FormControl className={classes.formField}>
+                        <TextField
+                            id='usernameOrEmailAddress'
+                            label='Username or Email Address'
+                            autoComplete='username'
+                            value={usernameOrEmailAddress}
+                            onChange={this.handleInputChange}
+                            error={errorState}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <FormControl className={classes.formField}>
+                        <TextField
+                            id='password'
+                            label='Password'
+                            type='password'
+                            autoComplete='current-password'
+                            value={password}
+                            onChange={this.handleInputChange}
+                            error={errorState}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                          className={classes.button}
+                          type={'submit'}
+                      >
+                        Login
+                      </Button>
+                    </Grid>
+                    {errorState &&
+                    <Grid item>
+                      <Typography color={'error'}>
+                        {this.errorMessage()}
+                      </Typography>
+                    </Grid>}
+                  </Grid>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -272,9 +280,5 @@ let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  /**
-   * react-router function
-   */
-  history: PropTypes.object.isRequired,
 }
 export default StyledLogin

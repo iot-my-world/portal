@@ -3,11 +3,11 @@ import {
   logout,
 } from 'actions/actionTypes'
 import {
-  Claims,
-} from 'brain/security/auth'
+  LoginClaims,
+} from 'brain/security/auth/claims/index'
 
 const initState = {
-  claims: new Claims(),
+  claims: new LoginClaims(),
 }
 
 export default function auth(state = initState, action) {

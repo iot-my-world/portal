@@ -21,9 +21,7 @@ before_script:
 stages:
 - deploy
 
-deploy to qa:
-  variables:
-    AWS_DEFAULT_REGION: eu-west-1
+tag branch:
   stage: deploy
   environment: qa
   script:

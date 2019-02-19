@@ -5,8 +5,9 @@ import PropTypes from 'prop-types'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
 import LoginContainer from '../login/LoginContainer'
+import RegisterUserContainer from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
-import {Claims} from 'brain/security/auth'
+import {LoginClaims} from 'brain/security/auth/claims/index'
 
 const styles = theme => ({})
 
@@ -25,7 +26,10 @@ class Root extends Component {
     } = this.props
     try {
       const claims = parseToken(sessionStorage.getItem('jwt'))
-      if (claims.notExpired) {
+      if (
+          claims.notExpired &&
+          (claims.type === LoginClaims.type)
+      ) {
         SetClaims(claims)
         return true
       } else {
@@ -40,8 +44,10 @@ class Root extends Component {
   }
 
   logout() {
+    const {Logout} = this.props
     sessionStorage.removeItem('jwt')
     this.loggedIn = false
+    Logout()
   }
 
   render() {
@@ -62,6 +68,13 @@ class Root extends Component {
                 } else {
                   return <Redirect to='/'/>
                 }
+              }}
+          />
+          <Route
+              path='/register'
+              render={props => {
+                this.logout()
+                return <RegisterUserContainer {...props}/>
               }}
           />
           <Route
@@ -94,7 +107,7 @@ class Root extends Component {
 
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  claims: PropTypes.instanceOf(Claims),
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 export default withStyles(styles)(Root)

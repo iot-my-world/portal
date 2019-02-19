@@ -4,6 +4,7 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
+import DomainIcon from '@material-ui/icons/Domain'
 import {
   BEPTable,
 } from 'components/table'
@@ -15,6 +16,8 @@ import {FullPageLoader} from 'components/loader'
 import {ReasonsInvalid} from 'brain/validate'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
+import PartyRegistrar from 'brain/party/registrar/Registrar'
+import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const styles = theme => ({
   formField: {
@@ -23,6 +26,11 @@ const styles = theme => ({
   },
   progress: {
     margin: 2,
+  },
+  detailCard: {},
+  companyIcon: {
+    fontSize: 100,
+    color: theme.palette.primary.main,
   },
 })
 
@@ -34,11 +42,13 @@ const states = {
 }
 
 const events = {
+  init: states.nop,
+
   selectExisting: states.viewingExisting,
 
   startCreateNew: states.editingNew,
   cancelCreateNew: states.nop,
-  createNewSuccess: states.viewingExisting,
+  createNewSuccess: states.nop,
 
   startEditExisting: states.editingExisting,
 }
@@ -48,16 +58,17 @@ class Company extends Component {
   state = {
     recordCollectionInProgress: false,
     isLoading: false,
-    activeState: states.nop,
+    activeState: events.init,
     selected: new CompanyEntity(),
+    selectedRowIdx: -1,
+    records: [],
+    totalNoRecords: 0,
   }
 
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
   collectQuery = new Query()
-  records = []
-  totalNoRecords = 0
 
   constructor(props) {
     super(props)
@@ -67,12 +78,30 @@ class Company extends Component {
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
+    this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
+    this.handleCreateNew = this.handleCreateNew.bind(this)
     this.collectTimeout = () => {
     }
   }
 
   componentDidMount() {
     this.collect()
+  }
+
+  handleCreateNew() {
+    const {
+      claims,
+    } = this.props
+    let newCompanyEntity = new CompanyEntity()
+    newCompanyEntity.parentId = claims.partyId
+    newCompanyEntity.parentPartyType = claims.partyType
+
+    this.setState({
+      selectedRowIdx: -1,
+      activeState: events.startCreateNew,
+      selected: newCompanyEntity,
+    })
   }
 
   handleChange(event) {
@@ -93,19 +122,16 @@ class Company extends Component {
       NotificationFailure,
     } = this.props
     try {
-
       this.setState({isLoading: true})
       selected.validate('Create').then(reasonsInvalid => {
         if (reasonsInvalid.count > 0) {
           this.reasonsInvalid = reasonsInvalid
           this.setState({isLoading: false})
         } else {
-          selected.create().then(newCompany => {
+          selected.create().then(() => {
             NotificationSuccess('Successfully Created Company')
-            this.setState({
-              selected: newCompany,
-              activeState: events.createNewSuccess,
-            })
+            this.setState({activeState: events.createNewSuccess})
+            this.collect()
           }).catch(error => {
             console.error('Error Creating Company', error)
             NotificationFailure('Error Creating Company')
@@ -131,8 +157,10 @@ class Company extends Component {
     this.setState({recordCollectionInProgress: true})
     CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
         .then(response => {
-          this.records = response.records
-          this.totalNoRecords = response.total
+          this.setState({
+            records: response.records,
+            totalNoRecords: response.total,
+          })
         })
         .catch(error => {
           console.error(`error collecting records: ${error}`)
@@ -147,35 +175,80 @@ class Company extends Component {
     this.collectCriteria = criteria
     this.collectQuery = query
     this.collectTimeout = setTimeout(this.collect, 300)
+    this.setState({
+      activeState: events.init,
+      selected: new CompanyEntity(),
+      selectedRowIdx: -1,
+    })
+  }
+
+  handleSelect(rowRecordObj, rowIdx) {
+    this.setState({
+      selectedRowIdx: rowIdx,
+      selected: new CompanyEntity(rowRecordObj),
+      activeState: events.selectExisting,
+    })
+  }
+
+  handleInviteAdmin() {
+    const {
+      selected,
+    } = this.state
+    const {
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    this.setState({isLoading: true})
+    PartyRegistrar.InviteCompanyAdminUser(selected.identifier).then(() => {
+      NotificationSuccess('Successfully Invited Company Admin User')
+    }).catch(error => {
+      console.error('Failed to Invite Company Admin User', error)
+      NotificationFailure('Failed to Invite Company Admin User')
+    }).finally(() => {
+      this.setState({isLoading: false})
+    })
   }
 
   render() {
     const {
       isLoading,
       recordCollectionInProgress,
+      selectedRowIdx,
+      records,
+      totalNoRecords,
     } = this.state
+    const {
+      theme,
+      classes,
+    } = this.props
 
     return <Grid
         container
         direction='column'
         spacing={8}
+        alignItems='center'
     >
       <Grid item xl={12}>
-        <Card>
-          <CardContent>
-            {this.renderCompanyDetails()}
-          </CardContent>
-          {this.renderControls()}
-        </Card>
+        <Grid container>
+          <Grid item>
+            <Card className={classes.detailCard}>
+              <CardContent>
+                {this.renderCompanyDetails()}
+              </CardContent>
+              {this.renderControls()}
+            </Card>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xl={12}>
         <Card>
           <CardContent>
             <BEPTable
                 loading={recordCollectionInProgress}
-                totalNoRecords={this.totalNoRecords}
+                totalNoRecords={totalNoRecords}
                 noDataText={'No Companies Found'}
-                data={this.records}
+                data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
                 columns={[
@@ -198,6 +271,28 @@ class Company extends Component {
                     },
                   },
                 ]}
+
+                getTdProps={(state, rowInfo) => {
+                  const rowIndex = rowInfo ? rowInfo.index : undefined
+                  return {
+                    onClick: (e, handleOriginal) => {
+                      if (rowInfo) {
+                        this.handleSelect(rowInfo.original, rowInfo.index)
+                      }
+                      if (handleOriginal) {
+                        handleOriginal()
+                      }
+                    },
+                    style: {
+                      background: rowIndex === selectedRowIdx ?
+                          theme.palette.secondary.light :
+                          'white',
+                      color: rowIndex === selectedRowIdx ?
+                          theme.palette.secondary.contrastText :
+                          theme.palette.primary.main,
+                    },
+                  }
+                }}
             />
           </CardContent>
         </Card>
@@ -222,71 +317,100 @@ class Company extends Component {
     switch (activeState) {
 
       case states.nop:
-        return <Typography variant={'body1'}>
-          Select Company or <Button
-            size='small'
-            color='primary'
-            variant='contained'
-            onClick={() => this.setState({
-              activeState: events.startCreateNew,
-              selected: new CompanyEntity(),
-            })}
+        return <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems={'center'}
         >
-          Create New
-        </Button>
-        </Typography>
+          <Grid item>
+            <Typography
+                variant={'body1'}
+                align={'center'}
+                color={'primary'}
+            >
+              Select A Company to View or Edit
+            </Typography>
+          </Grid>
+          <Grid item>
+            <DomainIcon className={classes.companyIcon}/>
+          </Grid>
+          <Grid item>
+            <Button
+                size='small'
+                color='primary'
+                variant='contained'
+                onClick={this.handleCreateNew}
+            >
+              Create New
+            </Button>
+          </Grid>
+        </Grid>
 
       case states.viewingExisting:
       case states.editingNew:
+      case states.editingExisting:
         const {
           selected,
         } = this.state
-        return <React.Fragment>
-          <Typography variant={'body1'}>
-            {(() => {
-
-            })()}
-            New Company Creation
-          </Typography>
-          <Grid
-              container
-              direction='column'
-              spacing={8}
-          >
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id='name'
-                  label='Name'
-                  value={selected.name}
-                  onChange={this.handleChange}
-                  disabled={disableFields}
-                  helperText={
-                    fieldValidations.name
-                        ? fieldValidations.name.help
-                        : undefined
-                  }
-                  error={!!fieldValidations.name}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id='adminEmailAddress'
-                  label='Admin Email'
-                  value={selected.adminEmailAddress}
-                  onChange={this.handleChange}
-                  disabled={disableFields}
-                  helperText={
-                    fieldValidations.adminEmailAddress
-                        ? fieldValidations.adminEmailAddress.help
-                        : undefined
-                  }
-                  error={!!fieldValidations.adminEmailAddress}
-              />
-            </Grid>
+        return <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems={'center'}
+        >
+          <Grid item>
+            <Typography
+                variant={'body1'}
+                align={'center'}
+                color={'primary'}
+            >
+              {(() => {
+                switch (activeState) {
+                  case states.editingNew:
+                    return 'Creating New'
+                  case states.editingExisting:
+                    return 'Editing'
+                  case states.viewingExisting:
+                    return 'Details'
+                  default:
+                }
+              })()}
+            </Typography>
           </Grid>
-        </React.Fragment>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='name'
+                label='Name'
+                value={selected.name}
+                onChange={this.handleChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.name
+                      ? fieldValidations.name.help
+                      : undefined
+                }
+                error={!!fieldValidations.name}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='adminEmailAddress'
+                label='Admin Email'
+                value={selected.adminEmailAddress}
+                onChange={this.handleChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.adminEmailAddress
+                      ? fieldValidations.adminEmailAddress.help
+                      : undefined
+                }
+                error={!!fieldValidations.adminEmailAddress}
+            />
+          </Grid>
+        </Grid>
 
       default:
     }
@@ -299,6 +423,7 @@ class Company extends Component {
     } = this.state
 
     switch (activeState) {
+
       case states.viewingExisting:
         return <CardActions>
           <Button
@@ -315,10 +440,15 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                activeState: events.startCreateNew,
-                selected: new CompanyEntity(),
-              })}
+              onClick={this.handleInviteAdmin}
+          >
+            Invite Admin
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={this.handleCreateNew}
           >
             Create New
           </Button>
@@ -351,7 +481,7 @@ class Company extends Component {
   }
 }
 
-Company = withStyles(styles)(Company)
+Company = withStyles(styles, {withTheme: true})(Company)
 
 Company.propTypes = {
   /**
@@ -362,6 +492,10 @@ Company.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 Company.defaultProps = {}

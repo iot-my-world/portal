@@ -16,7 +16,7 @@ export default class Base {
         // get the field name without the _
         const fieldName = field.slice(1)
         // if the field is NOT included in the ignoreInPost array (i.e. the field is NOT to be ignored)
-        if (!Base.ignoreInPost.includes(fieldName)) {
+        if (!this.constructor.ignoreInPost.includes(fieldName)) {
           if (
               // if the data at the field is not undefined or null
               !(

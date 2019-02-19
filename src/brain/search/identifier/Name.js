@@ -1,8 +1,8 @@
 import {Name as NameIdentifier} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
-import Base from 'brain/Base'
+import BaseIdentifier from './Base'
 
-export default class Name extends Base {
+export default class Name extends BaseIdentifier {
   static identifierType = NameIdentifier
 
   /**
@@ -37,10 +37,6 @@ export default class Name extends Base {
         throw new TypeError('invalid arg passed to Name identifier constructor')
       }
     }
-  }
-
-  get value() {
-    return this._value
   }
 
   get name() {
