@@ -10,6 +10,8 @@ import ClientHomeContainer from 'views/home/client/ClientContainer'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
+import MapsContainer from 'views/maps/MapsContainer'
+
 import {
   Party, PartyCompany, PartyClient, PartyUser,
 } from 'brain/security/permission/view/permission'
