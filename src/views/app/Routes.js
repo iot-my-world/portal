@@ -92,6 +92,10 @@ const AppRoutes = [
         },
       ],
     },
+  ],
+
+  // -------- divider here --------
+  [
     {
       text: 'MapsTest',
       icon: <PersonIcon/>,
@@ -99,8 +103,6 @@ const AppRoutes = [
       component: MapsContainer,
     },
   ],
-
-  // -------- divider here --------
 
   // [
   //   { // this is an individual route
