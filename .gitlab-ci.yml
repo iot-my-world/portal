@@ -1,0 +1,39 @@
+image: "docker:stable"
+
+services:
+- docker:dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - echo $CI_JOB_TOKEN
+  - apk update && apk upgrade
+  - apk update && apk add git
+  - apk add git python3 py3-pip
+  - pip3 install --upgrade pip
+  - pip3 install awscli bumpversion
+  - git remote set-url origin https://$GIT_USER_NAME:$GIT_USER_PASS@gitlab.com/$CI_PROJECT_PATH.git
+  - git config --global user.email $GIT_USER_EMAIL
+  - git config --global user.name $GIT_USER_NAME
+
+stages:
+- deploy
+
+tag branch:
+  stage: deploy
+  environment: qa
+  script:
+  - git checkout master
+  - current_v="$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)"
+  - bumpversion --message '[skip ci] GitLab CI Build {$CI_JOB_ID} tagged {current_version} to {new_version}' --current-version $current_v patch --tag --verbose
+  - new_v="$(bumpversion --dry-run --list patch --allow-dirty | grep current_version | sed -r s,"^.*=",,)"
+  - git tag -a $new_v -m 'version $new_v'
+  - git config --global push.followTags true
+  - git commit -am "[skip ci] GitLab CI Build {$CI_JOB_ID} version number bumped to $new_v"
+  - git push --follow-tags
+  - echo "New version - $new_v"
+  only:
+  - master
+  when: manual
