@@ -19,6 +19,8 @@ export default class Query extends Base {
   _order = []
 
   /**
+   * The number of records to return
+   * set to 0 will return all
    * @type {number}
    * @private
    */
