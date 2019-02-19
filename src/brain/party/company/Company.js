@@ -1,6 +1,10 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import {
+  IdIdentifier,
+  AdminEmailAddressIdentifier,
+} from 'brain/search/identifier'
 
 export default class Company extends Base {
   /**
@@ -22,6 +26,18 @@ export default class Company extends Base {
   _adminEmailAddress = ''
 
   /**
+   * @type {string}
+   * @private
+   */
+  _parentPartyType = ''
+
+  /**
+   * @type {Id}
+   * @private
+   */
+  _parentId = new IdIdentifier()
+
+  /**
    * construct a new Company Object
    * @param {Company|Object} [company]
    */
@@ -38,6 +54,8 @@ export default class Company extends Base {
         this._id = company.id
         this._name = company.name
         this._adminEmailAddress = company.adminEmailAddress
+        this._parentPartyType = company.parentPartyType
+        this._parentId = new IdIdentifier(company.parentId)
       } catch (e) {
         throw new Error(`error constructing company object: ${e}`)
       }
@@ -64,6 +82,22 @@ export default class Company extends Base {
     this._adminEmailAddress = newVal
   }
 
+  get parentPartyType() {
+    return this._parentPartyType
+  }
+
+  set parentPartyType(newVal) {
+    this._parentPartyType = newVal
+  }
+
+  get parentId() {
+    return this._parentId
+  }
+
+  set parentId(newVal) {
+    this._parentId = newVal
+  }
+
   create() {
     return CompanyRecordHandler.Create(this)
   }
@@ -72,4 +106,14 @@ export default class Company extends Base {
     return CompanyRecordHandler.Validate(this, method)
   }
 
+  get identifier() {
+    if (this._id !== '') {
+      return new IdIdentifier(this._id)
+    } else if (this._adminEmailAddress !== '') {
+      return new AdminEmailAddressIdentifier(this._adminEmailAddress)
+    } else {
+      throw new Error(
+          `cannot create identifier for company if id and adminEmailAddress are both blank`)
+    }
+  }
 }

@@ -12,7 +12,7 @@ export function HexToRGBA(hex, opacity) {
     val = val.substring(1)
   }
   if (val.length !== 6) {
-    console.log('The hex value is invalid:', hex)
+    console.error('The hex value is invalid:', hex)
     return 'rgba(255, 255, 255, 1)'
   }
 
