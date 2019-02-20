@@ -82,17 +82,17 @@ class Maps extends Component {
   _getLocData(readings) {
     return readings.map(function(elem) {
       return {
-        "east":this._transform(elem._eastCoordinate, 'east'),
-        "south":this._transform(elem._southCoordinate, 'south')
+        "long":this._transform(elem._southCoordinate, 's'),
+        "lat":this._transform(elem._eastCoordinate, 'e')
       }
     }, this)
   }
 
   _transform(coord, dir) {
     coord = coord.replace(`"`, '')
-    let degrees = coord.split('°')[0]
-    let minutes = coord.split("'")[0].split('°')[1]
-    let seconds = coord.split('.')[1]
+    let degrees = parseFloat(coord.split('°')[0])
+    let minutes = parseFloat(coord.split("'")[0].split('°')[1])
+    let seconds = parseFloat(coord.split("'")[1])
 
     return this._convertDMSToDD(degrees, minutes, seconds, dir)
   }
@@ -114,10 +114,9 @@ class Maps extends Component {
 
   _convertDMSToDD(degrees, minutes, seconds, direction) {
     var dd = degrees + minutes/60 + seconds/(60*60);
-
-    if (direction == "south" || direction == "east") {
+    if (direction == "s" || direction == "w") {
         dd = dd * -1;
-    } // Don't do anything for N or E
+    } // Don't do anything for north or east
     return dd;
   }
 
