@@ -1,22 +1,23 @@
 import '../../components/mapbox/Custom.css'
 
 import React, {Component} from 'react'
+import {
+  withStyles,
+} from '@material-ui/core'
+
 import MapGL,
 {
   Marker,
   Popup,
   // NavigationControl,
 } from 'react-map-gl'
-// import PropTypes from 'prop-types'
+
 import {
   RecordHandler as ReadingRecordHandler,
   Reading,
 } from 'brain/tracker/reading'
 import {FullPageLoader} from 'components/loader'
 import {Query} from 'brain/search'
-import {
-  withStyles,
-} from '@material-ui/core'
 
 import MapPin from './MapPin'
 import MapPinInfo from './MapPinInfo'
@@ -31,96 +32,12 @@ const styles = theme => ({
 })
 
 const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
+//https://stackoverflow.com/questions/36382725/converting-lat-long-values-received-from-gps-tracker
+// south, err := toDMS(data[24:33])
+// east, err := toDMS(data[35:44])
 
-const CITIES = [
-  {
-    '@lat': '-26.1497938',
-    '@lon': '28.135012',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:33:01.777Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1500571',
-    '@lon': '28.1351489',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:34:44.642Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1500487',
-    '@lon': '28.1351646',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:35:50.097Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1498571',
-    '@lon': '28.1350941',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:41:09.364Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1499881',
-    '@lon': '28.1351294',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:42:23.476Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1498493',
-    '@lon': '28.1350406',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T15:43:29.513Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.150948885171083',
-    '@lon': '28.151092282945598',
-    'ele': '1622.445457790047',
-    'time': '2019-02-10T15:52:40.867Z',
-    'course': '0.0',
-    'speed': '0.39919057',
-    'src': 'gps',
-    'sat': '3',
-    'hdop': '100.000',
-    'ageofdgpsdata': '0',
-  },
-  {
-    '@lat': '-26.150422145992877',
-    '@lon': '28.150711568387358',
-    'ele': '1630.8819362102076',
-    'time': '2019-02-10T15:54:29.540Z',
-    'course': '0.0',
-    'speed': '0.6758557',
-    'src': 'gps',
-    'sat': '3',
-    'hdop': '100.000',
-    'ageofdgpsdata': '0',
-  },
-  {
-    '@lat': '-26.1499524',
-    '@lon': '28.1351083',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T16:27:12.981Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1499141',
-    '@lon': '28.135117',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T16:40:15.087Z',
-    'src': 'network',
-  },
-  {
-    '@lat': '-26.1499141',
-    '@lon': '28.135117',
-    'ele': '1630.699951171875',
-    'time': '2019-02-10T16:40:15.088Z',
-    'src': 'network',
-  },
-]
+
+
 
 class Maps extends Component {
 
@@ -137,6 +54,7 @@ class Maps extends Component {
       },
       popupInfo: null,
       isLoading: true,
+      locationData: []
     }
   }
 
@@ -144,16 +62,33 @@ class Maps extends Component {
     this.collect()
   }
 
-  async collect() {
+  collect = async () => {
     const newQuery = new Query()
     newQuery.limit = 0
 
     const response = await ReadingRecordHandler.Collect([], newQuery)
     const readings = response.records.map(reading => new Reading(reading))
-    console.log('Here they are! do with them what you will', readings)
+
+    const reading_data = this._getLocData(readings)
+    console.log(reading_data)
+
     this.setState({
       isLoading: false,
+      locationData: readings
+
     })
+  }
+
+  _getLocData(readings) {
+    return readings.map(function(elem) {
+      return {
+        "east":this._transform(elem._eastCoordinate),
+        "south":this._transform(elem._southCoordinate)
+      }
+    }, this)
+  }
+  _transform(coord) {
+    console.log(coord)
   }
 
   _updateViewport = (viewport) => {
@@ -207,8 +142,7 @@ class Maps extends Component {
             onViewportChange={this._updateViewport}
             mapboxApiAccessToken={TOKEN}
         >
-          {CITIES.map(this._renderCityMarker)}
-          {this._renderPopup()}
+
         </MapGL>
     )
   }
