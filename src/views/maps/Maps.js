@@ -37,8 +37,6 @@ const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NW
 // east, err := toDMS(data[35:44])
 
 
-
-
 class Maps extends Component {
 
   constructor(props) {
@@ -54,7 +52,6 @@ class Maps extends Component {
       },
       popupInfo: null,
       isLoading: true,
-      locationData: []
     }
   }
 
@@ -68,22 +65,40 @@ class Maps extends Component {
 
     const response = await ReadingRecordHandler.Collect([], newQuery)
     const readings = response.records.map(reading => new Reading(reading))
+    // console.log(readings)
 
     const reading_data = this._getLocData(readings)
+    //readings.slice(1,10)
     console.log(reading_data)
 
     this.setState({
       isLoading: false,
-      locationData: readings
+      locationData: reading_data
 
     })
+  }
+
+  _updateViewport = (viewport) => {
+    this.setState({viewport})
+  }
+
+  _renderCityMarker = (city, index) => {
+    return (
+        <Marker
+            key={`marker-${index}`}
+            longitude={city['@lon']}
+            latitude={city['@lat']}>
+          <MapPin size={20} onClick={() => this.setState({popupInfo: city})}/>
+        </Marker>
+    )
   }
 
   _getLocData(readings) {
     return readings.map(function(elem) {
       return {
-        "long":this._transform(elem._southCoordinate, 's'),
-        "lat":this._transform(elem._eastCoordinate, 'e')
+        "@lat": this._transform(elem._southCoordinate, 's'),
+        "@lon": this._transform(elem._eastCoordinate, 'e'),
+        "time": elem._timeStamp
       }
     }, this)
   }
@@ -96,22 +111,6 @@ class Maps extends Component {
 
     return this._convertDMSToDD(degrees, minutes, seconds, dir)
   }
-
-  _updateViewport = (viewport) => {
-    this.setState({viewport})
-  }
-
-  _renderCityMarker = (city, index) => {
-    return (
-        <Marker
-            key={`marker-${index}`}
-            longitude={parseFloat(city['@lon'])}
-            latitude={parseFloat(city['@lat'])}>
-          <MapPin size={20} onClick={() => this.setState({popupInfo: city})}/>
-        </Marker>
-    )
-  }
-
   _convertDMSToDD(degrees, minutes, seconds, direction) {
     var dd = degrees + minutes/60 + seconds/(60*60);
     if (direction == "s" || direction == "w") {
@@ -156,6 +155,9 @@ class Maps extends Component {
             onViewportChange={this._updateViewport}
             mapboxApiAccessToken={TOKEN}
         >
+        {this.state.locationData.map(this._renderCityMarker)}
+        {this._renderPopup()}
+
 
         </MapGL>
     )
