@@ -23,7 +23,7 @@ class MapPinInfo extends PureComponent {
             Wikipedia
           </a>
         </Typography>
-        <img width={240} src={info.image} />
+        <img alt="" width={240} src={info.image} />
       </div>
     );
   }
