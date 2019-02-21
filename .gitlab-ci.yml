@@ -27,6 +27,7 @@ deploy_stage:
   only:
     - master
   script:
+    - yarn install
     - yarn build
     - tar cvf portal.tar build
     - scp ./portal.tar gitlabcli@spotnav.net:/home/portal.tar
