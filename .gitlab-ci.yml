@@ -1,39 +1,38 @@
-image: "docker:stable"
-
-services:
-- docker:dind
-
-variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
+image: node
 
 before_script:
-  - echo $CI_JOB_TOKEN
-  - apk update && apk upgrade
-  - apk update && apk add git
-  - apk add git python3 py3-pip
-  - pip3 install --upgrade pip
-  - pip3 install awscli bumpversion
-  - git remote set-url origin https://$GIT_USER_NAME:$GIT_USER_PASS@gitlab.com/$CI_PROJECT_PATH.git
-  - git config --global user.email $GIT_USER_EMAIL
-  - git config --global user.name $GIT_USER_NAME
+ # Install ssh-agent if not already installed
+ # it is required by Docker
+ - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+ 
+ # Run ssh-agent (inside the build environment)
+ - eval $(ssh-agent -s)
 
-stages:
-- deploy
+ # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+ # We're using tr to fix line endings which makes ed25519 keys work
+ # without extra base64 encoding.
+ - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
 
-tag branch:
+ # Create the SSH directory and give it the right permissions
+ - mkdir -p ~/.ssh
+ - chmod 700 ~/.ssh
+
+ # update known hosts
+ - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+ - chmod 644 ~/.ssh/known_hosts
+
+deploy_stage:
   stage: deploy
-  environment: qa
-  script:
-  - git checkout master
-  - current_v="$(bumpversion --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)"
-  - bumpversion --message '[skip ci] GitLab CI Build {$CI_JOB_ID} tagged {current_version} to {new_version}' --current-version $current_v patch --tag --verbose
-  - new_v="$(bumpversion --dry-run --list patch --allow-dirty | grep current_version | sed -r s,"^.*=",,)"
-  - git tag -a $new_v -m 'version $new_v'
-  - git config --global push.followTags true
-  - git commit -am "[skip ci] GitLab CI Build {$CI_JOB_ID} version number bumped to $new_v"
-  - git push --follow-tags
-  - echo "New version - $new_v"
+  environment: Production
   only:
-  - master
-  when: manual
+    - master
+  script:
+    - yarn install
+    - yarn build
+    - tar cvf portal.tar build
+    - scp ./portal.tar gitlabcli@spotnav.net:/home/portal.tar
+    # - ls
+    # - scp ./brain gitlabcli@spotnav.net:/home/gitlabcli
+    # - ssh gitlabcli@spotnav.net "sudo /bin/systemctl stop brain.service"
+    # - ssh gitlabcli@spotnav.net "sudo /bin/mv /home/gitlabcli/brain /home/brain" 
+    # - ssh gitlabcli@spotnav.net "sudo /bin/systemctl start brain.service"
