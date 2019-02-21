@@ -27,8 +27,9 @@ deploy_stage:
   only:
     - master
   script:
-    - ls
-    - which yarn
+    - yarn build
+    - tar cvf portal.tar build
+    - scp ./portal.tar gitlabcli@spotnav.net:/home/portal.tar
     # - ls
     # - scp ./brain gitlabcli@spotnav.net:/home/gitlabcli
     # - ssh gitlabcli@spotnav.net "sudo /bin/systemctl stop brain.service"
