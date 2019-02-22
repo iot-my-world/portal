@@ -7,15 +7,15 @@ import {
 import DomainIcon from '@material-ui/icons/Domain'
 import {
   BEPTable,
-} from 'components/table'
+} from 'components/table/index'
 import {
   Company as CompanyEntity,
   RecordHandler as CompanyRecordHandler,
-} from 'brain/party/company'
-import {FullPageLoader} from 'components/loader'
-import {ReasonsInvalid} from 'brain/validate'
+} from 'brain/party/company/index'
+import {FullPageLoader} from 'components/loader/index'
+import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
-import {Query} from 'brain/search'
+import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 

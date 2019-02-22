@@ -7,15 +7,15 @@ import {
 import PeopleIcon from '@material-ui/icons/People'
 import {
   BEPTable,
-} from 'components/table'
+} from 'components/table/index'
 import {
   Client as ClientEntity,
   RecordHandler as ClientRecordHandler,
-} from 'brain/party/client'
-import {FullPageLoader} from 'components/loader'
-import {ReasonsInvalid} from 'brain/validate'
+} from 'brain/party/client/index'
+import {FullPageLoader} from 'components/loader/index'
+import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
-import {Query} from 'brain/search'
+import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 

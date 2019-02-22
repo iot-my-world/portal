@@ -1,11 +1,11 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
-import DeviceRecordHandler from 'brain/tracker/device/RecordHandler'
+import DeviceRecordHandler from 'brain/tracker/device/tk102/RecordHandler'
 import {
   IdIdentifier,
-} from 'brain/search/identifier'
+} from 'brain/search/identifier/index'
 
-export default class Device extends Base {
+export default class TK102 extends Base {
   /**
    * @type {string}
    * @private
@@ -55,29 +55,29 @@ export default class Device extends Base {
   _assignedId = new IdIdentifier()
 
   /**
-   * construct a new Device Object
-   * @param {Device|Object} [device]
+   * construct a new TK102 Object
+   * @param {TK102|Object} [tk102]
    */
-  constructor(device) {
+  constructor(tk102) {
     super()
     if (
-        (device !== undefined) &&
+        (tk102 !== undefined) &&
         (
-            (device instanceof Device) ||
-            isObject(device)
+            (tk102 instanceof TK102) ||
+            isObject(tk102)
         )
     ) {
       try {
-        this._id = device.id
-        this._imei = device.imei
-        this._simCountryCode = device.simCountryCode
-        this._simNumber = device.simNumber
-        this._ownerPartyType = device.ownerPartyType
-        this._ownerId = new IdIdentifier(device.ownerId)
-        this._assignedPartyType = device.assignedPartyType
-        this._assignedId = new IdIdentifier(device.assignedId)
+        this._id = tk102.id
+        this._imei = tk102.imei
+        this._simCountryCode = tk102.simCountryCode
+        this._simNumber = tk102.simNumber
+        this._ownerPartyType = tk102.ownerPartyType
+        this._ownerId = new IdIdentifier(tk102.ownerId)
+        this._assignedPartyType = tk102.assignedPartyType
+        this._assignedId = new IdIdentifier(tk102.assignedId)
       } catch (e) {
-        throw new Error(`error constructing device object: ${e}`)
+        throw new Error(`error constructing tk102 object: ${e}`)
       }
     }
   }
@@ -155,7 +155,7 @@ export default class Device extends Base {
       return new IdIdentifier(this._id)
     } else {
       throw new Error(
-          `cannot create identifier for device if id is blank`)
+          `cannot create identifier for tk102 if id is blank`)
     }
   }
 }

@@ -1,13 +1,13 @@
-import {jsonRpcRequest} from 'utilities/network'
+import {jsonRpcRequest} from 'utilities/network/index'
 import config from 'react-global-configuration'
-import Device from './Device'
+import TK102 from './Device'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 export default class RecordHandler {
 
   /**
    * Create a new device
-   * @param {Device} device
+   * @param {TK102} device
    * @constructor
    */
   static Create(device) {
@@ -19,14 +19,14 @@ export default class RecordHandler {
           device: device.toPOJO(),
         },
       }).then(result => {
-        resolve(new Device(result.device))
+        resolve(new TK102(result.device))
       }).catch(error => reject(error))
     })
   }
 
   /**
    * Validate a device
-   * @param {Device} device
+   * @param {TK102} device
    * @param {string} method
    * @constructor
    */
