@@ -119,7 +119,7 @@ class Company extends Component {
     this.setState({selected})
   }
 
-  handleSaveNew() {
+  async handleSaveNew() {
     const {
       selected,
     } = this.state
@@ -127,31 +127,35 @@ class Company extends Component {
       NotificationSuccess,
       NotificationFailure,
     } = this.props
+
+    this.setState({isLoading: true})
+
+    // perform validation
     try {
-      this.setState({isLoading: true})
-      selected.validate('Create').then(reasonsInvalid => {
-        if (reasonsInvalid.count > 0) {
-          this.reasonsInvalid = reasonsInvalid
-          this.setState({isLoading: false})
-        } else {
-          selected.create().then(() => {
-            NotificationSuccess('Successfully Created Company')
-            this.setState({activeState: events.createNewSuccess})
-            this.collect()
-          }).catch(error => {
-            console.error('Error Creating Company', error)
-            NotificationFailure('Error Creating Company')
-          }).finally(() => {
-            this.setState({isLoading: false})
-          })
-        }
-      }).catch(error => {
-        console.error('Error Validating Company', error)
-        NotificationFailure('Error Validating Company')
+      const reasonsInvalid = await selected.validate('Create')
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
         this.setState({isLoading: false})
-      })
-    } catch (error) {
-      console.error('Error Creating Company', error)
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Company', e)
+      NotificationFailure('Error Validating Company')
+      this.setState({isLoading: false})
+      return
+    }
+
+    // if validation passes, perform create
+    try {
+      await selected.create()
+      NotificationSuccess('Successfully Created Company')
+      this.setState({activeState: events.createNewSuccess})
+      await this.collect()
+      this.setState({isLoading: false})
+    } catch (e) {
+      console.error('Error Creating Company', e)
+      NotificationFailure('Error Creating Company')
+      this.setState({isLoading: false})
     }
   }
 
