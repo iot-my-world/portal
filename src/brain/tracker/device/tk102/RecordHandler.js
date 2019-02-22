@@ -1,42 +1,42 @@
 import {jsonRpcRequest} from 'utilities/network/index'
 import config from 'react-global-configuration'
-import TK102 from './Device'
+import TK102 from './TK102'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 export default class RecordHandler {
 
   /**
-   * Create a new device
-   * @param {TK102} device
+   * Create a new tk102
+   * @param {TK102} tk102
    * @constructor
    */
-  static Create(device) {
+  static Create(tk102) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
         url: config.get('brainAPIUrl'),
-        method: 'CompanyRecordHandler.Create',
+        method: 'TK102DeviceRecordHandler.Create',
         request: {
-          device: device.toPOJO(),
+          tk102: tk102.toPOJO(),
         },
       }).then(result => {
-        resolve(new TK102(result.device))
+        resolve(new TK102(result.tk102))
       }).catch(error => reject(error))
     })
   }
 
   /**
-   * Validate a device
-   * @param {TK102} device
+   * Validate a tk102
+   * @param {TK102} tk102
    * @param {string} method
    * @constructor
    */
-  static Validate(device, method) {
+  static Validate(tk102, method) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
         url: config.get('brainAPIUrl'),
-        method: 'CompanyRecordHandler.Validate',
+        method: 'TK102DeviceRecordHandler.Validate',
         request: {
-          device: device.toPOJO(),
+          tk102: tk102.toPOJO(),
           method,
         },
       }).then(result => {
@@ -54,7 +54,7 @@ export default class RecordHandler {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
         url: config.get('brainAPIUrl'),
-        method: 'CompanyRecordHandler.Collect',
+        method: 'TK102DeviceRecordHandler.Collect',
         request: {
           criteria: criteria.map(criterion => criterion.toPOJO()),
           query: query.toPOJO(),

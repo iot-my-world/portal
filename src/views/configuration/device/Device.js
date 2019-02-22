@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 // import PropTypes from 'prop-types'
 import {
   withStyles, Paper, Tabs, Tab,
+  Grid,
 } from '@material-ui/core'
 import {
   TK102,
@@ -35,20 +36,24 @@ class Device extends Component {
   render() {
     const {classes} = this.props
     const {activeTab} = this.state
-    return <React.Fragment>
-      <Paper className={classes.root}>
-        <Tabs
-            value={activeTab}
-            onChange={this.handleTabChange}
-            indicatorColor='primary'
-            textColor='primary'
-            centered
-        >
-          <Tab label={TK102} value={tabs.TK102}/>
-        </Tabs>
-      </Paper>
-      {this.renderTabContent()}
-    </React.Fragment>
+    return <Grid container direction={'column'} spacing={8}>
+      <Grid item>
+        <Paper className={classes.root}>
+          <Tabs
+              value={activeTab}
+              onChange={this.handleTabChange}
+              indicatorColor='primary'
+              textColor='primary'
+              centered
+          >
+            <Tab label={TK102} value={tabs.TK102}/>
+          </Tabs>
+        </Paper>
+      </Grid>
+      <Grid item>
+        {this.renderTabContent()}
+      </Grid>
+    </Grid>
   }
 
   renderTabContent() {
