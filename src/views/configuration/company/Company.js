@@ -51,6 +51,8 @@ const events = {
   createNewSuccess: states.nop,
 
   startEditExisting: states.editingExisting,
+  finishEditExisting: states.nop,
+  cancelEditExisting: states.nop,
 }
 
 class Company extends Component {
@@ -74,13 +76,17 @@ class Company extends Component {
     super(props)
     this.renderControls = this.renderControls.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
     this.handleCreateNew = this.handleCreateNew.bind(this)
+    this.handleCancelCreateNew = this.handleCancelCreateNew.bind(this)
+    this.handleSaveChanges = this.handleSaveChanges.bind(this)
+    this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
+    this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -104,7 +110,7 @@ class Company extends Component {
     })
   }
 
-  handleChange(event) {
+  handleFieldChange(event) {
     let {
       selected,
     } = this.state
@@ -149,6 +155,25 @@ class Company extends Component {
     }
   }
 
+  handleCancelCreateNew() {
+    this.reasonsInvalid.clearAll()
+    this.setState({activeState: events.cancelCreateNew})
+  }
+
+  handleSaveChanges() {
+    this.setState({activeState: events.finishEditExisting})
+  }
+
+  handleStartEditExisting() {
+    this.setState({
+      activeState: events.startEditExisting,
+    })
+  }
+
+  handleCancelEditExisting() {
+    this.setState({activeState: events.finishEditExisting})
+  }
+
   collect() {
     const {
       NotificationFailure,
@@ -183,6 +208,7 @@ class Company extends Component {
   }
 
   handleSelect(rowRecordObj, rowIdx) {
+    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: rowIdx,
       selected: new CompanyEntity(rowRecordObj),
@@ -384,7 +410,7 @@ class Company extends Component {
                 id='name'
                 label='Name'
                 value={selected.name}
-                onChange={this.handleChange}
+                onChange={this.handleFieldChange}
                 disabled={disableFields}
                 helperText={
                   fieldValidations.name
@@ -400,7 +426,7 @@ class Company extends Component {
                 id='adminEmailAddress'
                 label='Admin Email'
                 value={selected.adminEmailAddress}
-                onChange={this.handleChange}
+                onChange={this.handleFieldChange}
                 disabled={disableFields}
                 helperText={
                   fieldValidations.adminEmailAddress
@@ -430,9 +456,7 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                activeState: events.startEditExisting,
-              })}
+              onClick={this.handleStartEditExisting}
           >
             Edit
           </Button>
@@ -468,8 +492,27 @@ class Company extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState(
-                  {activeState: events.cancelCreateNew})}
+              onClick={this.handleCancelCreateNew}
+          >
+            Cancel
+          </Button>
+        </CardActions>
+
+      case states.editingExisting:
+        return <CardActions>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={this.handleSaveChanges}
+          >
+            Save Changes
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={this.handleCancelEditExisting}
           >
             Cancel
           </Button>
