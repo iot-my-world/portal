@@ -30,9 +30,8 @@ deploy_stage:
     - yarn install
     - yarn build
     - tar cvf portal.tar build
-    - scp ./portal.tar gitlabcli@spotnav.net:/home/portal.tar
-    # - ls
-    # - scp ./brain gitlabcli@spotnav.net:/home/gitlabcli
-    # - ssh gitlabcli@spotnav.net "sudo /bin/systemctl stop brain.service"
-    # - ssh gitlabcli@spotnav.net "sudo /bin/mv /home/gitlabcli/brain /home/brain" 
-    # - ssh gitlabcli@spotnav.net "sudo /bin/systemctl start brain.service"
+    - scp ./portal.tar gitlabcli@spotnav.net:/home/gitlabcli
+    - ssh gitlabcli@spotnav.net "sudo /bin/tar -xvf  portal.tar"
+    - ssh gitlabcli@spotnav.net "sudo /bin/rm -rf /var/www/*"
+    - ssh gitlabcli@spotnav.net "sudo /bin/cp -r build/* /var/www/"
+    - ssh gitlabcli@spotnav.net "sudo /bin/rm -rf /home/gitlabcli/*"

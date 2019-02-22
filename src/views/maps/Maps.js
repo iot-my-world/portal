@@ -113,7 +113,7 @@ class Maps extends Component {
   }
   _convertDMSToDD(degrees, minutes, seconds, direction) {
     var dd = degrees + minutes/60 + seconds/(60*60);
-    if (direction == "s" || direction == "w") {
+    if (direction === "s" || direction === "w") {
         dd = dd * -1;
     } // Don't do anything for north or east
     return dd;
