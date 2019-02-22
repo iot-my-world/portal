@@ -13,15 +13,29 @@ const store = createStore(
     window.__REDUX_DEVTOOLS_EXTENSION__(),
 )
 
-// Find host where this app is running i.e. localhost or 192.168 ...
-const host = window && window.location && window.location.hostname
+let hostName = 'localhost'
+let host = 'localhost'
+try {
+  hostName = window.location.hostname.split('.')[0]
+} catch (e) {
+  console.error('error determining hostname', e)
+}
 
-config.set(
-    {
+switch (hostName) {
+  case 'spotnav':
+    config.set({
+      brainAPIUrl: `https://${host}/api`,
+      // webSocketUrl: `wss://${host}/ws`,
+    })
+    break
+
+  case 'localHost':
+  default:
+    config.set({
       brainAPIUrl: `http://${host}:9010/api`,
-      webSocketUrl: `ws://${host}:9008/ws`,
-    },
-)
+      // webSocketUrl: `ws://${host}:9008/ws`,
+    })
+}
 
 ReactDOM.render(
     <Provider store={store}>
