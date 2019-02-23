@@ -20,6 +20,7 @@ import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import SearchDialogTextField from 'components/searchDialogTextField/SearchDialogTextfield'
 
 const styles = theme => ({
   root: {
@@ -568,7 +569,7 @@ class TK102 extends Component {
               <Grid item>
                 <Grid container direction='column' spacing={8}>
                   <Grid item>
-                    <TextField
+                    <SearchDialogTextField
                         className={classes.formField}
                         id='ownerId'
                         label='Owned By'
