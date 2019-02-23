@@ -4,15 +4,19 @@ import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import HomeIcon from '@material-ui/icons/Home'
+import ConfigurationIcon from '@material-ui/icons/Settings'
+import DeviceIcon from '@material-ui/icons/DevicesOther'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
-import CompanyContainer from 'views/party/company/CompanyContainer'
-import ClientContainer from 'views/party/client/ClientContainer'
-import UserContainer from 'views/party/user/UserContainer'
+import CompanyContainer from 'views/configuration/company/CompanyContainer'
+import ClientContainer from 'views/configuration/client/ClientContainer'
+import UserContainer from 'views/configuration/user/UserContainer'
+import Device from 'views/configuration/device/Device'
 import MapsContainer from 'views/maps/MapsContainer'
 import {
-  Party, PartyCompany, PartyClient, PartyUser,
+  Configuration, PartyCompanyConfiguration, PartyClientConfiguration,
+  PartyUserConfiguration, DeviceConfiguration,
 } from 'brain/security/permission/view/permission'
 import {
   System,
@@ -65,30 +69,37 @@ const AppRoutes = [
 
     { // this is a route group
       group: true,
-      viewPermission: Party,
-      text: 'Party',
-      icon: <PeopleIcon/>,
+      viewPermission: Configuration,
+      text: 'Configuration',
+      icon: <ConfigurationIcon/>,
       routes: [
         { // this is an individual route
           text: 'Company',
           icon: <DomainIcon/>,
-          path: '/app/party/company',
+          path: '/app/configuration/company',
           component: CompanyContainer,
-          viewPermission: PartyCompany,
+          viewPermission: PartyCompanyConfiguration,
         },
         {
           text: 'Client',
           icon: <PeopleIcon/>,
-          path: '/app/party/client',
+          path: '/app/configuration/client',
           component: ClientContainer,
-          viewPermission: PartyClient,
+          viewPermission: PartyClientConfiguration,
         },
         {
           text: 'User',
           icon: <PersonIcon/>,
-          path: '/app/party/user',
+          path: '/app/configuration/user',
           component: UserContainer,
-          viewPermission: PartyUser,
+          viewPermission: PartyUserConfiguration,
+        },
+        {
+          text: 'Device',
+          icon: <DeviceIcon/>,
+          path: '/app/configuration/device',
+          component: Device,
+          viewPermission: DeviceConfiguration,
         },
       ],
     },

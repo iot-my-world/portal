@@ -1,5 +1,6 @@
 
-export const Party = "Party"
-export const PartyCompany = "PartyCompany"
-export const PartyClient = "PartyClient"
-export const PartyUser = "PartyUser"
+export const Configuration = "Configuration"
+export const PartyCompanyConfiguration = "PartyCompanyConfiguration"
+export const PartyClientConfiguration = "PartyClientConfiguration"
+export const PartyUserConfiguration = "PartyUserConfiguration"
+export const DeviceConfiguration = "DeviceConfiguration"

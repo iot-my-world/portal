@@ -63,6 +63,13 @@ export default class ReasonsInvalid {
   }
 
   /**
+   * Clears all reasons invalid
+   */
+  clearAll() {
+    this._reasonsInvalid = []
+  }
+
+  /**
    * Clears reasons invalid on field
    * @param {string} field
    */
@@ -74,7 +81,7 @@ export default class ReasonsInvalid {
    * The number of reasons invalid
    * @returns {number}
    */
-  get count(){
+  get count() {
     return this._reasonsInvalid.length
   }
 }

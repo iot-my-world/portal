@@ -4,7 +4,7 @@ import {
   withStyles, Input,
 } from '@material-ui/core'
 import {
-  Text as TextCriterion,
+  TextCriterion,
 } from 'brain/search/criterion'
 
 const styles = (theme) => ({})

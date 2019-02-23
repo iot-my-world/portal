@@ -24,13 +24,13 @@ export default class Reading extends Base {
    * @type {string}
    * @private
    */
-  _southCoordinate = ''
+  _latitude = ''
 
   /**
    * @type {string}
    * @private
    */
-  _eastCoordinate = ''
+  _longitute = ''
 
   /**
    * @type {number}
@@ -55,8 +55,8 @@ export default class Reading extends Base {
         this._id = reading.id
         this._imei = reading.imei
         this._raw = reading.raw
-        this._southCoordinate = reading.southCoordinate
-        this._eastCoordinate = reading.eastCoordinate
+        this._latitude = reading.latitude
+        this._longitute = reading.longitude
         this._timeStamp = reading.timeStamp
       } catch (e) {
         throw new Error(`error constructing reading object: ${e}`)
@@ -84,20 +84,20 @@ export default class Reading extends Base {
     this._raw = newVal
   }
 
-  get southCoordinate() {
-    return this._southCoordinate
+  get latitude() {
+    return this._latitude
   }
 
-  set southCoordinate(newVal) {
-    this._southCoordinate = newVal
+  set latitude(newVal) {
+    this._latitude = newVal
   }
 
-  get eastCoordinate() {
-    return this._eastCoordinate
+  get longitude() {
+    return this._longitute
   }
 
-  set eastCoordinate(newVal) {
-    this._eastCoordinate = newVal
+  set longitude(newVal) {
+    this._longitute = newVal
   }
 
   get timeStamp() {

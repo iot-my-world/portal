@@ -1,7 +1,7 @@
-import Device from './Device'
+import TK102 from './TK102'
 import RecordHandler from './RecordHandler'
 
 export {
-  Device,
+  TK102,
   RecordHandler,
 }
