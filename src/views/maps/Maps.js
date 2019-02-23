@@ -96,8 +96,10 @@ class Maps extends Component {
   _getLocData(readings) {
     return readings.map(function(elem) {
       return {
-        "@lat": this._transform(elem._southCoordinate, 's'),
-        "@lon": this._transform(elem._eastCoordinate, 'e'),
+        // "@lat": this._transform(elem._southCoordinate, 's'),
+        // "@lon": this._transform(elem._eastCoordinate, 'e'),
+        "@lat": elem.latitude,
+        "@lon": elem.longitude,
         "time": elem._timeStamp
       }
     }, this)
