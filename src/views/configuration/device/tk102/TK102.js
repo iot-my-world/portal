@@ -25,6 +25,7 @@ import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'
+import {retrieveFromList} from 'brain/search/identifier/utilities'
 
 const styles = theme => ({
   root: {
@@ -95,8 +96,11 @@ class TK102 extends Component {
     records: [],
     totalNoRecords: 0,
   }
-  companyEntities = []
-  clientEntities = []
+  entityMap = {
+    Company: [],
+    Client: [],
+    System: [],
+  }
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
@@ -304,7 +308,7 @@ class TK102 extends Component {
     try {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this.companyEntities = (await CompanyRecordHandler.Collect(
+      this.entityMap.Company = (await CompanyRecordHandler.Collect(
           [
             new ListTextCriterion({
               field: 'id',
@@ -314,7 +318,7 @@ class TK102 extends Component {
           blankQuery,
       )).records
     } catch (e) {
-      this.companyEntities = []
+      this.entityMap.Company = []
       console.error('error collecting company records', e)
       NotificationFailure('Failed To Fetch Company Records')
       this.setState({recordCollectionInProgress: false})
@@ -325,7 +329,7 @@ class TK102 extends Component {
     try {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this.clientEntities = (await ClientRecordHandler.Collect(
+      this.entityMap.Client = (await ClientRecordHandler.Collect(
           [
             new ListTextCriterion({
               field: 'id',
@@ -335,7 +339,7 @@ class TK102 extends Component {
           blankQuery,
       )).records
     } catch (e) {
-      this.companyEntities = []
+      this.entityMap.Client = []
       console.error('error collecting client records', e)
       NotificationFailure('Failed To Fetch Client Records')
       this.setState({recordCollectionInProgress: false})
@@ -418,8 +422,21 @@ class TK102 extends Component {
                   },
                   {
                     Header: 'Owned By',
-                    accessor: 'ownerId.id',
+                    accessor: 'ownerId',
                     width: 150,
+                    Cell: rowCellInfo => {
+                      try {
+                        const list = this.entityMap[rowCellInfo.original.ownerPartyType]
+                        const entity = retrieveFromList(
+                            rowCellInfo.value,
+                            list ? list : [],
+                        )
+                        return entity ? entity.name : ''
+                      } catch (e) {
+                        console.error('error getting owner info', e)
+                        return '-'
+                      }
+                    },
                     config: {
                       filter: {
                         type: Text,
@@ -440,6 +457,19 @@ class TK102 extends Component {
                     Header: 'Assigned To',
                     accessor: 'assignedId.id',
                     width: 150,
+                    Cell: rowCellInfo => {
+                      try {
+                        const list = this.entityMap[rowCellInfo.original.assignedPartyType]
+                        const entity = retrieveFromList(
+                            rowCellInfo.value,
+                            list ? list : [],
+                        )
+                        return entity ? entity.name : ''
+                      } catch (e) {
+                        console.error('error getting assigned info', e)
+                        return '-'
+                      }
+                    },
                     config: {
                       filter: {
                         type: Text,
