@@ -2,7 +2,8 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
-  Button, TextField,
+  Button, TextField, FormControl, InputLabel, Select, MenuItem,
+  FormHelperText,
 } from '@material-ui/core'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {
@@ -12,6 +13,7 @@ import {
   TK102 as TK102Entity,
   RecordHandler as TK102RecordHandler,
 } from 'brain/tracker/device/tk102/index'
+import {allPartyTypes} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
@@ -20,9 +22,20 @@ import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 
 const styles = theme => ({
+  root: {
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr',
+    gridTemplateColumns: '1fr',
+  },
+  detailCardWrapper: {
+    justifySelf: 'center'
+  },
+  tableWrapper: {
+    overflow: 'auto'
+  },
   formField: {
     height: '60px',
-    width: '150px',
+    minWidth: '150px',
   },
   progress: {
     margin: 2,
@@ -42,7 +55,8 @@ const states = {
 }
 
 const events = {
-  init: states.nop,
+  // init: states.nop,
+  init: states.editingNew,
 
   selectExisting: states.viewingExisting,
 
@@ -253,13 +267,8 @@ class TK102 extends Component {
       classes,
     } = this.props
 
-    return <Grid
-        container
-        direction='column'
-        spacing={8}
-        alignItems='center'
-    >
-      <Grid item xl={12}>
+    return <div className={classes.root} style={{gridRowGap: 8}}>
+      <div className={classes.detailCardWrapper}>
         <Grid container>
           <Grid item>
             <Card className={classes.detailCard}>
@@ -270,21 +279,21 @@ class TK102 extends Component {
             </Card>
           </Grid>
         </Grid>
-      </Grid>
-      <Grid item xl={12}>
+      </div>
+      <div className={classes.tableWrapper}>
         <Card>
           <CardContent>
             <BEPTable
                 loading={recordCollectionInProgress}
                 totalNoRecords={totalNoRecords}
-                noDataText={'No Companies Found'}
+                noDataText={'No TK102 Devices Found'}
                 data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
                 columns={[
                   {
-                    Header: 'Name',
-                    accessor: 'name',
+                    Header: 'Owner Party Type',
+                    accessor: 'ownerPartyType',
                     config: {
                       filter: {
                         type: Text,
@@ -292,8 +301,53 @@ class TK102 extends Component {
                     },
                   },
                   {
-                    Header: 'Admin Email',
-                    accessor: 'adminEmailAddress',
+                    Header: 'Owned By',
+                    accessor: 'ownerId.id',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Assigned Party Type',
+                    accessor: 'assignedPartyType',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Assigned To',
+                    accessor: 'assignedId.id',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Sim Country Code',
+                    accessor: 'simCountryCode',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Sim Number',
+                    accessor: 'simNumber',
+                    config: {
+                      filter: {
+                        type: Text,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'IMEI',
+                    accessor: 'imei',
                     config: {
                       filter: {
                         type: Text,
@@ -326,9 +380,9 @@ class TK102 extends Component {
             />
           </CardContent>
         </Card>
-      </Grid>
+      </div>
       <FullPageLoader open={isLoading}/>
-    </Grid>
+    </div>
   }
 
   renderTK102Details() {
@@ -341,6 +395,9 @@ class TK102 extends Component {
     } = this.props
 
     const fieldValidations = this.reasonsInvalid.toMap()
+    const helperText = field => fieldValidations[field]
+        ? fieldValidations[field].help
+        : undefined
     const disableFields = (activeState === states.viewingExisting) ||
         isLoading
 
@@ -387,13 +444,13 @@ class TK102 extends Component {
             container
             direction='column'
             spacing={8}
-            alignItems={'center'}
+            alignItems='center'
         >
           <Grid item>
             <Typography
-                variant={'body1'}
-                align={'center'}
-                color={'primary'}
+                variant='body1'
+                align='center'
+                color='primary'
             >
               {(() => {
                 switch (activeState) {
@@ -409,36 +466,140 @@ class TK102 extends Component {
             </Typography>
           </Grid>
           <Grid item>
-            <TextField
-                className={classes.formField}
-                id='name'
-                label='Name'
-                value={selected.name}
-                onChange={this.handleFieldChange}
-                disabled={disableFields}
-                helperText={
-                  fieldValidations.name
-                      ? fieldValidations.name.help
-                      : undefined
-                }
-                error={!!fieldValidations.name}
-            />
-          </Grid>
-          <Grid item>
-            <TextField
-                className={classes.formField}
-                id='adminEmailAddress'
-                label='Admin Email'
-                value={selected.adminEmailAddress}
-                onChange={this.handleFieldChange}
-                disabled={disableFields}
-                helperText={
-                  fieldValidations.adminEmailAddress
-                      ? fieldValidations.adminEmailAddress.help
-                      : undefined
-                }
-                error={!!fieldValidations.adminEmailAddress}
-            />
+            <Grid container direction='row' spacing={8}>
+              <Grid item>
+                <Grid container direction='column' spacing={8}>
+                  <Grid item>
+                    <FormControl
+                        className={classes.formField}
+                        error={!!fieldValidations.ownerPartyType}
+                        aria-describedby='ownerPartyType'
+                    >
+                      <InputLabel htmlFor='ownerPartyType'>
+                        Owner Party Type
+                      </InputLabel>
+                      <Select
+                          id={'ownerPartyType'}
+                          value={selected.ownerPartyType}
+                          onChange={this.handleFieldChange}
+                          disabled={disableFields}
+                          style={{width: 150}}
+                      >
+                        <MenuItem value=''><em>None</em></MenuItem>
+                        {allPartyTypes.map((partyType, idx) => {
+                          return <MenuItem
+                              key={idx}
+                              value={partyType}
+                          >
+                            {partyType}
+                          </MenuItem>
+                        })}
+                      </Select>
+                      {(!!fieldValidations.ownerPartyType) &&
+                      <FormHelperText id='ownerPartyType'>
+                        {helperText('ownerPartyType')}
+                      </FormHelperText>}
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    <FormControl
+                        className={classes.formField}
+                        error={!!fieldValidations.assignedPartyType}
+                        aria-describedby='assignedPartyType'
+                    >
+                      <InputLabel htmlFor='assignedPartyType'>
+                        Assigned Party Type
+                      </InputLabel>
+                      <Select
+                          id={'assignedPartyType'}
+                          value={selected.assignedPartyType}
+                          onChange={this.handleFieldChange}
+                          disabled={disableFields}
+                          style={{width: 165}}
+                      >
+                        <MenuItem value=''><em>None</em></MenuItem>
+                        {allPartyTypes.map((partyType, idx) => {
+                          return <MenuItem
+                              key={idx}
+                              value={partyType}
+                          >
+                            {partyType}
+                          </MenuItem>
+                        })}
+                      </Select>
+                      {(!!fieldValidations.assignedPartyType) &&
+                      <FormHelperText id='assignedPartyType'>
+                        {helperText('assignedPartyType')}
+                      </FormHelperText>}
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        id='simCountryCode'
+                        label='Sim Country Code'
+                        value={selected.simCountryCode}
+                        onChange={this.handleFieldChange}
+                        disabled={disableFields}
+                        helperText={helperText('simCountryCode')}
+                        error={!!fieldValidations.simCountryCode}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        id='imei'
+                        label='imei'
+                        value={selected.imei}
+                        onChange={this.handleFieldChange}
+                        disabled={disableFields}
+                        helperText={helperText('imei')}
+                        error={!!fieldValidations.imei}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Grid container direction='column' spacing={8}>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        id='ownerId'
+                        label='Owned By'
+                        value={selected.ownerId.id}
+                        onChange={this.handleFieldChange}
+                        disabled={disableFields}
+                        helperText={helperText('ownerId')}
+                        error={!!fieldValidations.ownerId}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        id='assignedId'
+                        label='Assigned To'
+                        value={selected.assignedId.id}
+                        onChange={this.handleFieldChange}
+                        disabled={disableFields}
+                        helperText={helperText('assignedId')}
+                        error={!!fieldValidations.assignedId}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        id='simNumber'
+                        label='Sim Number'
+                        value={selected.simNumber}
+                        onChange={this.handleFieldChange}
+                        disabled={disableFields}
+                        helperText={helperText('simNumber')}
+                        error={!!fieldValidations.simNumber}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
 

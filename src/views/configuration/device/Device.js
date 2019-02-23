@@ -10,9 +10,15 @@ import {
 import TK102Container from './tk102/TK102Container'
 
 const styles = theme => ({
-  tabRoot: {
-    flexGrow: 1,
+  root: {
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr',
+    gridTemplateColumns: '1fr',
   },
+  tabBarWrapper: {
+    marginBottom: 8,
+  },
+  contentWrapper: {},
 })
 
 const tabs = {
@@ -36,9 +42,9 @@ class Device extends Component {
   render() {
     const {classes} = this.props
     const {activeTab} = this.state
-    return <Grid container direction={'column'} spacing={8}>
-      <Grid item>
-        <Paper className={classes.root}>
+    return <div className={classes.root}>
+      <div className={classes.tabBarWrapper}>
+        <Paper>
           <Tabs
               value={activeTab}
               onChange={this.handleTabChange}
@@ -49,11 +55,11 @@ class Device extends Component {
             <Tab label={TK102} value={tabs.TK102}/>
           </Tabs>
         </Paper>
-      </Grid>
-      <Grid item>
+      </div>
+      <div className={classes.contentWrapper}>
         {this.renderTabContent()}
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   }
 
   renderTabContent() {
