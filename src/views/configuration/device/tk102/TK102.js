@@ -13,6 +13,7 @@ import {
   TK102 as TK102Entity,
   RecordHandler as TK102RecordHandler,
 } from 'brain/tracker/device/tk102/index'
+import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
 import {allPartyTypes} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
@@ -21,6 +22,7 @@ import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 import SearchDialogTextField from 'components/searchDialogTextField/SearchDialogTextfield'
+import {IdIdentifier} from 'brain/search/identifier'
 
 const styles = theme => ({
   root: {
@@ -133,7 +135,19 @@ class TK102 extends Component {
       selected,
     } = this.state
     const fieldName = event.target.name ? event.target.name : event.target.id
-    selected[fieldName] = event.target.value
+
+    switch (fieldName) {
+      case 'ownerId':
+        selected[fieldName] = new IdIdentifier(event.target.value.id)
+        break
+
+      default:
+        selected[fieldName] = event.target.value
+    }
+    if (fieldName === 'ownerId') {
+      console.log('event', event)
+    }
+
     this.reasonsInvalid.clearField(fieldName)
     this.setState({selected})
   }
@@ -578,6 +592,18 @@ class TK102 extends Component {
                         disabled={disableFields}
                         helperText={helperText('ownerId')}
                         error={!!fieldValidations.ownerId}
+                        recordHandler={CompanyRecordHandler}
+                        searchColumns={[
+                          {
+                            Header: 'Name',
+                            accessor: 'name',
+                            config: {
+                              filter: {
+                                type: Text,
+                              },
+                            },
+                          },
+                        ]}
                     />
                   </Grid>
                   <Grid item>
