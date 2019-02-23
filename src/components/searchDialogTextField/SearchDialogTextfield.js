@@ -3,10 +3,12 @@ import PropTypes from 'prop-types'
 import {
   withStyles, TextField, Dialog,
   DialogTitle, DialogContent,
-  DialogActions, Button,
+  DialogActions, Button, Typography,
+  Hidden,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import Query from 'brain/search/Query'
+import ErrorIcon from '@material-ui/icons/ErrorOutline'
 
 const styles = theme => ({})
 
@@ -20,6 +22,9 @@ class SearchDialogTextField extends Component {
     this.collect = this.collect.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
+    this.renderUndefinedRecordHandler
+        = this.renderUndefinedRecordHandler.bind(this)
+    this.renderTable = this.renderTable.bind(this)
     this.collectTimeout = () => {
     }
     this.state = {
@@ -36,8 +41,29 @@ class SearchDialogTextField extends Component {
   collectCriteria = []
   collectQuery = new Query()
 
-  componentDidMount(){
-    this.collect()
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {open: prevOpen} = prevState
+    const {open} = this.state
+    const {recordHandler} = this.props
+    if (
+        (open !== prevOpen) &&
+        open
+    ) {
+      this.collectCriteria = []
+      this.collectQuery = new Query()
+      this.setState({
+        value: '',
+        isLoading: false,
+        selected: {},
+        selectedRowIdx: -1,
+        records: [],
+        totalNoRecords: 0,
+      })
+      if (recordHandler === undefined) {
+        return
+      }
+      this.collect()
+    }
   }
 
   handleOpen() {
@@ -61,12 +87,12 @@ class SearchDialogTextField extends Component {
       selected,
       selectedRowIdx,
     } = this.state
-    
+
     if (selectedRowIdx > 0) {
       this.handleClose()
       return
     }
-    
+
     onChange({
       target: {
         id,
@@ -113,20 +139,19 @@ class SearchDialogTextField extends Component {
     })
   }
 
-  render() {
+  renderUndefinedRecordHandler() {
     const {
       open,
-      isLoading,
-      selectedRowIdx,
-      records,
-      totalNoRecords,
     } = this.state
     const {
       recordHandler,
       searchColumns,
+      undefinedMessage,
       theme,
+      classes,
       ...rest
     } = this.props
+
     return <React.Fragment>
       <TextField
           {...rest}
@@ -140,43 +165,28 @@ class SearchDialogTextField extends Component {
       >
         <DialogTitle id='form-dialog-title'>{rest.label}</DialogTitle>
         <DialogContent>
-          <BEPTable
-              loading={isLoading}
-              totalNoRecords={totalNoRecords}
-              data={records}
-              onCriteriaQueryChange={this.handleCriteriaQueryChange}
-              columns={searchColumns}
-              getTdProps={(state, rowInfo) => {
-                const rowIndex = rowInfo ? rowInfo.index : undefined
-                return {
-                  onClick: (e, handleOriginal) => {
-                    if (rowInfo) {
-                      this.handleSelect(rowInfo.original, rowInfo.index)
-                    }
-                    if (handleOriginal) {
-                      handleOriginal()
-                    }
-                  },
-                  style: {
-                    background: rowIndex === selectedRowIdx ?
-                        theme.palette.secondary.light :
-                        'white',
-                    color: rowIndex === selectedRowIdx ?
-                        theme.palette.secondary.contrastText :
-                        theme.palette.primary.main,
-                  },
-                }
-              }}
-          />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            alignItems: 'center',
+            justifyItems: 'center',
+          }}>
+            <div>
+              <Typography color={'error'}>
+                {undefinedMessage}
+              </Typography>
+            </div>
+            <div>
+              <ErrorIcon
+                  color={'error'}
+                  style={{
+                    fontSize: 80,
+                  }}
+              />
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button
-              onClick={this.handleSelectClose}
-              color='primary'
-              variant='contained'
-          >
-            Select
-          </Button>
           <Button
               onClick={this.handleClose}
               color='primary'
@@ -188,6 +198,129 @@ class SearchDialogTextField extends Component {
       </Dialog>
     </React.Fragment>
   }
+
+  renderTable() {
+    const {
+      isLoading,
+      selectedRowIdx,
+      records,
+      totalNoRecords,
+    } = this.state
+    const {
+      searchColumns,
+      theme,
+    } = this.props
+    return <BEPTable
+        loading={isLoading}
+        totalNoRecords={totalNoRecords}
+        data={records}
+        onCriteriaQueryChange={this.handleCriteriaQueryChange}
+        columns={searchColumns}
+        getTdProps={(state, rowInfo) => {
+          const rowIndex = rowInfo ? rowInfo.index : undefined
+          return {
+            onClick: (e, handleOriginal) => {
+              if (rowInfo) {
+                this.handleSelect(rowInfo.original, rowInfo.index)
+              }
+              if (handleOriginal) {
+                handleOriginal()
+              }
+            },
+            style: {
+              background: rowIndex === selectedRowIdx ?
+                  theme.palette.secondary.light :
+                  'white',
+              color: rowIndex === selectedRowIdx ?
+                  theme.palette.secondary.contrastText :
+                  theme.palette.primary.main,
+            },
+          }
+        }}
+    />
+  }
+
+  render() {
+    const {
+      open,
+    } = this.state
+    const {
+      recordHandler,
+      searchColumns,
+      theme,
+      undefinedMessage,
+      ...rest
+    } = this.props
+
+    if (recordHandler === undefined) {
+      return this.renderUndefinedRecordHandler()
+    }
+
+    return <React.Fragment>
+      <TextField
+          {...rest}
+          onClick={this.handleOpen}
+          inputProps={{readOnly: true}}
+      />
+      <Hidden smDown>
+        <Dialog
+            open={open}
+            onClose={this.handleClose}
+            aria-labelledby='form-dialog-title'
+        >
+          <DialogTitle id='form-dialog-title'>{rest.label}</DialogTitle>
+          <DialogContent>
+            {this.renderTable()}
+          </DialogContent>
+          <DialogActions>
+            <Button
+                onClick={this.handleSelectClose}
+                color='primary'
+                variant='contained'
+            >
+              Select
+            </Button>
+            <Button
+                onClick={this.handleClose}
+                color='primary'
+                variant='contained'
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Hidden>
+      <Hidden mdUp>
+        <Dialog
+            open={open}
+            onClose={this.handleClose}
+            aria-labelledby='form-dialog-title'
+            fullScreen
+        >
+          <DialogTitle id='form-dialog-title'>{rest.label}</DialogTitle>
+          <DialogContent>
+            {this.renderTable()}
+          </DialogContent>
+          <DialogActions>
+            <Button
+                onClick={this.handleSelectClose}
+                color='primary'
+                variant='contained'
+            >
+              Select
+            </Button>
+            <Button
+                onClick={this.handleClose}
+                color='primary'
+                variant='contained'
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Hidden>
+    </React.Fragment>
+  }
 }
 
 SearchDialogTextField = withStyles(styles, {withTheme: true})(
@@ -196,7 +329,7 @@ SearchDialogTextField = withStyles(styles, {withTheme: true})(
 SearchDialogTextField.propTypes = {
   onChange: PropTypes.func.isRequired,
   searchColumns: PropTypes.array.isRequired,
-  recordHandler: PropTypes.any.isRequired,
+  recordHandler: PropTypes.any,
 }
 SearchDialogTextField.defaultProps = {}
 

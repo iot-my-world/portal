@@ -14,14 +14,16 @@ import {
   RecordHandler as TK102RecordHandler,
 } from 'brain/tracker/device/tk102/index'
 import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
-import {allPartyTypes} from 'brain/party/types'
+import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
+import {allPartyTypes, Company, Client} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
-import SearchDialogTextField from 'components/searchDialogTextField/SearchDialogTextfield'
+import SearchDialogTextField
+  from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'
 
 const styles = theme => ({
@@ -31,10 +33,10 @@ const styles = theme => ({
     gridTemplateColumns: '1fr',
   },
   detailCardWrapper: {
-    justifySelf: 'center'
+    justifySelf: 'center',
   },
   tableWrapper: {
-    overflow: 'auto'
+    overflow: 'auto',
   },
   formField: {
     height: '60px',
@@ -70,6 +72,16 @@ const events = {
   startEditExisting: states.editingExisting,
   finishEditExisting: states.nop,
   cancelEditExisting: states.nop,
+}
+
+function recordHandlerSelect(partyType) {
+  switch (partyType) {
+    case Company:
+      return CompanyRecordHandler
+    case Client:
+      return ClientRecordHandler
+    default:
+  }
 }
 
 class TK102 extends Component {
@@ -313,6 +325,7 @@ class TK102 extends Component {
                   {
                     Header: 'Owner Party Type',
                     accessor: 'ownerPartyType',
+                    width: 136,
                     config: {
                       filter: {
                         type: Text,
@@ -322,6 +335,7 @@ class TK102 extends Component {
                   {
                     Header: 'Owned By',
                     accessor: 'ownerId.id',
+                    width: 150,
                     config: {
                       filter: {
                         type: Text,
@@ -331,6 +345,7 @@ class TK102 extends Component {
                   {
                     Header: 'Assigned Party Type',
                     accessor: 'assignedPartyType',
+                    width: 160,
                     config: {
                       filter: {
                         type: Text,
@@ -340,6 +355,7 @@ class TK102 extends Component {
                   {
                     Header: 'Assigned To',
                     accessor: 'assignedId.id',
+                    width: 150,
                     config: {
                       filter: {
                         type: Text,
@@ -349,6 +365,7 @@ class TK102 extends Component {
                   {
                     Header: 'Sim Country Code',
                     accessor: 'simCountryCode',
+                    width: 150,
                     config: {
                       filter: {
                         type: Text,
@@ -358,6 +375,7 @@ class TK102 extends Component {
                   {
                     Header: 'Sim Number',
                     accessor: 'simNumber',
+                    width: 150,
                     config: {
                       filter: {
                         type: Text,
@@ -367,6 +385,7 @@ class TK102 extends Component {
                   {
                     Header: 'IMEI',
                     accessor: 'imei',
+                    width: 150,
                     config: {
                       filter: {
                         type: Text,
@@ -592,7 +611,8 @@ class TK102 extends Component {
                         disabled={disableFields}
                         helperText={helperText('ownerId')}
                         error={!!fieldValidations.ownerId}
-                        recordHandler={CompanyRecordHandler}
+                        recordHandler={recordHandlerSelect(selected.ownerPartyType)}
+                        undefinedMessage={'Please First Select Owner Party Type'}
                         searchColumns={[
                           {
                             Header: 'Name',
@@ -607,7 +627,7 @@ class TK102 extends Component {
                     />
                   </Grid>
                   <Grid item>
-                    <TextField
+                    <SearchDialogTextField
                         className={classes.formField}
                         id='assignedId'
                         label='Assigned To'
@@ -616,6 +636,19 @@ class TK102 extends Component {
                         disabled={disableFields}
                         helperText={helperText('assignedId')}
                         error={!!fieldValidations.assignedId}
+                        recordHandler={recordHandlerSelect(selected.assignedPartyType)}
+                        undefinedMessage={'Please First Select Owner Party Type'}
+                        searchColumns={[
+                          {
+                            Header: 'Name',
+                            accessor: 'name',
+                            config: {
+                              filter: {
+                                type: Text,
+                              },
+                            },
+                          },
+                        ]}
                     />
                   </Grid>
                   <Grid item>

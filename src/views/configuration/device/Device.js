@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 // import PropTypes from 'prop-types'
 import {
   withStyles, Paper, Tabs, Tab,
-  Grid,
 } from '@material-ui/core'
 import {
   TK102,
