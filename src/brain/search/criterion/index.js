@@ -1,5 +1,5 @@
-import Text from './Text'
+import TextCriterion from './Text'
 
 export {
-  Text,
+  TextCriterion,
 }

@@ -15,12 +15,12 @@ import {
 } from 'brain/tracker/device/tk102/index'
 import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
 import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
-import {allPartyTypes, Company, Client} from 'brain/party/types'
+import {allPartyTypes, Company, Client, System} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
+import {ListTextCriterion} from 'brain/search/criterion/list'
 import {Query} from 'brain/search/index'
-import PartyRegistrar from 'brain/party/registrar/Registrar'
 import LoginClaims from 'brain/security/auth/claims/LoginClaims'
 import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
@@ -95,7 +95,8 @@ class TK102 extends Component {
     records: [],
     totalNoRecords: 0,
   }
-
+  companyEntities = []
+  clientEntities = []
   reasonsInvalid = new ReasonsInvalid()
 
   collectCriteria = []
@@ -110,7 +111,6 @@ class TK102 extends Component {
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
-    this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
     this.handleCreateNew = this.handleCreateNew.bind(this)
     this.handleCancelCreateNew = this.handleCancelCreateNew.bind(this)
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
@@ -151,6 +151,17 @@ class TK102 extends Component {
     switch (fieldName) {
       case 'ownerId':
         selected[fieldName] = new IdIdentifier(event.target.value.id)
+        break
+      case 'ownerPartyType':
+        // if owner party type changed clear owner id
+        selected['ownerId'] = new IdIdentifier()
+        selected[fieldName] = event.target.value
+        break
+
+      case 'assignedPartyType':
+        // if assigned party type changed clear assigned id
+        selected['assignedId'] = new IdIdentifier()
+        selected[fieldName] = event.target.value
         break
 
       default:
@@ -223,26 +234,119 @@ class TK102 extends Component {
     this.setState({activeState: events.finishEditExisting})
   }
 
-  collect() {
+  async collect() {
     const {
       NotificationFailure,
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    TK102RecordHandler.Collect(this.collectCriteria, this.collectQuery)
-        .then(response => {
-          this.setState({
-            records: response.records,
-            totalNoRecords: response.total,
-          })
-        })
-        .catch(error => {
-          console.error(`error collecting records: ${error}`)
-          NotificationFailure('Failed To Fetch Companies')
-        })
-        .finally(() => {
-          this.setState({recordCollectionInProgress: false})
-        })
+    // fetch tk102 records
+    let response
+    try {
+      response =
+          await TK102RecordHandler.Collect(
+              this.collectCriteria,
+              this.collectQuery,
+          )
+    } catch (e) {
+      console.error('error collecting tk102 records', e)
+      NotificationFailure('Failed To Fetch TK102 Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    // compile list criteria for retrieval of client and company
+    // entities associated with these TK102 devices
+    let systemEntityIds = []
+    let clientEntityIds = []
+    let companyEntityIds = []
+    response.records.forEach(record => {
+      switch (record.ownerPartyType) {
+        case System:
+          if (!systemEntityIds.includes(record.ownerId.id)) {
+            systemEntityIds.push(record.ownerId.id)
+          }
+          break
+        case Company:
+          if (!companyEntityIds.includes(record.ownerId.id)) {
+            companyEntityIds.push(record.ownerId.id)
+          }
+          break
+        case Client:
+          if (!clientEntityIds.includes(record.ownerId.id)) {
+            clientEntityIds.push(record.ownerId.id)
+          }
+          break
+        default:
+      }
+
+      switch (record.assignedPartyType) {
+        case System:
+          if (!systemEntityIds.includes(record.assignedId.id)) {
+            systemEntityIds.push(record.assignedId.id)
+          }
+          break
+        case Company:
+          if (!companyEntityIds.includes(record.assignedId.id)) {
+            companyEntityIds.push(record.assignedId.id)
+          }
+          break
+        case Client:
+          if (!clientEntityIds.includes(record.assignedId.id)) {
+            clientEntityIds.push(record.assignedId.id)
+          }
+          break
+        default:
+      }
+    })
+
+    // fetch company entities
+    try {
+      const blankQuery = new Query()
+      blankQuery.limit = 0
+      this.companyEntities = (await CompanyRecordHandler.Collect(
+          [
+            new ListTextCriterion({
+              field: 'id',
+              list: companyEntityIds,
+            }),
+          ],
+          blankQuery,
+      )).records
+    } catch (e) {
+      this.companyEntities = []
+      console.error('error collecting company records', e)
+      NotificationFailure('Failed To Fetch Company Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    // fetch client entities
+    try {
+      const blankQuery = new Query()
+      blankQuery.limit = 0
+      this.clientEntities = (await ClientRecordHandler.Collect(
+          [
+            new ListTextCriterion({
+              field: 'id',
+              list: clientEntityIds,
+            }),
+          ],
+          blankQuery,
+      )).records
+    } catch (e) {
+      this.companyEntities = []
+      console.error('error collecting client records', e)
+      NotificationFailure('Failed To Fetch Client Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    this.setState({
+      recordCollectionInProgress: false,
+      records: response.records,
+      totalNoRecords: response.total,
+    })
   }
 
   handleCriteriaQueryChange(criteria, query) {
@@ -262,26 +366,6 @@ class TK102 extends Component {
       selectedRowIdx: rowIdx,
       selected: new TK102Entity(rowRecordObj),
       activeState: events.selectExisting,
-    })
-  }
-
-  handleInviteAdmin() {
-    const {
-      selected,
-    } = this.state
-    const {
-      NotificationSuccess,
-      NotificationFailure,
-    } = this.props
-
-    this.setState({isLoading: true})
-    PartyRegistrar.InviteTK102AdminUser(selected.identifier).then(() => {
-      NotificationSuccess('Successfully Invited TK102 Admin User')
-    }).catch(error => {
-      console.error('Failed to Invite TK102 Admin User', error)
-      NotificationFailure('Failed to Invite TK102 Admin User')
-    }).finally(() => {
-      this.setState({isLoading: false})
     })
   }
 
@@ -611,7 +695,8 @@ class TK102 extends Component {
                         disabled={disableFields}
                         helperText={helperText('ownerId')}
                         error={!!fieldValidations.ownerId}
-                        recordHandler={recordHandlerSelect(selected.ownerPartyType)}
+                        recordHandler={recordHandlerSelect(
+                            selected.ownerPartyType)}
                         undefinedMessage={'Please First Select Owner Party Type'}
                         searchColumns={[
                           {
@@ -636,7 +721,8 @@ class TK102 extends Component {
                         disabled={disableFields}
                         helperText={helperText('assignedId')}
                         error={!!fieldValidations.assignedId}
-                        recordHandler={recordHandlerSelect(selected.assignedPartyType)}
+                        recordHandler={recordHandlerSelect(
+                            selected.assignedPartyType)}
                         undefinedMessage={'Please First Select Owner Party Type'}
                         searchColumns={[
                           {
@@ -690,14 +776,6 @@ class TK102 extends Component {
               onClick={this.handleStartEditExisting}
           >
             Edit
-          </Button>
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={this.handleInviteAdmin}
-          >
-            Invite Admin
           </Button>
           <Button
               size='small'
