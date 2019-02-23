@@ -11,7 +11,9 @@ let TK102Container = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    claims: state.auth.claims,
+  }
 }
 
 TK102Container = connect(

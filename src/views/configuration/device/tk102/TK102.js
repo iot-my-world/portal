@@ -115,7 +115,10 @@ class TK102 extends Component {
     } = this.props
     let newTK102Entity = new TK102Entity()
     newTK102Entity.parentId = claims.partyId
-    newTK102Entity.parentPartyType = claims.partyType
+    newTK102Entity.ownerPartyType = claims.partyType
+    newTK102Entity.ownerId = claims.partyId
+    newTK102Entity.assignedPartyType = claims.partyType
+    newTK102Entity.assignedId = claims.partyId
 
     this.setState({
       selectedRowIdx: -1,
@@ -128,8 +131,9 @@ class TK102 extends Component {
     let {
       selected,
     } = this.state
-    selected[event.target.id] = event.target.value
-    this.reasonsInvalid.clearField(event.target.id)
+    const fieldName = event.target.name ? event.target.name : event.target.id
+    selected[fieldName] = event.target.value
+    this.reasonsInvalid.clearField(fieldName)
     this.setState({selected})
   }
 
@@ -479,7 +483,8 @@ class TK102 extends Component {
                         Owner Party Type
                       </InputLabel>
                       <Select
-                          id={'ownerPartyType'}
+                          id='ownerPartyType'
+                          name='ownerPartyType'
                           value={selected.ownerPartyType}
                           onChange={this.handleFieldChange}
                           disabled={disableFields}
@@ -511,7 +516,8 @@ class TK102 extends Component {
                         Assigned Party Type
                       </InputLabel>
                       <Select
-                          id={'assignedPartyType'}
+                          id='assignedPartyType'
+                          name='assignedPartyType'
                           value={selected.assignedPartyType}
                           onChange={this.handleFieldChange}
                           disabled={disableFields}
