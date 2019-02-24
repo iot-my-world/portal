@@ -16,7 +16,7 @@ export default class TK102 extends Base {
    * @type {string}
    * @private
    */
-  _imei = ''
+  _manufacturerId = ''
 
   /**
    * @type {string}
@@ -69,7 +69,7 @@ export default class TK102 extends Base {
     ) {
       try {
         this._id = tk102.id
-        this._imei = tk102.imei
+        this._manufacturerId = tk102.manufacturerId
         this._simCountryCode = tk102.simCountryCode
         this._simNumber = tk102.simNumber
         this._ownerPartyType = tk102.ownerPartyType
@@ -86,12 +86,12 @@ export default class TK102 extends Base {
     return this._id
   }
 
-  get imei(){
-    return this._imei
+  get manufacturerId(){
+    return this._manufacturerId
   }
 
-  set imei(newVal) {
-    this._imei = newVal
+  set manufacturerId(newVal) {
+    this._manufacturerId = newVal
   }
 
   get simCountryCode() {
