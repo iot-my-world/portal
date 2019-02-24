@@ -6,14 +6,25 @@ import DomainIcon from '@material-ui/icons/Domain'
 import HomeIcon from '@material-ui/icons/Home'
 import ConfigurationIcon from '@material-ui/icons/Settings'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
+import DashboardIcon from '@material-ui/icons/Dashboard'
+import GPSFixedIcon from '@material-ui/icons/GpsFixed'
+import TimelineIcon from '@material-ui/icons/Timeline'
+// Home
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
+// Configuration
 import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import Device from 'views/configuration/device/Device'
+// Dashboards
+import LiveTrackingDashboard from 'views/dashboard/tracking/live/Live'
+import HistoricalTrackingDashboard from 'views/dashboard/tracking/historical/Historical'
+
 import MapsContainer from 'views/maps/MapsContainer'
+
+// View Permissions
 import {
   Configuration, PartyCompanyConfiguration, PartyClientConfiguration,
   PartyUserConfiguration, DeviceConfiguration,
@@ -107,6 +118,31 @@ const AppRoutes = [
 
   // -------- divider here --------
   [
+    { // this is a route group
+      group: true,
+      // viewPermission: Configuration,
+      text: 'Dashboards',
+      icon: <DashboardIcon/>,
+      routes: [
+        {
+          text: 'Live Tracking',
+          icon: <GPSFixedIcon/>,
+          path: '/app/dashboard/liveTracking',
+          component: LiveTrackingDashboard,
+          // viewPermission: PartyCompanyConfiguration,
+        },
+        {
+          text: 'Historical Tracking',
+          icon: <TimelineIcon/>,
+          path: '/app/dashboard/historicalTracking',
+          component: HistoricalTrackingDashboard,
+          // viewPermission: PartyCompanyConfiguration,
+        },
+      ],
+    },
+  ],
+
+  [
     {
       text: 'MapsTest',
       icon: <PersonIcon/>,
@@ -114,33 +150,6 @@ const AppRoutes = [
       component: MapsContainer,
     },
   ],
-
-  // [
-  //   { // this is an individual route
-  //     text: 'Client',
-  //     icon: <PeopleIcon/>,
-  //   },
-  //
-  //   { // this is a route group
-  //     group: true,
-  //     text: 'Party',
-  //     icon: <PeopleIcon/>,
-  //     routes: [
-  //       { // this is an individual route
-  //         text: 'Company',
-  //         icon: <DomainIcon/>,
-  //       },
-  //       {
-  //         text: 'Client',
-  //         icon: <PeopleIcon/>,
-  //       },
-  //       {
-  //         text: 'User',
-  //         icon: <PersonIcon/>,
-  //       },
-  //     ],
-  //   },
-  // ],
 ]
 
 const appRouteBuilder = (partyType, viewPermissions) => {

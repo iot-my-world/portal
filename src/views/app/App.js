@@ -17,7 +17,7 @@ import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
 import {LoginClaims} from 'brain/security/auth/claims'
 
-const drawerWidth = 220
+const drawerWidth = 230
 
 const styles = theme => ({
   route: {
