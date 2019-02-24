@@ -61,8 +61,7 @@ const states = {
 }
 
 const events = {
-  // init: states.nop,
-  init: states.editingNew,
+  init: states.nop,
 
   selectExisting: states.viewingExisting,
 
@@ -497,8 +496,8 @@ class TK102 extends Component {
                     },
                   },
                   {
-                    Header: 'IMEI',
-                    accessor: 'imei',
+                    Header: 'Manufacturer Id',
+                    accessor: 'manufacturerId',
                     width: 150,
                     config: {
                       filter: {
@@ -702,13 +701,13 @@ class TK102 extends Component {
                   <Grid item>
                     <TextField
                         className={classes.formField}
-                        id='imei'
-                        label='imei'
-                        value={selected.imei}
+                        id='manufacturerId'
+                        label='Manufacturer Id'
+                        value={selected.manufacturerId}
                         onChange={this.handleFieldChange}
                         disabled={disableFields}
-                        helperText={helperText('imei')}
-                        error={!!fieldValidations.imei}
+                        helperText={helperText('manufacturerId')}
+                        error={!!fieldValidations.manufacturerId}
                     />
                   </Grid>
                 </Grid>
