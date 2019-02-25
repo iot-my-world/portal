@@ -5,9 +5,10 @@ import {
 
 // import PropTypes from 'prop-types'
 import {
-  withStyles, Grid
+  withStyles, Grid, Typography,
 } from '@material-ui/core'
 import {grayColor} from 'components/timDashboard/timDashboard'
+import LiveTrackingImage from 'assets/images/liveTracking.png'
 
 const styles = theme => ({
   cardCategory: {
@@ -47,17 +48,34 @@ class Company extends Component {
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Grid container>
+        <Grid container spacing={16}>
           <Grid item>
             <TimCard chart>
-              <TimCardHeader color='success'>
-                Chart picture
+              <TimCardHeader color='primary'>
+                <img id='photo' src={LiveTrackingImage} alt='' style={{width: 300, borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0'}}/>
               </TimCardHeader>
               <TimCardBody>
-                <h4 className={classes.cardTitle}>Daily Sales</h4>
-                <p className={classes.cardCategory}>
-                  Some text
-                </p>
+                <Typography color='primary' variant='h6'>
+                  Live Asset Tracking
+                </Typography>
+                <Typography variant='subtitle2'>
+                  The Latest Location Of All Of Your Tracked Assets
+                </Typography>
+              </TimCardBody>
+            </TimCard>
+          </Grid>
+          <Grid item>
+            <TimCard chart>
+              <TimCardHeader color='primary'>
+                <img id='photo' src={LiveTrackingImage} alt='' style={{width: 300, borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0'}}/>
+              </TimCardHeader>
+              <TimCardBody>
+                <Typography color='primary' variant='h6'>
+                  Historical Asset Tracking
+                </Typography>
+                <Typography variant='subtitle2'>
+                  The Path Your Assets Have Travelled
+                </Typography>
               </TimCardBody>
             </TimCard>
           </Grid>
