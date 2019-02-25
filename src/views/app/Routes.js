@@ -9,6 +9,7 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
+import MapIcon from '@material-ui/icons/Map'
 // Home
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
@@ -145,7 +146,7 @@ const AppRoutes = [
   [
     {
       text: 'MapsTest',
-      icon: <PersonIcon/>,
+      icon: <MapIcon/>,
       path: '/app/maps',
       component: MapsContainer,
     },

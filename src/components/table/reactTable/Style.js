@@ -1,4 +1,4 @@
-import {HexToRGBA} from 'utilities/color/index'
+import {hexToRgb} from 'utilities/color/index'
 
 const tableStyle = (theme) => {
   return {
@@ -15,7 +15,7 @@ const tableStyle = (theme) => {
     },
     TableHeader: {
       boxShadow: 'none',
-      backgroundColor: HexToRGBA(theme.palette.primary.main, 1),
+      backgroundColor: hexToRgb(theme.palette.primary.main, 1),
       color: theme.palette.primary.contrastText,
     },
     TableHeaderRow: {
