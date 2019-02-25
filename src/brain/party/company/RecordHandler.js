@@ -1,19 +1,16 @@
 import {jsonRpcRequest} from 'utilities/network'
-import config from 'react-global-configuration'
 import Company from './Company'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
-export default class RecordHandler {
-
+const RecordHandler = {
   /**
    * Create a new company
    * @param {Company} company
    * @constructor
    */
-  static Create(company) {
+  Create(company) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'CompanyRecordHandler.Create',
         request: {
           company: company.toPOJO(),
@@ -22,7 +19,7 @@ export default class RecordHandler {
         resolve(new Company(result.company))
       }).catch(error => reject(error))
     })
-  }
+  },
 
   /**
    * Validate a company
@@ -30,10 +27,9 @@ export default class RecordHandler {
    * @param {string} method
    * @constructor
    */
-  static Validate(company, method) {
+  Validate(company, method) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'CompanyRecordHandler.Validate',
         request: {
           company: company.toPOJO(),
@@ -43,17 +39,16 @@ export default class RecordHandler {
         resolve(new ReasonsInvalid(result.reasonsInvalid))
       }).catch(error => reject(error))
     })
-  }
+  },
 
   /**
    * @param {array} criteria
    * @param {Query} query
    * @constructor
    */
-  static Collect(criteria, query) {
+  Collect(criteria, query) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'CompanyRecordHandler.Collect',
         request: {
           criteria: criteria.map(criterion => criterion.toPOJO()),
@@ -63,5 +58,7 @@ export default class RecordHandler {
         resolve(result)
       }).catch(error => reject(error))
     })
-  }
+  },
 }
+
+export default RecordHandler
