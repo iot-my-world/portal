@@ -88,7 +88,7 @@ class SearchDialogTextField extends Component {
       selectedRowIdx,
     } = this.state
 
-    if (selectedRowIdx > 0) {
+    if (selectedRowIdx < 0) {
       this.handleClose()
       return
     }

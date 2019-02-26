@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import {
-  TimCard, TimCardHeader, TimCardBody,
+  TimCard, TimCardHeader, TimCardBody, TimCardIcon,
+  TimCardFooter,
 } from 'components/timDashboard/timCard'
-
+import DeviceIcon from '@material-ui/icons/DevicesOther'
+import DateRange from '@material-ui/icons/DateRange'
 // import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Typography,
@@ -17,7 +19,7 @@ const styles = theme => ({
     fontSize: '14px',
     marginTop: '0',
     paddingTop: '10px',
-    marginBottom: '0'
+    marginBottom: '0',
   },
   cardTitle: {
     color: grayColor[2],
@@ -30,29 +32,88 @@ const styles = theme => ({
     '& small': {
       color: grayColor[1],
       fontWeight: '400',
-      lineHeight: '1'
-    }
+      lineHeight: '1',
+    },
+  },
+  stats: {
+    color: grayColor[0],
+    display: 'inline-flex',
+    fontSize: '12px',
+    lineHeight: '22px',
+    '& svg': {
+      top: '4px',
+      width: '16px',
+      height: '16px',
+      position: 'relative',
+      marginRight: '3px',
+      marginLeft: '3px',
+    },
+    '& .fab,& .fas,& .far,& .fal,& .material-icons': {
+      top: '4px',
+      fontSize: '16px',
+      position: 'relative',
+      marginRight: '3px',
+      marginLeft: '3px',
+    },
   },
 })
 
 class Company extends Component {
   render() {
     const {
-      classes,
+      // classes,
+      history,
     } = this.props
 
     return <Grid container direction='column'>
       <Grid item xs={12}>
-        <Grid container>
-          asdf
+        <Grid container spacing={16}>
+          <Grid item>
+            <TimCard>
+              <TimCardHeader color='success' stats icon>
+                <TimCardIcon color='success'>
+                  <DeviceIcon/>
+                </TimCardIcon>
+              </TimCardHeader>
+              <TimCardBody>
+                <Typography color='primary' variant='subtitle1'>
+                  Active Devices
+                </Typography>
+                <Typography variant='body1'>
+                  5
+                </Typography>
+              </TimCardBody>
+            </TimCard>
+          </Grid>
+          <Grid item>
+            <TimCard>
+              <TimCardHeader color='warning' stats icon>
+                <TimCardIcon color='warning'>
+                  <DeviceIcon/>
+                </TimCardIcon>
+              </TimCardHeader>
+              <TimCardBody>
+                <Typography color='primary' variant='subtitle1'>
+                  Devices In Transit
+                </Typography>
+                <Typography variant='body1'>
+                  100
+                </Typography>
+              </TimCardBody>
+            </TimCard>
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Grid container spacing={16} xs={12}>
+        <Grid container spacing={16}>
           <Grid item>
-            <TimCard chart>
+            <TimCard
+                onClick={() => history.push('/app/dashboard/liveTracking')}>
               <TimCardHeader color='primary'>
-                <img id='photo' src={LiveTrackingImage} alt='' style={{width: 300, borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0'}}/>
+                <img id='photo' src={LiveTrackingImage} alt='' style={{
+                  width: 300,
+                  borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
+                }}/>
               </TimCardHeader>
               <TimCardBody>
                 <Typography color='primary' variant='h6'>
@@ -65,9 +126,13 @@ class Company extends Component {
             </TimCard>
           </Grid>
           <Grid item>
-            <TimCard chart>
+            <TimCard onClick={() => history.push(
+                '/app/dashboard/historicalTracking')}>
               <TimCardHeader color='primary'>
-                <img id='photo' src={LiveTrackingImage} alt='' style={{width: 300, borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0'}}/>
+                <img id='photo' src={LiveTrackingImage} alt='' style={{
+                  width: 300,
+                  borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
+                }}/>
               </TimCardHeader>
               <TimCardBody>
                 <Typography color='primary' variant='h6'>
@@ -87,12 +152,8 @@ class Company extends Component {
 
 Company = withStyles(styles)(Company)
 
-Company.propTypes = {
+Company.propTypes = {}
 
-}
-
-Company.defaultProps = {
-  
-}
+Company.defaultProps = {}
 
 export default Company

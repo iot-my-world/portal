@@ -184,7 +184,7 @@ class TK102 extends Component {
     if (fieldName === 'ownerId') {
       console.log('event', event)
     }
-
+    console.log('selected', selected)
     this.reasonsInvalid.clearField(fieldName)
     this.setState({selected})
   }
