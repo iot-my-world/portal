@@ -12,6 +12,7 @@ import {
 import {
   TK102 as TK102Entity,
   RecordHandler as TK102RecordHandler,
+  Administrator as TK102Administrator
 } from 'brain/tracker/device/tk102/index'
 import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
 import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
@@ -72,11 +73,13 @@ const events = {
 
   startEditExisting: states.editingExisting,
   finishEditExisting: states.nop,
-  cancelEditExisting: states.nop,
+  cancelEditExisting: states.viewingExisting,
 }
 
 function recordHandlerSelect(partyType) {
   switch (partyType) {
+    case System:
+      return SystemRecordHandler
     case Company:
       return CompanyRecordHandler
     case Client:
@@ -91,6 +94,7 @@ class TK102 extends Component {
     recordCollectionInProgress: false,
     isLoading: false,
     activeState: events.init,
+    original: new TK102Entity(),
     selected: new TK102Entity(),
     selectedRowIdx: -1,
     records: [],
@@ -226,18 +230,88 @@ class TK102 extends Component {
     this.setState({activeState: events.cancelCreateNew})
   }
 
-  handleSaveChanges() {
-    this.setState({activeState: events.finishEditExisting})
+  async handleSaveChanges() {
+    const {
+      original,
+      selected,
+    } = this.state
+    const {
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    this.setState({isLoading: true})
+
+    // perform validation
+    try {
+      const reasonsInvalid = await selected.validate('Update')
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        this.setState({isLoading: false})
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating TK102', e)
+      NotificationFailure('Error Validating TK102')
+      this.setState({isLoading: false})
+      return
+    }
+
+    // check if owner or assignment has changed and call the
+    // services specific to them if either of them have changed
+    if (
+        (original.ownerPartyType !== selected.ownerPartyType) ||
+        (original.ownerId.id !== selected.ownerId.id)
+    ) {
+      try {
+        await TK102Administrator.ChangeOwner(
+            selected.identifier,
+            selected.ownerPartyType,
+            selected.ownerId,
+        )
+      } catch (e) {
+        console.error('Error Changing Owner', e)
+        NotificationFailure('Error Changing Owner')
+      }
+    }
+
+    if (
+        (original.assignedPartyType !== selected.assignedPartyType) ||
+        (original.assignedId.id !== selected.assignedId.id)
+    ) {
+      try {
+        await TK102Administrator.ChangeAssigned(
+            selected.identifier,
+            selected.assignedPartyType,
+            selected.assignedId,
+        )
+      } catch (e) {
+        console.error('Error Changing Owner', e)
+        NotificationFailure('Error Changing Owner')
+      }
+    }
+
+    this.setState({
+      activeState: events.finishEditExisting,
+      isLoading: false,
+    })
+    NotificationSuccess('Successfully Updated TK102')
   }
 
   handleStartEditExisting() {
+    const {selected} = this.state
     this.setState({
+      original: new TK102Entity(selected),
       activeState: events.startEditExisting,
     })
   }
 
   handleCancelEditExisting() {
-    this.setState({activeState: events.finishEditExisting})
+    const {original} = this.state
+    this.setState({
+      activeState: events.cancelEditExisting,
+      selected: new TK102Entity(original)
+    })
   }
 
   async collect() {
@@ -402,7 +476,7 @@ class TK102 extends Component {
     })
   }
 
-  getPartyName(partyType, partyId){
+  getPartyName(partyType, partyId) {
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(
         partyId,
