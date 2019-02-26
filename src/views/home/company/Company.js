@@ -48,7 +48,7 @@ class Company extends Component {
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Grid container spacing={16}>
+        <Grid container spacing={16} xs={12}>
           <Grid item>
             <TimCard chart>
               <TimCardHeader color='primary'>
