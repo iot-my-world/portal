@@ -15,6 +15,7 @@ import {
 } from 'brain/tracker/device/tk102/index'
 import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
 import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
+import {RecordHandler as SystemRecordHandler} from 'brain/party/system'
 import {allPartyTypes, Company, Client, System} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
@@ -121,6 +122,7 @@ class TK102 extends Component {
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.collectTimeout = () => {
     }
+    this.partyIsRoot = props.claims.partyType === System
   }
 
   componentDidMount() {
@@ -303,19 +305,44 @@ class TK102 extends Component {
       }
     })
 
+    // fetch system entities
+    try {
+      if (systemEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.System = (await SystemRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: systemEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+    } catch (e) {
+      this.entityMap.System = []
+      console.error('error collecting system records', e)
+      NotificationFailure('Failed To Fetch System Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
     // fetch company entities
     try {
-      const blankQuery = new Query()
-      blankQuery.limit = 0
-      this.entityMap.Company = (await CompanyRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: companyEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      if (companyEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: companyEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
     } catch (e) {
       this.entityMap.Company = []
       console.error('error collecting company records', e)
@@ -326,17 +353,19 @@ class TK102 extends Component {
 
     // fetch client entities
     try {
-      const blankQuery = new Query()
-      blankQuery.limit = 0
-      this.entityMap.Client = (await ClientRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: clientEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      if (clientEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Client = (await ClientRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: clientEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
     } catch (e) {
       this.entityMap.Client = []
       console.error('error collecting client records', e)
@@ -634,7 +663,7 @@ class TK102 extends Component {
                           name='ownerPartyType'
                           value={selected.ownerPartyType}
                           onChange={this.handleFieldChange}
-                          disabled={disableFields}
+                          disabled={disableFields || !this.partyIsRoot}
                           style={{width: 150}}
                       >
                         <MenuItem value=''><em>None</em></MenuItem>
@@ -721,7 +750,7 @@ class TK102 extends Component {
                         label='Owned By'
                         value={selected.ownerId.id}
                         onChange={this.handleFieldChange}
-                        disabled={disableFields}
+                        disabled={disableFields || !this.partyIsRoot}
                         helperText={helperText('ownerId')}
                         error={!!fieldValidations.ownerId}
                         recordHandler={recordHandlerSelect(
