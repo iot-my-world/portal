@@ -174,6 +174,10 @@ class TK102 extends Component {
         selected[fieldName] = event.target.value
         break
 
+      case 'assignedId':
+        selected[fieldName] = new IdIdentifier(event.target.value.id)
+        break
+
       default:
         selected[fieldName] = event.target.value
     }
@@ -292,10 +296,10 @@ class TK102 extends Component {
     }
 
     this.setState({
-      activeState: events.finishEditExisting,
+      // activeState: events.finishEditExisting,
       isLoading: false,
     })
-    NotificationSuccess('Successfully Updated TK102')
+    // NotificationSuccess('Successfully Updated TK102')
   }
 
   handleStartEditExisting() {
