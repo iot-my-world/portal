@@ -240,7 +240,7 @@ class TK102 extends Component {
       selected,
     } = this.state
     const {
-      NotificationSuccess,
+      // NotificationSuccess,
       NotificationFailure,
     } = this.props
 

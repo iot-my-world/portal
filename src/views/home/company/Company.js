@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
 import {
   TimCard, TimCardHeader, TimCardBody, TimCardIcon,
-  TimCardFooter,
 } from 'components/timDashboard/timCard'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
-import DateRange from '@material-ui/icons/DateRange'
 // import PropTypes from 'prop-types'
 import {
   withStyles, Grid, Typography,
