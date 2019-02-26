@@ -1,19 +1,16 @@
 import {jsonRpcRequest} from 'utilities/network'
-import config from 'react-global-configuration'
 import User from './User'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
-export default class RecordHandler {
-
+const RecordHandler = {
   /**
    * Create a new user
    * @param {User} user
    * @constructor
    */
-  static Create(user) {
+  Create(user) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'UserRecordHandler.Create',
         request: {
           user: user.toPOJO(),
@@ -22,7 +19,7 @@ export default class RecordHandler {
         resolve(new User(result.user))
       }).catch(error => reject(error))
     })
-  }
+  },
 
   /**
    * Validate a user
@@ -30,10 +27,9 @@ export default class RecordHandler {
    * @param {string} method
    * @constructor
    */
-  static Validate(user, method) {
+  Validate(user, method) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'UserRecordHandler.Validate',
         request: {
           user: user.toPOJO(),
@@ -43,17 +39,16 @@ export default class RecordHandler {
         resolve(new ReasonsInvalid(result.reasonsInvalid))
       }).catch(error => reject(error))
     })
-  }
+  },
 
   /**
    * @param {array} criteria
    * @param {Query} query
    * @constructor
    */
-  static Collect(criteria, query) {
+  Collect(criteria, query) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        url: config.get('brainAPIUrl'),
         method: 'UserRecordHandler.Collect',
         request: {
           criteria: criteria.map(criterion => criterion.toPOJO()),
@@ -63,5 +58,7 @@ export default class RecordHandler {
         resolve(result)
       }).catch(error => reject(error))
     })
-  }
+  },
 }
+
+export default RecordHandler

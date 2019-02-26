@@ -9,7 +9,7 @@ const RecordHandler = {
   Collect(criteria, query) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'ReadingRecordHandler.Collect',
+        method: 'SystemRecordHandler.Collect',
         request: {
           criteria: criteria.map(criterion => criterion.toPOJO()),
           query: query.toPOJO(),

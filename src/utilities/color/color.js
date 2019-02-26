@@ -6,7 +6,7 @@
  * @param {number} opacity
  * @returns {string}
  */
-export function HexToRGBA(hex, opacity) {
+export function hexToRgb(hex, opacity) {
   let val = hex
   if (val.startsWith('#')) {
     val = val.substring(1)

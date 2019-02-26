@@ -12,9 +12,11 @@ import {
 import {
   TK102 as TK102Entity,
   RecordHandler as TK102RecordHandler,
+  Administrator as TK102Administrator
 } from 'brain/tracker/device/tk102/index'
 import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
 import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
+import {RecordHandler as SystemRecordHandler} from 'brain/party/system'
 import {allPartyTypes, Company, Client, System} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
@@ -71,11 +73,13 @@ const events = {
 
   startEditExisting: states.editingExisting,
   finishEditExisting: states.nop,
-  cancelEditExisting: states.nop,
+  cancelEditExisting: states.viewingExisting,
 }
 
 function recordHandlerSelect(partyType) {
   switch (partyType) {
+    case System:
+      return SystemRecordHandler
     case Company:
       return CompanyRecordHandler
     case Client:
@@ -90,6 +94,7 @@ class TK102 extends Component {
     recordCollectionInProgress: false,
     isLoading: false,
     activeState: events.init,
+    original: new TK102Entity(),
     selected: new TK102Entity(),
     selectedRowIdx: -1,
     records: [],
@@ -119,8 +124,10 @@ class TK102 extends Component {
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
+    this.getPartyName = this.getPartyName.bind(this)
     this.collectTimeout = () => {
     }
+    this.partyIsRoot = props.claims.partyType === System
   }
 
   componentDidMount() {
@@ -167,13 +174,17 @@ class TK102 extends Component {
         selected[fieldName] = event.target.value
         break
 
+      case 'assignedId':
+        selected[fieldName] = new IdIdentifier(event.target.value.id)
+        break
+
       default:
         selected[fieldName] = event.target.value
     }
     if (fieldName === 'ownerId') {
       console.log('event', event)
     }
-
+    console.log('selected', selected)
     this.reasonsInvalid.clearField(fieldName)
     this.setState({selected})
   }
@@ -223,18 +234,88 @@ class TK102 extends Component {
     this.setState({activeState: events.cancelCreateNew})
   }
 
-  handleSaveChanges() {
-    this.setState({activeState: events.finishEditExisting})
+  async handleSaveChanges() {
+    const {
+      original,
+      selected,
+    } = this.state
+    const {
+      // NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    this.setState({isLoading: true})
+
+    // perform validation
+    try {
+      const reasonsInvalid = await selected.validate('Update')
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        this.setState({isLoading: false})
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating TK102', e)
+      NotificationFailure('Error Validating TK102')
+      this.setState({isLoading: false})
+      return
+    }
+
+    // check if owner or assignment has changed and call the
+    // services specific to them if either of them have changed
+    if (
+        (original.ownerPartyType !== selected.ownerPartyType) ||
+        (original.ownerId.id !== selected.ownerId.id)
+    ) {
+      try {
+        await TK102Administrator.ChangeOwner(
+            selected.identifier,
+            selected.ownerPartyType,
+            selected.ownerId,
+        )
+      } catch (e) {
+        console.error('Error Changing Owner', e)
+        NotificationFailure('Error Changing Owner')
+      }
+    }
+
+    if (
+        (original.assignedPartyType !== selected.assignedPartyType) ||
+        (original.assignedId.id !== selected.assignedId.id)
+    ) {
+      try {
+        await TK102Administrator.ChangeAssigned(
+            selected.identifier,
+            selected.assignedPartyType,
+            selected.assignedId,
+        )
+      } catch (e) {
+        console.error('Error Changing Owner', e)
+        NotificationFailure('Error Changing Owner')
+      }
+    }
+
+    this.setState({
+      // activeState: events.finishEditExisting,
+      isLoading: false,
+    })
+    // NotificationSuccess('Successfully Updated TK102')
   }
 
   handleStartEditExisting() {
+    const {selected} = this.state
     this.setState({
+      original: new TK102Entity(selected),
       activeState: events.startEditExisting,
     })
   }
 
   handleCancelEditExisting() {
-    this.setState({activeState: events.finishEditExisting})
+    const {original} = this.state
+    this.setState({
+      activeState: events.cancelEditExisting,
+      selected: new TK102Entity(original)
+    })
   }
 
   async collect() {
@@ -303,19 +384,44 @@ class TK102 extends Component {
       }
     })
 
+    // fetch system entities
+    try {
+      if (systemEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.System = (await SystemRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: systemEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+    } catch (e) {
+      this.entityMap.System = []
+      console.error('error collecting system records', e)
+      NotificationFailure('Failed To Fetch System Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
     // fetch company entities
     try {
-      const blankQuery = new Query()
-      blankQuery.limit = 0
-      this.entityMap.Company = (await CompanyRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: companyEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      if (companyEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: companyEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
     } catch (e) {
       this.entityMap.Company = []
       console.error('error collecting company records', e)
@@ -326,17 +432,19 @@ class TK102 extends Component {
 
     // fetch client entities
     try {
-      const blankQuery = new Query()
-      blankQuery.limit = 0
-      this.entityMap.Client = (await ClientRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: clientEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      if (clientEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Client = (await ClientRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: clientEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
     } catch (e) {
       this.entityMap.Client = []
       console.error('error collecting client records', e)
@@ -370,6 +478,15 @@ class TK102 extends Component {
       selected: new TK102Entity(rowRecordObj),
       activeState: events.selectExisting,
     })
+  }
+
+  getPartyName(partyType, partyId) {
+    const list = this.entityMap[partyType]
+    const entity = retrieveFromList(
+        partyId,
+        list ? list : [],
+    )
+    return entity ? entity.name : ''
   }
 
   render() {
@@ -425,12 +542,10 @@ class TK102 extends Component {
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
-                        const list = this.entityMap[rowCellInfo.original.ownerPartyType]
-                        const entity = retrieveFromList(
+                        return this.getPartyName(
+                            rowCellInfo.original.ownerPartyType,
                             rowCellInfo.value,
-                            list ? list : [],
                         )
-                        return entity ? entity.name : ''
                       } catch (e) {
                         console.error('error getting owner info', e)
                         return '-'
@@ -458,12 +573,10 @@ class TK102 extends Component {
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
-                        const list = this.entityMap[rowCellInfo.original.assignedPartyType]
-                        const entity = retrieveFromList(
+                        return this.getPartyName(
+                            rowCellInfo.original.ownerPartyType,
                             rowCellInfo.value,
-                            list ? list : [],
                         )
-                        return entity ? entity.name : ''
                       } catch (e) {
                         console.error('error getting assigned info', e)
                         return '-'
@@ -634,7 +747,7 @@ class TK102 extends Component {
                           name='ownerPartyType'
                           value={selected.ownerPartyType}
                           onChange={this.handleFieldChange}
-                          disabled={disableFields}
+                          disabled={disableFields || !this.partyIsRoot}
                           style={{width: 150}}
                       >
                         <MenuItem value=''><em>None</em></MenuItem>
@@ -719,9 +832,12 @@ class TK102 extends Component {
                         className={classes.formField}
                         id='ownerId'
                         label='Owned By'
-                        value={selected.ownerId.id}
+                        value={this.getPartyName(
+                            selected.ownerPartyType,
+                            selected.ownerId,
+                        )}
                         onChange={this.handleFieldChange}
-                        disabled={disableFields}
+                        disabled={disableFields || !this.partyIsRoot}
                         helperText={helperText('ownerId')}
                         error={!!fieldValidations.ownerId}
                         recordHandler={recordHandlerSelect(
@@ -745,7 +861,10 @@ class TK102 extends Component {
                         className={classes.formField}
                         id='assignedId'
                         label='Assigned To'
-                        value={selected.assignedId.id}
+                        value={this.getPartyName(
+                            selected.assignedPartyType,
+                            selected.assignedId,
+                        )}
                         onChange={this.handleFieldChange}
                         disabled={disableFields}
                         helperText={helperText('assignedId')}

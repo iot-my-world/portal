@@ -1,10 +1,18 @@
 import uuid from 'uuid/v1'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
+import config from 'react-global-configuration'
 
 const methodsWithoutAuthorization = [
   'Auth.Login',
 ]
 
+/**
+ * Make a jsonRpc Post Request
+ * @param {string} [url]
+ * @param {string} method
+ * @param {object} request
+ * @returns {Promise<any>}
+ */
 export default function jsonRpcRequest({url, method, request}) {
   const id = uuid()
   let header = new Headers({
@@ -31,7 +39,8 @@ export default function jsonRpcRequest({url, method, request}) {
 
   return new Promise((resolve, reject) => {
     fetch(
-        url, {
+        url ? url : config.get('brainAPIUrl'),
+        {
           method: 'POST',
           headers: header,
           mode: 'cors',

@@ -1,15 +1,15 @@
 import {jsonRpcRequest} from 'utilities/network'
-import config from 'react-global-configuration'
 
-export default class Service {
-  static Login(usernameOrEmailAddress, password) {
+const Service = {
+  Login(usernameOrEmailAddress, password) {
     return jsonRpcRequest({
-      url: config.get('brainAPIUrl'),
       method: 'Auth.Login',
       request: {
         usernameOrEmailAddress,
         password,
       },
     })
-  }
+  },
 }
+
+export default Service
