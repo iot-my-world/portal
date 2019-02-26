@@ -120,6 +120,7 @@ class TK102 extends Component {
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
+    this.getPartyName = this.getPartyName.bind(this)
     this.collectTimeout = () => {
     }
     this.partyIsRoot = props.claims.partyType === System
@@ -401,6 +402,15 @@ class TK102 extends Component {
     })
   }
 
+  getPartyName(partyType, partyId){
+    const list = this.entityMap[partyType]
+    const entity = retrieveFromList(
+        partyId,
+        list ? list : [],
+    )
+    return entity ? entity.name : ''
+  }
+
   render() {
     const {
       isLoading,
@@ -454,12 +464,10 @@ class TK102 extends Component {
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
-                        const list = this.entityMap[rowCellInfo.original.ownerPartyType]
-                        const entity = retrieveFromList(
+                        return this.getPartyName(
+                            rowCellInfo.original.ownerPartyType,
                             rowCellInfo.value,
-                            list ? list : [],
                         )
-                        return entity ? entity.name : ''
                       } catch (e) {
                         console.error('error getting owner info', e)
                         return '-'
@@ -487,12 +495,10 @@ class TK102 extends Component {
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
-                        const list = this.entityMap[rowCellInfo.original.assignedPartyType]
-                        const entity = retrieveFromList(
+                        return this.getPartyName(
+                            rowCellInfo.original.ownerPartyType,
                             rowCellInfo.value,
-                            list ? list : [],
                         )
-                        return entity ? entity.name : ''
                       } catch (e) {
                         console.error('error getting assigned info', e)
                         return '-'
@@ -748,7 +754,10 @@ class TK102 extends Component {
                         className={classes.formField}
                         id='ownerId'
                         label='Owned By'
-                        value={selected.ownerId.id}
+                        value={this.getPartyName(
+                            selected.ownerPartyType,
+                            selected.ownerId,
+                        )}
                         onChange={this.handleFieldChange}
                         disabled={disableFields || !this.partyIsRoot}
                         helperText={helperText('ownerId')}
@@ -774,7 +783,10 @@ class TK102 extends Component {
                         className={classes.formField}
                         id='assignedId'
                         label='Assigned To'
-                        value={selected.assignedId.id}
+                        value={this.getPartyName(
+                            selected.assignedPartyType,
+                            selected.assignedId,
+                        )}
                         onChange={this.handleFieldChange}
                         disabled={disableFields}
                         helperText={helperText('assignedId')}
