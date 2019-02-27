@@ -88,7 +88,10 @@ class Maps extends Component {
             key={`marker-${index}`}
             longitude={city['@lon']}
             latitude={city['@lat']}>
-          <MapPin size={20} onClick={() => this.setState({popupInfo: city})}/>
+          <MapPin
+              size={20}
+              // onClick={() => this.setState({popupInfo: city})}
+          />
         </Marker>
     )
   }
