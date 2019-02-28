@@ -35,10 +35,20 @@ const styles = theme => ({
 class MultiSelect extends Component {
   constructor(props) {
     super(props)
+    this.handleAdd = this.handleAdd.bind(this)
+    this.handleRemove = this.handleRemove.bind(this)
     this.state = {
       selected: props.selected,
       available: props.available,
     }
+  }
+
+  handleAdd(...things) {
+    console.log('select', things)
+  }
+
+  handleRemove(...things) {
+    console.log('delete', things)
   }
 
   render(){
@@ -65,7 +75,7 @@ class MultiSelect extends Component {
                           color='primary'
                           // avatar={<Avatar><DoneIcon/></Avatar>}
                           clickable
-                          onClick={() => console.log('clicked!!!!')}
+                          onClick={this.handleAdd}
                       />
                     </div>
                   })}
@@ -89,7 +99,7 @@ class MultiSelect extends Component {
                           color='primary'
                           clickable
                           onClick={() => console.log('clicked!!!!')}
-                          onDelete={()=> console.log('delete!!!')}
+                          onDelete={this.handleRemove}
                       />
                     </div>
                   })}
