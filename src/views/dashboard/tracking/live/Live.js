@@ -121,7 +121,18 @@ class Live extends Component {
             Like Displayed</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-         <MultiSelect/>
+         <MultiSelect
+             displayAccessor='name'
+             selected={[
+               {name: 'Monteagle Logistics'},
+               {name: 'Spar'},
+             ]}
+             available={[
+               {name: 'Omni'},
+               {name: 'Woolworths'},
+             ]}
+             onChange={(selected, available)=>console.log('change!', selected, available)}
+         />
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel expanded={expanded === 'panel2'}

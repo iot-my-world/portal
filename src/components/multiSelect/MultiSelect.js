@@ -33,9 +33,18 @@ const styles = theme => ({
 })
 
 class MultiSelect extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      selected: props.selected,
+      available: props.available,
+    }
+  }
+
   render(){
-    const {classes} = this.props
-    return<div className={classes.selectRoot}>
+    const {classes, displayAccessor} = this.props
+    const {selected, available} = this.state
+    return <div className={classes.selectRoot}>
       <Card>
         <CardContent>
           <Grid container spacing={8}>
@@ -47,12 +56,12 @@ class MultiSelect extends Component {
                     variant='outlined'
                 />
                 <div className={classes.availableWindow}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(thing => {
-                    return <div key={thing}
+                  {available.map((item, idx) => {
+                    return <div key={idx}
                                 className={classes.chipWrapper}>
                       <Chip
                           className={classes.chip}
-                          label='monteagle'
+                          label={item[displayAccessor]}
                           color='primary'
                           // avatar={<Avatar><DoneIcon/></Avatar>}
                           clickable
@@ -71,12 +80,12 @@ class MultiSelect extends Component {
                     variant='outlined'
                 />
                 <div className={classes.selectedWindow}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(thing => {
-                    return <div key={thing}
+                  {selected.map((item, idx) => {
+                    return <div key={idx}
                                 className={classes.chipWrapper}>
                       <Chip
                           className={classes.chip}
-                          label='monteagle logistics'
+                          label={item[displayAccessor]}
                           color='primary'
                           clickable
                           onClick={() => console.log('clicked!!!!')}
@@ -96,7 +105,14 @@ class MultiSelect extends Component {
 
 MultiSelect = withStyles(styles)(MultiSelect)
 
-MultiSelect.propTypes = {}
-MultiSelect.defaultProps = {}
+MultiSelect.propTypes = {
+  displayAccessor: PropTypes.string.isRequired,
+  selected: PropTypes.array.isRequired,
+  available: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
+}
+MultiSelect.defaultProps = {
+
+}
 
 export default MultiSelect
