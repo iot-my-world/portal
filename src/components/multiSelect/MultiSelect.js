@@ -46,10 +46,9 @@ class MultiSelect extends Component {
     this.renderSelectedChips = this.renderSelectedChips.bind(this)
     this.handleSelectAll = this.handleSelectAll.bind(this)
     this.handleRemoveAll = this.handleRemoveAll.bind(this)
-    this.onChange = this.onChange.bind(this)
     this.state = {
-      selected: props.selected,
-      available: props.available,
+      selected: [...props.selected],
+      available: [...props.available],
       selectedFilter: '',
       availableFilter: '',
     }
@@ -62,6 +61,7 @@ class MultiSelect extends Component {
     } = this.state
     const {
       uniqueIdAccessor,
+      onChange,
     } = this.props
 
     // remove item from the available list
@@ -76,7 +76,7 @@ class MultiSelect extends Component {
       selected,
       available,
     })
-    this.onChange()
+    onChange(selected, available)
   }
 
   handleRemove(item) {
@@ -86,6 +86,7 @@ class MultiSelect extends Component {
     } = this.state
     const {
       uniqueIdAccessor,
+      onChange,
     } = this.props
 
     // remove item from the selected list
@@ -100,37 +101,69 @@ class MultiSelect extends Component {
       selected,
       available,
     })
-    this.onChange()
+    onChange(selected, available)
   }
 
   handleSelectAll() {
-    const {
+    let {
       available,
       selected,
     } = this.state
+    const {
+      onChange,
+    } = this.props
+
+    available = []
+    selected = [
+      ...available,
+      ...selected,
+    ]
+
     this.setState({
-      available: [],
-      selected: [
-        ...available,
-        ...selected,
-      ],
+      available,
+      selected,
     })
-    this.onChange()
+    onChange(selected, available)
   }
 
   handleRemoveAll() {
-    const {
+    let {
       available,
       selected,
     } = this.state
+    const {
+      onChange,
+    } = this.props
+    available = [
+      ...available,
+      ...selected,
+    ]
+    selected = []
     this.setState({
-      available: [
-        ...available,
-        ...selected,
-      ],
-      selected: [],
+      available,
+      selected,
     })
-    this.onChange()
+    onChange(selected, available)
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      selected: prevSelected,
+      available: prevAvailable,
+    } = prevProps
+    const {
+      selected,
+      available,
+    } = this.props
+    if (
+        (prevSelected.length !== selected.length) ||
+        (available.length !== prevAvailable.length)
+    ) {
+      this.setState({
+        selected: [...selected],
+        available: [...available],
+      })
+    }
   }
 
   handleFilterChange(e) {
@@ -187,12 +220,14 @@ class MultiSelect extends Component {
       available,
       selected,
     } = this.state
+    console.log('thi state asdfasd', this.state)
     onChange(selected, available)
   }
 
   render() {
     const {classes} = this.props
     const {availableFilter, selectedFilter} = this.state
+    console.log('this tate', this.state)
     return <div className={classes.selectRoot}>
       <Card>
         <CardContent>

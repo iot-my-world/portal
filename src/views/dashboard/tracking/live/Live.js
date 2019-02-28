@@ -83,8 +83,12 @@ class Live extends Component {
     }
     this.companies = []
     this.clients = []
+
     this.collectCriteria = []
     this.collectQuery = new Query()
+
+    this.collectTimeout = () => {
+    }
   }
 
   async load() {
@@ -117,7 +121,8 @@ class Live extends Component {
   async collect() {
     let collectReadingsResponse
     try {
-      collectReadingsResponse = await ReadingRecordHandler.Collect(this.collectCriteria)
+      collectReadingsResponse = await ReadingRecordHandler.Collect(
+          this.collectCriteria)
     } catch (e) {
       console.error('error collecting readings', e)
     }
@@ -139,14 +144,8 @@ class Live extends Component {
           <MultiSelect
               displayAccessor='name'
               uniqueIdAccessor='id'
-              selected={[
-                {id: 0, name: 'Monteagle Logistics'},
-                {id: 1, name: 'Spar'},
-              ]}
-              available={[
-                {id: 2, name: 'Omni'},
-                {id: 3, name: 'Woolworths'},
-              ]}
+              selected={this.companies}
+              available={[]}
               onChange={(selected, available) => console.log('change!',
                   selected, available)}
           />
