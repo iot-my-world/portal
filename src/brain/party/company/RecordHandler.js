@@ -42,8 +42,8 @@ const RecordHandler = {
   },
 
   /**
-   * @param {array} criteria
-   * @param {Query} query
+   * @param {array} [criteria]
+   * @param {Query} [query]
    * @constructor
    */
   Collect(criteria, query) {
@@ -51,8 +51,12 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'CompanyRecordHandler.Collect',
         request: {
-          criteria: criteria.map(criterion => criterion.toPOJO()),
-          query: query.toPOJO(),
+          criteria: criteria
+              ? criteria.map(criterion => criterion.toPOJO())
+              : undefined,
+          query: query
+              ? query.toPOJO()
+              : undefined,
         },
       }).then(result => {
         resolve(result)

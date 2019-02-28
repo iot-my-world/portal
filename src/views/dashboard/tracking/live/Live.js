@@ -10,6 +10,10 @@ import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading/index
 import Reading from 'brain/tracker/reading/Reading'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
+import {FullPageLoader} from 'components/loader/index'
+import {
+  RecordHandler as CompanyRecordHandler,
+} from 'brain/party/company/index'
 
 const styles = theme => ({
   root: {
@@ -32,7 +36,7 @@ const styles = theme => ({
   selectRoot: {padding: 10},
   availableRoot: {},
   availableWindow: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
@@ -40,7 +44,7 @@ const styles = theme => ({
   },
   selectedRoot: {},
   selectedWindow: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
@@ -63,6 +67,7 @@ class Live extends Component {
     super(props)
     this.collect = this.collect.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
+    this.load = this.load.bind(this)
     this.state = {
       // expanded: null,
       expanded: 'panel1',
@@ -74,12 +79,24 @@ class Live extends Component {
         pitch: 0,
       },
       popupInfo: null,
-      isLoading: true,
+      loading: true,
     }
+    this.companies = []
+    this.clients = []
+  }
+
+  async load() {
+    this.setState({loading: true})
+    try {
+      this.companies = (await CompanyRecordHandler.Collect()).records
+    } catch (e) {
+      console.error('error collecting companies', e)
+    }
+    this.setState({loading: false})
   }
 
   componentDidMount() {
-    this.collect()
+    this.load().then(() => this.collect())
   }
 
   handleChange = panel => (event, expanded) => {
@@ -104,7 +121,7 @@ class Live extends Component {
     console.log(readings)
 
     this.setState({
-      isLoading: false,
+      loading: false,
       locationData: readings,
     })
   }
@@ -112,6 +129,7 @@ class Live extends Component {
   renderFiltersMenu() {
     const {classes} = this.props
     const {expanded} = this.state
+
     return <div className={classes.root}>
       <ExpansionPanel expanded={expanded === 'panel1'}
                       onChange={this.handleChange('panel1')}>
@@ -121,19 +139,20 @@ class Live extends Component {
             Like Displayed</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-         <MultiSelect
-             displayAccessor='name'
-             uniqueIdAccessor='id'
-             selected={[
-               {id: 0, name: 'Monteagle Logistics'},
-               {id: 1, name: 'Spar'},
-             ]}
-             available={[
-               {id: 2, name: 'Omni'},
-               {id: 3, name: 'Woolworths'},
-             ]}
-             onChange={(selected, available)=>console.log('change!', selected, available)}
-         />
+          <MultiSelect
+              displayAccessor='name'
+              uniqueIdAccessor='id'
+              selected={[
+                {id: 0, name: 'Monteagle Logistics'},
+                {id: 1, name: 'Spar'},
+              ]}
+              available={[
+                {id: 2, name: 'Omni'},
+                {id: 3, name: 'Woolworths'},
+              ]}
+              onChange={(selected, available) => console.log('change!',
+                  selected, available)}
+          />
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel expanded={expanded === 'panel2'}
@@ -175,6 +194,7 @@ class Live extends Component {
     const {
       classes,
     } = this.props
+    const {loading} = this.state
     return <div className={classes.root}>
       <div style={{
         width: '100%',
@@ -186,6 +206,7 @@ class Live extends Component {
       </div>
       <div>
       </div>
+      <FullPageLoader open={loading}/>
     </div>
   }
 }
