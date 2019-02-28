@@ -123,13 +123,14 @@ class Live extends Component {
         <ExpansionPanelDetails>
          <MultiSelect
              displayAccessor='name'
+             uniqueIdAccessor='id'
              selected={[
-               {name: 'Monteagle Logistics'},
-               {name: 'Spar'},
+               {id: 0, name: 'Monteagle Logistics'},
+               {id: 1, name: 'Spar'},
              ]}
              available={[
-               {name: 'Omni'},
-               {name: 'Woolworths'},
+               {id: 2, name: 'Omni'},
+               {id: 3, name: 'Woolworths'},
              ]}
              onChange={(selected, available)=>console.log('change!', selected, available)}
          />

@@ -9,7 +9,7 @@ const styles = theme => ({
   root: {padding: 10},
   availableRoot: {},
   availableWindow: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
@@ -17,7 +17,7 @@ const styles = theme => ({
   },
   selectedRoot: {},
   selectedWindow: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
@@ -43,15 +43,53 @@ class MultiSelect extends Component {
     }
   }
 
-  handleAdd(...things) {
-    console.log('select', things)
+  handleAdd(item) {
+    let {
+      available,
+      selected,
+    } = this.state
+    const {
+      uniqueIdAccessor,
+    } = this.props
+
+    // remove item from the available list
+    available = available.filter(availableItem =>
+        availableItem[uniqueIdAccessor] !== item[uniqueIdAccessor])
+
+    // add item to the selected list
+    selected.push(item)
+
+    // update state
+    this.setState({
+      selected,
+      available,
+    })
   }
 
-  handleRemove(...things) {
-    console.log('delete', things)
+  handleRemove(item) {
+    let {
+      available,
+      selected,
+    } = this.state
+    const {
+      uniqueIdAccessor,
+    } = this.props
+
+    // remove item from the selected list
+    selected = selected.filter(selectedItem =>
+        selectedItem[uniqueIdAccessor] !== item[uniqueIdAccessor])
+
+    // add item to the available list
+    available.push(item)
+
+    // update state
+    this.setState({
+      selected,
+      available,
+    })
   }
 
-  render(){
+  render() {
     const {classes, displayAccessor} = this.props
     const {selected, available} = this.state
     return <div className={classes.selectRoot}>
@@ -75,7 +113,7 @@ class MultiSelect extends Component {
                           color='primary'
                           // avatar={<Avatar><DoneIcon/></Avatar>}
                           clickable
-                          onClick={this.handleAdd}
+                          onClick={() => this.handleAdd(item)}
                       />
                     </div>
                   })}
@@ -97,9 +135,7 @@ class MultiSelect extends Component {
                           className={classes.chip}
                           label={item[displayAccessor]}
                           color='primary'
-                          clickable
-                          onClick={() => console.log('clicked!!!!')}
-                          onDelete={this.handleRemove}
+                          onDelete={() => this.handleRemove(item)}
                       />
                     </div>
                   })}
@@ -117,12 +153,11 @@ MultiSelect = withStyles(styles)(MultiSelect)
 
 MultiSelect.propTypes = {
   displayAccessor: PropTypes.string.isRequired,
+  uniqueIdAccessor: PropTypes.string.isRequired,
   selected: PropTypes.array.isRequired,
   available: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 }
-MultiSelect.defaultProps = {
-
-}
+MultiSelect.defaultProps = {}
 
 export default MultiSelect
