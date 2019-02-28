@@ -220,14 +220,12 @@ class MultiSelect extends Component {
       available,
       selected,
     } = this.state
-    console.log('thi state asdfasd', this.state)
     onChange(selected, available)
   }
 
   render() {
     const {classes} = this.props
     const {availableFilter, selectedFilter} = this.state
-    console.log('this tate', this.state)
     return <div className={classes.selectRoot}>
       <Card>
         <CardContent>

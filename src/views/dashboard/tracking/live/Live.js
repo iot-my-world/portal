@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {
   withStyles, Typography,
   ExpansionPanel, ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  ExpansionPanelSummary, Grid,
 } from '@material-ui/core'
 import Query from 'brain/search/Query'
 import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading'
@@ -14,6 +14,7 @@ import {FullPageLoader} from 'components/loader/index'
 import {
   RecordHandler as CompanyRecordHandler,
 } from 'brain/party/company'
+import ListTextCriterion from 'brain/search/criterion/list/Text'
 
 const styles = theme => ({
   root: {
@@ -61,16 +62,23 @@ const styles = theme => ({
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
+const filterPanels = {
+  company: 0,
+  client: 1,
+}
+
 class Live extends Component {
 
   constructor(props) {
     super(props)
     this.collect = this.collect.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
+    this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
+    this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(
+        this)
     this.load = this.load.bind(this)
     this.state = {
-      // expanded: null,
-      expanded: 'panel1',
+      expanded: null,
       viewport: {
         latitude: -26.046573,
         longitude: 28.095451,
@@ -84,7 +92,10 @@ class Live extends Component {
     this.companies = []
     this.clients = []
 
-    this.collectCriteria = []
+    this.selectedClientIds = []
+    this.selecedCompanyIds = []
+
+    this.collectCritera = []
     this.collectQuery = new Query()
 
     this.collectTimeout = () => {
@@ -121,11 +132,39 @@ class Live extends Component {
   async collect() {
     let collectReadingsResponse
     try {
-      collectReadingsResponse = await ReadingRecordHandler.Collect(
-          this.collectCriteria)
+      collectReadingsResponse =
+          await ReadingRecordHandler.Collect(this.collectCritera)
     } catch (e) {
       console.error('error collecting readings', e)
     }
+  }
+
+  handleClientFilterChange(selected, available) {
+    this.selectedClientIds = selected.map(client => client.id)
+    if (
+        (this.selectedClientIds.length === this.clients.length) &&
+        (this.selecedCompanyIds.length === this.companies.length)
+    ) {
+      // there is essentially no criteria being imposed
+      this.collectCritera = []
+    } else {
+      // there is some criteria
+      this.collectCritera = [
+        ...this.collectCritera,
+        new ListTextCriterion({
+          field: 'assignedId.id',
+          list: [
+            ...this.selectedClientIds,
+            ...this.selecedCompanyIds,
+          ],
+        }),
+      ]
+    }
+    this.collectTimeout = setTimeout(this.collect, 300)
+  }
+
+  handleCompanyFilterChange(selected, available) {
+
   }
 
   renderFiltersMenu() {
@@ -133,38 +172,58 @@ class Live extends Component {
     const {expanded} = this.state
 
     return <div className={classes.root}>
-      <ExpansionPanel expanded={expanded === 'panel1'}
-                      onChange={this.handleChange('panel1')}>
+      <ExpansionPanel expanded={expanded === filterPanels.client}
+                      onChange={this.handleChange(filterPanels.client)}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-          <Typography className={classes.heading}>Client Filter</Typography>
-          <Typography className={classes.secondaryHeading}>Select Clients You'd
-            Like Displayed</Typography>
+          <Typography className={classes.heading}>Company Filter</Typography>
+          <Typography className={classes.secondaryHeading}>
+            Select Companies You'd Like Displayed
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <MultiSelect
-              displayAccessor='name'
-              uniqueIdAccessor='id'
-              selected={this.companies}
-              available={[]}
-              onChange={(selected, available) => console.log('change!',
-                  selected, available)}
-          />
+          <Grid
+              container
+              direction='column'
+              spacing={8}
+              alignItems='center'
+          >
+            <Grid item>
+              <MultiSelect
+                  displayAccessor='name'
+                  uniqueIdAccessor='id'
+                  selected={this.companies}
+                  available={[]}
+                  onChange={this.handleCompanyFilterChange}
+              />
+            </Grid>
+          </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === 'panel2'}
-                      onChange={this.handleChange('panel2')}>
+      <ExpansionPanel expanded={expanded === filterPanels.company}
+                      onChange={this.handleChange(filterPanels.company)}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-          <Typography className={classes.heading}>Assets</Typography>
+          <Typography className={classes.heading}>Client Filter</Typography>
           <Typography className={classes.secondaryHeading}>
-            Select the Assets You'd Like Displayed
+            Select Clients You'd Like Displayed
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat
-            lectus, varius pulvinar
-            diam eros in elit. Pellentesque convallis laoreet laoreet.
-          </Typography>
+          <Grid
+              container
+              direction='column'
+              spacing={8}
+              alignItems='center'
+          >
+            <Grid item>
+              <MultiSelect
+                  displayAccessor='name'
+                  uniqueIdAccessor='id'
+                  selected={this.clients}
+                  available={[]}
+                  onChange={this.handleClientFilterChange}
+              />
+            </Grid>
+          </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel expanded={expanded === 'panel3'}
