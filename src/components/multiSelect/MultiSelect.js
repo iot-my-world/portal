@@ -197,7 +197,7 @@ class MultiSelect extends Component {
       <Card>
         <CardContent>
           <Grid container spacing={8}>
-            <Grid item>
+            <Grid item sm={6} xs={12}>
               <div className={classes.availableRoot}>
                 <TextField
                     id='availableFilter'
@@ -220,7 +220,7 @@ class MultiSelect extends Component {
                 </Button>
               </div>
             </Grid>
-            <Grid item>
+            <Grid item sm={6} xs={12}>
               <div className={classes.selectedRoot}>
                 <TextField
                     id='selectedFilter'
