@@ -1,16 +1,15 @@
 import React, {Component} from 'react'
 // import PropTypes from 'prop-types'
 import {
-  withStyles, Grid, Typography, TextField,
+  withStyles, Typography,
   ExpansionPanel, ExpansionPanelDetails,
-  ExpansionPanelSummary, Avatar, Chip,
-  Card, CardContent,
+  ExpansionPanelSummary,
 } from '@material-ui/core'
 import Query from 'brain/search/Query'
 import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading/index'
 import Reading from 'brain/tracker/reading/Reading'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import DoneIcon from '@material-ui/icons/Done'
+import MultiSelect from 'components/multiSelect'
 
 const styles = theme => ({
   root: {
@@ -33,6 +32,7 @@ const styles = theme => ({
   selectRoot: {padding: 10},
   availableRoot: {},
   availableWindow: {
+    backgroundColor: "#f2f2f2",
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
@@ -40,13 +40,18 @@ const styles = theme => ({
   },
   selectedRoot: {},
   selectedWindow: {
+    backgroundColor: "#f2f2f2",
     boxShadow: 'inset 0 0 4px #000000',
     height: 120,
     padding: 5,
     overflow: 'auto',
   },
+  chip: {},
   chipWrapper: {
     padding: 2,
+  },
+  searchField: {
+    width: '100%',
   },
 })
 
@@ -116,52 +121,7 @@ class Live extends Component {
             Like Displayed</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <div className={classes.selectRoot}>
-            <Card>
-              <CardContent>
-                <Grid container spacing={8}>
-                  <Grid item>
-                    <div className={classes.availableRoot}>
-                      <TextField/>
-                      <div className={classes.availableWindow}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(thing => {
-                          return <div key={thing}
-                                      className={classes.chipWrapper}>
-                            <Chip
-                                label='monteagle'
-                                color='primary'
-                                avatar={<Avatar><DoneIcon/></Avatar>}
-                                clickable
-                                onClick={() => console.log('clicked!!!!')}
-                            />
-                          </div>
-                        })}
-                      </div>
-                    </div>
-                  </Grid>
-                  <Grid item>
-                    <div className={classes.selectedRoot}>
-                      <TextField/>
-                      <div className={classes.selectedWindow}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(thing => {
-                          return <div key={thing}
-                                      className={classes.chipWrapper}>
-                            <Chip
-                                label='monteagle'
-                                color='primary'
-                                avatar={<Avatar><DoneIcon/></Avatar>}
-                                clickable
-                                onClick={() => console.log('clicked!!!!')}
-                            />
-                          </div>
-                        })}
-                      </div>
-                    </div>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </div>
+         <MultiSelect/>
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel expanded={expanded === 'panel2'}
