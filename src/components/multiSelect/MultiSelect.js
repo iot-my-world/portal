@@ -2,12 +2,14 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   Card, CardContent, Chip, Grid,
-  TextField, withStyles,
+  TextField, withStyles, Button,
 } from '@material-ui/core'
 
 const styles = theme => ({
   root: {padding: 10},
-  availableRoot: {},
+  availableRoot: {
+    display: 'grid',
+  },
   availableWindow: {
     backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
@@ -15,7 +17,9 @@ const styles = theme => ({
     padding: 5,
     overflow: 'auto',
   },
-  selectedRoot: {},
+  selectedRoot: {
+    display: 'grid',
+  },
   selectedWindow: {
     backgroundColor: '#f2f2f2',
     boxShadow: 'inset 0 0 4px #000000',
@@ -40,6 +44,9 @@ class MultiSelect extends Component {
     this.handleFilterChange = this.handleFilterChange.bind(this)
     this.renderAvailableChips = this.renderAvailableChips.bind(this)
     this.renderSelectedChips = this.renderSelectedChips.bind(this)
+    this.handleSelectAll = this.handleSelectAll.bind(this)
+    this.handleRemoveAll = this.handleRemoveAll.bind(this)
+    this.onChange = this.onChange.bind(this)
     this.state = {
       selected: props.selected,
       available: props.available,
@@ -69,6 +76,7 @@ class MultiSelect extends Component {
       selected,
       available,
     })
+    this.onChange()
   }
 
   handleRemove(item) {
@@ -92,6 +100,37 @@ class MultiSelect extends Component {
       selected,
       available,
     })
+    this.onChange()
+  }
+
+  handleSelectAll() {
+    const {
+      available,
+      selected,
+    } = this.state
+    this.setState({
+      available: [],
+      selected: [
+        ...available,
+        ...selected,
+      ],
+    })
+    this.onChange()
+  }
+
+  handleRemoveAll() {
+    const {
+      available,
+      selected,
+    } = this.state
+    this.setState({
+      available: [
+        ...available,
+        ...selected,
+      ],
+      selected: [],
+    })
+    this.onChange()
   }
 
   handleFilterChange(e) {
@@ -142,6 +181,15 @@ class MultiSelect extends Component {
     return chips
   }
 
+  onChange() {
+    const {onChange} = this.props
+    const {
+      available,
+      selected,
+    } = this.state
+    onChange(selected, available)
+  }
+
   render() {
     const {classes} = this.props
     const {availableFilter, selectedFilter} = this.state
@@ -162,6 +210,14 @@ class MultiSelect extends Component {
                 <div className={classes.availableWindow}>
                   {this.renderAvailableChips()}
                 </div>
+                <Button
+                    color='primary'
+                    variant='contained'
+                    size='small'
+                    onClick={this.handleSelectAll}
+                >
+                  Select All
+                </Button>
               </div>
             </Grid>
             <Grid item>
@@ -177,6 +233,14 @@ class MultiSelect extends Component {
                 <div className={classes.selectedWindow}>
                   {this.renderSelectedChips()}
                 </div>
+                <Button
+                    color='primary'
+                    variant='contained'
+                    size='small'
+                    onClick={this.handleRemoveAll}
+                >
+                  Remove All
+                </Button>
               </div>
             </Grid>
           </Grid>
