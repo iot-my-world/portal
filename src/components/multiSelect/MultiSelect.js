@@ -37,9 +37,14 @@ class MultiSelect extends Component {
     super(props)
     this.handleAdd = this.handleAdd.bind(this)
     this.handleRemove = this.handleRemove.bind(this)
+    this.handleFilterChange = this.handleFilterChange.bind(this)
+    this.renderAvailableChips = this.renderAvailableChips.bind(this)
+    this.renderSelectedChips = this.renderSelectedChips.bind(this)
     this.state = {
       selected: props.selected,
       available: props.available,
+      selectedFilter: '',
+      availableFilter: '',
     }
   }
 
@@ -89,9 +94,57 @@ class MultiSelect extends Component {
     })
   }
 
-  render() {
+  handleFilterChange(e) {
+    this.setState({[e.target.id]: e.target.value})
+  }
+
+  renderAvailableChips() {
+    const {available, availableFilter} = this.state
     const {classes, displayAccessor} = this.props
-    const {selected, available} = this.state
+
+    let chips = []
+    available.forEach((item, idx) => {
+      if (item[displayAccessor].includes(availableFilter)) {
+        chips.push(<div key={idx}
+                        className={classes.chipWrapper}>
+          <Chip
+              className={classes.chip}
+              label={item[displayAccessor]}
+              color='primary'
+              // avatar={<Avatar><DoneIcon/></Avatar>}
+              clickable
+              onClick={() => this.handleAdd(item)}
+          />
+        </div>)
+      }
+    })
+    return chips
+  }
+
+  renderSelectedChips() {
+    const {selected, selectedFilter} = this.state
+    const {classes, displayAccessor} = this.props
+
+    let chips = []
+    selected.forEach((item, idx) => {
+      if (item[displayAccessor].includes(selectedFilter)) {
+        chips.push(<div key={idx}
+                        className={classes.chipWrapper}>
+          <Chip
+              className={classes.chip}
+              label={item[displayAccessor]}
+              color='primary'
+              onDelete={() => this.handleRemove(item)}
+          />
+        </div>)
+      }
+    })
+    return chips
+  }
+
+  render() {
+    const {classes} = this.props
+    const {availableFilter, selectedFilter} = this.state
     return <div className={classes.selectRoot}>
       <Card>
         <CardContent>
@@ -99,46 +152,30 @@ class MultiSelect extends Component {
             <Grid item>
               <div className={classes.availableRoot}>
                 <TextField
+                    id='availableFilter'
                     className={classes.searchField}
                     label='Available'
                     variant='outlined'
+                    value={availableFilter}
+                    onChange={this.handleFilterChange}
                 />
                 <div className={classes.availableWindow}>
-                  {available.map((item, idx) => {
-                    return <div key={idx}
-                                className={classes.chipWrapper}>
-                      <Chip
-                          className={classes.chip}
-                          label={item[displayAccessor]}
-                          color='primary'
-                          // avatar={<Avatar><DoneIcon/></Avatar>}
-                          clickable
-                          onClick={() => this.handleAdd(item)}
-                      />
-                    </div>
-                  })}
+                  {this.renderAvailableChips()}
                 </div>
               </div>
             </Grid>
             <Grid item>
               <div className={classes.selectedRoot}>
                 <TextField
+                    id='selectedFilter'
                     className={classes.searchField}
                     label='Selected'
                     variant='outlined'
+                    value={selectedFilter}
+                    onChange={this.handleFilterChange}
                 />
                 <div className={classes.selectedWindow}>
-                  {selected.map((item, idx) => {
-                    return <div key={idx}
-                                className={classes.chipWrapper}>
-                      <Chip
-                          className={classes.chip}
-                          label={item[displayAccessor]}
-                          color='primary'
-                          onDelete={() => this.handleRemove(item)}
-                      />
-                    </div>
-                  })}
+                  {this.renderSelectedChips()}
                 </div>
               </div>
             </Grid>
