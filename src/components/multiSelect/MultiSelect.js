@@ -113,11 +113,11 @@ class MultiSelect extends Component {
       onChange,
     } = this.props
 
-    available = []
     selected = [
       ...available,
       ...selected,
     ]
+    available = []
 
     this.setState({
       available,
