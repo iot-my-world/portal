@@ -6,14 +6,14 @@ import {
   ExpansionPanelSummary,
 } from '@material-ui/core'
 import Query from 'brain/search/Query'
-import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading/index'
-import Reading from 'brain/tracker/reading/Reading'
+import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading'
+import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
 import {
   RecordHandler as CompanyRecordHandler,
-} from 'brain/party/company/index'
+} from 'brain/party/company'
 
 const styles = theme => ({
   root: {
@@ -83,6 +83,8 @@ class Live extends Component {
     }
     this.companies = []
     this.clients = []
+    this.collectCriteria = []
+    this.collectQuery = new Query()
   }
 
   async load() {
@@ -91,6 +93,13 @@ class Live extends Component {
       this.companies = (await CompanyRecordHandler.Collect()).records
     } catch (e) {
       console.error('error collecting companies', e)
+      return
+    }
+    try {
+      this.clients = (await ClientRecordHandler.Collect()).records
+    } catch (e) {
+      console.error('error collecting clients', e)
+      return
     }
     this.setState({loading: false})
   }
@@ -106,24 +115,12 @@ class Live extends Component {
   }
 
   async collect() {
-    const newQuery = new Query()
-    newQuery.limit = 0
-
     let collectReadingsResponse
     try {
-      collectReadingsResponse = await ReadingRecordHandler.Collect([], newQuery)
+      collectReadingsResponse = await ReadingRecordHandler.Collect(this.collectCriteria)
     } catch (e) {
       console.error('error collecting readings', e)
     }
-
-    const readings = collectReadingsResponse.records.map(
-        reading => new Reading(reading))
-    console.log(readings)
-
-    this.setState({
-      loading: false,
-      locationData: readings,
-    })
   }
 
   renderFiltersMenu() {
