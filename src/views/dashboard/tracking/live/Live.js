@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core'
 import Query from 'brain/search/Query'
 import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading'
-import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
+import {ClientRecordHandler} from 'brain/party/client'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
