@@ -29,6 +29,7 @@ const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NW
 
 const styles = theme => ({
   root: {
+    height: '100%',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: '1fr',
@@ -69,6 +70,9 @@ const styles = theme => ({
   searchField: {
     width: '100%',
   },
+  map: {
+    backgroundColor: '#ff2a59',
+  },
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -90,6 +94,7 @@ class Live extends Component {
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderDeviceLocation = this.renderDeviceLocation.bind(this)
+    this.getMapDimensions = this.getMapDimensions.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -98,6 +103,10 @@ class Live extends Component {
         zoom: 3.5,
         bearing: 0,
         pitch: 0,
+      },
+      mapDimensions: {
+        width: 0,
+        height: 0,
       },
       popupInfo: null,
       loading: true,
@@ -141,6 +150,20 @@ class Live extends Component {
     this.setState({
       expanded: expanded ? panel : false,
     })
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      expanded: prevExpanded,
+    } = prevState
+    const {
+      expanded,
+    } = this.state
+    if (
+        (expanded !== prevExpanded) &&
+        (expanded !== null)
+    ) {
+    }
   }
 
   async collect() {
@@ -283,6 +306,19 @@ class Live extends Component {
     this.setState({viewport})
   }
 
+  getMapDimensions(element) {
+    try {
+      this.setState({
+        mapDimensions: {
+          width: element.clientWidth,
+          height: element.clientHeight,
+        },
+      })
+    } catch (e) {
+      console.error('error getting map dimensions', e)
+    }
+  }
+
   renderDeviceLocation(reading, idx) {
     return <Marker
         key={`marker-${idx}`}
@@ -303,7 +339,9 @@ class Live extends Component {
       loading,
       viewport,
       readings,
+      mapDimensions,
     } = this.state
+
     return <div className={classes.root}>
       <div style={{
         width: '100%',
@@ -313,11 +351,14 @@ class Live extends Component {
       }}>
         {this.renderFiltersMenu()}
       </div>
-      <div>
+      <div
+          className={classes.map}
+          ref={this.getMapDimensions}
+      >
         <MapGL
             {...viewport}
-            width="100%"
-            height="100%"
+            width={mapDimensions.width}
+            height={mapDimensions.height}
             mapStyle="mapbox://styles/mapbox/dark-v9"
             onViewportChange={this.updateMapViewport}
             mapboxApiAccessToken={TOKEN}
