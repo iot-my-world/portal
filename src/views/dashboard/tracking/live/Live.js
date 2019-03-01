@@ -14,7 +14,8 @@ import {FullPageLoader} from 'components/loader/index'
 import {
   RecordHandler as CompanyRecordHandler,
 } from 'brain/party/company'
-import ListTextCriterion from 'brain/search/criterion/list/Text'
+import {ListTextCriterion} from 'brain/search/criterion/list'
+import {OrCriterion} from 'brain/search/criterion'
 
 const styles = theme => ({
   root: {
@@ -142,15 +143,16 @@ class Live extends Component {
   handleClientFilterChange(selected, available) {
     this.selectedClientIds = selected.map(client => client.id)
     if (
+        // if all clients and all companies are slected
         (this.selectedClientIds.length === this.clients.length) &&
         (this.selecedCompanyIds.length === this.companies.length)
     ) {
       // there is essentially no criteria being imposed
       this.collectCritera = []
     } else {
-      // there is some criteria
-      this.collectCritera = [
-        ...this.collectCritera,
+      // otherwise there is some criteria
+      const OrCrit = new OrCriterion()
+      OrCrit.criteria = [
         new ListTextCriterion({
           field: 'assignedId.id',
           list: [
@@ -158,7 +160,15 @@ class Live extends Component {
             ...this.selecedCompanyIds,
           ],
         }),
+        new ListTextCriterion({
+          field: 'ownerId.id',
+          list: [
+            ...this.selectedClientIds,
+            ...this.selecedCompanyIds,
+          ],
+        }),
       ]
+      this.collectCritera = [OrCrit]
     }
     this.collectTimeout = setTimeout(this.collect, 300)
   }

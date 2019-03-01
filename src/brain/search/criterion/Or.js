@@ -57,4 +57,10 @@ export default class Or extends Base {
     return this._value.criteria.length === 0
   }
 
+  toPOJO(){
+    let retObj = super.toPOJO()
+    retObj.value.criteria = this._value.criteria.map(crit => crit.toPOJO())
+    return retObj
+  }
+
 }
