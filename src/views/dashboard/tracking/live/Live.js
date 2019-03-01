@@ -16,6 +16,16 @@ import {
 } from 'brain/party/company'
 import {ListTextCriterion} from 'brain/search/criterion/list'
 import {OrCriterion} from 'brain/search/criterion'
+import MapGL,
+{
+  Marker,
+  Popup,
+  // NavigationControl,
+} from 'react-map-gl'
+import 'components/mapbox/Custom.css'
+import MapPin from 'views/maps/MapPin'
+
+const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
 const styles = theme => ({
   root: {
@@ -78,6 +88,8 @@ class Live extends Component {
     this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(
         this)
     this.load = this.load.bind(this)
+    this.updateMapViewport = this.updateMapViewport.bind(this)
+    this.renderDeviceLocation = this.renderDeviceLocation.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -89,6 +101,7 @@ class Live extends Component {
       },
       popupInfo: null,
       loading: true,
+      readings: [],
     }
     this.companies = []
     this.clients = []
@@ -135,7 +148,7 @@ class Live extends Component {
     try {
       collectReadingsResponse =
           await ReadingRecordHandler.Collect(this.collectCritera)
-      console.log('readings:', collectReadingsResponse)
+      this.setState({readings: collectReadingsResponse.records})
     } catch (e) {
       console.error('error collecting readings', e)
     }
@@ -266,11 +279,31 @@ class Live extends Component {
     </div>
   }
 
+  updateMapViewport = (viewport) => {
+    this.setState({viewport})
+  }
+
+  renderDeviceLocation(reading, idx) {
+    return <Marker
+        key={`marker-${idx}`}
+        longitude={reading.longitude}
+        latitude={reading.latitude}>
+      <MapPin
+          size={20}
+          // onClick={() => this.setState({popupInfo: city})}
+      />
+    </Marker>
+  }
+
   render() {
     const {
       classes,
     } = this.props
-    const {loading} = this.state
+    const {
+      loading,
+      viewport,
+      readings,
+    } = this.state
     return <div className={classes.root}>
       <div style={{
         width: '100%',
@@ -281,6 +314,16 @@ class Live extends Component {
         {this.renderFiltersMenu()}
       </div>
       <div>
+        <MapGL
+            {...viewport}
+            width="100%"
+            height="100%"
+            mapStyle="mapbox://styles/mapbox/dark-v9"
+            onViewportChange={this.updateMapViewport}
+            mapboxApiAccessToken={TOKEN}
+        >
+          {readings.map(this.renderDeviceLocation)}
+        </MapGL>
       </div>
       <FullPageLoader open={loading}/>
     </div>

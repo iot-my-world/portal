@@ -1,4 +1,4 @@
-import '../../components/mapbox/Custom.css'
+import 'components/mapbox/Custom.css'
 
 import React, {Component} from 'react'
 import {
