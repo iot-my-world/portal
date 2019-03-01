@@ -10,7 +10,7 @@ import {
 } from 'components/table/index'
 import {
   Company as CompanyEntity,
-  RecordHandler as CompanyRecordHandler,
+  CompanyRecordHandler,
 } from 'brain/party/company/index'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'

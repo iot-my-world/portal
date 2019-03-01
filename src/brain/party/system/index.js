@@ -1,7 +1,7 @@
 import System from './System'
-import RecordHandler from './RecordHandler'
+import SystemRecordHandler from './RecordHandler'
 
 export {
   System,
-  RecordHandler,
+  SystemRecordHandler,
 }

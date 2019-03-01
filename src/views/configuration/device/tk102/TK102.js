@@ -14,9 +14,9 @@ import {
   RecordHandler as TK102RecordHandler,
   Administrator as TK102Administrator
 } from 'brain/tracker/device/tk102/index'
-import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
+import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
-import {RecordHandler as SystemRecordHandler} from 'brain/party/system'
+import {SystemRecordHandler} from 'brain/party/system'
 import {allPartyTypes, Company, Client, System} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
