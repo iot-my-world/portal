@@ -142,39 +142,49 @@ class Live extends Component {
 
   handleClientFilterChange(selected, available) {
     this.selectedClientIds = selected.map(client => client.id)
-    if (
-        // if all clients and all companies are slected
-        (this.selectedClientIds.length === this.clients.length) &&
-        (this.selecedCompanyIds.length === this.companies.length)
-    ) {
-      // there is essentially no criteria being imposed
-      this.collectCritera = []
-    } else {
-      // otherwise there is some criteria
-      const OrCrit = new OrCriterion()
-      OrCrit.criteria = [
-        new ListTextCriterion({
-          field: 'assignedId.id',
-          list: [
-            ...this.selectedClientIds,
-            ...this.selecedCompanyIds,
-          ],
-        }),
-        new ListTextCriterion({
-          field: 'ownerId.id',
-          list: [
-            ...this.selectedClientIds,
-            ...this.selecedCompanyIds,
-          ],
-        }),
-      ]
-      this.collectCritera = [OrCrit]
-    }
+    // otherwise there is some criteria
+    const OrCrit = new OrCriterion()
+    OrCrit.criteria = [
+      new ListTextCriterion({
+        field: 'assignedId.id',
+        list: [
+          ...this.selectedClientIds,
+          ...this.selecedCompanyIds,
+        ],
+      }),
+      new ListTextCriterion({
+        field: 'ownerId.id',
+        list: [
+          ...this.selectedClientIds,
+          ...this.selecedCompanyIds,
+        ],
+      }),
+    ]
+    this.collectCritera = [OrCrit]
     this.collectTimeout = setTimeout(this.collect, 300)
   }
 
   handleCompanyFilterChange(selected, available) {
-
+    this.selecedCompanyIds = selected.map(client => client.id)
+    const OrCrit = new OrCriterion()
+    OrCrit.criteria = [
+      new ListTextCriterion({
+        field: 'assignedId.id',
+        list: [
+          ...this.selectedClientIds,
+          ...this.selecedCompanyIds,
+        ],
+      }),
+      new ListTextCriterion({
+        field: 'ownerId.id',
+        list: [
+          ...this.selectedClientIds,
+          ...this.selecedCompanyIds,
+        ],
+      }),
+    ]
+    this.collectCritera = [OrCrit]
+    this.collectTimeout = setTimeout(this.collect, 300)
   }
 
   renderFiltersMenu() {
