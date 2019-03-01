@@ -569,12 +569,12 @@ class TK102 extends Component {
                   },
                   {
                     Header: 'Assigned To',
-                    accessor: 'assignedId.id',
+                    accessor: 'assignedId',
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
                         return this.getPartyName(
-                            rowCellInfo.original.ownerPartyType,
+                            rowCellInfo.original.assignedPartyType,
                             rowCellInfo.value,
                         )
                       } catch (e) {

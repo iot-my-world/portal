@@ -135,6 +135,7 @@ class Live extends Component {
     try {
       collectReadingsResponse =
           await ReadingRecordHandler.Collect(this.collectCritera)
+      console.log('readings:', collectReadingsResponse)
     } catch (e) {
       console.error('error collecting readings', e)
     }
