@@ -1,7 +1,7 @@
 import Client from './Client'
-import RecordHandler from './RecordHandler'
+import ClientRecordHandler from './RecordHandler'
 
 export {
   Client,
-  RecordHandler,
+  ClientRecordHandler,
 }

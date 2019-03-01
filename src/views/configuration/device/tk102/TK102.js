@@ -14,9 +14,9 @@ import {
   RecordHandler as TK102RecordHandler,
   Administrator as TK102Administrator
 } from 'brain/tracker/device/tk102/index'
-import {RecordHandler as CompanyRecordHandler} from 'brain/party/company'
-import {RecordHandler as ClientRecordHandler} from 'brain/party/client'
-import {RecordHandler as SystemRecordHandler} from 'brain/party/system'
+import {CompanyRecordHandler} from 'brain/party/company'
+import {ClientRecordHandler} from 'brain/party/client'
+import {SystemRecordHandler} from 'brain/party/system'
 import {allPartyTypes, Company, Client, System} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
@@ -569,12 +569,12 @@ class TK102 extends Component {
                   },
                   {
                     Header: 'Assigned To',
-                    accessor: 'assignedId.id',
+                    accessor: 'assignedId',
                     width: 150,
                     Cell: rowCellInfo => {
                       try {
                         return this.getPartyName(
-                            rowCellInfo.original.ownerPartyType,
+                            rowCellInfo.original.assignedPartyType,
                             rowCellInfo.value,
                         )
                       } catch (e) {

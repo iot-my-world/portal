@@ -1,7 +1,7 @@
 import Company from './Company'
-import RecordHandler from './RecordHandler'
+import CompanyRecordHandler from './RecordHandler'
 
 export {
   Company,
-  RecordHandler,
+  CompanyRecordHandler,
 }

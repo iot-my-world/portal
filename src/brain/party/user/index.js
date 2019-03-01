@@ -1,7 +1,7 @@
 import User from './User'
-import RecordHandler from './RecordHandler'
+import UserRecordHandler from './RecordHandler'
 
 export {
   User,
-  RecordHandler,
+  UserRecordHandler,
 }
