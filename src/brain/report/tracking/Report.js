@@ -1,4 +1,5 @@
 import {jsonRpcRequest} from 'utilities/network'
+import {Reading} from 'brain/tracker/reading'
 
 const Report = {
   /**
@@ -13,10 +14,15 @@ const Report = {
       jsonRpcRequest({
         method: 'TrackingReport.Live',
         request: {
-          companyCriteria,
-          clientCriteria
+          companyCriteria: companyCriteria
+              ? companyCriteria.map(criterion => criterion.toPOJO())
+              : undefined,
+          clientCriteria: clientCriteria
+              ? clientCriteria.map(criterion => criterion.toPOJO())
+              : undefined,
         },
       }).then(result => {
+        result.readings = result.readings.map(reading => new Reading(reading))
         resolve(result)
       }).catch(error => reject(error))
     })
@@ -35,7 +41,7 @@ const Report = {
         method: 'TrackingReport.Historical',
         request: {
           companyCriteria,
-          clientCriteria
+          clientCriteria,
         },
       }).then(result => {
         resolve(result)

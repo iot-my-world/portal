@@ -5,15 +5,13 @@ import {
   ExpansionPanel, ExpansionPanelDetails,
   ExpansionPanelSummary, Grid,
 } from '@material-ui/core'
-import Query from 'brain/search/Query'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
 import {CompanyRecordHandler} from 'brain/party/company'
-import {ReadingRecordHandler} from 'brain/tracker/reading'
 import {ClientRecordHandler} from 'brain/party/client'
 import {ListTextCriterion} from 'brain/search/criterion/list'
-import {OrCriterion} from 'brain/search/criterion'
+import {TrackingReport} from 'brain/report/tracking'
 import MapGL,
 {
   Marker,
@@ -84,11 +82,11 @@ class Live extends Component {
 
   constructor(props) {
     super(props)
-    this.collect = this.collect.bind(this)
+    this.loadReport = this.loadReport.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
     this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
-    this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(
-        this)
+    this.handleCompanyFilterChange =
+        this.handleCompanyFilterChange.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderDeviceLocation = this.renderDeviceLocation.bind(this)
@@ -113,13 +111,10 @@ class Live extends Component {
     this.companies = []
     this.clients = []
 
-    this.selectedClientIds = []
-    this.selecedCompanyIds = []
+    this.companyCriteria = []
+    this.clientCriteria = []
 
-    this.collectCritera = []
-    this.collectQuery = new Query()
-
-    this.collectTimeout = () => {
+    this.loadReportTimeout = () => {
     }
   }
 
@@ -141,7 +136,7 @@ class Live extends Component {
   }
 
   componentDidMount() {
-    this.load().then(() => this.collect())
+    this.load().then(() => this.loadReport())
   }
 
   handleChange = panel => (event, expanded) => {
@@ -164,62 +159,39 @@ class Live extends Component {
     }
   }
 
-  async collect() {
-    let collectReadingsResponse
+  async loadReport() {
+    this.setState({loading: true})
     try {
-      collectReadingsResponse =
-          await ReadingRecordHandler.Collect(this.collectCritera)
-      this.setState({readings: collectReadingsResponse.records})
+      this.setState({
+        readings: (await TrackingReport.Live({
+          companyCriteria: this.companyCriteria,
+          clientCriteria: this.clientCriteria,
+        })).readings,
+      })
     } catch (e) {
-      console.error('error collecting readings', e)
+      console.error('error loading report', e)
     }
+    this.setState({loading: false})
   }
 
-  handleClientFilterChange(selected, available) {
-    this.selectedClientIds = selected.map(client => client.id)
-    // otherwise there is some criteria
-    const OrCrit = new OrCriterion()
-    OrCrit.criteria = [
+  handleClientFilterChange(selected) {
+    this.clientCriteria = [
       new ListTextCriterion({
         field: 'assignedId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-      new ListTextCriterion({
-        field: 'ownerId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
+        list: selected.map(client => client.id),
       }),
     ]
-    this.collectCritera = [OrCrit]
-    this.collectTimeout = setTimeout(this.collect, 300)
+    this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
-  handleCompanyFilterChange(selected, available) {
-    this.selecedCompanyIds = selected.map(client => client.id)
-    const OrCrit = new OrCriterion()
-    OrCrit.criteria = [
+  handleCompanyFilterChange(selected) {
+    this.clientCriteria = [
       new ListTextCriterion({
         field: 'assignedId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-      new ListTextCriterion({
-        field: 'ownerId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
+        list: selected.map(company => company.id),
       }),
     ]
-    this.collectCritera = [OrCrit]
-    this.collectTimeout = setTimeout(this.collect, 300)
+    this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   renderFiltersMenu() {
@@ -306,12 +278,14 @@ class Live extends Component {
 
   getMapDimensions(element) {
     try {
-      this.setState({
-        mapDimensions: {
-          width: element.clientWidth,
-          height: element.clientHeight,
-        },
-      })
+      if (element) {
+        this.setState({
+          mapDimensions: {
+            width: element.clientWidth,
+            height: element.clientHeight,
+          },
+        })
+      }
     } catch (e) {
       console.error('error getting map dimensions', e)
     }
