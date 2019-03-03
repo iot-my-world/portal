@@ -15,10 +15,10 @@ const Report = {
         method: 'TrackingReport.Live',
         request: {
           companyIdentifiers: companyIdentifiers
-              ? companyIdentifiers.map(criterion => criterion.toPOJO())
+              ? companyIdentifiers.map(identifier => identifier.toPOJO())
               : undefined,
           clientIdentifiers: clientIdentifiers
-              ? clientIdentifiers.map(criterion => criterion.toPOJO())
+              ? clientIdentifiers.map(identifier => identifier.toPOJO())
               : undefined,
         },
       }).then(result => {
