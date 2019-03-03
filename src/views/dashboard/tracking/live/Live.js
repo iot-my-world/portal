@@ -175,22 +175,32 @@ class Live extends Component {
   }
 
   handleClientFilterChange(selected) {
-    this.clientCriteria = [
-      new ListTextCriterion({
-        field: 'assignedId.id',
-        list: selected.map(client => client.id),
-      }),
-    ]
+    if (selected.length === this.clients.length) {
+      this.clientCriteria = []
+    } else {
+      this.clientCriteria = [
+        new ListTextCriterion({
+          field: 'assignedId.id',
+          list: selected.map(client => client.id),
+        }),
+      ]
+    }
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   handleCompanyFilterChange(selected) {
-    this.clientCriteria = [
-      new ListTextCriterion({
-        field: 'assignedId.id',
-        list: selected.map(company => company.id),
-      }),
-    ]
+    if (selected.length === this.companies.length) {
+      // all companies have been selected, i.e. there is essentially no
+      // criteria
+      this.companyCriteria = []
+    } else {
+      this.companyCriteria = [
+        new ListTextCriterion({
+          field: 'assignedId.id',
+          list: selected.map(company => company.id),
+        }),
+      ]
+    }
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
