@@ -65,9 +65,7 @@ const styles = theme => ({
   searchField: {
     width: '100%',
   },
-  map: {
-    backgroundColor: '#ff2a59',
-  },
+  map: {},
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
