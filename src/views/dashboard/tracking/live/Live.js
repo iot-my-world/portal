@@ -10,7 +10,6 @@ import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
-import {ListTextCriterion} from 'brain/search/criterion/list'
 import {TrackingReport} from 'brain/report/tracking'
 import MapGL,
 {
@@ -111,8 +110,8 @@ class Live extends Component {
     this.companies = []
     this.clients = []
 
-    this.companyCriteria = []
-    this.clientCriteria = []
+    this.companyIdentifiers = []
+    this.clientIdentifiers = []
 
     this.loadReportTimeout = () => {
     }
@@ -164,8 +163,8 @@ class Live extends Component {
     try {
       this.setState({
         readings: (await TrackingReport.Live({
-          companyCriteria: this.companyCriteria,
-          clientCriteria: this.clientCriteria,
+          companyIdentifiers: this.companyIdentifiers,
+          clientIdentifiers: this.clientIdentifiers,
         })).readings,
       })
     } catch (e) {
@@ -175,32 +174,12 @@ class Live extends Component {
   }
 
   handleClientFilterChange(selected) {
-    if (selected.length === this.clients.length) {
-      this.clientCriteria = []
-    } else {
-      this.clientCriteria = [
-        new ListTextCriterion({
-          field: 'assignedId.id',
-          list: selected.map(client => client.id),
-        }),
-      ]
-    }
+    this.clientIdentifiers = selected.map(client => client.identifier)
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   handleCompanyFilterChange(selected) {
-    if (selected.length === this.companies.length) {
-      // all companies have been selected, i.e. there is essentially no
-      // criteria
-      this.companyCriteria = []
-    } else {
-      this.companyCriteria = [
-        new ListTextCriterion({
-          field: 'assignedId.id',
-          list: selected.map(company => company.id),
-        }),
-      ]
-    }
+    this.companyIdentifiers = selected.map(company => company.identifier)
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 

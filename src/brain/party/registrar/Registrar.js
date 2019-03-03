@@ -9,7 +9,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        partyIdentifier: partyIdentifier.toWrapped(),
+        partyIdentifier: partyIdentifier.toToPO(),
       },
     })
   },
@@ -37,7 +37,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteClientAdminUser',
       request: {
-        partyIdentifier: partyIdentifier.toWrapped(),
+        partyIdentifier: partyIdentifier.toPOJO(),
       },
     })
   },

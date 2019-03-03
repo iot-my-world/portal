@@ -4,21 +4,21 @@ import {Reading} from 'brain/tracker/reading'
 const Report = {
   /**
    * Get the Live Tracking Report
-   * @param companyCriteria
-   * @param clientCriteria
+   * @param companyIdentifiers
+   * @param clientIdentifiers
    * @returns {Promise<any>}
    * @constructor
    */
-  Live({companyCriteria, clientCriteria}) {
+  Live({companyIdentifiers, clientIdentifiers}) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
         method: 'TrackingReport.Live',
         request: {
-          companyCriteria: companyCriteria
-              ? companyCriteria.map(criterion => criterion.toPOJO())
+          companyIdentifiers: companyIdentifiers
+              ? companyIdentifiers.map(criterion => criterion.toPOJO())
               : undefined,
-          clientCriteria: clientCriteria
-              ? clientCriteria.map(criterion => criterion.toPOJO())
+          clientIdentifiers: clientIdentifiers
+              ? clientIdentifiers.map(criterion => criterion.toPOJO())
               : undefined,
         },
       }).then(result => {
