@@ -121,12 +121,16 @@ class Live extends Component {
     this.setState({loading: true})
     try {
       this.companies = (await CompanyRecordHandler.Collect()).records
+      this.companyIdentifiers =
+          this.companies.map(company => company.identifier)
     } catch (e) {
       console.error('error collecting companies', e)
       return
     }
     try {
       this.clients = (await ClientRecordHandler.Collect()).records
+      this.clientIdentifiers =
+          this.clients.map(client => client.identifier)
     } catch (e) {
       console.error('error collecting clients', e)
       return

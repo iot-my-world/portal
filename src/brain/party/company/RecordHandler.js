@@ -59,6 +59,7 @@ const RecordHandler = {
               : undefined,
         },
       }).then(result => {
+        result.records = result.records.map(company => new Company(company))
         resolve(result)
       }).catch(error => reject(error))
     })

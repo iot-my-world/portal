@@ -14,12 +14,10 @@ const Report = {
       jsonRpcRequest({
         method: 'TrackingReport.Live',
         request: {
-          companyIdentifiers: companyIdentifiers
-              ? companyIdentifiers.map(identifier => identifier.toPOJO())
-              : undefined,
-          clientIdentifiers: clientIdentifiers
-              ? clientIdentifiers.map(identifier => identifier.toPOJO())
-              : undefined,
+          companyIdentifiers:
+              companyIdentifiers.map(identifier => identifier.toPOJO()),
+          clientIdentifiers:
+              clientIdentifiers.map(identifier => identifier.toPOJO()),
         },
       }).then(result => {
         result.readings = result.readings.map(reading => new Reading(reading))
