@@ -5,15 +5,13 @@ import {
   ExpansionPanel, ExpansionPanelDetails,
   ExpansionPanelSummary, Grid,
 } from '@material-ui/core'
-import Query from 'brain/search/Query'
-import {RecordHandler as ReadingRecordHandler} from 'brain/tracker/reading'
-import {ClientRecordHandler} from 'brain/party/client'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Query from 'brain/search/Query'
+import {ReadingRecordHandler} from 'brain/tracker/reading'
+import {ClientRecordHandler} from 'brain/party/client'
 import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
-import {
-  CompanyRecordHandler,
-} from 'brain/party/company'
+import {CompanyRecordHandler} from 'brain/party/company'
 import {ListTextCriterion} from 'brain/search/criterion/list'
 import {OrCriterion} from 'brain/search/criterion'
 

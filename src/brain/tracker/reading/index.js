@@ -1,7 +1,7 @@
 import Reading from './Reading'
-import RecordHandler from './RecordHandler'
+import ReadingRecordHandler from './RecordHandler'
 
 export {
   Reading,
-  RecordHandler,
+  ReadingRecordHandler,
 }

@@ -13,7 +13,7 @@ import MapGL,
 } from 'react-map-gl'
 
 import {
-  RecordHandler as ReadingRecordHandler,
+  ReadingRecordHandler,
   Reading,
 } from 'brain/tracker/reading'
 import {FullPageLoader} from 'components/loader'
