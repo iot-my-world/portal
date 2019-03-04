@@ -18,7 +18,7 @@ import MapGL,
   // NavigationControl,
 } from 'react-map-gl'
 import 'components/mapbox/Custom.css'
-import MapPin from 'views/maps/MapPin'
+import {MapPin} from './map'
 
 const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
