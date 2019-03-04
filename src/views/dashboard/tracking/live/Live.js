@@ -131,6 +131,8 @@ class Live extends Component {
     this.companyIdentifiers = []
     this.clientIdentifiers = []
 
+    this.readingPinColorMap = {}
+
     this.loadReportTimeout = () => {
     }
   }
@@ -188,6 +190,13 @@ class Live extends Component {
           companyIdentifiers: this.companyIdentifiers,
           clientIdentifiers: this.clientIdentifiers,
         })).readings,
+      })
+      this.readingPinColorMap = {}
+      let usedColors = []
+      this.state.readings.forEach(reading => {
+        const fill = getRandomColor(usedColors)
+        usedColors.push(fill)
+        this.readingPinColorMap[reading.id] = fill
       })
     } catch (e) {
       console.error('error loading report', e)
@@ -307,11 +316,7 @@ class Live extends Component {
       readings,
     } = this.state
 
-    let usedColors = []
-
     return readings.map((reading, idx) => {
-      const fill = getRandomColor(usedColors)
-      usedColors.push(fill)
       return <Marker
           key={`marker-${idx}`}
           longitude={reading.longitude}
@@ -319,7 +324,7 @@ class Live extends Component {
         <MapPin
             style={{
               ...MapPin.defaultProps.style,
-              fill,
+              fill: this.readingPinColorMap[reading.id],
             }}
         />
       </Marker>
