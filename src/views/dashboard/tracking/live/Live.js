@@ -13,12 +13,13 @@ import {ClientRecordHandler} from 'brain/party/client'
 import {TrackingReport} from 'brain/report/tracking'
 import MapGL,
 {
-  Marker,
-  // Popup,
+  Marker, Popup,
   // NavigationControl,
 } from 'react-map-gl'
 import 'components/mapbox/Custom.css'
-import {MapPin} from './map'
+import {
+  MapPin, MapPinPopup,
+} from './map'
 
 const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
@@ -108,6 +109,7 @@ class Live extends Component {
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderDeviceLocations = this.renderDeviceLocations.bind(this)
     this.getMapDimensions = this.getMapDimensions.bind(this)
+    this.renderMapPipPopup = this.renderMapPipPopup.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -124,6 +126,7 @@ class Live extends Component {
       popupInfo: null,
       loading: true,
       readings: [],
+      selectedReading: undefined,
     }
     this.companies = []
     this.clients = []
@@ -329,9 +332,29 @@ class Live extends Component {
               ...MapPin.defaultProps.style,
               fill: this.readingPinColorMap[reading.id],
             }}
+            onClick={()=>{
+              console.log('clicked!!')
+              this.setState({selectedReading: reading})
+            }}
         />
       </Marker>
     })
+  }
+
+  renderMapPipPopup() {
+    const {
+      selectedReading,
+    } = this.state
+    
+    return <MapPinPopup
+        open={selectedReading !== undefined}
+        tipSize={5}
+        anchor='top'
+        longitude={selectedReading.longitude}
+        latitude={selectedReading.latitude}
+        closeOnClick={false}
+        onClose={() => this.setState({selectedReading: undefined})}
+    />
   }
 
   render() {
@@ -361,11 +384,12 @@ class Live extends Component {
             {...viewport}
             width={mapDimensions.width}
             height={mapDimensions.height}
-            mapStyle="mapbox://styles/mapbox/dark-v9"
+            mapStyle='mapbox://styles/mapbox/dark-v9'
             onViewportChange={this.updateMapViewport}
             mapboxApiAccessToken={TOKEN}
         >
           {this.renderDeviceLocations()}
+          {this.renderMapPipPopup()}
         </MapGL>
       </div>
       <FullPageLoader open={loading}/>
