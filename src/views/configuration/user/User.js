@@ -4,7 +4,7 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
-import PeopleIcon from '@material-ui/icons/People'
+import PersonIcon from '@material-ui/icons/Person'
 import {
   BEPTable,
 } from 'components/table/index'
@@ -333,7 +333,7 @@ class User extends Component {
             </Typography>
           </Grid>
           <Grid item>
-            <PeopleIcon className={classes.userIcon}/>
+            <PersonIcon className={classes.userIcon}/>
           </Grid>
           <Grid item>
             <Button
