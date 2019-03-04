@@ -191,12 +191,15 @@ class Live extends Component {
           clientIdentifiers: this.clientIdentifiers,
         })).readings,
       })
-      this.readingPinColorMap = {}
-      let usedColors = []
+      let usedColors = Object.values(this.readingPinColorMap)
       this.state.readings.forEach(reading => {
-        const fill = getRandomColor(usedColors)
-        usedColors.push(fill)
-        this.readingPinColorMap[reading.id] = fill
+        if (this.readingPinColorMap[reading.id] === undefined) {
+          // if a color has not yet been assigned for this reading id then
+          // assign one now
+          const fill = getRandomColor(usedColors)
+          usedColors.push(fill)
+          this.readingPinColorMap[reading.id] = fill
+        }
       })
     } catch (e) {
       console.error('error loading report', e)
