@@ -28,7 +28,9 @@ import MapsContainer from 'views/maps/MapsContainer'
 // View Permissions
 import {
   Configuration, PartyCompanyConfiguration, PartyClientConfiguration,
-  PartyUserConfiguration, DeviceConfiguration,
+  PartyUserConfiguration, DeviceConfiguration, Dashboards,
+  LiveTrackingDashboard as ViewLiveTrackingDashboard,
+  HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
 } from 'brain/security/permission/view/permission'
 import {
   System,
@@ -121,7 +123,7 @@ const AppRoutes = [
   [
     { // this is a route group
       group: true,
-      // viewPermission: Configuration,
+      viewPermission: Dashboards,
       text: 'Dashboards',
       icon: <DashboardIcon/>,
       routes: [
@@ -130,14 +132,14 @@ const AppRoutes = [
           icon: <GPSFixedIcon/>,
           path: '/app/dashboard/liveTracking',
           component: LiveTrackingDashboard,
-          // viewPermission: PartyCompanyConfiguration,
+          viewPermission: ViewLiveTrackingDashboard,
         },
         {
           text: 'Historical Tracking',
           icon: <TimelineIcon/>,
           path: '/app/dashboard/historicalTracking',
           component: HistoricalTrackingDashboard,
-          // viewPermission: PartyCompanyConfiguration,
+          viewPermission: ViewHistoricalTrackingDashboard,
         },
       ],
     },

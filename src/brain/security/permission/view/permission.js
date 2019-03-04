@@ -1,6 +1,8 @@
-
-export const Configuration = "Configuration"
-export const PartyCompanyConfiguration = "PartyCompanyConfiguration"
-export const PartyClientConfiguration = "PartyClientConfiguration"
-export const PartyUserConfiguration = "PartyUserConfiguration"
-export const DeviceConfiguration = "DeviceConfiguration"
+export const Configuration = 'Configuration'
+export const PartyCompanyConfiguration = 'PartyCompanyConfiguration'
+export const PartyClientConfiguration = 'PartyClientConfiguration'
+export const PartyUserConfiguration = 'PartyUserConfiguration'
+export const DeviceConfiguration = 'DeviceConfiguration'
+export const Dashboards = 'Dashboards'
+export const LiveTrackingDashboard = 'LiveTrackingDashboard'
+export const HistoricalTrackingDashboard = 'HistoricalTrackingDashboard'

@@ -9,7 +9,7 @@ const Handler = {
     return jsonRpcRequest({
       method: 'PermissionHandler.GetAllUsersViewPermissions',
       request: {
-        userIdentifier: userIdentifier.toWrapped(),
+        userIdentifier: userIdentifier.toPOJO(),
       },
     })
   },

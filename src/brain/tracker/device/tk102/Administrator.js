@@ -15,9 +15,9 @@ const Administrator = {
       jsonRpcRequest({
         method: 'TK102DeviceAdministrator.ChangeOwner',
         request: {
-          tk102Identifier: tk102Identifier.toWrapped(),
+          tk102Identifier: tk102Identifier.toPOJO(),
           newOwnerPartyType,
-          newOwnerIdentifier: newOwnerIdentifier.toWrapped(),
+          newOwnerIdentifier: newOwnerIdentifier.toPOJO(),
         },
       }).then(result => {
         resolve(new TK102(result.tk102))
@@ -38,9 +38,9 @@ const Administrator = {
       jsonRpcRequest({
         method: 'TK102DeviceAdministrator.ChangeAssigned',
         request: {
-          tk102Identifier: tk102Identifier.toWrapped(),
+          tk102Identifier: tk102Identifier.toPOJO(),
           newAssignedPartyType,
-          newAssignedIdentifier: newAssignedIdentifier.toWrapped(),
+          newAssignedIdentifier: newAssignedIdentifier.toPOJO(),
         },
       }).then(result => {
         resolve(new TK102(result.tk102))

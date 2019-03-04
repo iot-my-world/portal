@@ -116,4 +116,10 @@ export default class Company extends Base {
           `cannot create identifier for company if id and adminEmailAddress are both blank`)
     }
   }
+
+  toPOJO(){
+    let retObj = super.toPOJO()
+    retObj.parentId = this.parentId.value
+    return retObj
+  }
 }

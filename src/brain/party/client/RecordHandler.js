@@ -59,6 +59,7 @@ const RecordHandler = {
               : undefined,
         },
       }).then(result => {
+        result.records = result.records.map(client => new Client(client))
         resolve(result)
       }).catch(error => reject(error))
     })

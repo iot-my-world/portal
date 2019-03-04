@@ -21,12 +21,4 @@ export default class BaseIdentifier extends Base {
   get type() {
     return this._type
   }
-
-  toPOJO(){
-    return this._value
-  }
-
-  toWrapped(){
-    return super.toPOJO()
-  }
 }
