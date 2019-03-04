@@ -31,6 +31,7 @@ class RootContainer extends Component {
 function mapStateToProps(state) {
   return {
     claims: state.auth.claims,
+    doneLoading: state.app.doneLoading,
   }
 }
 

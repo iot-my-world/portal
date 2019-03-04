@@ -16,7 +16,9 @@ class Root extends Component {
     super(props)
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
     this.logout = this.logout.bind(this)
-
+    this.state = {
+      allowedRoutes: [],
+    }
     this.loggedIn = this.determineLoggedIn()
   }
 
@@ -53,6 +55,7 @@ class Root extends Component {
   render() {
     const {
       claims,
+      doneLoading,
     } = this.props
 
     return <BrowserRouter>
@@ -61,6 +64,10 @@ class Root extends Component {
           <Route
               path='/app'
               render={props => {
+                // if the app is done loading then we can check if
+                // this route is allowed
+
+
                 if (this.loggedIn || claims.notExpired) {
                   return <AppContainer
                       {...props}
@@ -86,7 +93,6 @@ class Root extends Component {
               }}
           />
           <Route
-              exact
               path='/'
               render={props => {
                 if (this.loggedIn || claims.notExpired) {
@@ -108,6 +114,11 @@ class Root extends Component {
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
   claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * redux state flag indicating if the app
+   * has loaded
+   */
+  doneLoading: PropTypes.bool.isRequired,
 }
 
 export default withStyles(styles)(Root)
