@@ -14,7 +14,7 @@ import {TrackingReport} from 'brain/report/tracking'
 import MapGL,
 {
   Marker,
-  Popup,
+  // Popup,
   // NavigationControl,
 } from 'react-map-gl'
 import 'components/mapbox/Custom.css'
@@ -70,6 +70,26 @@ const styles = theme => ({
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
+/**
+ * returns a random color
+ * @param {string[]} [exclude] - colors to exclude
+ * @returns {string}
+ */
+function getRandomColor(exclude = []) {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  let firstTime = true
+  while (exclude.includes(color) || firstTime) {
+    firstTime = false
+    color = '#'
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)]
+    }
+  }
+
+  return color
+}
+
 const filterPanels = {
   company: 0,
   client: 1,
@@ -86,7 +106,7 @@ class Live extends Component {
         this.handleCompanyFilterChange.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
-    this.renderDeviceLocation = this.renderDeviceLocation.bind(this)
+    this.renderDeviceLocations = this.renderDeviceLocations.bind(this)
     this.getMapDimensions = this.getMapDimensions.bind(this)
     this.state = {
       expanded: null,
@@ -282,16 +302,28 @@ class Live extends Component {
     }
   }
 
-  renderDeviceLocation(reading, idx) {
-    return <Marker
-        key={`marker-${idx}`}
-        longitude={reading.longitude}
-        latitude={reading.latitude}>
-      <MapPin
-          size={20}
-          // onClick={() => this.setState({popupInfo: city})}
-      />
-    </Marker>
+  renderDeviceLocations() {
+    const {
+      readings,
+    } = this.state
+
+    let usedColors = []
+
+    return readings.map((reading, idx) => {
+      const fill = getRandomColor(usedColors)
+      usedColors.push(fill)
+      return <Marker
+          key={`marker-${idx}`}
+          longitude={reading.longitude}
+          latitude={reading.latitude}>
+        <MapPin
+            style={{
+              ...MapPin.defaultProps.style,
+              fill,
+            }}
+        />
+      </Marker>
+    })
   }
 
   render() {
@@ -301,7 +333,6 @@ class Live extends Component {
     const {
       loading,
       viewport,
-      readings,
       mapDimensions,
     } = this.state
 
@@ -326,7 +357,7 @@ class Live extends Component {
             onViewportChange={this.updateMapViewport}
             mapboxApiAccessToken={TOKEN}
         >
-          {readings.map(this.renderDeviceLocation)}
+          {this.renderDeviceLocations()}
         </MapGL>
       </div>
       <FullPageLoader open={loading}/>
