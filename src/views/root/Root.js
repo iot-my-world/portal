@@ -16,10 +16,15 @@ class Root extends Component {
     super(props)
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
     this.logout = this.logout.bind(this)
+    this.updateAllowedRoutes = this.updateAllowedRoutes.bind(this)
     this.state = {
       allowedRoutes: [],
     }
     this.loggedIn = this.determineLoggedIn()
+  }
+
+  updateAllowedRoutes(newAllowedRoots) {
+
   }
 
   determineLoggedIn() {
@@ -70,6 +75,7 @@ class Root extends Component {
 
                 if (this.loggedIn || claims.notExpired) {
                   return <AppContainer
+                      updateAllowedRoutes={this.updateAllowedRoutes}
                       {...props}
                   />
                 } else {
