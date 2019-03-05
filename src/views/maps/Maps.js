@@ -63,8 +63,13 @@ class Maps extends Component {
     const newQuery = new Query()
     newQuery.limit = 0
 
-    const response = await ReadingRecordHandler.Collect([], newQuery)
-    const readings = response.records.map(reading => new Reading(reading))
+    let readings = []
+    try {
+      const response = await ReadingRecordHandler.Collect([], newQuery)
+      readings = response.records
+    } catch (e) {
+      console.error(`error collecting readings ${e}`)
+    }
     // console.log(readings)
 
     const reading_data = this._getLocData(readings)
