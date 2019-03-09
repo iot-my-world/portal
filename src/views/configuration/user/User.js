@@ -4,14 +4,14 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
-import PersonIcon from '@material-ui/icons/Person'
+import DomainIcon from '@material-ui/icons/Domain'
 import {
   BEPTable,
 } from 'components/table/index'
 import {
   User as UserEntity,
   UserRecordHandler,
-} from 'brain/party/user/index'
+} from 'brain/party/user'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
@@ -51,6 +51,8 @@ const events = {
   createNewSuccess: states.nop,
 
   startEditExisting: states.editingExisting,
+  finishEditExisting: states.nop,
+  cancelEditExisting: states.nop,
 }
 
 class User extends Component {
@@ -74,13 +76,16 @@ class User extends Component {
     super(props)
     this.renderControls = this.renderControls.bind(this)
     this.renderUserDetails = this.renderUserDetails.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
-    this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
     this.handleCreateNew = this.handleCreateNew.bind(this)
+    this.handleCancelCreateNew = this.handleCancelCreateNew.bind(this)
+    this.handleSaveChanges = this.handleSaveChanges.bind(this)
+    this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
+    this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -104,7 +109,7 @@ class User extends Component {
     })
   }
 
-  handleChange(event) {
+  handleFieldChange(event) {
     let {
       selected,
     } = this.state
@@ -113,7 +118,7 @@ class User extends Component {
     this.setState({selected})
   }
 
-  handleSaveNew() {
+  async handleSaveNew() {
     const {
       selected,
     } = this.state
@@ -121,32 +126,55 @@ class User extends Component {
       NotificationSuccess,
       NotificationFailure,
     } = this.props
+
+    this.setState({isLoading: true})
+
+    // perform validation
     try {
-      this.setState({isLoading: true})
-      selected.validate('Create').then(reasonsInvalid => {
-        if (reasonsInvalid.count > 0) {
-          this.reasonsInvalid = reasonsInvalid
-          this.setState({isLoading: false})
-        } else {
-          selected.create().then(() => {
-            NotificationSuccess('Successfully Created User')
-            this.setState({activeState: events.createNewSuccess})
-            this.collect()
-          }).catch(error => {
-            console.error('Error Creating User', error)
-            NotificationFailure('Error Creating User')
-          }).finally(() => {
-            this.setState({isLoading: false})
-          })
-        }
-      }).catch(error => {
-        console.error('Error Validating User', error)
-        NotificationFailure('Error Validating User')
+      const reasonsInvalid = await selected.validate('Create')
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
         this.setState({isLoading: false})
-      })
-    } catch (error) {
-      console.error('Error Creating User', error)
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating User', e)
+      NotificationFailure('Error Validating User')
+      this.setState({isLoading: false})
+      return
     }
+
+    // if validation passes, perform create
+    try {
+      await selected.create()
+      NotificationSuccess('Successfully Created User')
+      this.setState({activeState: events.createNewSuccess})
+      await this.collect()
+      this.setState({isLoading: false})
+    } catch (e) {
+      console.error('Error Creating User', e)
+      NotificationFailure('Error Creating User')
+      this.setState({isLoading: false})
+    }
+  }
+
+  handleCancelCreateNew() {
+    this.reasonsInvalid.clearAll()
+    this.setState({activeState: events.cancelCreateNew})
+  }
+
+  handleSaveChanges() {
+    this.setState({activeState: events.finishEditExisting})
+  }
+
+  handleStartEditExisting() {
+    this.setState({
+      activeState: events.startEditExisting,
+    })
+  }
+
+  handleCancelEditExisting() {
+    this.setState({activeState: events.finishEditExisting})
   }
 
   collect() {
@@ -164,7 +192,7 @@ class User extends Component {
         })
         .catch(error => {
           console.error(`error collecting records: ${error}`)
-          NotificationFailure('Failed To Fetch Users')
+          NotificationFailure('Failed To Fetch Companies')
         })
         .finally(() => {
           this.setState({recordCollectionInProgress: false})
@@ -183,30 +211,11 @@ class User extends Component {
   }
 
   handleSelect(rowRecordObj, rowIdx) {
+    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: rowIdx,
       selected: new UserEntity(rowRecordObj),
       activeState: events.selectExisting,
-    })
-  }
-
-  handleInviteAdmin() {
-    const {
-      selected,
-    } = this.state
-    const {
-      NotificationSuccess,
-      NotificationFailure,
-    } = this.props
-
-    this.setState({isLoading: true})
-    PartyRegistrar.InviteUserAdminUser(selected.identifier).then(() => {
-      NotificationSuccess('Successfully Invited User Admin User')
-    }).catch(error => {
-      console.error('Failed to Invite User Admin User', error)
-      NotificationFailure('Failed to Invite User Admin User')
-    }).finally(() => {
-      this.setState({isLoading: false})
     })
   }
 
@@ -247,7 +256,7 @@ class User extends Component {
             <BEPTable
                 loading={recordCollectionInProgress}
                 totalNoRecords={totalNoRecords}
-                noDataText={'No Users Found'}
+                noDataText={'No Companies Found'}
                 data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
@@ -333,7 +342,7 @@ class User extends Component {
             </Typography>
           </Grid>
           <Grid item>
-            <PersonIcon className={classes.userIcon}/>
+            <DomainIcon className={classes.userIcon}/>
           </Grid>
           <Grid item>
             <Button
@@ -384,7 +393,7 @@ class User extends Component {
                 id='name'
                 label='Name'
                 value={selected.name}
-                onChange={this.handleChange}
+                onChange={this.handleFieldChange}
                 disabled={disableFields}
                 helperText={
                   fieldValidations.name
@@ -400,7 +409,7 @@ class User extends Component {
                 id='adminEmailAddress'
                 label='Admin Email'
                 value={selected.adminEmailAddress}
-                onChange={this.handleChange}
+                onChange={this.handleFieldChange}
                 disabled={disableFields}
                 helperText={
                   fieldValidations.adminEmailAddress
@@ -430,9 +439,7 @@ class User extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                activeState: events.startEditExisting,
-              })}
+              onClick={this.handleStartEditExisting}
           >
             Edit
           </Button>
@@ -440,7 +447,6 @@ class User extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={this.handleInviteAdmin}
           >
             Invite Admin
           </Button>
@@ -448,11 +454,7 @@ class User extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                selectedRowIdx: -1,
-                activeState: events.startCreateNew,
-                selected: new UserEntity(),
-              })}
+              onClick={this.handleCreateNew}
           >
             Create New
           </Button>
@@ -472,8 +474,27 @@ class User extends Component {
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState(
-                  {activeState: events.cancelCreateNew})}
+              onClick={this.handleCancelCreateNew}
+          >
+            Cancel
+          </Button>
+        </CardActions>
+
+      case states.editingExisting:
+        return <CardActions>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={this.handleSaveChanges}
+          >
+            Save Changes
+          </Button>
+          <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              onClick={this.handleCancelEditExisting}
           >
             Cancel
           </Button>
