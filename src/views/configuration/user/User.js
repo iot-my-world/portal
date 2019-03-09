@@ -299,6 +299,7 @@ class User extends Component {
                       rowCellInfo.value.forEach(role => roles += `${role}, `)
                       return roles
                     },
+                    sortable: false,
                     filterable: false,
                   },
                 ]}
