@@ -18,6 +18,8 @@ import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
+import {User as UserEntity} from 'brain/party/user/index'
+import {Client as ClientPartyType} from 'brain/party/types'
 
 const styles = theme => ({
   formField: {
@@ -190,24 +192,33 @@ class Client extends Component {
     })
   }
 
-  handleInviteAdmin() {
+  async handleInviteAdmin() {
     const {
       selected,
     } = this.state
     const {
+      claims,
       NotificationSuccess,
       NotificationFailure,
     } = this.props
 
     this.setState({isLoading: true})
-    PartyRegistrar.InviteClientAdminUser(selected.identifier).then(() => {
+    try {
+      // create the minimal admin user
+      const newAdminUser = new UserEntity()
+      newAdminUser.emailAddress = selected.adminEmailAddress
+      newAdminUser.parentPartyType = claims.partyType
+      newAdminUser.parentId = claims.partyId
+      newAdminUser.partyType = ClientPartyType
+      newAdminUser.partyId = selected.identifier
+      // perform the invite
+      await PartyRegistrar.InviteClientAdminUser({user: newAdminUser})
       NotificationSuccess('Successfully Invited Client Admin User')
-    }).catch(error => {
-      console.error('Failed to Invite Client Admin User', error)
+    } catch (e) {
+      console.error('Failed to Invite Client Admin User', e)
       NotificationFailure('Failed to Invite Client Admin User')
-    }).finally(() => {
-      this.setState({isLoading: false})
-    })
+    }
+    this.setState({isLoading: false})
   }
 
   render() {
