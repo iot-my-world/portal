@@ -13,6 +13,11 @@ import {parseToken} from 'utilities/token'
 import {User as UserEntity} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
+import {
+  RegisterCompanyAdminUser, RegisterCompanyUser,
+  RegisterClientAdminUser, RegisterClientUser,
+} from 'brain/security/claims/types'
+import {PartyRegistrar} from 'brain/party/registrar'
 
 const style = theme => {
   return {
@@ -84,14 +89,12 @@ const states = {
   invalidURL: 2,
   tokenExpired: 3,
   passwordsDoNotMatch: 4,
-  passwordBlank: 5,
 }
 
 const events = {
   init: states.parsingToken,
   jwtExpired: states.tokenExpired,
   passwordsDoNotMatch: states.passwordsDoNotMatch,
-  passwordBlank: states.passwordBlank,
   tokenParsed: states.nop,
   reInit: states.nop,
 }
@@ -160,15 +163,32 @@ class RegisterUser extends Component {
     if (user.password !== confirmPassword) {
       this.setState({activeState: events.passwordsDoNotMatch})
       return
-    } else if (user.password === '') {
-      this.setState({activeState: events.passwordBlank})
     }
 
     // validate the new user for create
     let reasonsInvalid
     try {
       this.setState({isLoading: true})
-      reasonsInvalid = await user.validate('Create')
+      switch (this.registrationClaims.type) {
+        case RegisterCompanyAdminUser:
+          reasonsInvalid = await user.validate('RegisterCompanyAdminUser')
+          break
+
+        case RegisterCompanyUser:
+          reasonsInvalid = await user.validate('RegisterCompanyUser')
+          break
+
+        case RegisterClientAdminUser:
+          reasonsInvalid = await user.validate('RegisterClientAdminUser')
+          break
+
+        case RegisterClientUser:
+          reasonsInvalid = await user.validate('RegisterClientUser')
+          break
+
+        default:
+          throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+      }
     } catch (error) {
       console.error('Error Validating User', error)
       NotificationFailure('Error Validating User')
@@ -181,7 +201,26 @@ class RegisterUser extends Component {
         this.reasonsInvalid = reasonsInvalid
         this.setState({isLoading: false})
       } else {
-        await user.registerAsAdmin()
+        switch (this.registrationClaims.type) {
+          case RegisterCompanyAdminUser:
+            await PartyRegistrar.RegisterCompanyAdminUser({user})
+            break
+
+          case RegisterCompanyUser:
+            await PartyRegistrar.RegisterCompanyUser({user})
+            break
+
+          case RegisterClientAdminUser:
+            await PartyRegistrar.RegisterClientAdminUser({user})
+            break
+
+          case RegisterClientUser:
+            await PartyRegistrar.RegisterClientUser({user})
+            break
+
+          default:
+            throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+        }
         NotificationSuccess('Successfully Registered User')
         this.setState({isLoading: false})
         this.handleBackToSite()
@@ -233,7 +272,6 @@ class RegisterUser extends Component {
       // store the token to be used on registration api
       sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
-      console.log('user', registrationClaims.user)
       this.setState({
         // set up the user from the claims
         user: new UserEntity(registrationClaims.user),
@@ -249,6 +287,12 @@ class RegisterUser extends Component {
     const {
       activeState,
     } = this.state
+
+    const passwordError = this.reasonsInvalid.errorOnField('password')
+    if (passwordError) {
+      return passwordError.help
+    }
+
     switch (activeState) {
       case states.passwordsDoNotMatch:
         return 'do not match'
@@ -269,8 +313,6 @@ class RegisterUser extends Component {
       confirmPassword,
       isLoading,
     } = this.state
-
-    console.log('state user:', user)
 
     switch (activeState) {
       case states.tokenExpired:

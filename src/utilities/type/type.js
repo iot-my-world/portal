@@ -22,3 +22,12 @@ export function isFunction(value) {
 export function isBoolean(value) {
   return typeof (value) === typeof (true)
 }
+
+export function stringToBytes(str) {
+  let bytes = []
+  for(let i = 0; i < str.length; i++) {
+    let char = str.charCodeAt(i)
+    bytes.push(char)
+  }
+  return bytes
+}

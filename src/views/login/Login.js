@@ -12,7 +12,7 @@ import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
-import {LoginClaims} from 'brain/security/claims'
+import {Login as LoginClaimsType} from 'brain/security/claims/types'
 
 const style = theme => {
   return {
@@ -145,14 +145,15 @@ class Login extends Component {
 
       if (
           claims.notExpired &&
-          (claims.type === Login.type)
+          (claims.type === LoginClaimsType)
       ) {
         // and set the token in local storage
         sessionStorage.setItem('jwt', loginResult.jwt)
       } else {
         // if the token is expired clear the token state
         sessionStorage.setItem('jwt', null)
-        console.error('given token is expired!')
+        console.error('given token is expired!', claims)
+        this.setState({activeState: events.loginFail})
         return
       }
     } catch (e) {
