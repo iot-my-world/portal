@@ -23,7 +23,7 @@ import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {ListTextCriterion} from 'brain/search/criterion/list'
 import {Query} from 'brain/search/index'
-import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import {LoginClaims} from 'brain/security/claims'
 import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'

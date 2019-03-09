@@ -1,11 +1,12 @@
 import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
-import ClaimsBase from 'brain/security/auth/claims/Base'
+import ClaimsBase from 'brain/security/claims/Base'
 import {isObject} from 'utilities/type/index'
-import {RegisterClientAdminUser} from 'brain/security/auth/claims/types'
+import {RegisterClientAdminUser as RegisterClientAdminUserClaimsType} from 'brain/security/claims/types'
+import {User} from 'brain/party/user/index'
 
-class RegisterClientAdminUserClaims extends ClaimsBase {
-  static type = RegisterClientAdminUser
+class RegisterClientAdminUser extends ClaimsBase {
+  static type = RegisterClientAdminUserClaimsType
 
   /**
    * @type {number}
@@ -20,10 +21,16 @@ class RegisterClientAdminUserClaims extends ClaimsBase {
   _expirationTime = 0
 
   /**
+   * @type {string}
+   * @private
+   */
+  _parentPartyType = ''
+
+  /**
    * @type {IdIdentifier}
    * @private
    */
-  _partyId = new IdIdentifier()
+  _parentId = new IdIdentifier()
 
   /**
    * @type {string}
@@ -32,14 +39,20 @@ class RegisterClientAdminUserClaims extends ClaimsBase {
   _partyType = ''
 
   /**
-   * @type {string}
+   * @type {IdIdentifier}
    * @private
    */
-  _emailAddress = ''
+  _partyId = new IdIdentifier()
+
+  /**
+   * @type {User}
+   * @private
+   */
+  _user = new User()
 
   /**
    * construct a RegisterClientAdminUserClaims Object
-   * @param {RegisterClientAdminUserClaims|Object} [registerClientAdminUserClaims]
+   * @param {RegisterClientAdminUser|Object} [registerClientAdminUserClaims]
    */
   constructor(registerClientAdminUserClaims) {
     super()
@@ -47,16 +60,19 @@ class RegisterClientAdminUserClaims extends ClaimsBase {
         (registerClientAdminUserClaims !== undefined) &&
         (
             (registerClientAdminUserClaims instanceof
-                RegisterClientAdminUserClaims) ||
+                RegisterClientAdminUser) ||
             isObject(registerClientAdminUserClaims)
         )
     ) {
       try {
         this._issueTime = registerClientAdminUserClaims.issueTime
         this._expirationTime = registerClientAdminUserClaims.expirationTime
-        this._partyId = new IdIdentifier(registerClientAdminUserClaims.partyId)
+        this._parentPartyType = registerClientAdminUserClaims.parentPartyType
+        this._parentId = new IdIdentifier(
+            registerClientAdminUserClaims.parentId)
         this._partyType = registerClientAdminUserClaims.partyType
-        this._emailAddress = registerClientAdminUserClaims.emailAddress
+        this._partyId = new IdIdentifier(registerClientAdminUserClaims.partyId)
+        this._user = new User(registerClientAdminUserClaims.user)
       } catch (e) {
         throw new Error(
             `error constructing registerClientAdminUserClaims object: ${e}`)
@@ -72,16 +88,24 @@ class RegisterClientAdminUserClaims extends ClaimsBase {
     return this._expirationTime
   }
 
+  get parentPartyType() {
+    return this._parentPartyType
+  }
+
+  get parentId() {
+    return this._parentId
+  }
+
   get partyId() {
     return this._partyId
   }
 
-  get partyType(){
+  get partyType() {
     return this._partyType
   }
 
-  get emailAddress(){
-    return this._emailAddress
+  get user() {
+    return this._user
   }
 
   /**
@@ -94,4 +118,4 @@ class RegisterClientAdminUserClaims extends ClaimsBase {
 
 }
 
-export default RegisterClientAdminUserClaims
+export default RegisterClientAdminUser

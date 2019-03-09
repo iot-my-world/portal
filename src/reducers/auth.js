@@ -4,7 +4,7 @@ import {
 } from 'actions/actionTypes'
 import {
   LoginClaims,
-} from 'brain/security/auth/claims/index'
+} from 'brain/security/claims/index'
 
 const initState = {
   claims: new LoginClaims(),

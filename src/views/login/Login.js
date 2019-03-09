@@ -12,7 +12,7 @@ import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
-import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import {LoginClaims} from 'brain/security/claims'
 
 const style = theme => {
   return {
@@ -145,7 +145,7 @@ class Login extends Component {
 
       if (
           claims.notExpired &&
-          (claims.type === LoginClaims.type)
+          (claims.type === Login.type)
       ) {
         // and set the token in local storage
         sessionStorage.setItem('jwt', loginResult.jwt)

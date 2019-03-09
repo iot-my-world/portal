@@ -82,6 +82,12 @@ export default class User extends Base {
   _partyId = new IdIdentifier()
 
   /**
+   * @type {boolean}
+   * @private
+   */
+  _registered = false
+
+  /**
    * construct a new User Object
    * @param {User|Object} [user]
    */
@@ -102,7 +108,7 @@ export default class User extends Base {
         this._parentId = new IdIdentifier(user.parentId)
         this._partyType = user.partyType
         this._partyId = new IdIdentifier(user.partyId)
-
+        this._registered = user.registered
       } catch (e) {
         throw new Error(`error constructing user object: ${e}`)
       }
@@ -185,6 +191,11 @@ export default class User extends Base {
     this._partyId = newVal
   }
 
+  get registered(){
+    return this._registered
+  }
+  // should never be able to set registered
+
   create() {
     return UserRecordHandler.Create(this)
   }
@@ -221,6 +232,7 @@ export default class User extends Base {
 
   toPOJO(){
     let retObj = super.toPOJO()
+    retObj.parentId = this.parentId.value
     retObj.partyId = this.partyId.value
     return retObj
   }

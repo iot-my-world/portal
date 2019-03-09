@@ -2,14 +2,14 @@ import {jsonRpcRequest} from 'utilities/network'
 
 const Registrar = {
   /**
-   * @param {Object} partyIdentifier
+   * @param {User} request
    * @constructor
    */
-  InviteCompanyAdminUser(partyIdentifier) {
+  InviteCompanyAdminUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        partyIdentifier: partyIdentifier.toToPO(),
+        user: user.toPOJO(),
       },
     })
   },

@@ -11,13 +11,15 @@ import {
 import {
   Company as CompanyEntity,
   CompanyRecordHandler,
-} from 'brain/party/company/index'
+} from 'brain/party/company'
+import {User as UserEntity} from 'brain/party/user'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import {LoginClaims} from 'brain/security/claims'
+import {Company as CompanyPartyType} from 'brain/party/types'
 
 const styles = theme => ({
   formField: {
@@ -220,24 +222,33 @@ class Company extends Component {
     })
   }
 
-  handleInviteAdmin() {
+  async handleInviteAdmin() {
     const {
       selected,
     } = this.state
     const {
+      claims,
       NotificationSuccess,
       NotificationFailure,
     } = this.props
 
     this.setState({isLoading: true})
-    PartyRegistrar.InviteCompanyAdminUser(selected.identifier).then(() => {
-      NotificationSuccess('Successfully Invited Company Admin User')
-    }).catch(error => {
-      console.error('Failed to Invite Company Admin User', error)
+    try {
+      // create the minimal admin user
+      const newAdminUser = new UserEntity()
+      newAdminUser.emailAddress = selected.adminEmailAddress
+      newAdminUser.parentPartyType = claims.partyType
+      newAdminUser.parentId = claims.partyId
+      newAdminUser.partyType = CompanyPartyType
+      newAdminUser.partyId = selected.identifier
+      // perform the invite
+      await PartyRegistrar.InviteCompanyAdminUser({user: newAdminUser})
+      NotificationSuccess('Company Admin User Invited')
+    } catch (e) {
+      console.error('Failed to Invite Company Admin User', e)
       NotificationFailure('Failed to Invite Company Admin User')
-    }).finally(() => {
-      this.setState({isLoading: false})
-    })
+    }
+    this.setState({isLoading: false})
   }
 
   render() {

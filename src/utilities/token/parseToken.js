@@ -1,6 +1,10 @@
 import {
-  LoginClaims, RegisterCompanyAdminUserClaims, RegisterClientAdminUserClaims,
-} from 'brain/security/auth/claims/index'
+  LoginClaims,
+  RegisterCompanyAdminUserClaims,
+  RegisterCompanyUserClaims,
+  RegisterClientAdminUserClaims,
+  RegisterClientUserClaims,
+} from 'brain/security/claims/index'
 import {isString} from 'utilities/type/type'
 
 export function parseToken(jwt) {
@@ -21,12 +25,19 @@ export function parseToken(jwt) {
       case RegisterCompanyAdminUserClaims.type:
         return new RegisterCompanyAdminUserClaims(tokenPOJO.value)
 
+      case RegisterCompanyUserClaims.type:
+        return new RegisterCompanyUserClaims(tokenPOJO.value)
+
       case RegisterClientAdminUserClaims.type:
         return new RegisterClientAdminUserClaims(tokenPOJO.value)
 
+      case RegisterClientUserClaims.type:
+        return new RegisterClientUserClaims(tokenPOJO.value)
+
       default:
         throw new TypeError(
-            `invalid claims object type in token: ${tokenPOJO.type}`)
+            `invalid claims object type in token: ${tokenPOJO.type}`
+        )
     }
   }
 }

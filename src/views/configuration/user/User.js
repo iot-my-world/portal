@@ -17,7 +17,7 @@ import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import LoginClaims from 'brain/security/auth/claims/LoginClaims'
+import {LoginClaims} from 'brain/security/claims'
 
 const styles = theme => ({
   formField: {

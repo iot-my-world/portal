@@ -15,7 +15,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import LoadingScreen from './LoadingScreen'
 import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
-import {LoginClaims} from 'brain/security/auth/claims'
+import {LoginClaims} from 'brain/security/claims'
 
 const drawerWidth = 230
 
