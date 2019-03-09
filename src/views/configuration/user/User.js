@@ -4,7 +4,7 @@ import {
   withStyles, Grid, Card, CardContent, CardActions, Typography,
   Button, TextField,
 } from '@material-ui/core'
-import DomainIcon from '@material-ui/icons/Domain'
+import PersonIcon from '@material-ui/icons/Person'
 import {
   BEPTable,
 } from 'components/table/index'
@@ -271,13 +271,35 @@ class User extends Component {
                     },
                   },
                   {
-                    Header: 'Admin Email',
-                    accessor: 'adminEmailAddress',
+                    Header: 'Email',
+                    accessor: 'emailAddress',
                     config: {
                       filter: {
                         type: Text,
                       },
                     },
+                  },
+                  {
+                    Header: 'Registered',
+                    accessor: 'registered',
+                    Cell: rowCellInfo => {
+                      if (rowCellInfo.value) {
+                        return 'true'
+                      } else {
+                        return 'false'
+                      }
+                    },
+                    filterable: false,
+                  },
+                  {
+                    Header: 'Roles',
+                    accessor: 'roles',
+                    Cell: rowCellInfo => {
+                      let roles = ''
+                      rowCellInfo.value.forEach(role => roles += `${role}, `)
+                      return roles
+                    },
+                    filterable: false,
                   },
                 ]}
 
@@ -342,7 +364,7 @@ class User extends Component {
             </Typography>
           </Grid>
           <Grid item>
-            <DomainIcon className={classes.userIcon}/>
+            <PersonIcon className={classes.userIcon}/>
           </Grid>
           <Grid item>
             <Button
@@ -406,17 +428,49 @@ class User extends Component {
           <Grid item>
             <TextField
                 className={classes.formField}
-                id='adminEmailAddress'
-                label='Admin Email'
-                value={selected.adminEmailAddress}
+                id='surname'
+                label='Surname'
+                value={selected.surname}
                 onChange={this.handleFieldChange}
                 disabled={disableFields}
                 helperText={
-                  fieldValidations.adminEmailAddress
-                      ? fieldValidations.adminEmailAddress.help
+                  fieldValidations.surname
+                      ? fieldValidations.surname.help
                       : undefined
                 }
-                error={!!fieldValidations.adminEmailAddress}
+                error={!!fieldValidations.surname}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='username'
+                label='Username'
+                value={selected.username}
+                onChange={this.handleFieldChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.username
+                      ? fieldValidations.username.help
+                      : undefined
+                }
+                error={!!fieldValidations.username}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='emailAddress'
+                label='EmailAddress'
+                value={selected.emailAddress}
+                onChange={this.handleFieldChange}
+                disabled={disableFields}
+                helperText={
+                  fieldValidations.emailAddress
+                      ? fieldValidations.emailAddress.help
+                      : undefined
+                }
+                error={!!fieldValidations.emailAddress}
             />
           </Grid>
         </Grid>

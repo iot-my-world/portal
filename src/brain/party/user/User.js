@@ -100,6 +100,8 @@ export default class User extends Base {
       try {
         this._id = user.id
         this._name = user.name
+        this._surname = user.surname
+        this._username = user.username
         this._emailAddress = user.emailAddress
         this._parentPartyType = user.parentPartyType
         this._parentId = new IdIdentifier(user.parentId)
