@@ -205,9 +205,6 @@ class RegisterUser extends Component {
     const {
       location,
     } = this.props
-    const {
-      user,
-    } = this.state
 
     let jwt
     let registrationClaims
@@ -224,21 +221,22 @@ class RegisterUser extends Component {
       return
     }
     try {
+      // parse the registration claims
       registrationClaims = parseToken(jwt)
-      console.log('registration claims:', registrationClaims)
     } catch (e) {
       console.error(`error parsing token to claims: ${e}`)
       this.handleBackToSite()
       return
     }
+    // if the claims are not expired
     if (registrationClaims.notExpired) {
+      // store the token to be used on registration api
       sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
-      user.emailAddress = registrationClaims.emailAddress
-      user.partyType = registrationClaims.partyType
-      user.partyId = registrationClaims.partyId
+      console.log('user', registrationClaims.user)
       this.setState({
-        user,
+        // set up the user from the claims
+        user: new UserEntity(registrationClaims.user),
         activeState: events.tokenParsed,
       })
     } else {
@@ -271,6 +269,8 @@ class RegisterUser extends Component {
       confirmPassword,
       isLoading,
     } = this.state
+
+    console.log('state user:', user)
 
     switch (activeState) {
       case states.tokenExpired:
@@ -372,7 +372,7 @@ class RegisterUser extends Component {
                                 id='emailAddress'
                                 label='Email Address'
                                 autoComplete='emailAddress'
-                                value={this.registrationClaims.emailAddress}
+                                value={user.emailAddress}
                                 disabled={true}
                                 helperText={
                                   fieldValidations.emailAddress
