@@ -108,6 +108,19 @@ const Registrar = {
       },
     })
   },
+
+  /**
+   * @param {{partyDetails: []}} request
+   * @constructor
+   */
+  AreAdminsRegistered({partyDetails}){
+    return jsonRpcRequest({
+      method: 'PartyRegistrar.AreAdminsRegistered',
+      request: {
+        partyDetails,
+      },
+    })
+  }
 }
 
 export default Registrar

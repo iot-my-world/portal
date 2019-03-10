@@ -20,6 +20,7 @@ import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {Company as CompanyPartyType} from 'brain/party/types'
+import IdIdentifier from 'brain/search/identifier/Id'
 
 const styles = theme => ({
   formField: {
@@ -180,26 +181,36 @@ class Company extends Component {
     this.setState({activeState: events.finishEditExisting})
   }
 
-  collect() {
+  async collect() {
     const {
       NotificationFailure,
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    CompanyRecordHandler.Collect(this.collectCriteria, this.collectQuery)
-        .then(response => {
-          this.setState({
-            records: response.records,
-            totalNoRecords: response.total,
+    try {
+      const collectResponse = await CompanyRecordHandler.Collect(
+          this.collectCriteria, this.collectQuery,
+      )
+      this.setState({
+        records: collectResponse.records,
+        totalNoRecords: collectResponse.total,
+      })
+
+      // find the admin user registration status of these companies
+      const registrationCheckResponse =
+          await PartyRegistrar.AreAdminsRegistered({
+            partyDetails: collectResponse.records.map(company => {
+              return {
+                partyId: (new IdIdentifier(company.id)).value,
+                partyType: CompanyPartyType,
+              }
+            }),
           })
-        })
-        .catch(error => {
-          console.error(`error collecting records: ${error}`)
-          NotificationFailure('Failed To Fetch Companies')
-        })
-        .finally(() => {
-          this.setState({recordCollectionInProgress: false})
-        })
+    } catch (e) {
+      console.error(`error collecting records: ${e}`)
+      NotificationFailure('Failed To Fetch Companies')
+    }
+    this.setState({recordCollectionInProgress: false})
   }
 
   handleCriteriaQueryChange(criteria, query) {
