@@ -71,12 +71,14 @@ class Company extends Component {
   }
 
   reasonsInvalid = new ReasonsInvalid()
+  companyRegistration = {}
 
   collectCriteria = []
   collectQuery = new Query()
 
   constructor(props) {
     super(props)
+    this.setCardsMaxWidth = this.setCardsMaxWidth.bind(this)
     this.renderControls = this.renderControls.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleFieldChange = this.handleFieldChange.bind(this)
@@ -197,15 +199,15 @@ class Company extends Component {
       })
 
       // find the admin user registration status of these companies
-      const registrationCheckResponse =
-          await PartyRegistrar.AreAdminsRegistered({
+      this.companyRegistration =
+          (await PartyRegistrar.AreAdminsRegistered({
             partyDetails: collectResponse.records.map(company => {
               return {
                 partyId: (new IdIdentifier(company.id)).value,
                 partyType: CompanyPartyType,
               }
             }),
-          })
+          })).result
     } catch (e) {
       console.error(`error collecting records: ${e}`)
       NotificationFailure('Failed To Fetch Companies')
@@ -238,22 +240,16 @@ class Company extends Component {
       selected,
     } = this.state
     const {
-      claims,
       NotificationSuccess,
       NotificationFailure,
     } = this.props
 
     this.setState({isLoading: true})
     try {
-      // create the minimal admin user
-      const newAdminUser = new UserEntity()
-      newAdminUser.emailAddress = selected.adminEmailAddress
-      newAdminUser.parentPartyType = claims.partyType
-      newAdminUser.parentId = claims.partyId
-      newAdminUser.partyType = CompanyPartyType
-      newAdminUser.partyId = selected.identifier
       // perform the invite
-      await PartyRegistrar.InviteCompanyAdminUser({user: newAdminUser})
+      await PartyRegistrar.InviteCompanyAdminUser({
+        companyIdentifier: selected.identifier,
+      })
       NotificationSuccess('Company Admin User Invited')
     } catch (e) {
       console.error('Failed to Invite Company Admin User', e)
@@ -322,6 +318,19 @@ class Company extends Component {
                       },
                     },
                   },
+                  {
+                    Header: 'Admin Registered',
+                    accessor: '',
+                    filterable: false,
+                    sortable: false,
+                    Cell: rowCellInfo => {
+                      if (this.companyRegistration[rowCellInfo.original.id]) {
+                        return 'Yes'
+                      } else {
+                        return 'No'
+                      }
+                    },
+                  },
                 ]}
 
                 getTdProps={(state, rowInfo) => {
@@ -351,6 +360,16 @@ class Company extends Component {
       </Grid>
       <FullPageLoader open={isLoading}/>
     </Grid>
+  }
+
+  setCardsMaxWidth(element){
+    try {
+      console.log(element)
+      console.log(element.props.ref)
+      console.log(element.parentNode.clientHeight)
+    } catch (e) {
+
+    }
   }
 
   renderCompanyDetails() {
@@ -471,6 +490,7 @@ class Company extends Component {
 
   renderControls() {
     const {
+      selected,
       activeState,
     } = this.state
 
@@ -486,6 +506,7 @@ class Company extends Component {
           >
             Edit
           </Button>
+          {(!this.companyRegistration[selected.id]) &&
           <Button
               size='small'
               color='primary'
@@ -493,7 +514,7 @@ class Company extends Component {
               onClick={this.handleInviteAdmin}
           >
             Invite Admin
-          </Button>
+          </Button>}
           <Button
               size='small'
               color='primary'

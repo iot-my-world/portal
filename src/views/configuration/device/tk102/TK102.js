@@ -12,7 +12,7 @@ import {
 import {
   TK102 as TK102Entity,
   RecordHandler as TK102RecordHandler,
-  Administrator as TK102Administrator
+  Administrator as TK102Administrator,
 } from 'brain/tracker/device/tk102/index'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
@@ -125,9 +125,28 @@ class TK102 extends Component {
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.getPartyName = this.getPartyName.bind(this)
+    this.updateEntityMap = this.updateEntityMap.bind(this)
     this.collectTimeout = () => {
     }
     this.partyIsRoot = props.claims.partyType === System
+  }
+
+  updateEntityMap(newMap = {systemEntities: [], companyEntities: [], clientEntities: []}) {
+    for (let systemEntity of newMap.systemEntities) {
+      if (this.getPartyName(System, new IdIdentifier(systemEntity.id)) === '') {
+        this.entityMap.System.push(systemEntity)
+      }
+    }
+    for (let companyEntity of newMap.clientEntities) {
+      if (this.getPartyName(System, new IdIdentifier(companyEntity.id)) === '') {
+        this.entityMap.Company.push(companyEntity)
+      }
+    }
+    for (let clientEntity of newMap.clientEntities) {
+      if (this.getPartyName(System, new IdIdentifier(clientEntity.id)) === '') {
+        this.entityMap.Client.push(clientEntity)
+      }
+    }
   }
 
   componentDidMount() {
@@ -161,6 +180,7 @@ class TK102 extends Component {
     switch (fieldName) {
       case 'ownerId':
         selected[fieldName] = new IdIdentifier(event.target.value.id)
+        this.entityMap[selected.ownerPartyType].push(event.target.value)
         break
       case 'ownerPartyType':
         // if owner party type changed clear owner id
@@ -172,6 +192,7 @@ class TK102 extends Component {
         // if assigned party type changed clear assigned id
         selected['assignedId'] = new IdIdentifier()
         selected[fieldName] = event.target.value
+        this.entityMap[selected.assignedPartyType].push(event.target.value)
         break
 
       case 'assignedId':
@@ -314,7 +335,7 @@ class TK102 extends Component {
     const {original} = this.state
     this.setState({
       activeState: events.cancelEditExisting,
-      selected: new TK102Entity(original)
+      selected: new TK102Entity(original),
     })
   }
 
@@ -501,6 +522,8 @@ class TK102 extends Component {
       theme,
       classes,
     } = this.props
+
+    console.log('thisngs', this.entityMap)
 
     return <div className={classes.root} style={{gridRowGap: 8}}>
       <div className={classes.detailCardWrapper}>

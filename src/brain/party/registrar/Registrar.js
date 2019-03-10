@@ -2,28 +2,27 @@ import {jsonRpcRequest} from 'utilities/network'
 
 const Registrar = {
   /**
-   * @param {{user: User}} request
+   * @param {{companyIdentifier: object}} request
    * @constructor
    */
-  InviteCompanyAdminUser({user}) {
+  InviteCompanyAdminUser({companyIdentifier}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        user: user.toPOJO(),
+        companyIdentifier: companyIdentifier.toPOJO(),
       },
     })
   },
 
   /**
-   * @param {{user: User, password: string}} request
+   * @param {{user: User}} request
    * @constructor
    */
-  RegisterCompanyAdminUser({user, password}) {
+  RegisterCompanyAdminUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterCompanyAdminUser',
       request: {
         user: user.toPOJO(),
-        password: password,
       },
     })
   },
@@ -42,15 +41,27 @@ const Registrar = {
   },
 
   /**
-   * @param {{user: User, password: string}} request
+   * @param {{user: User}} request
    * @constructor
    */
-  RegisterCompanyUser({user, password}) {
+  RegisterCompanyUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterCompanyUser',
       request: {
         user: user.toPOJO(),
-        password: password,
+      },
+    })
+  },
+
+  /**
+   * @param {{clientIdentifier: object}} request
+   * @constructor
+   */
+  InviteClientAdminUser({clientIdentifier}) {
+    return jsonRpcRequest({
+      method: 'PartyRegistrar.InviteClientAdminUser',
+      request: {
+        clientIdentifier: clientIdentifier.toPOJO(),
       },
     })
   },
@@ -59,25 +70,11 @@ const Registrar = {
    * @param {{user: User}} request
    * @constructor
    */
-  InviteClientAdminUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.InviteClientAdminUser',
-      request: {
-        user: user.toPOJO(),
-      },
-    })
-  },
-
-  /**
-   * @param {{user: User, password: string}} request
-   * @constructor
-   */
-  RegisterClientAdminUser({user, password}) {
+  RegisterClientAdminUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterClientAdminUser',
       request: {
         user: user.toPOJO(),
-        password: password,
       },
     })
   },
@@ -96,15 +93,14 @@ const Registrar = {
   },
 
   /**
-   * @param {{user: User, password: string}} request
+   * @param {{user: User}} request
    * @constructor
    */
-  RegisterClientUser({user, password}) {
+  RegisterClientUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterClientUser',
       request: {
         user: user.toPOJO(),
-        password: password,
       },
     })
   },

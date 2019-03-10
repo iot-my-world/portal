@@ -19,7 +19,10 @@ import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {User as UserEntity} from 'brain/party/user/index'
-import {Client as ClientPartyType} from 'brain/party/types'
+import {
+  Client as ClientPartyType,
+} from 'brain/party/types'
+import IdIdentifier from 'brain/search/identifier/Id'
 
 const styles = theme => ({
   formField: {
@@ -68,6 +71,7 @@ class Client extends Component {
   }
 
   reasonsInvalid = new ReasonsInvalid()
+  clientRegistration = {}
 
   collectCriteria = []
   collectQuery = new Query()
@@ -151,26 +155,36 @@ class Client extends Component {
     }
   }
 
-  collect() {
+  async collect() {
     const {
       NotificationFailure,
     } = this.props
 
     this.setState({recordCollectionInProgress: true})
-    ClientRecordHandler.Collect(this.collectCriteria, this.collectQuery)
-        .then(response => {
-          this.setState({
-            records: response.records,
-            totalNoRecords: response.total,
-          })
-        })
-        .catch(error => {
-          console.error(`error collecting records: ${error}`)
-          NotificationFailure('Failed To Fetch Clients')
-        })
-        .finally(() => {
-          this.setState({recordCollectionInProgress: false})
-        })
+    try {
+      const collectResponse = await ClientRecordHandler.Collect(
+          this.collectCriteria, this.collectQuery,
+      )
+      this.setState({
+        records: collectResponse.records,
+        totalNoRecords: collectResponse.total,
+      })
+
+      // find the admin user registration status of these clients
+      this.clientRegistration =
+          (await PartyRegistrar.AreAdminsRegistered({
+            partyDetails: collectResponse.records.map(client => {
+              return {
+                partyId: (new IdIdentifier(client.id)).value,
+                partyType: ClientPartyType,
+              }
+            }),
+          })).result
+    } catch (e) {
+      console.error(`error collecting records: ${e}`)
+      NotificationFailure('Failed To Fetch Clients')
+    }
+    this.setState({recordCollectionInProgress: false})
   }
 
   handleCriteriaQueryChange(criteria, query) {
@@ -279,6 +293,19 @@ class Client extends Component {
                       filter: {
                         type: Text,
                       },
+                    },
+                  },
+                  {
+                    Header: 'Admin Registered',
+                    accessor: '',
+                    filterable: false,
+                    sortable: false,
+                    Cell: rowCellInfo => {
+                      if (this.clientRegistration[rowCellInfo.original.id]) {
+                        return 'Yes'
+                      } else {
+                        return 'No'
+                      }
                     },
                   },
                 ]}
@@ -431,6 +458,7 @@ class Client extends Component {
   renderControls() {
     const {
       activeState,
+      selected,
     } = this.state
 
     switch (activeState) {
@@ -447,6 +475,7 @@ class Client extends Component {
           >
             Edit
           </Button>
+          {(!this.clientRegistration[selected.id]) &&
           <Button
               size='small'
               color='primary'
@@ -454,16 +483,12 @@ class Client extends Component {
               onClick={this.handleInviteAdmin}
           >
             Invite Admin
-          </Button>
+          </Button>}
           <Button
               size='small'
               color='primary'
               variant='contained'
-              onClick={() => this.setState({
-                selectedRowIdx: -1,
-                activeState: events.startCreateNew,
-                selected: new ClientEntity(),
-              })}
+              onClick={this.handleCreateNew}
           >
             Create New
           </Button>

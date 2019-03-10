@@ -9,3 +9,6 @@ export const notificationFailure = 4
 
 // app
 export const appDoneLoading = 5
+
+// party
+export const setMyParty = 6
