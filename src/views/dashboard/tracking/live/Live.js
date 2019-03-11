@@ -21,6 +21,8 @@ import MapGL, {
 } from "react-map-gl";
 import "components/mapbox/Custom.css";
 import { MapPin, MapPinPopup } from "./map";
+import { Reading } from "brain/tracker/reading";
+import { SystemRecordHandler } from "brain/party/system";
 
 const TOKEN =
   "pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg";
@@ -126,11 +128,15 @@ class Live extends Component {
       popupInfo: null,
       loading: true,
       readings: [],
-      selectedReading: undefined
+
+      mapPopUpOpen: false,
+      selectedReading: new Reading()
     };
+    this.systems = [];
     this.companies = [];
     this.clients = [];
 
+    this.systemIdentifiers = [];
     this.companyIdentifiers = [];
     this.clientIdentifiers = [];
 
@@ -141,6 +147,13 @@ class Live extends Component {
 
   async load() {
     this.setState({ loading: true });
+    try {
+      this.systems = (await SystemRecordHandler.Collect()).records;
+      this.systemIdentifiers = this.systems.map(system => system.identifier);
+    } catch (e) {
+      console.error("error collecting system", e);
+      return;
+    }
     try {
       this.companies = (await CompanyRecordHandler.Collect()).records;
       this.companyIdentifiers = this.companies.map(
@@ -183,7 +196,8 @@ class Live extends Component {
       this.setState({
         readings: (await TrackingReport.Live({
           companyIdentifiers: this.companyIdentifiers,
-          clientIdentifiers: this.clientIdentifiers
+          clientIdentifiers: this.clientIdentifiers,
+          systemIdentifiers: this.systemIdentifiers
         })).readings
       });
       let usedColors = Object.values(this.readingPinColorMap);
@@ -332,11 +346,11 @@ class Live extends Component {
   }
 
   renderMapPipPopup() {
-    const { selectedReading } = this.state;
+    const { selectedReading, mapPopUpOpen } = this.state;
 
     return (
       <MapPinPopup
-        open={selectedReading !== undefined}
+        open={mapPopUpOpen}
         tipSize={5}
         anchor="top"
         longitude={selectedReading.longitude}
