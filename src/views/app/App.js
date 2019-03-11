@@ -167,29 +167,6 @@ const buildAppHeaderRoutes = appRoutes => appRoutes.map(
       return routes
     })
 
-const getAllowedRoutes = appRoutes => appRoutes.map(
-    routeSection => {
-      let routes = []
-      routeSection.forEach(
-          routeGroupOrRoute => {
-            if (routeGroupOrRoute.group) {
-              let embeddedRoutes = []
-              routeGroupOrRoute.routes.forEach(
-                  route => {
-                    if (route.component !== undefined) {
-                      embeddedRoutes.push(route.path)
-                    }
-                  })
-              routes = [...routes, ...embeddedRoutes]
-            } else {
-              if (routeGroupOrRoute.component !== undefined) {
-                routes.push(routeGroupOrRoute.path)
-              }
-            }
-          })
-      return routes
-    })
-
 const states = {
   nop: 0,
   loading: 1,
