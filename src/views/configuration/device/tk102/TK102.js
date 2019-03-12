@@ -114,6 +114,7 @@ class TK102 extends Component {
     this.updateEntityMap = this.updateEntityMap.bind(this);
     this.collectTimeout = () => {};
     this.partyIsRoot = props.claims.partyType === System;
+    this.updateEntityMap(props.party, props.claims.partyType);
   }
 
   state = {
@@ -657,7 +658,6 @@ class TK102 extends Component {
       </div>
     );
   }
-
   renderTK102Details() {
     const { isLoading, activeState } = this.state;
     const { classes } = this.props;
