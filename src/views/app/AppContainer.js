@@ -1,7 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import App from './App'
-import {Logout} from 'actions/auth'
+import {
+  Logout,
+  SetMyParty,
+} from 'actions/auth'
 import {
   SetViewPermissions,
 } from 'actions/permission'
@@ -26,6 +29,7 @@ AppContainer = connect(
       Logout,
       SetViewPermissions,
       AppDoneLoading,
+      SetMyParty,
     }
 )(AppContainer)
 

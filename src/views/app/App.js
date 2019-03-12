@@ -15,7 +15,8 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import LoadingScreen from './LoadingScreen'
 import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
-import {LoginClaims} from 'brain/security/auth/claims'
+import {LoginClaims} from 'brain/security/claims'
+import {PartyHandler} from 'brain/party/handler'
 
 const drawerWidth = 230
 
@@ -189,6 +190,7 @@ class App extends Component {
     this.toggleDesktopDrawer = this.toggleDesktopDrawer.bind(this)
     this.toggleMenuState = this.toggleMenuState.bind(this)
     this.changePath = this.changePath.bind(this)
+    this.getViewWindowMaxDimensions = this.getViewWindowMaxDimensions.bind(this)
 
     this.state = {
       open: true,
@@ -197,6 +199,10 @@ class App extends Component {
       menuState: {},
       route: HomeRoute,
       activeState: events.init,
+      viewWindowMaxDimensions: {
+        width: 0,
+        height: 0,
+      },
     }
 
     this.appRoutes = []
@@ -239,18 +245,19 @@ class App extends Component {
       claims,
       SetViewPermissions,
       AppDoneLoading,
+      SetMyParty,
     } = this.props
 
     // catch in case setup starts before claims are set
     // when the claims are set later on componentDidUpdate will catch
     // and start setup again
     if (!claims.notExpired) {
-
       return
     }
 
     let viewPermissions = []
     try {
+      // TODO: remove redundant passing of user id
       const response = await PermissionHandler.GetAllUsersViewPermissions(
           claims.userId)
       // update view permissions in state
@@ -258,6 +265,13 @@ class App extends Component {
       viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+    }
+
+    try {
+      const response = await PartyHandler.GetMyParty()
+      SetMyParty(response.party)
+    } catch (e) {
+      console.error('error getting my party', e)
     }
 
     try {
@@ -325,6 +339,16 @@ class App extends Component {
     history.push(route.path)
   }
 
+  getViewWindowMaxDimensions(element){
+    try {
+      console.log('element!', element)
+      console.log(element.parentNode.clientHeight)
+      console.log(element.parentNode.clientWidth)
+    } catch (e) {
+      console.error('getViewWindowMaxDimensions error', e)
+    }
+  }
+
   render() {
     const {
       classes,
@@ -347,7 +371,10 @@ class App extends Component {
           </Hidden>
           <div className={classes.contentRoot}>
             <div className={classes.toolbar}/>
-            <div className={classes.contentWrapper}>
+            <div
+                className={classes.contentWrapper}
+                ref={this.getViewWindowMaxDimensions}
+            >
               <div>
                 <Switch>
                   {this.appContentRoutes}
@@ -567,6 +594,17 @@ App.propTypes = {
    * SetViewPermissions action creator
    */
   SetViewPermissions: PropTypes.func.isRequired,
+  /**
+   * SetMyParty action creator
+   */
+  SetMyParty: PropTypes.func.isRequired,
+  /**
+   * called to update the allowed roots so that
+   * the root component can disallow navigation
+   * to roots for which the logged in user does
+   * not have the required view permission
+   */
+  updateAllowedRoutes: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)

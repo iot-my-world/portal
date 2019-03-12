@@ -86,7 +86,7 @@ export default class TK102 extends Base {
     return this._id
   }
 
-  get manufacturerId(){
+  get manufacturerId() {
     return this._manufacturerId
   }
 
@@ -102,19 +102,19 @@ export default class TK102 extends Base {
     this._simCountryCode = newVal
   }
 
-  get simNumber (){
+  get simNumber() {
     return this._simNumber
   }
 
-  set simNumber(newVal){
+  set simNumber(newVal) {
     this._simNumber = newVal
   }
 
-  get ownerPartyType(){
+  get ownerPartyType() {
     return this._ownerPartyType
   }
 
-  set ownerPartyType(newVal){
+  set ownerPartyType(newVal) {
     this._ownerPartyType = newVal
   }
 
@@ -126,11 +126,11 @@ export default class TK102 extends Base {
     this._ownerId = newVal
   }
 
-  get assignedPartyType(){
+  get assignedPartyType() {
     return this._assignedPartyType
   }
 
-  set assignedPartyType(newVal){
+  set assignedPartyType(newVal) {
     this._assignedPartyType = newVal
   }
 
@@ -157,5 +157,12 @@ export default class TK102 extends Base {
       throw new Error(
           `cannot create identifier for tk102 if id is blank`)
     }
+  }
+
+  toPOJO() {
+    let retObj = super.toPOJO()
+    retObj.ownerId = this.ownerId.value
+    retObj.assignedId = this.assignedId.value
+    return retObj
   }
 }

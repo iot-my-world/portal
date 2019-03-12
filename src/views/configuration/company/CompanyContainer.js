@@ -21,7 +21,7 @@ FunctionalContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
-    }
+    },
 )(FunctionalContainer)
 
 export default FunctionalContainer

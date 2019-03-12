@@ -1,5 +1,5 @@
-import {jsonRpcRequest} from 'utilities/network'
-import {Reading} from 'brain/tracker/reading'
+import { jsonRpcRequest } from "utilities/network";
+import { Reading } from "brain/tracker/reading";
 
 const Report = {
   /**
@@ -9,21 +9,31 @@ const Report = {
    * @returns {Promise<any>}
    * @constructor
    */
-  Live({companyIdentifiers, clientIdentifiers}) {
+  Live({ systemIdentifiers, companyIdentifiers, clientIdentifiers }) {
+    console.log("systemIdentifiers", systemIdentifiers);
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'TrackingReport.Live',
+        method: "TrackingReport.Live",
         request: {
-          companyIdentifiers:
-              companyIdentifiers.map(identifier => identifier.toPOJO()),
-          clientIdentifiers:
-              clientIdentifiers.map(identifier => identifier.toPOJO()),
-        },
-      }).then(result => {
-        result.readings = result.readings.map(reading => new Reading(reading))
-        resolve(result)
-      }).catch(error => reject(error))
-    })
+          systemIdentifiers: systemIdentifiers.map(identifier =>
+            identifier.toPOJO()
+          ),
+          companyIdentifiers: companyIdentifiers.map(identifier =>
+            identifier.toPOJO()
+          ),
+          clientIdentifiers: clientIdentifiers.map(identifier =>
+            identifier.toPOJO()
+          )
+        }
+      })
+        .then(result => {
+          result.readings = result.readings.map(
+            reading => new Reading(reading)
+          );
+          resolve(result);
+        })
+        .catch(error => reject(error));
+    });
   },
 
   /**
@@ -33,18 +43,20 @@ const Report = {
    * @returns {Promise<any>}
    * @constructor
    */
-  Historical({companyCriteria, clientCriteria}) {
+  Historical({ companyCriteria, clientCriteria }) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'TrackingReport.Historical',
+        method: "TrackingReport.Historical",
         request: {
           companyCriteria,
-          clientCriteria,
-        },
-      }).then(result => {
-        resolve(result)
-      }).catch(error => reject(error))
-    })
-  },
-}
-export default Report
+          clientCriteria
+        }
+      })
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => reject(error));
+    });
+  }
+};
+export default Report;

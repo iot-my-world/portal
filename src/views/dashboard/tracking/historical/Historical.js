@@ -6,17 +6,25 @@ import {
   ExpansionPanelSummary, Grid,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Query from 'brain/search/Query'
-import {ReadingRecordHandler} from 'brain/tracker/reading'
-import {ClientRecordHandler} from 'brain/party/client'
 import MultiSelect from 'components/multiSelect'
 import {FullPageLoader} from 'components/loader/index'
 import {CompanyRecordHandler} from 'brain/party/company'
-import {ListTextCriterion} from 'brain/search/criterion/list'
-import {OrCriterion} from 'brain/search/criterion'
+import {ClientRecordHandler} from 'brain/party/client'
+import {TrackingReport} from 'brain/report/tracking'
+import MapGL,
+{
+  Marker,
+  // Popup,
+  // NavigationControl,
+} from 'react-map-gl'
+import 'components/mapbox/Custom.css'
+import {MapPin} from './map'
+
+const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
 
 const styles = theme => ({
   root: {
+    height: '100%',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: '1fr',
@@ -57,9 +65,30 @@ const styles = theme => ({
   searchField: {
     width: '100%',
   },
+  map: {},
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
+
+/**
+ * returns a random color
+ * @param {string[]} [exclude] - colors to exclude
+ * @returns {string}
+ */
+function getRandomColor(exclude = []) {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  let firstTime = true
+  while (exclude.includes(color) || firstTime) {
+    firstTime = false
+    color = '#'
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)]
+    }
+  }
+
+  return color
+}
 
 const filterPanels = {
   company: 0,
@@ -70,12 +99,15 @@ class Historical extends Component {
 
   constructor(props) {
     super(props)
-    this.collect = this.collect.bind(this)
+    this.loadReport = this.loadReport.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
     this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
-    this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(
-        this)
+    this.handleCompanyFilterChange =
+        this.handleCompanyFilterChange.bind(this)
     this.load = this.load.bind(this)
+    this.updateMapViewport = this.updateMapViewport.bind(this)
+    this.renderDeviceLocations = this.renderDeviceLocations.bind(this)
+    this.getMapDimensions = this.getMapDimensions.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -85,19 +117,23 @@ class Historical extends Component {
         bearing: 0,
         pitch: 0,
       },
+      mapDimensions: {
+        width: 0,
+        height: 0,
+      },
       popupInfo: null,
       loading: true,
+      readings: [],
     }
     this.companies = []
     this.clients = []
 
-    this.selectedClientIds = []
-    this.selecedCompanyIds = []
+    this.companyIdentifiers = []
+    this.clientIdentifiers = []
 
-    this.collectCritera = []
-    this.collectQuery = new Query()
+    this.readingPinColorMap = {}
 
-    this.collectTimeout = () => {
+    this.loadReportTimeout = () => {
     }
   }
 
@@ -105,12 +141,16 @@ class Historical extends Component {
     this.setState({loading: true})
     try {
       this.companies = (await CompanyRecordHandler.Collect()).records
+      this.companyIdentifiers =
+          this.companies.map(company => company.identifier)
     } catch (e) {
       console.error('error collecting companies', e)
       return
     }
     try {
       this.clients = (await ClientRecordHandler.Collect()).records
+      this.clientIdentifiers =
+          this.clients.map(client => client.identifier)
     } catch (e) {
       console.error('error collecting clients', e)
       return
@@ -119,7 +159,7 @@ class Historical extends Component {
   }
 
   componentDidMount() {
-    this.load().then(() => this.collect())
+    this.load().then(() => this.loadReport())
   }
 
   handleChange = panel => (event, expanded) => {
@@ -128,62 +168,53 @@ class Historical extends Component {
     })
   }
 
-  async collect() {
-    let collectReadingsResponse
-    try {
-      collectReadingsResponse =
-          await ReadingRecordHandler.Collect(this.collectCritera)
-      console.log('readings:', collectReadingsResponse)
-    } catch (e) {
-      console.error('error collecting readings', e)
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      expanded: prevExpanded,
+    } = prevState
+    const {
+      expanded,
+    } = this.state
+    if (
+        (expanded !== prevExpanded) &&
+        (expanded !== null)
+    ) {
     }
   }
 
-  handleClientFilterChange(selected, available) {
-    this.selectedClientIds = selected.map(client => client.id)
-    // otherwise there is some criteria
-    const OrCrit = new OrCriterion()
-    OrCrit.criteria = [
-      new ListTextCriterion({
-        field: 'assignedId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-      new ListTextCriterion({
-        field: 'ownerId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-    ]
-    this.collectCritera = [OrCrit]
-    this.collectTimeout = setTimeout(this.collect, 300)
+  async loadReport() {
+    this.setState({loading: true})
+    try {
+      this.setState({
+        readings: (await TrackingReport.Live({
+          companyIdentifiers: this.companyIdentifiers,
+          clientIdentifiers: this.clientIdentifiers,
+        })).readings,
+      })
+      let usedColors = Object.values(this.readingPinColorMap)
+      this.state.readings.forEach(reading => {
+        if (this.readingPinColorMap[reading.id] === undefined) {
+          // if a color has not yet been assigned for this reading id then
+          // assign one now
+          const fill = getRandomColor(usedColors)
+          usedColors.push(fill)
+          this.readingPinColorMap[reading.id] = fill
+        }
+      })
+    } catch (e) {
+      console.error('error loading report', e)
+    }
+    this.setState({loading: false})
   }
 
-  handleCompanyFilterChange(selected, available) {
-    this.selecedCompanyIds = selected.map(client => client.id)
-    const OrCrit = new OrCriterion()
-    OrCrit.criteria = [
-      new ListTextCriterion({
-        field: 'assignedId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-      new ListTextCriterion({
-        field: 'ownerId.id',
-        list: [
-          ...this.selectedClientIds,
-          ...this.selecedCompanyIds,
-        ],
-      }),
-    ]
-    this.collectCritera = [OrCrit]
-    this.collectTimeout = setTimeout(this.collect, 300)
+  handleClientFilterChange(selected) {
+    this.clientIdentifiers = selected.map(client => client.identifier)
+    this.loadReportTimeout = setTimeout(this.loadReport, 500)
+  }
+
+  handleCompanyFilterChange(selected) {
+    this.companyIdentifiers = selected.map(company => company.identifier)
+    this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   renderFiltersMenu() {
@@ -264,11 +295,55 @@ class Historical extends Component {
     </div>
   }
 
+  updateMapViewport = (viewport) => {
+    this.setState({viewport})
+  }
+
+  getMapDimensions(element) {
+    try {
+      if (element) {
+        this.setState({
+          mapDimensions: {
+            width: element.clientWidth,
+            height: element.clientHeight,
+          },
+        })
+      }
+    } catch (e) {
+      console.error('error getting map dimensions', e)
+    }
+  }
+
+  renderDeviceLocations() {
+    const {
+      readings,
+    } = this.state
+
+    return readings.map((reading, idx) => {
+      return <Marker
+          key={`marker-${idx}`}
+          longitude={reading.longitude}
+          latitude={reading.latitude}>
+        <MapPin
+            style={{
+              ...MapPin.defaultProps.style,
+              fill: this.readingPinColorMap[reading.id],
+            }}
+        />
+      </Marker>
+    })
+  }
+
   render() {
     const {
       classes,
     } = this.props
-    const {loading} = this.state
+    const {
+      loading,
+      viewport,
+      mapDimensions,
+    } = this.state
+
     return <div className={classes.root}>
       <div style={{
         width: '100%',
@@ -278,7 +353,20 @@ class Historical extends Component {
       }}>
         {this.renderFiltersMenu()}
       </div>
-      <div>
+      <div
+          className={classes.map}
+          ref={this.getMapDimensions}
+      >
+        <MapGL
+            {...viewport}
+            width={mapDimensions.width}
+            height={mapDimensions.height}
+            mapStyle="mapbox://styles/mapbox/dark-v9"
+            onViewportChange={this.updateMapViewport}
+            mapboxApiAccessToken={TOKEN}
+        >
+          {this.renderDeviceLocations()}
+        </MapGL>
       </div>
       <FullPageLoader open={loading}/>
     </div>

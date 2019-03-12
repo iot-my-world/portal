@@ -1,13 +1,14 @@
 import {
   setClaims,
-  logout,
+  logout, setMyParty,
 } from 'actions/actionTypes'
 import {
   LoginClaims,
-} from 'brain/security/auth/claims/index'
+} from 'brain/security/claims/index'
 
 const initState = {
   claims: new LoginClaims(),
+  party: {},
 }
 
 export default function auth(state = initState, action) {
@@ -16,6 +17,12 @@ export default function auth(state = initState, action) {
       return {
         ...state,
         claims: action.data,
+      }
+
+    case setMyParty:
+      return {
+        ...state,
+        party: action.data,
       }
 
     case logout:

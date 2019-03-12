@@ -1,4 +1,5 @@
-import {jsonRpcRequest} from 'utilities/network'
+import { jsonRpcRequest } from "utilities/network";
+import System from "./System";
 
 const RecordHandler = {
   /**
@@ -9,20 +10,21 @@ const RecordHandler = {
   Collect(criteria, query) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'SystemRecordHandler.Collect',
+        method: "SystemRecordHandler.Collect",
         request: {
           criteria: criteria
-              ? criteria.map(criterion => criterion.toPOJO())
-              : undefined,
-          query: query
-              ? query.toPOJO()
-              : undefined,
-        },
-      }).then(result => {
-        resolve(result)
-      }).catch(error => reject(error))
-    })
-  },
-}
+            ? criteria.map(criterion => criterion.toPOJO())
+            : undefined,
+          query: query ? query.toPOJO() : undefined
+        }
+      })
+        .then(result => {
+          result.records = result.records.map(system => new System(system));
+          resolve(result);
+        })
+        .catch(error => reject(error));
+    });
+  }
+};
 
-export default RecordHandler
+export default RecordHandler;

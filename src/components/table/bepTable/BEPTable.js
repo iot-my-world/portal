@@ -62,16 +62,6 @@ const events = {
 }
 
 class BEPTable extends Component {
-  state = {
-    activeState: events.init,
-    errors: {},
-    page: 0,
-  }
-
-  criteria = {}
-  query = new Query()
-  columns = []
-
   constructor(props) {
     super(props)
     this.renderError = this.renderError.bind(this)
@@ -83,7 +73,16 @@ class BEPTable extends Component {
     this.handleQueryLimitChange = this.handleQueryLimitChange.bind(this)
     this.handleQueryOffsetChange = this.handleQueryOffsetChange.bind(this)
     this.criteriaToArray = this.criteriaToArray.bind(this)
+    this.state = {
+      activeState: events.init,
+      errors: {},
+      page: 0,
+      query: new Query(props.query),
+    }
   }
+
+  criteria = {}
+  columns = []
 
   componentDidMount() {
     this.constructTable()
@@ -179,48 +178,63 @@ class BEPTable extends Component {
     const {
       onCriteriaQueryChange,
     } = this.props
+    const {
+      query,
+    } = this.state
     this.criteria[field] = newFilter
-    this.query.offset = 0
-    onCriteriaQueryChange(this.criteriaToArray(), this.query)
-    this.setState({page: 0})
+    query.offset = 0
+    onCriteriaQueryChange(this.criteriaToArray(), query)
+    this.setState({page: 0, query})
   }
 
   handleQuerySortChange(updatedSortObjects) {
     const {
       onCriteriaQueryChange,
     } = this.props
-    this.query.sortBy = []
-    this.query.order = []
+    const {
+      query,
+    } = this.state
+    query.sortBy = []
+    query.order = []
 
     for (let sortObj of updatedSortObjects) {
-      this.query.sortBy.push(sortObj.id)
-      this.query.order.push(
+      query.sortBy.push(sortObj.id)
+      query.order.push(
           sortObj.desc ? Query.SortOrderDescending : Query.SortOrderAscending)
     }
-    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+    onCriteriaQueryChange(this.criteriaToArray(), query)
+    this.setState({query})
   }
 
   handleQueryLimitChange(newPageSize) {
     const {
       onCriteriaQueryChange,
     } = this.props
-    this.query.limit = newPageSize
-    onCriteriaQueryChange(this.criteriaToArray(), this.query)
+    const {
+      query,
+    } = this.state
+    query.limit = newPageSize
+    onCriteriaQueryChange(this.criteriaToArray(), query)
+    this.setState({query})
   }
 
   handleQueryOffsetChange(newPageIndex) {
     const {
       onCriteriaQueryChange,
     } = this.props
-    this.query.offset = newPageIndex * this.query.limit
-    onCriteriaQueryChange(this.criteriaToArray(), this.query)
-    this.setState({page: newPageIndex})
+    const {
+      query,
+    } = this.state
+    query.offset = newPageIndex * query.limit
+    onCriteriaQueryChange(this.criteriaToArray(), query)
+    this.setState({page: newPageIndex, query})
   }
 
   render() {
     const {
       activeState,
       page,
+      query,
     } = this.state
     const {
       classes,
@@ -236,8 +250,8 @@ class BEPTable extends Component {
             columns={this.columns}
             manual={true}
             page={page}
-            pages={Math.ceil(totalNoRecords / this.query.limit)}
-            defaultPageSize={this.query.limit}
+            pages={Math.ceil(totalNoRecords / query.limit)}
+            defaultPageSize={query.limit}
             onSortedChange={this.handleQuerySortChange}
             onPageSizeChange={this.handleQueryLimitChange}
             onPageChange={this.handleQueryOffsetChange}
@@ -360,6 +374,10 @@ class BEPTable extends Component {
 BEPTable = withStyles(styles)(BEPTable)
 
 BEPTable.propTypes = {
+  /**
+   * used to initialise the query object for this table
+   */
+  initialQuery: PropTypes.instanceOf(Query),
   /**
    * function which will be called with criteria array and
    * query object when any of the query parameters or filters are
