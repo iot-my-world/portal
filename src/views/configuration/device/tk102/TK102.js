@@ -258,10 +258,7 @@ class TK102 extends Component {
 
   async handleSaveChanges() {
     const { original, selected } = this.state;
-    const {
-      // NotificationSuccess,
-      NotificationFailure
-    } = this.props;
+    const { NotificationSuccess, NotificationFailure } = this.props;
 
     this.setState({ isLoading: true });
 
@@ -284,41 +281,25 @@ class TK102 extends Component {
     // services specific to them if either of them have changed
     if (
       original.ownerPartyType !== selected.ownerPartyType ||
-      original.ownerId.id !== selected.ownerId.id
-    ) {
-      try {
-        await TK102Administrator.ChangeOwner(
-          selected.identifier,
-          selected.ownerPartyType,
-          selected.ownerId
-        );
-      } catch (e) {
-        console.error("Error Changing Owner", e);
-        NotificationFailure("Error Changing Owner");
-      }
-    }
-
-    if (
+      original.ownerId.id !== selected.ownerId.id ||
       original.assignedPartyType !== selected.assignedPartyType ||
       original.assignedId.id !== selected.assignedId.id
     ) {
       try {
-        await TK102Administrator.ChangeAssigned(
-          selected.identifier,
-          selected.assignedPartyType,
-          selected.assignedId
-        );
+        await TK102Administrator.ChangeOwnershipAndAssignment(selected);
       } catch (e) {
-        console.error("Error Changing Owner", e);
-        NotificationFailure("Error Changing Owner");
+        console.error("Error Changing Ownership and Assignment", e);
+        NotificationFailure("Error Changing Ownership and Assignment");
+        this.setState({ isLoading: false });
+        return;
       }
     }
 
     this.setState({
-      // activeState: events.finishEditExisting,
+      activeState: events.finishEditExisting,
       isLoading: false
     });
-    // NotificationSuccess('Successfully Updated TK102')
+    NotificationSuccess("Successfully Updated TK102");
   }
 
   handleStartEditExisting() {
