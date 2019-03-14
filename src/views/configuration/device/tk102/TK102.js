@@ -258,10 +258,7 @@ class TK102 extends Component {
 
   async handleSaveChanges() {
     const { original, selected } = this.state;
-    const {
-      // NotificationSuccess,
-      NotificationFailure
-    } = this.props;
+    const { NotificationSuccess, NotificationFailure } = this.props;
 
     this.setState({ isLoading: true });
 
@@ -283,38 +280,26 @@ class TK102 extends Component {
     // check if owner or assignment has changed and call the
     // services specific to them if either of them have changed
     if (
-      original.ownerPartyType !== selected.ownerPartyType &&
-      original.ownerId.id !== selected.ownerId.id
+      original.ownerPartyType !== selected.ownerPartyType ||
+      original.ownerId.id !== selected.ownerId.id ||
+      original.assignedPartyType !== selected.assignedPartyType ||
+      original.assignedId.id !== selected.assignedId.id
     ) {
       try {
         await TK102Administrator.ChangeOwnershipAndAssignment(selected);
       } catch (e) {
         console.error("Error Changing Ownership and Assignment", e);
-        NotificationFailure("Error Ownership and Assignment");
-      }
-    }
-
-    if (
-      original.assignedPartyType !== selected.assignedPartyType ||
-      original.assignedId.id !== selected.assignedId.id
-    ) {
-      try {
-        await TK102Administrator.ChangeAssigned(
-          selected.identifier,
-          selected.assignedPartyType,
-          selected.assignedId
-        );
-      } catch (e) {
-        console.error("Error Changing Owner", e);
-        NotificationFailure("Error Changing Owner");
+        NotificationFailure("Error Changing Ownership and Assignment");
+        this.setState({ isLoading: false });
+        return;
       }
     }
 
     this.setState({
-      // activeState: events.finishEditExisting,
+      activeState: events.finishEditExisting,
       isLoading: false
     });
-    // NotificationSuccess('Successfully Updated TK102')
+    NotificationSuccess("Successfully Updated TK102");
   }
 
   handleStartEditExisting() {
