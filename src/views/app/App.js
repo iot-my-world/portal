@@ -246,6 +246,7 @@ class App extends Component {
       SetViewPermissions,
       AppDoneLoading,
       SetMyParty,
+      SetMyUser,
     } = this.props
 
     // catch in case setup starts before claims are set
@@ -265,6 +266,7 @@ class App extends Component {
       viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+      return
     }
 
     try {
@@ -272,11 +274,22 @@ class App extends Component {
       SetMyParty(response.party)
     } catch (e) {
       console.error('error getting my party', e)
+      return
+    }
+
+    let user
+    try {
+      const response = await PartyHandler.GetMyUser()
+      SetMyUser(response.user)
+      user = response.user
+    } catch (e) {
+      console.error('error getting my user', e)
+      return
     }
 
     try {
       // build app routes
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -598,6 +611,10 @@ App.propTypes = {
    * SetMyParty action creator
    */
   SetMyParty: PropTypes.func.isRequired,
+  /**
+   * SetMyUser action creator
+   */
+  SetMyUser: PropTypes.func.isRequired,
   /**
    * called to update the allowed roots so that
    * the root component can disallow navigation

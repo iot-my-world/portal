@@ -12,3 +12,4 @@ export const appDoneLoading = 5
 
 // party
 export const setMyParty = 6
+export const setMyUser = 7

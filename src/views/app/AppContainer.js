@@ -4,6 +4,7 @@ import App from './App'
 import {
   Logout,
   SetMyParty,
+  SetMyUser,
 } from 'actions/auth'
 import {
   SetViewPermissions,
@@ -30,6 +31,7 @@ AppContainer = connect(
       SetViewPermissions,
       AppDoneLoading,
       SetMyParty,
+      SetMyUser,
     }
 )(AppContainer)
 
