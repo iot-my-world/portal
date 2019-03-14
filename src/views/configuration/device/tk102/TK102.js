@@ -283,18 +283,14 @@ class TK102 extends Component {
     // check if owner or assignment has changed and call the
     // services specific to them if either of them have changed
     if (
-      original.ownerPartyType !== selected.ownerPartyType ||
+      original.ownerPartyType !== selected.ownerPartyType &&
       original.ownerId.id !== selected.ownerId.id
     ) {
       try {
-        await TK102Administrator.ChangeOwner(
-          selected.identifier,
-          selected.ownerPartyType,
-          selected.ownerId
-        );
+        await TK102Administrator.ChangeOwnershipAndAssignment(selected);
       } catch (e) {
-        console.error("Error Changing Owner", e);
-        NotificationFailure("Error Changing Owner");
+        console.error("Error Changing Ownership and Assignment", e);
+        NotificationFailure("Error Ownership and Assignment");
       }
     }
 
