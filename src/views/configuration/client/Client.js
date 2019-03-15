@@ -427,33 +427,35 @@ class Client extends Component {
     } = this.props
 
     const fieldValidations = this.reasonsInvalid.toMap()
-    const disableFields = (activeState === states.viewingExisting) ||
-        isLoading
+    const stateIsViewing = activeState === states.viewingExisting
+
 
     switch (activeState) {
 
       case states.nop:
-        return <Grid
-            container
-            direction='column'
-            spacing={8}
-            alignItems={'center'}
-        >
-          <Grid item>
-            <PeopleIcon className={classes.clientIcon}/>
-          </Grid>
-          <Grid item>
-            <Fab
-                className={classes.button}
-                size={'small'}
-                onClick={this.handleCreateNew}
+        return (
+            <Grid
+                container
+                direction='column'
+                spacing={8}
+                alignItems={'center'}
             >
-              <Tooltip title='Add New Client'>
-                <AddIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-          </Grid>
-        </Grid>
+              <Grid item>
+                <PeopleIcon className={classes.clientIcon}/>
+              </Grid>
+              <Grid item>
+                <Fab
+                    className={classes.button}
+                    size={'small'}
+                    onClick={this.handleCreateNew}
+                >
+                  <Tooltip title='Add New Client'>
+                    <AddIcon className={classes.buttonIcon}/>
+                  </Tooltip>
+                </Fab>
+              </Grid>
+            </Grid>
+        )
 
       case states.viewingExisting:
       case states.editingNew:
@@ -474,7 +476,8 @@ class Client extends Component {
                 label='Name'
                 value={selected.name}
                 onChange={this.handleChange}
-                disabled={disableFields}
+                disabled={isLoading}
+                InputProps={{disableUnderline: stateIsViewing}}
                 helperText={
                   fieldValidations.name
                       ? fieldValidations.name.help
@@ -490,7 +493,8 @@ class Client extends Component {
                 label='Admin Email'
                 value={selected.adminEmailAddress}
                 onChange={this.handleChange}
-                disabled={disableFields}
+                disabled={isLoading}
+                InputProps={{disableUnderline: stateIsViewing}}
                 helperText={
                   fieldValidations.adminEmailAddress
                       ? fieldValidations.adminEmailAddress.help
