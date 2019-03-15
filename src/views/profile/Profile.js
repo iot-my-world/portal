@@ -1,13 +1,29 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {withStyles} from '@material-ui/core'
+import {
+  Grid,
+  withStyles,
+  Card,
+  CardContent,
+  CardHeader,
+} from '@material-ui/core'
 import {User} from 'brain/party/user'
 
-const styles = theme => ({})
+const styles = theme => ({
+  detailCard: {},
+})
 
 class Profile extends Component {
-  render(){
-    return <div>User</div>
+  render() {
+    const {classes} = this.props
+    return <Grid container direction="column" spacing={8} alignItems="center">
+      <Grid item>
+        <Card className={classes.detailCard}>
+          <CardHeader title={'Profile'}/>
+          <CardContent>some stuff</CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   }
 }
 
@@ -18,6 +34,14 @@ Profile.propTypes = {
    * Logged in user from redux
    */
   user: PropTypes.instanceOf(User).isRequired,
+  /**
+   * Success Action Creator
+   */
+  NotificationSuccess: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 Profile.defaultProps = {}
 

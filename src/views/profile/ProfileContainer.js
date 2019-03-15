@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import Profile from './Profile'
+import {NotificationSuccess, NotificationFailure} from 'actions/notification'
 
 let ProfileContainer = props => {
   return <Profile {...props}/>
@@ -15,6 +16,8 @@ const mapStateToProps = (state) => {
 ProfileContainer = connect(
     mapStateToProps,
     {
+      NotificationSuccess,
+      NotificationFailure,
     }
 )(ProfileContainer)
 
