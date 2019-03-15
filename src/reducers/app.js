@@ -1,13 +1,18 @@
 import {
   appDoneLoading,
+  setMaxViewDimensions,
   logout,
 } from 'actions/actionTypes'
 
-const initState = {
+const initState = () => ({
   doneLoading: false,
-}
+  maxViewDimensions: {
+    width: 0,
+    height: 0,
+  },
+})
 
-export default function app(state = initState, action) {
+export default function app(state = initState(), action) {
   switch (action.type) {
     case appDoneLoading:
       return {
@@ -15,8 +20,14 @@ export default function app(state = initState, action) {
         doneLoading: true,
       }
 
+    case setMaxViewDimensions:
+      return {
+        ...state,
+        maxViewDimensions: action.data,
+      }
+
     case logout:
-      return initState
+      return initState()
 
     default:
       return state

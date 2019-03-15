@@ -7,13 +7,13 @@ import {
 } from 'brain/security/claims/index'
 import {User} from 'brain/party/user'
 
-const initState = {
+const initState = () => ({
   claims: new LoginClaims(),
   party: {},
   user: new User(),
-}
+})
 
-export default function auth(state = initState, action) {
+export default function auth(state = initState(), action) {
   switch (action.type) {
     case setClaims:
       return {
@@ -34,7 +34,7 @@ export default function auth(state = initState, action) {
       }
 
     case logout:
-      return initState
+      return initState()
 
     default:
       return state

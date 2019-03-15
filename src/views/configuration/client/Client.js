@@ -264,6 +264,7 @@ class Client extends Component {
     const {
       theme,
       classes,
+      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
@@ -345,7 +346,7 @@ class Client extends Component {
         </Grid>
       </Grid>
       <Grid item xl={12}>
-        <Card>
+        <Card style={{maxWidth: maxViewDimensions.width - 10}}>
           <CardContent>
             <BEPTable
                 loading={recordCollectionInProgress}
@@ -603,6 +604,10 @@ Client.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * maxViewDimensions from redux state
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
 }
 
 Client.defaultProps = {}

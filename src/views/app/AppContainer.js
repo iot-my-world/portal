@@ -11,6 +11,7 @@ import {
 } from 'actions/permission'
 import {
   AppDoneLoading,
+  SetMaxViewDimensions,
 } from 'actions/app'
 
 let AppContainer = props => {
@@ -32,6 +33,7 @@ AppContainer = connect(
       AppDoneLoading,
       SetMyParty,
       SetMyUser,
+      SetMaxViewDimensions,
     }
 )(AppContainer)
 

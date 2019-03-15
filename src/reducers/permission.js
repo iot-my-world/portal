@@ -3,11 +3,11 @@ import {
   logout,
 } from 'actions/actionTypes'
 
-const initState = {
+const initState = () => ({
   view: [],
-}
+})
 
-export default function permission(state = initState, action) {
+export default function permission(state = initState(), action) {
   switch (action.type) {
     case setViewPermissions:
       return {
@@ -16,7 +16,7 @@ export default function permission(state = initState, action) {
       }
 
     case logout:
-      return initState
+      return initState()
 
     default:
       return state

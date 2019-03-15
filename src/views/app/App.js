@@ -355,12 +355,14 @@ class App extends Component {
   }
 
   getViewWindowMaxDimensions(element){
+    const {SetMaxViewDimensions} = this.props
     try {
-      console.log('element!', element)
-      console.log(element.parentNode.clientHeight)
-      console.log(element.parentNode.clientWidth)
+      SetMaxViewDimensions({
+        width: element.parentNode.clientWidth - 24,
+        height: element.parentNode.clientHeight,
+      })
     } catch (e) {
-      console.error('getViewWindowMaxDimensions error', e)
+      // console.error('getViewWindowMaxDimensions error', e)
     }
   }
 
@@ -617,6 +619,10 @@ App.propTypes = {
    * SetMyUser action creator
    */
   SetMyUser: PropTypes.func.isRequired,
+  /**
+   * SetMaxViewDimensions action creator
+   */
+  SetMaxViewDimensions: PropTypes.func.isRequired,
   /**
    * called to update the allowed roots so that
    * the root component can disallow navigation

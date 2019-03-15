@@ -9,7 +9,8 @@ export const notificationFailure = 4
 
 // app
 export const appDoneLoading = 5
+export const setMaxViewDimensions = 6
 
 // party
-export const setMyParty = 6
-export const setMyUser = 7
+export const setMyParty = 7
+export const setMyUser = 8
