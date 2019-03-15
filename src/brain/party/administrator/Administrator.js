@@ -7,13 +7,12 @@ import {
 import {Company} from 'brain/party/company'
 import {Client} from 'brain/party/client'
 import {System} from 'brain/party/system'
-import {User} from 'brain/party/user'
 
-const Handler = {
+const Administrator = {
   GetMyParty() {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'PartyHandler.GetMyParty',
+        method: 'PartyAdministrator.GetMyParty',
         request: {},
       }).then(response => {
         switch (response.partyType) {
@@ -37,15 +36,6 @@ const Handler = {
       }).catch(error => reject(error))
     })
   },
-
-  async GetMyUser() {
-    let response = await jsonRpcRequest({
-      method: 'PartyHandler.GetMyUser',
-      request: {},
-    })
-    response.user = new User(response.user)
-    return response
-  }
 }
 
-export default Handler
+export default Administrator

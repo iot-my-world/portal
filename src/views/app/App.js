@@ -16,7 +16,8 @@ import LoadingScreen from './LoadingScreen'
 import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
 import {LoginClaims} from 'brain/security/claims'
-import {PartyHandler} from 'brain/party/handler'
+import {PartyAdministrator} from 'brain/party/administrator'
+import {UserAdministrator} from 'brain/party/user'
 
 const drawerWidth = 230
 
@@ -229,6 +230,7 @@ class App extends Component {
         claims.notExpired
     ) {
       this.setup()
+      this.setState({activeState: events.doneLoading})
       return
     }
 
@@ -270,7 +272,7 @@ class App extends Component {
     }
 
     try {
-      const response = await PartyHandler.GetMyParty()
+      const response = await PartyAdministrator.GetMyParty()
       SetMyParty(response.party)
     } catch (e) {
       console.error('error getting my party', e)
@@ -279,7 +281,7 @@ class App extends Component {
 
     let user
     try {
-      const response = await PartyHandler.GetMyUser()
+      const response = await UserAdministrator.GetMyUser()
       SetMyUser(response.user)
       user = response.user
     } catch (e) {
