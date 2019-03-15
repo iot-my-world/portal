@@ -352,7 +352,8 @@ class Company extends Component {
     const { classes } = this.props;
 
     const fieldValidations = this.reasonsInvalid.toMap();
-    const disableFields = activeState === states.viewingExisting || isLoading;
+    const stateIsViewing = activeState === states.viewingExisting
+
 
     switch (activeState) {
       case states.nop:
@@ -402,32 +403,34 @@ class Company extends Component {
             </Grid>
             <Grid item>
               <TextField
-                className={classes.formField}
-                id="name"
-                label="Name"
-                value={selected.name}
-                onChange={this.handleFieldChange}
-                disabled={disableFields}
-                helperText={
+                  className={classes.formField}
+                  id="name"
+                  label="Name"
+                  value={selected.name}
+                  onChange={this.handleFieldChange}
+                  disabled={isLoading}
+                  InputProps={{disableUnderline: stateIsViewing}}
+                  helperText={
                   fieldValidations.name ? fieldValidations.name.help : undefined
                 }
-                error={!!fieldValidations.name}
+                  error={!!fieldValidations.name}
               />
             </Grid>
             <Grid item>
               <TextField
-                className={classes.formField}
-                id="adminEmailAddress"
-                label="Admin Email"
-                value={selected.adminEmailAddress}
-                onChange={this.handleFieldChange}
-                disabled={disableFields}
-                helperText={
+                  className={classes.formField}
+                  id="adminEmailAddress"
+                  label="Admin Email"
+                  value={selected.adminEmailAddress}
+                  onChange={this.handleFieldChange}
+                  disabled={isLoading}
+                  InputProps={{disableUnderline: stateIsViewing}}
+                  helperText={
                   fieldValidations.adminEmailAddress
                     ? fieldValidations.adminEmailAddress.help
                     : undefined
                 }
-                error={!!fieldValidations.adminEmailAddress}
+                  error={!!fieldValidations.adminEmailAddress}
               />
             </Grid>
           </Grid>
