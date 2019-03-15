@@ -5,12 +5,21 @@ import {
   Grid,
   Card,
   CardContent,
-  CardActions,
   Typography,
-  Button,
   TextField,
   CardHeader,
+  Tooltip,
+  Fab,
 } from '@material-ui/core'
+import {
+  // MdClose as CloseIcon,
+  // MdErrorOutline as ErrorIcon,
+  MdEdit as EditIcon,
+  MdSave as SaveIcon,
+  MdClear as CancelIcon,
+  MdAdd as AddIcon,
+  MdEmail as SendEmailIcon,
+} from 'react-icons/md'
 import PersonIcon from '@material-ui/icons/Person'
 import {BEPTable} from 'components/table/index'
 import {User as UserEntity, UserRecordHandler} from 'brain/party/user'
@@ -22,24 +31,36 @@ import {LoginClaims} from 'brain/security/claims'
 
 const styles = theme => ({
   formField: {
-    height: "60px",
-    width: "150px"
+    height: '60px',
+    width: '150px',
   },
   progress: {
-    margin: 2
+    margin: 2,
   },
   detailCard: {},
+  detailCardTitle: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+  },
   userIcon: {
     fontSize: 100,
-    color: theme.palette.primary.main
-  }
+    color: theme.palette.primary.main,
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    fontSize: '20px',
+  },
 })
 
 const states = {
   nop: 0,
   viewingExisting: 1,
   editingNew: 2,
-  editingExisting: 3
+  editingExisting: 3,
 }
 
 const events = {
@@ -53,7 +74,7 @@ const events = {
 
   startEditExisting: states.editingExisting,
   finishEditExisting: states.nop,
-  cancelEditExisting: states.nop
+  cancelEditExisting: states.nop,
 }
 
 class User extends Component {
@@ -64,7 +85,7 @@ class User extends Component {
     selected: new UserEntity(),
     selectedRowIdx: -1,
     records: [],
-    totalNoRecords: 0
+    totalNoRecords: 0,
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -74,7 +95,7 @@ class User extends Component {
 
   constructor(props) {
     super(props)
-    this.renderControls = this.renderControls.bind(this)
+    this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderUserDetails = this.renderUserDetails.bind(this)
     this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
@@ -103,7 +124,7 @@ class User extends Component {
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
-      selected: newUserEntity
+      selected: newUserEntity,
     })
   }
 
@@ -160,7 +181,7 @@ class User extends Component {
 
   handleStartEditExisting() {
     this.setState({
-      activeState: events.startEditExisting
+      activeState: events.startEditExisting,
     })
   }
 
@@ -173,19 +194,19 @@ class User extends Component {
 
     this.setState({recordCollectionInProgress: true})
     UserRecordHandler.Collect(this.collectCriteria, this.collectQuery)
-      .then(response => {
-        this.setState({
-          records: response.records,
-          totalNoRecords: response.total
+        .then(response => {
+          this.setState({
+            records: response.records,
+            totalNoRecords: response.total,
+          })
         })
-      })
-      .catch(error => {
-        console.error(`error collecting records: ${error}`)
-        NotificationFailure('Failed To Fetch Companies')
-      })
-      .finally(() => {
-        this.setState({recordCollectionInProgress: false})
-      })
+        .catch(error => {
+          console.error(`error collecting records: ${error}`)
+          NotificationFailure('Failed To Fetch Companies')
+        })
+        .finally(() => {
+          this.setState({recordCollectionInProgress: false})
+        })
   }
 
   handleCriteriaQueryChange(criteria, query) {
@@ -195,7 +216,7 @@ class User extends Component {
     this.setState({
       activeState: events.init,
       selected: new UserEntity(),
-      selectedRowIdx: -1
+      selectedRowIdx: -1,
     })
   }
 
@@ -204,7 +225,7 @@ class User extends Component {
     this.setState({
       selectedRowIdx: rowIdx,
       selected: new UserEntity(rowRecordObj),
-      activeState: events.selectExisting
+      activeState: events.selectExisting,
     })
   }
 
@@ -219,114 +240,156 @@ class User extends Component {
     } = this.state
     const {theme, classes} = this.props
 
-    let cardTitle = 'Select A User to View or Edit'
+    let cardTitle = 'Select A User To View Or Edit'
     switch (activeState) {
       case states.editingNew:
-        cardTitle = 'Creating New'
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                New User
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
         break
       case states.editingExisting:
-        cardTitle = 'Editing'
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Editing
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
         break
       case states.viewingExisting:
-        cardTitle = 'Details'
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Details
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
         break
       default:
     }
 
     return (
-      <Grid container direction="column" spacing={8} alignItems="center">
-        <Grid item xl={12}>
-          <Grid container>
-            <Grid item>
-              <Card className={classes.detailCard}>
-                <CardHeader title={cardTitle}/>
-                <CardContent>{this.renderUserDetails()}</CardContent>
-                {this.renderControls()}
-              </Card>
+        <Grid container direction="column" spacing={8} alignItems="center">
+          <Grid item xl={12}>
+            <Grid container>
+              <Grid item>
+                <Card className={classes.detailCard}>
+                  <CardHeader title={cardTitle}/>
+                  <CardContent>{this.renderUserDetails()}</CardContent>
+                </Card>
+              </Grid>
             </Grid>
           </Grid>
+          <Grid item xl={12}>
+            <Card>
+              <CardContent>
+                <BEPTable
+                    loading={recordCollectionInProgress}
+                    totalNoRecords={totalNoRecords}
+                    noDataText={'No Companies Found'}
+                    data={records}
+                    onCriteriaQueryChange={this.handleCriteriaQueryChange}
+                    columns={[
+                      {
+                        Header: 'Name',
+                        accessor: 'name',
+                        config: {
+                          filter: {
+                            type: Text,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Email',
+                        accessor: 'emailAddress',
+                        config: {
+                          filter: {
+                            type: Text,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Registered',
+                        accessor: 'registered',
+                        Cell: rowCellInfo => {
+                          if (rowCellInfo.value) {
+                            return 'true'
+                          } else {
+                            return 'false'
+                          }
+                        },
+                        filterable: false,
+                      },
+                      {
+                        Header: 'Roles',
+                        accessor: 'roles',
+                        Cell: rowCellInfo => {
+                          let roles = ''
+                          rowCellInfo.value.forEach(
+                              role => (roles += `${role}, `))
+                          return roles
+                        },
+                        sortable: false,
+                        filterable: false,
+                      },
+                    ]}
+                    getTdProps={(state, rowInfo) => {
+                      const rowIndex = rowInfo ? rowInfo.index : undefined
+                      return {
+                        onClick: (e, handleOriginal) => {
+                          if (rowInfo) {
+                            this.handleSelect(rowInfo.original, rowInfo.index)
+                          }
+                          if (handleOriginal) {
+                            handleOriginal()
+                          }
+                        },
+                        style: {
+                          background:
+                              rowIndex === selectedRowIdx
+                                  ? theme.palette.secondary.light
+                                  : 'white',
+                          color:
+                              rowIndex === selectedRowIdx
+                                  ? theme.palette.secondary.contrastText
+                                  : theme.palette.primary.main,
+                        },
+                      }
+                    }}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+          <FullPageLoader open={isLoading}/>
         </Grid>
-        <Grid item xl={12}>
-          <Card>
-            <CardContent>
-              <BEPTable
-                loading={recordCollectionInProgress}
-                totalNoRecords={totalNoRecords}
-                noDataText={"No Companies Found"}
-                data={records}
-                onCriteriaQueryChange={this.handleCriteriaQueryChange}
-                columns={[
-                  {
-                    Header: "Name",
-                    accessor: "name",
-                    config: {
-                      filter: {
-                        type: Text
-                      }
-                    }
-                  },
-                  {
-                    Header: "Email",
-                    accessor: "emailAddress",
-                    config: {
-                      filter: {
-                        type: Text
-                      }
-                    }
-                  },
-                  {
-                    Header: "Registered",
-                    accessor: "registered",
-                    Cell: rowCellInfo => {
-                      if (rowCellInfo.value) {
-                        return 'true'
-                      } else {
-                        return 'false'
-                      }
-                    },
-                    filterable: false
-                  },
-                  {
-                    Header: "Roles",
-                    accessor: "roles",
-                    Cell: rowCellInfo => {
-                      let roles = ''
-                      rowCellInfo.value.forEach(role => (roles += `${role}, `))
-                      return roles
-                    },
-                    sortable: false,
-                    filterable: false
-                  }
-                ]}
-                getTdProps={(state, rowInfo) => {
-                  const rowIndex = rowInfo ? rowInfo.index : undefined
-                  return {
-                    onClick: (e, handleOriginal) => {
-                      if (rowInfo) {
-                        this.handleSelect(rowInfo.original, rowInfo.index)
-                      }
-                      if (handleOriginal) {
-                        handleOriginal()
-                      }
-                    },
-                    style: {
-                      background:
-                        rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.light
-                          : "white",
-                      color:
-                        rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.contrastText
-                          : theme.palette.primary.main
-                    }
-                  }
-                }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-        <FullPageLoader open={isLoading} />
-      </Grid>
     )
   }
 
@@ -340,21 +403,23 @@ class User extends Component {
     switch (activeState) {
       case states.nop:
         return (
-          <Grid container direction="column" spacing={8} alignItems={"center"}>
-            <Grid item>
-              <PersonIcon className={classes.userIcon} />
+            <Grid container direction="column" spacing={8}
+                  alignItems={'center'}>
+              <Grid item>
+                <PersonIcon className={classes.userIcon}/>
+              </Grid>
+              <Grid item>
+                <Tooltip title='Add New'>
+                  <Fab
+                      color={'primary'}
+                      onClick={this.handleCreateNew}
+                      size={'small'}
+                  >
+                    <AddIcon className={classes.buttonIcon}/>
+                  </Fab>
+                </Tooltip>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button
-                size="small"
-                color="primary"
-                variant="contained"
-                onClick={this.handleCreateNew}
-              >
-                Create New
-              </Button>
-            </Grid>
-          </Grid>
         )
 
       case states.viewingExisting:
@@ -362,151 +427,170 @@ class User extends Component {
       case states.editingExisting:
         const {selected} = this.state
         return (
-          <Grid container direction="column" spacing={8} alignItems={"center"}>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id="name"
-                  label="Name"
-                  value={selected.name}
-                  onChange={this.handleFieldChange}
-                  disabled={isLoading}
-                  InputProps={{disableUnderline: stateIsViewing}}
-                  helperText={
-                  fieldValidations.name ? fieldValidations.name.help : undefined
-                }
-                  error={!!fieldValidations.name}
-              />
+            <Grid container direction="column" spacing={8}
+                  alignItems={'center'}>
+              <Grid item>
+                <TextField
+                    className={classes.formField}
+                    id="name"
+                    label="Name"
+                    value={selected.name}
+                    onChange={this.handleFieldChange}
+                    disabled={isLoading}
+                    InputProps={{disableUnderline: stateIsViewing}}
+                    helperText={
+                      fieldValidations.name ?
+                          fieldValidations.name.help :
+                          undefined
+                    }
+                    error={!!fieldValidations.name}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                    className={classes.formField}
+                    id="surname"
+                    label="Surname"
+                    value={selected.surname}
+                    onChange={this.handleFieldChange}
+                    disabled={isLoading}
+                    InputProps={{disableUnderline: stateIsViewing}}
+                    helperText={
+                      fieldValidations.surname
+                          ? fieldValidations.surname.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.surname}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                    className={classes.formField}
+                    id="username"
+                    label="Username"
+                    value={selected.username}
+                    onChange={this.handleFieldChange}
+                    disabled={isLoading}
+                    InputProps={{disableUnderline: stateIsViewing}}
+                    helperText={
+                      fieldValidations.username
+                          ? fieldValidations.username.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.username}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                    className={classes.formField}
+                    id="emailAddress"
+                    label="EmailAddress"
+                    value={selected.emailAddress}
+                    onChange={this.handleFieldChange}
+                    disabled={isLoading}
+                    InputProps={{disableUnderline: stateIsViewing}}
+                    helperText={
+                      fieldValidations.emailAddress
+                          ? fieldValidations.emailAddress.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.emailAddress}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id="surname"
-                  label="Surname"
-                  value={selected.surname}
-                  onChange={this.handleFieldChange}
-                  disabled={isLoading}
-                  InputProps={{disableUnderline: stateIsViewing}}
-                  helperText={
-                  fieldValidations.surname
-                    ? fieldValidations.surname.help
-                    : undefined
-                }
-                  error={!!fieldValidations.surname}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id="username"
-                  label="Username"
-                  value={selected.username}
-                  onChange={this.handleFieldChange}
-                  disabled={isLoading}
-                  InputProps={{disableUnderline: stateIsViewing}}
-                  helperText={
-                  fieldValidations.username
-                    ? fieldValidations.username.help
-                    : undefined
-                }
-                  error={!!fieldValidations.username}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                  className={classes.formField}
-                  id="emailAddress"
-                  label="EmailAddress"
-                  value={selected.emailAddress}
-                  onChange={this.handleFieldChange}
-                  disabled={isLoading}
-                  InputProps={{disableUnderline: stateIsViewing}}
-                  helperText={
-                  fieldValidations.emailAddress
-                    ? fieldValidations.emailAddress.help
-                    : undefined
-                }
-                  error={!!fieldValidations.emailAddress}
-              />
-            </Grid>
-          </Grid>
         )
 
       default:
     }
   }
 
-  renderControls() {
+  renderControlIcons() {
     const {activeState} = this.state
+    const {classes} = this.props
 
     switch (activeState) {
       case states.viewingExisting:
         return (
-          <CardActions>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleStartEditExisting}
-            >
-              Edit
-            </Button>
-            <Button size="small" color="primary" variant="contained">
-              Invite Admin
-            </Button>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleCreateNew}
-            >
-              Create New
-            </Button>
-          </CardActions>
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleStartEditExisting}
+              >
+                <Tooltip title='Edit'>
+                  <EditIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  // onClick={this.handleStartEditExisting}
+              >
+                <Tooltip title='Send Email Invite'>
+                  <SendEmailIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCreateNew}
+              >
+                <Tooltip title='Add New User'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
         )
 
       case states.editingNew:
         return (
-          <CardActions>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleSaveNew}
-            >
-              Save New
-            </Button>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleCancelCreateNew}
-            >
-              Cancel
-            </Button>
-          </CardActions>
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveNew}
+              >
+                <Tooltip title='Save New User'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCancelCreateNew}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
         )
 
       case states.editingExisting:
         return (
-          <CardActions>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleSaveChanges}
-            >
-              Save Changes
-            </Button>
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={this.handleCancelEditExisting}
-            >
-              Cancel
-            </Button>
-          </CardActions>
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveChanges}
+              >
+                <Tooltip title='Save Changes'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCancelEditExisting}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
         )
 
       case states.nop:
@@ -529,7 +613,7 @@ User.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims)
+  claims: PropTypes.instanceOf(LoginClaims),
 }
 
 User.defaultProps = {}
