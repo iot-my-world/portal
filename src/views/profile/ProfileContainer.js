@@ -3,11 +3,12 @@ import {connect} from 'react-redux'
 import Profile from './Profile'
 
 let ProfileContainer = props => {
-  return <Profile/>
+  return <Profile {...props}/>
 }
 
 const mapStateToProps = (state) => {
   return {
+    user: state.auth.user,
   }
 }
 

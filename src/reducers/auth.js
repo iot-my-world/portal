@@ -30,7 +30,7 @@ export default function auth(state = initState, action) {
     case setMyUser:
       return {
         ...state,
-        user: action.user,
+        user: action.data,
       }
 
     case logout:
