@@ -219,7 +219,7 @@ class User extends Component {
     } = this.state
     const {theme, classes} = this.props
 
-    let cardTitle = ''
+    let cardTitle = 'Select A User to View or Edit'
     switch (activeState) {
       case states.editingNew:
         cardTitle = 'Creating New'
@@ -341,11 +341,6 @@ class User extends Component {
       case states.nop:
         return (
           <Grid container direction="column" spacing={8} alignItems={"center"}>
-            <Grid item>
-              <Typography variant={"body1"} align={"center"} color={"primary"}>
-                Select A User to View or Edit
-              </Typography>
-            </Grid>
             <Grid item>
               <PersonIcon className={classes.userIcon} />
             </Grid>
