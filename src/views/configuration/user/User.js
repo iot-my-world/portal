@@ -240,7 +240,11 @@ class User extends Component {
     } = this.state
     const {theme, classes} = this.props
 
-    let cardTitle = 'Select A User To View Or Edit'
+    let cardTitle = (
+        <Typography variant={'h6'}>
+          Select A User To View Or Edit
+        </Typography>
+    )
     switch (activeState) {
       case states.editingNew:
         cardTitle = (

@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, Grid, Card, CardContent, CardActions, Typography,
-  Button, TextField,
+  withStyles, Grid, Card, CardContent, Typography,
+  TextField, CardHeader, Fab, Tooltip,
 } from '@material-ui/core'
 import PeopleIcon from '@material-ui/icons/People'
 import {
@@ -23,6 +23,11 @@ import {
   Client as ClientPartyType,
 } from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
+import {
+  MdAdd as AddIcon, MdClear as CancelIcon,
+  MdEdit as EditIcon,
+  MdEmail as SendEmailIcon, MdSave as SaveIcon,
+} from 'react-icons/md'
 
 const styles = theme => ({
   formField: {
@@ -33,9 +38,21 @@ const styles = theme => ({
     margin: 2,
   },
   detailCard: {},
+  detailCardTitle: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+  },
   clientIcon: {
     fontSize: 100,
     color: theme.palette.primary.main,
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    fontSize: '20px',
   },
 })
 
@@ -78,7 +95,7 @@ class Client extends Component {
 
   constructor(props) {
     super(props)
-    this.renderControls = this.renderControls.bind(this)
+    this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderClientDetails = this.renderClientDetails.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
@@ -242,11 +259,72 @@ class Client extends Component {
       selectedRowIdx,
       records,
       totalNoRecords,
+      activeState,
     } = this.state
     const {
       theme,
       classes,
     } = this.props
+
+    let cardTitle = (
+        <Typography variant={'h6'}>
+          Select A Client To View Or Edit
+        </Typography>
+    )
+    switch (activeState) {
+      case states.editingNew:
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                New Client
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
+        break
+      case states.editingExisting:
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Editing
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
+        break
+      case states.viewingExisting:
+        cardTitle = (
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Details
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            </div>
+        )
+        break
+      default:
+    }
 
     return <Grid
         container
@@ -258,10 +336,10 @@ class Client extends Component {
         <Grid container>
           <Grid item>
             <Card className={classes.detailCard}>
+              <CardHeader title={cardTitle}/>
               <CardContent>
                 {this.renderClientDetails()}
               </CardContent>
-              {this.renderControls()}
             </Card>
           </Grid>
         </Grid>
@@ -362,26 +440,18 @@ class Client extends Component {
             alignItems={'center'}
         >
           <Grid item>
-            <Typography
-                variant={'body1'}
-                align={'center'}
-                color={'primary'}
-            >
-              Select A Client to View or Edit
-            </Typography>
-          </Grid>
-          <Grid item>
             <PeopleIcon className={classes.clientIcon}/>
           </Grid>
           <Grid item>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
+            <Fab
+                className={classes.button}
+                size={'small'}
                 onClick={this.handleCreateNew}
             >
-              Create New
-            </Button>
+              <Tooltip title='Add New Client'>
+                <AddIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
           </Grid>
         </Grid>
 
@@ -397,25 +467,6 @@ class Client extends Component {
             spacing={8}
             alignItems={'center'}
         >
-          <Grid item>
-            <Typography
-                variant={'body1'}
-                align={'center'}
-                color={'primary'}
-            >
-              {(() => {
-                switch (activeState) {
-                  case states.editingNew:
-                    return 'Creating New'
-                  case states.editingExisting:
-                    return 'Editing'
-                  case states.viewingExisting:
-                    return 'Details'
-                  default:
-                }
-              })()}
-            </Typography>
-          </Grid>
           <Grid item>
             <TextField
                 className={classes.formField}
@@ -455,65 +506,77 @@ class Client extends Component {
 
   }
 
-  renderControls() {
+  renderControlIcons() {
     const {
       activeState,
       selected,
     } = this.state
+    const {classes} = this.props
 
     switch (activeState) {
 
       case states.viewingExisting:
-        return <CardActions>
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={() => this.setState({
-                activeState: events.startEditExisting,
-              })}
-          >
-            Edit
-          </Button>
-          {(!this.clientRegistration[selected.id]) &&
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={this.handleInviteAdmin}
-          >
-            Invite Admin
-          </Button>}
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={this.handleCreateNew}
-          >
-            Create New
-          </Button>
-        </CardActions>
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={() => this.setState({
+                    activeState: events.startEditExisting,
+                  })}
+              >
+                <Tooltip title='Edit'>
+                  <EditIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              {(!this.clientRegistration[selected.id]) &&
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleInviteAdmin}
+              >
+                <Tooltip title='Invite Admin'>
+                  <SendEmailIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>}
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCreateNew}
+              >
+                <Tooltip title='Add New Client'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
 
       case states.editingNew:
-        return <CardActions>
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={this.handleSaveNew}
-          >
-            Save New
-          </Button>
-          <Button
-              size='small'
-              color='primary'
-              variant='contained'
-              onClick={() => this.setState(
-                  {activeState: events.cancelCreateNew})}
-          >
-            Cancel
-          </Button>
-        </CardActions>
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveNew}
+              >
+                <Tooltip title='Save New Client'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={() => this.setState(
+                      {activeState: events.cancelCreateNew})}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
 
       case states.nop:
       default:
