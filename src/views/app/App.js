@@ -315,6 +315,19 @@ class App extends Component {
   }
 
   toggleDesktopDrawer() {
+    const {desktopDrawerOpen} = this.state
+    const {maxViewDimensions, SetMaxViewDimensions} = this.props
+    if (desktopDrawerOpen) {
+      SetMaxViewDimensions({
+        ...maxViewDimensions,
+        width: maxViewDimensions.width - drawerWidth,
+      })
+    } else {
+      SetMaxViewDimensions({
+        ...maxViewDimensions,
+        width: maxViewDimensions.width + drawerWidth,
+      })
+    }
     this.setState({desktopDrawerOpen: !this.state.desktopDrawerOpen})
   }
 
@@ -354,7 +367,7 @@ class App extends Component {
     history.push(route.path)
   }
 
-  getViewWindowMaxDimensions(element){
+  getViewWindowMaxDimensions(element) {
     const {SetMaxViewDimensions} = this.props
     try {
       SetMaxViewDimensions({
@@ -623,6 +636,10 @@ App.propTypes = {
    * SetMaxViewDimensions action creator
    */
   SetMaxViewDimensions: PropTypes.func.isRequired,
+  /**
+   * maxViewDimensions from redux state
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
   /**
    * called to update the allowed roots so that
    * the root component can disallow navigation
