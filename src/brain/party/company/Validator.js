@@ -1,5 +1,4 @@
 import {jsonRpcRequest} from 'utilities/network'
-import Company from './Company'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const Validator = {

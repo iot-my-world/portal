@@ -3,7 +3,6 @@ import {jsonRpcRequest} from 'utilities/network'
 const Registrar = {
   /**
    * @param {{companyIdentifier: object}} request
-   * @constructor
    */
   InviteCompanyAdminUser({companyIdentifier}) {
     return jsonRpcRequest({
@@ -16,7 +15,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   RegisterCompanyAdminUser({user}) {
     return jsonRpcRequest({
@@ -29,7 +27,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   InviteCompanyUser({user}) {
     return jsonRpcRequest({
@@ -42,7 +39,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   RegisterCompanyUser({user}) {
     return jsonRpcRequest({
@@ -55,7 +51,6 @@ const Registrar = {
 
   /**
    * @param {{clientIdentifier: object}} request
-   * @constructor
    */
   InviteClientAdminUser({clientIdentifier}) {
     return jsonRpcRequest({
@@ -68,7 +63,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   RegisterClientAdminUser({user}) {
     return jsonRpcRequest({
@@ -81,7 +75,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   InviteClientUser({user}) {
     return jsonRpcRequest({
@@ -94,7 +87,6 @@ const Registrar = {
 
   /**
    * @param {{user: User}} request
-   * @constructor
    */
   RegisterClientUser({user}) {
     return jsonRpcRequest({
@@ -107,7 +99,6 @@ const Registrar = {
 
   /**
    * @param {{partyDetails: []}} request
-   * @constructor
    */
   AreAdminsRegistered({partyDetails}){
     return jsonRpcRequest({

@@ -50,7 +50,7 @@ class Root extends Component {
     const {Logout} = this.props
     sessionStorage.removeItem('jwt')
     this.loggedIn = false
-    Logout()
+    // Logout()
   }
 
   render() {
@@ -65,7 +65,6 @@ class Root extends Component {
                   render={props => {
                     // if the app is done loading then we can check if
                     // this route is allowed
-
                     if (this.loggedIn || claims.notExpired) {
                       return (
                           <AppContainer
