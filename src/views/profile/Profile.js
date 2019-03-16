@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader, TextField, Typography, Fab, Tooltip,
 } from '@material-ui/core'
-import {User} from 'brain/party/user'
+import {User, UserAdministrator} from 'brain/party/user'
 import {
   MdClear as CancelIcon,
   MdEdit as EditIcon,
@@ -49,6 +49,7 @@ class Profile extends Component {
     this.renderControlIcons = this.renderControlIcons.bind(this)
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
     this.handleCancel = this.handleCancel.bind(this)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
     this.state = {
       user: new User(props.user),
       userCopy: new User(),
@@ -64,7 +65,7 @@ class Profile extends Component {
     })
   }
 
-  handleSaveChanges() {
+  async handleSaveChanges() {
     const {user} = this.state
     this.setState({
       activeState: events.saveChanges,
@@ -127,11 +128,19 @@ class Profile extends Component {
     }
   }
 
+  handleFieldChange(e) {
+    let {user} = this.state
+    user[e.target.id] = e.target.value
+    this.setState({user})
+  }
+
   render() {
     const {classes} = this.props
-    const {user} = this.state
+    const {user, activeState} = this.state
 
-    return <Grid container direction="column" spacing={8} alignItems="center">
+    const editingState = activeState === states.editing
+
+    return <Grid container direction='column' spacing={8} alignItems='center'>
       <Grid item>
         <Card className={classes.detailCard}>
           <CardHeader title={
@@ -150,16 +159,19 @@ class Profile extends Component {
             </div>
           }/>
           <CardContent>
-            <Grid container direction="column" spacing={8}
+            <Grid container direction='column' spacing={8}
                   alignItems={'center'}>
               <Grid item>
                 <TextField
                     className={classes.formField}
-                    id="name"
-                    label="Name"
+                    id='name'
+                    label='Name'
                     value={user.name}
-                    InputProps={{disableUnderline: true}}
-                    // onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: !editingState,
+                      readOnly: !editingState,
+                    }}
+                    onChange={this.handleFieldChange}
                     // disabled={disableFields}
                     // helperText={
                     //   fieldValidations.name ? fieldValidations.name.help : undefined
@@ -170,11 +182,14 @@ class Profile extends Component {
               <Grid item>
                 <TextField
                     className={classes.formField}
-                    id="surname"
-                    label="Surname"
+                    id='surname'
+                    label='Surname'
                     value={user.surname}
-                    InputProps={{disableUnderline: true}}
-                    // onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: !editingState,
+                      readOnly: !editingState,
+                    }}
+                    onChange={this.handleFieldChange}
                     // disabled={disableFields}
                     // helperText={
                     //   fieldValidations.surname
@@ -187,10 +202,13 @@ class Profile extends Component {
               <Grid item>
                 <TextField
                     className={classes.formField}
-                    id="username"
-                    label="Username"
+                    id='username'
+                    label='Username'
                     value={user.username}
-                    InputProps={{disableUnderline: true}}
+                    InputProps={{
+                      disableUnderline: true,
+                      readOnly: true,
+                    }}
                     // onChange={this.handleFieldChange}
                     // disabled={disableFields}
                     // helperText={
@@ -204,10 +222,13 @@ class Profile extends Component {
               <Grid item>
                 <TextField
                     className={classes.formField}
-                    id="emailAddress"
-                    label="EmailAddress"
+                    id='emailAddress'
+                    label='EmailAddress'
                     value={user.emailAddress}
-                    InputProps={{disableUnderline: true}}
+                    InputProps={{
+                      disableUnderline: true,
+                      readOnly: true,
+                    }}
                     // onChange={this.handleFieldChange}
                     // disabled={disableFields}
                     // helperText={
