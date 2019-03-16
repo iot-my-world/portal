@@ -10,6 +10,17 @@ const Administrator = {
     response.user = new User(response.user)
     return response
   },
+
+  async UpdateAllowedFields({user}) {
+    let response = await jsonRpcRequest({
+      method: 'UserAdministrator.UpdateAllowedFields',
+      request: {
+        user: user.toPOJO(),
+      },
+    })
+    response.user = new User(response.user)
+    return response
+  },
 }
 
 export default Administrator
