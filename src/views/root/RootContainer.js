@@ -32,6 +32,7 @@ function mapStateToProps(state) {
   return {
     claims: state.auth.claims,
     doneLoading: state.app.doneLoading,
+    showGlobalLoader: state.app.showGlobalLoader,
   }
 }
 

@@ -2,6 +2,8 @@ import {
   appDoneLoading,
   setMaxViewDimensions,
   logout,
+  showGlobalLoader,
+  hideGlobalLoader,
 } from 'actions/actionTypes'
 
 const initState = () => ({
@@ -10,6 +12,7 @@ const initState = () => ({
     width: 0,
     height: 0,
   },
+  showGlobalLoader: false,
 })
 
 export default function app(state = initState(), action) {
@@ -18,6 +21,18 @@ export default function app(state = initState(), action) {
       return {
         ...state,
         doneLoading: true,
+      }
+
+    case showGlobalLoader:
+      return {
+        ...state,
+        showGlobalLoader: true,
+      }
+
+    case hideGlobalLoader:
+      return {
+        ...state,
+        showGlobalLoader: false,
       }
 
     case setMaxViewDimensions:

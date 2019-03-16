@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import Profile from './Profile'
 import {NotificationSuccess, NotificationFailure} from 'actions/notification'
+import {ShowGlobalLoader, HideGlobalLoader} from 'actions/app'
 
 let ProfileContainer = props => {
   return <Profile {...props}/>
@@ -18,6 +19,8 @@ ProfileContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     }
 )(ProfileContainer)
 

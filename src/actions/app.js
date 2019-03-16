@@ -1,6 +1,8 @@
 import {
   appDoneLoading,
   setMaxViewDimensions,
+  showGlobalLoader,
+  hideGlobalLoader,
 } from 'actions/actionTypes'
 
 /**
@@ -13,9 +15,24 @@ export function AppDoneLoading() {
 }
 
 /**
+ * Called to open global loading component
+ * @returns {{type: number}}
+ */
+export function ShowGlobalLoader() {
+  return {type: showGlobalLoader}
+}
+
+/**
+ * Called to hide global loading component
+ * @returns {{type: number}}
+ */
+export function HideGlobalLoader() {
+  return {type: hideGlobalLoader}
+}
+
+/**
  * @param {{width: number, height: number}} maxDimensions
  * @returns {{type: number, data: {width: number, height: number}}}
- * @constructor
  */
 export function SetMaxViewDimensions(maxDimensions) {
   return {type: setMaxViewDimensions, data: maxDimensions}

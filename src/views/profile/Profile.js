@@ -67,9 +67,28 @@ class Profile extends Component {
 
   async handleSaveChanges() {
     const {user} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    ShowGlobalLoader()
+    try {
+      await UserAdministrator.UpdateAllowedFields({user})
+    } catch (e) {
+      console.error('error updating allowed fields', e)
+      HideGlobalLoader()
+      NotificationFailure('Error Updating Profile')
+      return
+    }
+
     this.setState({
       activeState: events.saveChanges,
     })
+    NotificationSuccess('Successfully Updated Profile')
+    HideGlobalLoader()
   }
 
   handleCancel() {
@@ -262,6 +281,14 @@ Profile.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
 }
 Profile.defaultProps = {}
 
