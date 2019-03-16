@@ -10,7 +10,10 @@ import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
-import {User as UserEntity} from 'brain/party/user'
+import {
+  User as UserEntity,
+  UserValidator,
+} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {
@@ -171,23 +174,36 @@ class RegisterUser extends Component {
       this.setState({isLoading: true})
       switch (this.registrationClaims.type) {
         case RegisterCompanyAdminUser:
-          reasonsInvalid = await user.validate('RegisterCompanyAdminUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterCompanyAdminUser',
+          })).reasonsInvalid
           break
 
         case RegisterCompanyUser:
-          reasonsInvalid = await user.validate('RegisterCompanyUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterCompanyUser',
+          })).reasonsInvalid
           break
 
         case RegisterClientAdminUser:
-          reasonsInvalid = await user.validate('RegisterClientAdminUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterClientAdminUser',
+          })).reasonsInvalid
           break
 
         case RegisterClientUser:
-          reasonsInvalid = await user.validate('RegisterClientUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterClientUser',
+          })).reasonsInvalid
           break
 
         default:
-          throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+          throw new TypeError(
+              'invalid claims type: ' + this.registrationClaims.type)
       }
     } catch (error) {
       console.error('Error Validating User', error)
@@ -219,7 +235,8 @@ class RegisterUser extends Component {
             break
 
           default:
-            throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+            throw new TypeError(
+                'invalid claims type: ' + this.registrationClaims.type)
         }
         NotificationSuccess('Successfully Registered User')
         this.setState({isLoading: false})

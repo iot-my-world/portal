@@ -50,7 +50,7 @@ class Root extends Component {
     const {Logout} = this.props
     sessionStorage.removeItem('jwt')
     this.loggedIn = false
-    // Logout()
+    Logout()
   }
 
   render() {
@@ -80,7 +80,6 @@ class Root extends Component {
               <Route
                   path='/register'
                   render={props => {
-                    this.logout()
                     return <RegisterUserContainer {...props} />
                   }}
               />
