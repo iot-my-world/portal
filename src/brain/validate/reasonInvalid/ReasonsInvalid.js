@@ -20,6 +20,7 @@ export default class ReasonsInvalid {
             isObject(reasonsInvalid)
         )
     ) {
+      console.log('aweh, build')
       try {
         this._reasonsInvalid =
             reasonsInvalid.reasonsInvalid.map(r => new ReasonInvalid(r))

@@ -5,6 +5,10 @@ import {
   NotificationSuccess,
   NotificationFailure,
 } from 'actions/notification'
+import {
+  ShowGlobalLoader,
+  HideGlobalLoader,
+} from 'actions/app'
 
 let FunctionalContainer = props => {
   return <Company {...props}/>
@@ -21,6 +25,8 @@ FunctionalContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     },
 )(FunctionalContainer)
 
