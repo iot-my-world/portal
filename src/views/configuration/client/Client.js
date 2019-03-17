@@ -6,7 +6,14 @@ import {
   Card,
   CardContent,
   Typography,
-  TextField, CardHeader, Fab, Tooltip,
+  TextField,
+  CardHeader,
+  Fab,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem, FormHelperText,
 } from '@material-ui/core'
 import PeopleIcon from '@material-ui/icons/People'
 import {BEPTable} from 'components/table/index'
@@ -16,18 +23,26 @@ import {
   ClientValidator,
   ClientAdministrator,
 } from 'brain/party/client/index'
+import {CompanyRecordHandler} from 'brain/party/company'
+import {SystemRecordHandler} from 'brain/party/system'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
+import {TextCriterion} from 'brain/search/criterion'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
-import {Client as ClientPartyType} from 'brain/party/types'
+import {
+  allPartyTypes,
+  Client as ClientPartyType, Company,
+  System,
+} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
   MdEmail as SendEmailIcon, MdSave as SaveIcon,
 } from 'react-icons/md'
+import {AsyncSelect} from 'components/form'
 
 const styles = theme => ({
   formField: {
@@ -110,6 +125,7 @@ class Client extends Component {
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
+    this.loadOptions = this.loadOptions.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -133,9 +149,53 @@ class Client extends Component {
 
   handleFieldChange(event) {
     let {client} = this.state
-    client[event.target.id] = event.target.value
-    this.reasonsInvalid.clearField(event.target.id)
+    const field = event.target.id ? event.target.id : event.target.name
+    client[field] = event.target.value
+    this.reasonsInvalid.clearField(field)
     this.setState({client})
+  }
+
+  async loadOptions(inputValue, callback) {
+    const {client} = this.state
+    let collectResponse
+    switch (client.parentPartyType) {
+      case System:
+        collectResponse = await SystemRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callback(collectResponse.records.map(system => ({
+          label: system.name,
+          value: new IdIdentifier(system.id),
+        })))
+        break
+
+      case Company:
+        collectResponse = await CompanyRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callback(collectResponse.records.map(company => ({
+          label: company.name,
+          value: new IdIdentifier(company.id),
+        })))
+        break
+
+      default:
+        callback([])
+    }
+  }
+
+  testhandleChange(...stuff) {
+    console.log('stuff', stuff)
   }
 
   async handleSaveNew() {
@@ -484,8 +544,8 @@ class Client extends Component {
 
   renderClientDetails() {
     const {activeState} = this.state
-    const {classes} = this.props
-
+    const {classes, claims, theme} = this.props
+    console.log('theme', theme)
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === states.viewingExisting
 
@@ -519,15 +579,69 @@ class Client extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {
-          client,
-        } = this.state
+        const {client} = this.state
         return <Grid
             container
             direction='column'
             spacing={8}
             alignItems={'center'}
         >
+          {(claims.partyType === System) &&
+          <React.Fragment>
+            <Grid item>
+              <FormControl
+                  className={classes.formField}
+                  error={!!fieldValidations.parentPartyType}
+                  aria-describedby='parentPartyType'
+              >
+                <InputLabel htmlFor='parentPartyType'>
+                  Parent Party Type
+                </InputLabel>
+                <Select
+                    id='parentPartyType'
+                    name='parentPartyType'
+                    value={client.parentPartyType}
+                    onChange={this.handleFieldChange}
+                    style={{width: 150}}
+                    disableUnderline={stateIsViewing}
+                    inputProps={{readOnly: stateIsViewing}}
+                >
+                  <MenuItem value=''>
+                    <em>None</em>
+                  </MenuItem>
+                  {allPartyTypes.map((partyType, idx) => {
+                    return (
+                        <MenuItem key={idx} value={partyType}>
+                          {partyType}
+                        </MenuItem>
+                    )
+                  })}
+                </Select>
+                {!!fieldValidations.ownerPartyType && (
+                    <FormHelperText id='parentPartyType'>
+                      {fieldValidations.parentPartyType
+                          ? fieldValidations.parentPartyType.help
+                          : undefined}
+                    </FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <AsyncSelect
+                  cacheOptions
+                  name={'parentId'}
+                  ExtraTextFieldProps={{
+                    label: 'Parent',
+                    InputLabelProps: {
+                      shrink: true,
+                    },
+                  }}
+                  loadOptions={this.loadOptions}
+                  onChange={this.testhandleChange}
+              />
+            </Grid>
+          </React.Fragment>
+          }
           <Grid item>
             <TextField
                 className={classes.formField}
