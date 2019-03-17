@@ -43,6 +43,8 @@ import {
   MdEmail as SendEmailIcon, MdSave as SaveIcon,
 } from 'react-icons/md'
 import {AsyncSelect} from 'components/form'
+import ListTextCriterion from 'brain/search/criterion/list/Text'
+import {retrieveFromList} from 'brain/search/identifier/utilities'
 
 const styles = theme => ({
   formField: {
@@ -93,12 +95,6 @@ const events = {
 }
 
 class Client extends Component {
-  reasonsInvalid = new ReasonsInvalid()
-  clientRegistration = {}
-
-  collectCriteria = []
-  collectQuery = new Query()
-
   constructor(props) {
     super(props)
     this.renderControlIcons = this.renderControlIcons.bind(this)
@@ -115,19 +111,38 @@ class Client extends Component {
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.loadOptions = this.loadOptions.bind(this)
+    this.getPartyName = this.getPartyName.bind(this)
+    this.buildColumns = this.buildColumns.bind(this)
+    this.buildColumns()
     this.collectTimeout = () => {
     }
-    this.state = {
-      recordCollectionInProgress: false,
-      activeState: events.init,
-      client: new ClientEntity(),
-      clientCopy: new ClientEntity(),
-      selectedRowIdx: -1,
-      records: [],
-      totalNoRecords: 0,
-      defaultParent: {label: '-', value: ''},
-    }
   }
+
+  state = {
+    recordCollectionInProgress: false,
+    activeState: events.init,
+    client: new ClientEntity(),
+    clientCopy: new ClientEntity(),
+    selectedRowIdx: -1,
+    records: [],
+    totalNoRecords: 0,
+    defaultParent: {label: '-', value: ''},
+  }
+
+  reasonsInvalid = new ReasonsInvalid()
+
+  clientRegistration = {}
+
+  collectCriteria = []
+
+  collectQuery = new Query()
+
+  entityMap = {
+    Company: [],
+    System: [],
+  }
+
+  columns = []
 
   componentDidMount() {
     this.collect()
@@ -195,10 +210,6 @@ class Client extends Component {
     }
     callbackResults = [{label: '-', value: ''}, ...callbackResults]
     callback(callbackResults)
-  }
-
-  testhandleChange(...stuff) {
-    console.log('stuff', stuff)
   }
 
   async handleSaveNew() {
@@ -318,15 +329,22 @@ class Client extends Component {
     const {NotificationFailure} = this.props
 
     this.setState({recordCollectionInProgress: true})
+    let collectResponse
     try {
-      const collectResponse = await ClientRecordHandler.Collect(
+      collectResponse = await ClientRecordHandler.Collect(
           this.collectCriteria, this.collectQuery,
       )
       this.setState({
         records: collectResponse.records,
         totalNoRecords: collectResponse.total,
       })
+    } catch (e) {
+      console.error(`error collecting records: ${e}`)
+      NotificationFailure('Failed To Fetch Clients')
+      return
+    }
 
+    try {
       // find the admin user registration status of these clients
       this.clientRegistration =
           (await PartyRegistrar.AreAdminsRegistered({
@@ -338,9 +356,74 @@ class Client extends Component {
             }),
           })).result
     } catch (e) {
-      console.error(`error collecting records: ${e}`)
-      NotificationFailure('Failed To Fetch Clients')
+      console.error('error determining client registration', e)
+      NotificationFailure('Failed To Determine Client Registration')
+      return
     }
+
+    try {
+      // compile list criteria for retrieval of party entities associated
+      // with these clients
+      let systemEntityIds = []
+      let companyEntityIds = []
+      collectResponse.records.forEach(record => {
+        switch (record.parentPartyType) {
+          case System:
+            if (!systemEntityIds.includes(record.parentId.id)) {
+              systemEntityIds.push(record.parentId.id)
+            }
+            break
+          case Company:
+            if (!companyEntityIds.includes(record.parentId.id)) {
+              companyEntityIds.push(record.parentId.id)
+            }
+            break
+          default:
+        }
+      })
+
+      // fetch system entities
+      try {
+        if (systemEntityIds.length > 0) {
+          const blankQuery = new Query()
+          blankQuery.limit = 0
+          this.entityMap.System = (await SystemRecordHandler.Collect(
+              [
+                new ListTextCriterion({
+                  field: 'id',
+                  list: systemEntityIds,
+                }),
+              ],
+              blankQuery,
+          )).records
+        }
+
+        if (companyEntityIds.length > 0) {
+          const blankQuery = new Query()
+          blankQuery.limit = 0
+          this.entityMap.Company = (await CompanyRecordHandler.Collect(
+              [
+                new ListTextCriterion({
+                  field: 'id',
+                  list: companyEntityIds,
+                }),
+              ],
+              blankQuery,
+          )).records
+        }
+      } catch (e) {
+        this.entityMap.System = []
+        console.error('error collecting system records', e)
+        NotificationFailure('Failed To Fetch System Records')
+        this.setState({recordCollectionInProgress: false})
+        return
+      }
+    } catch (e) {
+      console.error('Failed Getting Parent Party Entities', e)
+      NotificationFailure('Failed Getting Parent Party Entities')
+      return
+    }
+    
     this.setState({recordCollectionInProgress: false})
   }
 
@@ -360,6 +443,13 @@ class Client extends Component {
       selectedRowIdx: rowIdx,
       client: new ClientEntity(rowRecordObj),
       activeState: events.selectExisting,
+      defaultParent: {
+        label: this.getPartyName(
+            rowRecordObj.parentPartyType,
+            rowRecordObj.parentId,
+        ),
+        value: rowRecordObj.parentId,
+      },
     })
   }
 
@@ -384,6 +474,76 @@ class Client extends Component {
     HideGlobalLoader()
   }
 
+  getPartyName(partyType, partyId) {
+    const list = this.entityMap[partyType]
+    const entity = retrieveFromList(partyId, list ? list : [])
+    return entity ? entity.name : ''
+  }
+
+  buildColumns() {
+    const {claims} = this.props
+    this.columns = [
+      {
+        Header: 'Name',
+        accessor: 'name',
+        config: {
+          filter: {
+            type: Text,
+          },
+        },
+      },
+      {
+        Header: 'Admin Email',
+        accessor: 'adminEmailAddress',
+        config: {
+          filter: {
+            type: Text,
+          },
+        },
+      },
+      {
+        Header: 'Admin Registered',
+        accessor: '',
+        filterable: false,
+        sortable: false,
+        Cell: rowCellInfo => {
+          if (this.clientRegistration[rowCellInfo.original.id]) {
+            return 'Yes'
+          } else {
+            return 'No'
+          }
+        },
+      },
+    ]
+
+    if (claims.partyType === System) {
+      this.columns = [
+        {
+          Header: 'Parent Party',
+          accessor: 'parentId',
+          width: 150,
+          Cell: rowCellInfo => {
+            try {
+              return this.getPartyName(
+                  rowCellInfo.original.parentPartyType,
+                  rowCellInfo.value,
+              )
+            } catch (e) {
+              console.error('error getting parent party info', e)
+              return '-'
+            }
+          },
+          config: {
+            filter: {
+              type: Text,
+            },
+          },
+        },
+        ...this.columns,
+      ]
+    }
+  }
+  
   render() {
     const {
       recordCollectionInProgress,
@@ -482,39 +642,7 @@ class Client extends Component {
                     data={records}
                     onCriteriaQueryChange={this.handleCriteriaQueryChange}
 
-                    columns={[
-                      {
-                        Header: 'Name',
-                        accessor: 'name',
-                        config: {
-                          filter: {
-                            type: Text,
-                          },
-                        },
-                      },
-                      {
-                        Header: 'Admin Email',
-                        accessor: 'adminEmailAddress',
-                        config: {
-                          filter: {
-                            type: Text,
-                          },
-                        },
-                      },
-                      {
-                        Header: 'Admin Registered',
-                        accessor: '',
-                        filterable: false,
-                        sortable: false,
-                        Cell: rowCellInfo => {
-                          if (this.clientRegistration[rowCellInfo.original.id]) {
-                            return 'Yes'
-                          } else {
-                            return 'No'
-                          }
-                        },
-                      },
-                    ]}
+                    columns={this.columns}
 
                     getTdProps={(state, rowInfo) => {
                       const rowIndex = rowInfo ? rowInfo.index : undefined
@@ -632,10 +760,15 @@ class Client extends Component {
               <AsyncSelect
                   cacheOptions
                   name={'parentId'}
+                  disabled={stateIsViewing}
                   ExtraTextFieldProps={{
                     label: 'Parent',
                     InputLabelProps: {
                       shrink: true,
+                    },
+                    InputProps: {
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
                     },
                     helperText:
                         fieldValidations.parentId
