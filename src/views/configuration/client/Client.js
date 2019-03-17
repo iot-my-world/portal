@@ -522,6 +522,7 @@ class Client extends Component {
           Header: 'Parent Party',
           accessor: 'parentId',
           width: 150,
+          filterable: false,
           Cell: rowCellInfo => {
             try {
               return this.getPartyName(
@@ -532,11 +533,6 @@ class Client extends Component {
               console.error('error getting parent party info', e)
               return '-'
             }
-          },
-          config: {
-            filter: {
-              type: Text,
-            },
           },
         },
         ...this.columns,

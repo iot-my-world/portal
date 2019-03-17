@@ -467,6 +467,24 @@ class User extends Component {
     const {claims} = this.props
     this.columns = [
       {
+        Header: 'Username',
+        accessor: 'username',
+        config: {
+          filter: {
+            type: Text,
+          },
+        },
+      },
+      {
+        Header: 'Email Address',
+        accessor: 'emailAddress',
+        config: {
+          filter: {
+            type: Text,
+          },
+        },
+      },
+      {
         Header: 'Name',
         accessor: 'name',
         config: {
@@ -476,8 +494,8 @@ class User extends Component {
         },
       },
       {
-        Header: 'Admin Email',
-        accessor: 'adminEmailAddress',
+        Header: 'Surname',
+        accessor: 'surname',
         config: {
           filter: {
             type: Text,
@@ -502,9 +520,27 @@ class User extends Component {
     if (claims.partyType === System) {
       this.columns = [
         {
+          Header: 'Party',
+          accessor: 'partyId',
+          width: 150,
+          filterable: false,
+          Cell: rowCellInfo => {
+            try {
+              return this.getPartyName(
+                  rowCellInfo.original.partyType,
+                  rowCellInfo.value,
+              )
+            } catch (e) {
+              console.error('error getting party info', e)
+              return '-'
+            }
+          },
+        },
+        {
           Header: 'Parent Party',
           accessor: 'parentId',
           width: 150,
+          filterable: false,
           Cell: rowCellInfo => {
             try {
               return this.getPartyName(
@@ -515,11 +551,6 @@ class User extends Component {
               console.error('error getting parent party info', e)
               return '-'
             }
-          },
-          config: {
-            filter: {
-              type: Text,
-            },
           },
         },
         ...this.columns,
