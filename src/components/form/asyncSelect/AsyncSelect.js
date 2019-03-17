@@ -17,7 +17,6 @@ const Input = props => {
     ...rest
   } = props
 
-  console.log('ExtraTextFieldProps', ExtraTextFieldProps)
   return <MUITextField
       {...rest}
       {...ExtraTextFieldProps}
@@ -37,7 +36,8 @@ const asyncSelectStyles = theme => ({
     ...styles,
     width: '150px',
     fontFamily: theme.typography.fontFamily,
-    border: 0,
+    border: `0px solid #ffffff`,
+    boxShadow: 0,
   }),
   option: styles => ({
     ...styles,
@@ -52,18 +52,33 @@ const asyncSelectStyles = theme => ({
 class AsyncSelect extends Component {
   constructor(props) {
     super(props)
+    this.onChange = this.onChange.bind(this)
     this.asyncSelectStyles = asyncSelectStyles(props.theme)
+  }
+
+  onChange(selectionInfo, actionInfo) {
+    const {
+      onChange,
+    } = this.props
+    onChange({
+      target: {
+        id: actionInfo.name,
+        value: selectionInfo.value,
+      },
+    })
   }
 
   render() {
     const {
       ExtraTextFieldProps,
+      onChange,
       ...rest
     } = this.props
     return (
         <ReactAsyncSelect
             styles={this.asyncSelectStyles}
             components={{Input: InputExtraProps(ExtraTextFieldProps)}}
+            onChange={this.onChange}
             {...rest}
         />
     )

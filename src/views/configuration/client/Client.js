@@ -93,17 +93,6 @@ const events = {
 }
 
 class Client extends Component {
-
-  state = {
-    recordCollectionInProgress: false,
-    activeState: events.init,
-    client: new ClientEntity(),
-    clientCopy: new ClientEntity(),
-    selectedRowIdx: -1,
-    records: [],
-    totalNoRecords: 0,
-  }
-
   reasonsInvalid = new ReasonsInvalid()
   clientRegistration = {}
 
@@ -128,6 +117,16 @@ class Client extends Component {
     this.loadOptions = this.loadOptions.bind(this)
     this.collectTimeout = () => {
     }
+    this.state = {
+      recordCollectionInProgress: false,
+      activeState: events.init,
+      client: new ClientEntity(),
+      clientCopy: new ClientEntity(),
+      selectedRowIdx: -1,
+      records: [],
+      totalNoRecords: 0,
+      defaultParent: {label: '-', value: ''},
+    }
   }
 
   componentDidMount() {
@@ -135,7 +134,7 @@ class Client extends Component {
   }
 
   handleCreateNew() {
-    const {claims} = this.props
+    const {claims, party} = this.props
     let newClientEntity = new ClientEntity()
     newClientEntity.parentId = claims.partyId
     newClientEntity.parentPartyType = claims.partyType
@@ -144,6 +143,7 @@ class Client extends Component {
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
       client: newClientEntity,
+      defaultParent: {label: party.name, value: party.id},
     })
   }
 
@@ -158,6 +158,7 @@ class Client extends Component {
   async loadOptions(inputValue, callback) {
     const {client} = this.state
     let collectResponse
+    let callbackResults = []
     switch (client.parentPartyType) {
       case System:
         collectResponse = await SystemRecordHandler.Collect(
@@ -168,10 +169,10 @@ class Client extends Component {
               }),
             ],
         )
-        callback(collectResponse.records.map(system => ({
+        callbackResults = collectResponse.records.map(system => ({
           label: system.name,
           value: new IdIdentifier(system.id),
-        })))
+        }))
         break
 
       case Company:
@@ -183,15 +184,17 @@ class Client extends Component {
               }),
             ],
         )
-        callback(collectResponse.records.map(company => ({
+        callbackResults = collectResponse.records.map(company => ({
           label: company.name,
           value: new IdIdentifier(company.id),
-        })))
+        }))
         break
 
       default:
-        callback([])
+        callbackResults = []
     }
+    callbackResults = [{label: '-', value: ''}, ...callbackResults]
+    callback(callbackResults)
   }
 
   testhandleChange(...stuff) {
@@ -544,8 +547,7 @@ class Client extends Component {
 
   renderClientDetails() {
     const {activeState} = this.state
-    const {classes, claims, theme} = this.props
-    console.log('theme', theme)
+    const {classes, claims} = this.props
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === states.viewingExisting
 
@@ -579,7 +581,7 @@ class Client extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {client} = this.state
+        const {client, defaultParent} = this.state
         return <Grid
             container
             direction='column'
@@ -635,9 +637,15 @@ class Client extends Component {
                     InputLabelProps: {
                       shrink: true,
                     },
+                    helperText:
+                        fieldValidations.parentId
+                            ? fieldValidations.parentId.help
+                            : undefined,
+                    error: !!fieldValidations.parentId,
                   }}
+                  defaultValue={defaultParent}
                   loadOptions={this.loadOptions}
-                  onChange={this.testhandleChange}
+                  onChange={this.handleFieldChange}
               />
             </Grid>
           </React.Fragment>
@@ -806,6 +814,10 @@ Client.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * Party from redux state
+   */
+  party: PropTypes.object.isRequired,
   /**
    * maxViewDimensions from redux state
    */
