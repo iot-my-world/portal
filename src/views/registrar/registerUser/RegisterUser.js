@@ -432,7 +432,10 @@ class RegisterUser extends Component {
                                 label='Email Address'
                                 autoComplete='emailAddress'
                                 value={user.emailAddress}
-                                disabled={true}
+                                InputProps={{
+                                  readOnly: true,
+                                  disableUnderline: true,
+                                }}
                                 helperText={
                                   fieldValidations.emailAddress
                                       ? fieldValidations.emailAddress.help

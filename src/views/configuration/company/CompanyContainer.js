@@ -17,6 +17,7 @@ let FunctionalContainer = props => {
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
+    maxViewDimensions: state.app.maxViewDimensions,
   }
 }
 

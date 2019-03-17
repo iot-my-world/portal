@@ -1,26 +1,26 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
-import {Company} from 'brain/party/company'
+import {Client} from 'brain/party/client'
 
 const Administrator = {
-  async Create({company}) {
+  async Create({client}) {
     let response = await jsonRpcRequest({
-      method: 'CompanyAdministrator.Create',
+      method: 'ClientAdministrator.Create',
       request: {
-        company: company.toPOJO(),
+        client: client.toPOJO(),
       },
     })
-    response.company = new Company(response.company)
+    response.client = new Client(response.client)
     return response
   },
 
-  async UpdateAllowedFields({company}) {
+  async UpdateAllowedFields({client}) {
     let response = await jsonRpcRequest({
-      method: 'CompanyAdministrator.UpdateAllowedFields',
+      method: 'ClientAdministrator.UpdateAllowedFields',
       request: {
-        company: company.toPOJO(),
+        client: client.toPOJO(),
       },
     })
-    response.company = new Company(response.company)
+    response.client = new Client(response.client)
     return response
   },
 }

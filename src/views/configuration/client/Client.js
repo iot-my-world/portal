@@ -1,27 +1,27 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, Grid, Card, CardContent, Typography,
+  withStyles,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
   TextField, CardHeader, Fab, Tooltip,
 } from '@material-ui/core'
 import PeopleIcon from '@material-ui/icons/People'
-import {
-  BEPTable,
-} from 'components/table/index'
+import {BEPTable} from 'components/table/index'
 import {
   Client as ClientEntity,
   ClientRecordHandler,
+  ClientValidator,
+  ClientAdministrator,
 } from 'brain/party/client/index'
-import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
-import {User as UserEntity} from 'brain/party/user/index'
-import {
-  Client as ClientPartyType,
-} from 'brain/party/types'
+import {Client as ClientPartyType} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
@@ -73,15 +73,17 @@ const events = {
   createNewSuccess: states.nop,
 
   startEditExisting: states.editingExisting,
+  finishEditExisting: states.viewingExisting,
+  cancelEditExisting: states.viewingExisting,
 }
 
 class Client extends Component {
 
   state = {
     recordCollectionInProgress: false,
-    isLoading: false,
     activeState: events.init,
-    selected: new ClientEntity(),
+    client: new ClientEntity(),
+    clientCopy: new ClientEntity(),
     selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
@@ -97,13 +99,17 @@ class Client extends Component {
     super(props)
     this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderClientDetails = this.renderClientDetails.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
     this.handleCreateNew = this.handleCreateNew.bind(this)
+    this.handleCancelCreateNew = this.handleCancelCreateNew.bind(this)
+    this.handleSaveChanges = this.handleSaveChanges.bind(this)
+    this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
+    this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.collectTimeout = () => {
     }
   }
@@ -113,9 +119,7 @@ class Client extends Component {
   }
 
   handleCreateNew() {
-    const {
-      claims,
-    } = this.props
+    const {claims} = this.props
     let newClientEntity = new ClientEntity()
     newClientEntity.parentId = claims.partyId
     newClientEntity.parentPartyType = claims.partyType
@@ -123,59 +127,132 @@ class Client extends Component {
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
-      selected: newClientEntity,
+      client: newClientEntity,
     })
   }
 
-  handleChange(event) {
-    let {
-      selected,
-    } = this.state
-    selected[event.target.id] = event.target.value
+  handleFieldChange(event) {
+    let {client} = this.state
+    client[event.target.id] = event.target.value
     this.reasonsInvalid.clearField(event.target.id)
-    this.setState({selected})
+    this.setState({client})
   }
 
-  handleSaveNew() {
+  async handleSaveNew() {
+    const {client} = this.state
     const {
-      selected,
-    } = this.state
-    const {
-      NotificationSuccess,
-      NotificationFailure,
+      NotificationSuccess, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
     } = this.props
+
+    ShowGlobalLoader()
+
+    // perform validation
     try {
-      this.setState({isLoading: true})
-      selected.validate('Create').then(reasonsInvalid => {
-        if (reasonsInvalid.count > 0) {
-          this.reasonsInvalid = reasonsInvalid
-          this.setState({isLoading: false})
-        } else {
-          selected.create().then(() => {
-            NotificationSuccess('Successfully Created Client')
-            this.setState({activeState: events.createNewSuccess})
-            this.collect()
-          }).catch(error => {
-            console.error('Error Creating Client', error)
-            NotificationFailure('Error Creating Client')
-          }).finally(() => {
-            this.setState({isLoading: false})
-          })
-        }
-      }).catch(error => {
-        console.error('Error Validating Client', error)
-        NotificationFailure('Error Validating Client')
-        this.setState({isLoading: false})
-      })
-    } catch (error) {
-      console.error('Error Creating Client', error)
+      const reasonsInvalid = (await ClientValidator.Validate({
+        client,
+        action: 'Create',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Client', e)
+      NotificationFailure('Error Validating Client')
+      HideGlobalLoader()
+      return
+    }
+
+    // if validation passes, perform create
+    try {
+      await ClientAdministrator.Create({client})
+      NotificationSuccess('Successfully Created Client')
+      this.setState({activeState: events.createNewSuccess})
+      await this.collect()
+      HideGlobalLoader()
+    } catch (e) {
+      console.error('Error Creating Client', e)
+      NotificationFailure('Error Creating Client')
+      HideGlobalLoader()
     }
   }
 
-  async collect() {
+  handleCancelCreateNew() {
+    this.reasonsInvalid.clearAll()
+    this.setState({activeState: events.cancelCreateNew})
+  }
+
+  async handleSaveChanges() {
+    const {client} = this.state
+    let {records} = this.state
     const {
-      NotificationFailure,
+      NotificationSuccess, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
     } = this.props
+
+    ShowGlobalLoader()
+
+    // perform validation
+    try {
+      const reasonsInvalid = (await ClientValidator.Validate({
+        client,
+        action: 'UpdateAllowedFields',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Client', e)
+      NotificationFailure('Error Validating Client')
+      HideGlobalLoader()
+      return
+    }
+
+    // if validation passes, perform update
+    try {
+      let response = await ClientAdministrator.UpdateAllowedFields({client})
+      const companyIdx = records.findIndex(c => c.id === response.client.id)
+      if (companyIdx < 0) {
+        console.error('unable to find updated client in records')
+      } else {
+        records[companyIdx] = response.client
+      }
+      NotificationSuccess('Successfully Updated Client')
+      this.setState({
+        records,
+        client: response.client,
+        activeState: events.finishEditExisting,
+      })
+      HideGlobalLoader()
+    } catch (e) {
+      console.error('Error Updating Client', e)
+      NotificationFailure('Error Updating Client')
+      HideGlobalLoader()
+    }
+  }
+
+  handleStartEditExisting() {
+    const {client} = this.state
+    this.setState({
+      clientCopy: new ClientEntity(client),
+      activeState: events.startEditExisting,
+    })
+  }
+
+  handleCancelEditExisting() {
+    const {clientCopy} = this.state
+    this.setState({
+      client: new ClientEntity(clientCopy),
+      activeState: events.cancelEditExisting,
+    })
+  }
+
+  async collect() {
+    const {NotificationFailure} = this.props
 
     this.setState({recordCollectionInProgress: true})
     try {
@@ -210,7 +287,7 @@ class Client extends Component {
     this.collectTimeout = setTimeout(this.collect, 300)
     this.setState({
       activeState: events.init,
-      selected: new ClientEntity(),
+      client: new ClientEntity(),
       selectedRowIdx: -1,
     })
   }
@@ -218,43 +295,34 @@ class Client extends Component {
   handleSelect(rowRecordObj, rowIdx) {
     this.setState({
       selectedRowIdx: rowIdx,
-      selected: new ClientEntity(rowRecordObj),
+      client: new ClientEntity(rowRecordObj),
       activeState: events.selectExisting,
     })
   }
 
   async handleInviteAdmin() {
+    const {client} = this.state
     const {
-      selected,
-    } = this.state
-    const {
-      claims,
-      NotificationSuccess,
-      NotificationFailure,
+      NotificationSuccess, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
     } = this.props
 
-    this.setState({isLoading: true})
+    ShowGlobalLoader()
     try {
-      // create the minimal admin user
-      const newAdminUser = new UserEntity()
-      newAdminUser.emailAddress = selected.adminEmailAddress
-      newAdminUser.parentPartyType = claims.partyType
-      newAdminUser.parentId = claims.partyId
-      newAdminUser.partyType = ClientPartyType
-      newAdminUser.partyId = selected.identifier
       // perform the invite
-      await PartyRegistrar.InviteClientAdminUser({user: newAdminUser})
+      await PartyRegistrar.InviteClientAdminUser({
+        clientIdentifier: client.identifier,
+      })
       NotificationSuccess('Successfully Invited Client Admin User')
     } catch (e) {
       console.error('Failed to Invite Client Admin User', e)
       NotificationFailure('Failed to Invite Client Admin User')
     }
-    this.setState({isLoading: false})
+    HideGlobalLoader()
   }
 
   render() {
     const {
-      isLoading,
       recordCollectionInProgress,
       selectedRowIdx,
       records,
@@ -327,117 +395,106 @@ class Client extends Component {
       default:
     }
 
-    return <Grid
-        container
-        direction='column'
-        spacing={8}
-        alignItems='center'
-    >
-      <Grid item xl={12}>
-        <Grid container>
-          <Grid item>
-            <Card className={classes.detailCard}>
-              <CardHeader title={cardTitle}/>
+    return (
+        <Grid container direction='column' spacing={8} alignItems='center'>
+          <Grid item xl={12}>
+            <Grid container>
+              <Grid item>
+                <Card className={classes.detailCard}>
+                  <CardHeader title={cardTitle}/>
+                  <CardContent>
+                    {this.renderClientDetails()}
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xl={12}>
+            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
               <CardContent>
-                {this.renderClientDetails()}
+                <BEPTable
+                    loading={recordCollectionInProgress}
+                    totalNoRecords={totalNoRecords}
+                    noDataText={'No Clients Found'}
+                    data={records}
+                    onCriteriaQueryChange={this.handleCriteriaQueryChange}
+
+                    columns={[
+                      {
+                        Header: 'Name',
+                        accessor: 'name',
+                        config: {
+                          filter: {
+                            type: Text,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Admin Email',
+                        accessor: 'adminEmailAddress',
+                        config: {
+                          filter: {
+                            type: Text,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Admin Registered',
+                        accessor: '',
+                        filterable: false,
+                        sortable: false,
+                        Cell: rowCellInfo => {
+                          if (this.clientRegistration[rowCellInfo.original.id]) {
+                            return 'Yes'
+                          } else {
+                            return 'No'
+                          }
+                        },
+                      },
+                    ]}
+
+                    getTdProps={(state, rowInfo) => {
+                      const rowIndex = rowInfo ? rowInfo.index : undefined
+                      return {
+                        onClick: (e, handleOriginal) => {
+                          if (rowInfo) {
+                            this.handleSelect(rowInfo.original, rowInfo.index)
+                          }
+                          if (handleOriginal) {
+                            handleOriginal()
+                          }
+                        },
+                        style: {
+                          background: rowIndex === selectedRowIdx ?
+                              theme.palette.secondary.light :
+                              'white',
+                          color: rowIndex === selectedRowIdx ?
+                              theme.palette.secondary.contrastText :
+                              theme.palette.primary.main,
+                        },
+                      }
+                    }}
+                />
               </CardContent>
             </Card>
           </Grid>
         </Grid>
-      </Grid>
-      <Grid item xl={12}>
-        <Card style={{maxWidth: maxViewDimensions.width - 10}}>
-          <CardContent>
-            <BEPTable
-                loading={recordCollectionInProgress}
-                totalNoRecords={totalNoRecords}
-                noDataText={'No Clients Found'}
-                data={records}
-                onCriteriaQueryChange={this.handleCriteriaQueryChange}
-
-                columns={[
-                  {
-                    Header: 'Name',
-                    accessor: 'name',
-                    config: {
-                      filter: {
-                        type: Text,
-                      },
-                    },
-                  },
-                  {
-                    Header: 'Admin Email',
-                    accessor: 'adminEmailAddress',
-                    config: {
-                      filter: {
-                        type: Text,
-                      },
-                    },
-                  },
-                  {
-                    Header: 'Admin Registered',
-                    accessor: '',
-                    filterable: false,
-                    sortable: false,
-                    Cell: rowCellInfo => {
-                      if (this.clientRegistration[rowCellInfo.original.id]) {
-                        return 'Yes'
-                      } else {
-                        return 'No'
-                      }
-                    },
-                  },
-                ]}
-
-                getTdProps={(state, rowInfo) => {
-                  const rowIndex = rowInfo ? rowInfo.index : undefined
-                  return {
-                    onClick: (e, handleOriginal) => {
-                      if (rowInfo) {
-                        this.handleSelect(rowInfo.original, rowInfo.index)
-                      }
-                      if (handleOriginal) {
-                        handleOriginal()
-                      }
-                    },
-                    style: {
-                      background: rowIndex === selectedRowIdx ?
-                          theme.palette.secondary.light :
-                          'white',
-                      color: rowIndex === selectedRowIdx ?
-                          theme.palette.secondary.contrastText :
-                          theme.palette.primary.main,
-                    },
-                  }
-                }}
-            />
-          </CardContent>
-        </Card>
-      </Grid>
-      <FullPageLoader open={isLoading}/>
-    </Grid>
+    )
   }
 
   renderClientDetails() {
-    const {
-      isLoading,
-      activeState,
-    } = this.state
-    const {
-      classes,
-    } = this.props
+    const {activeState} = this.state
+    const {classes} = this.props
 
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === states.viewingExisting
 
-
     switch (activeState) {
-
       case states.nop:
         return (
             <Grid
                 container
-                direction='column'
+                direction={'column'}
                 spacing={8}
                 alignItems={'center'}
             >
@@ -446,6 +503,7 @@ class Client extends Component {
               </Grid>
               <Grid item>
                 <Fab
+                    color={'primary'}
                     className={classes.button}
                     size={'small'}
                     onClick={this.handleCreateNew}
@@ -462,7 +520,7 @@ class Client extends Component {
       case states.editingNew:
       case states.editingExisting:
         const {
-          selected,
+          client,
         } = this.state
         return <Grid
             container
@@ -475,10 +533,12 @@ class Client extends Component {
                 className={classes.formField}
                 id='name'
                 label='Name'
-                value={selected.name}
-                onChange={this.handleChange}
-                disabled={isLoading}
-                InputProps={{disableUnderline: stateIsViewing}}
+                value={client.name}
+                onChange={this.handleFieldChange}
+                InputProps={{
+                  disableUnderline: stateIsViewing,
+                  readOnly: stateIsViewing,
+                }}
                 helperText={
                   fieldValidations.name
                       ? fieldValidations.name.help
@@ -492,10 +552,12 @@ class Client extends Component {
                 className={classes.formField}
                 id='adminEmailAddress'
                 label='Admin Email'
-                value={selected.adminEmailAddress}
-                onChange={this.handleChange}
-                disabled={isLoading}
-                InputProps={{disableUnderline: stateIsViewing}}
+                value={client.adminEmailAddress}
+                onChange={this.handleFieldChange}
+                InputProps={{
+                  disableUnderline: stateIsViewing,
+                  readOnly: stateIsViewing,
+                }}
                 helperText={
                   fieldValidations.adminEmailAddress
                       ? fieldValidations.adminEmailAddress.help
@@ -512,14 +574,10 @@ class Client extends Component {
   }
 
   renderControlIcons() {
-    const {
-      activeState,
-      selected,
-    } = this.state
+    const {activeState, client} = this.state
     const {classes} = this.props
 
     switch (activeState) {
-
       case states.viewingExisting:
         return (
             <React.Fragment>
@@ -527,15 +585,13 @@ class Client extends Component {
                   color={'primary'}
                   className={classes.button}
                   size={'small'}
-                  onClick={() => this.setState({
-                    activeState: events.startEditExisting,
-                  })}
+                  onClick={this.handleStartEditExisting}
               >
                 <Tooltip title='Edit'>
                   <EditIcon className={classes.buttonIcon}/>
                 </Tooltip>
               </Fab>
-              {(!this.clientRegistration[selected.id]) &&
+              {(!this.clientRegistration[client.id]) &&
               <Fab
                   className={classes.button}
                   size={'small'}
@@ -573,8 +629,32 @@ class Client extends Component {
               <Fab
                   className={classes.button}
                   size={'small'}
-                  onClick={() => this.setState(
-                      {activeState: events.cancelCreateNew})}
+                  onClick={this.handleCancelCreateNew}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+
+      case states.editingExisting:
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveChanges}
+              >
+                <Tooltip title='Save Changes'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCancelEditExisting}
               >
                 <Tooltip title='Cancel'>
                   <CancelIcon className={classes.buttonIcon}/>
@@ -600,6 +680,14 @@ Client.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Show Global App Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global App Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
   /**
    * Login claims from redux state
    */

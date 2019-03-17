@@ -96,7 +96,6 @@ class Company extends Component {
 
   constructor(props) {
     super(props)
-    this.setCardsMaxWidth = this.setCardsMaxWidth.bind(this)
     this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderCompanyDetails = this.renderCompanyDetails.bind(this)
     this.handleFieldChange = this.handleFieldChange.bind(this)
@@ -217,7 +216,7 @@ class Company extends Component {
       let response = await CompanyAdministrator.UpdateAllowedFields({company})
       const companyIdx = records.findIndex(c => c.id === response.company.id)
       if (companyIdx < 0) {
-        console.error('unable to fund updated company in records')
+        console.error('unable to find updated company in records')
       } else {
         records[companyIdx] = response.company
       }
@@ -330,7 +329,11 @@ class Company extends Component {
       totalNoRecords,
       activeState,
     } = this.state
-    const {theme, classes} = this.props
+    const {
+      theme,
+      classes,
+      maxViewDimensions,
+    } = this.props
 
     let cardTitle = (
         <Typography variant={'h6'}>
@@ -407,7 +410,7 @@ class Company extends Component {
             </Grid>
           </Grid>
           <Grid item xl={12}>
-            <Card>
+            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
@@ -479,15 +482,6 @@ class Company extends Component {
     )
   }
 
-  setCardsMaxWidth(element) {
-    try {
-      console.log(element)
-      console.log(element.props.ref)
-      console.log(element.parentNode.clientHeight)
-    } catch (e) {
-    }
-  }
-
   renderCompanyDetails() {
     const {activeState} = this.state
     const {classes} = this.props
@@ -498,19 +492,18 @@ class Company extends Component {
     switch (activeState) {
       case states.nop:
         return (
-            <Grid container direction='column' spacing={8}
-                  alignItems={'center'}>
-              <Grid item>
-                <Typography variant={'body1'} align={'center'}
-                            color={'primary'}>
-                  Select A Company to View or Edit
-                </Typography>
-              </Grid>
+            <Grid
+                container
+                direction={'column'}
+                spacing={8}
+                alignItems={'center'}
+            >
               <Grid item>
                 <DomainIcon className={classes.companyIcon}/>
               </Grid>
               <Grid item>
                 <Fab
+                    color={'primary'}
                     className={classes.button}
                     size={'small'}
                     onClick={this.handleCreateNew}
@@ -694,6 +687,10 @@ Company.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * maxViewDimensions from redux state
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
 }
 
 Company.defaultProps = {}

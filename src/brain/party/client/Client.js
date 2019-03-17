@@ -1,6 +1,5 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
-import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
   IdIdentifier,
   AdminEmailAddressIdentifier,
@@ -96,14 +95,6 @@ export default class Client extends Base {
 
   set parentId(newVal) {
     this._parentId = newVal
-  }
-
-  create() {
-    return ClientRecordHandler.Create(this)
-  }
-
-  validate(method = '') {
-    return ClientRecordHandler.Validate(this, method)
   }
 
   get identifier() {
