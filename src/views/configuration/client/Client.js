@@ -114,6 +114,7 @@ class Client extends Component {
     this.loadParentPartyOptions = this.loadParentPartyOptions.bind(this)
     this.getPartyName = this.getPartyName.bind(this)
     this.buildColumns = this.buildColumns.bind(this)
+    this.updateEntityMap = this.updateEntityMap.bind(this)
     this.buildColumns()
     this.collectTimeout = () => {
     }
@@ -127,7 +128,6 @@ class Client extends Component {
     selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
-    defaultParent: {label: '-', value: ''},
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -150,7 +150,7 @@ class Client extends Component {
   }
 
   handleCreateNew() {
-    const {claims, party} = this.props
+    const {claims} = this.props
     let newClientEntity = new ClientEntity()
     newClientEntity.parentId = claims.partyId
     newClientEntity.parentPartyType = claims.partyType
@@ -159,7 +159,6 @@ class Client extends Component {
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
       client: newClientEntity,
-      defaultParent: {label: party.name, value: party.id},
     })
   }
 
@@ -167,6 +166,24 @@ class Client extends Component {
     let {client} = this.state
     const field = event.target.id ? event.target.id : event.target.name
     client[field] = event.target.value
+
+    // clear the party and parent party id field if the
+    // party type for that field has changed
+    switch (field) {
+      case 'parentPartyType':
+        client.parentId = new IdIdentifier()
+        break
+
+      case 'parentId':
+        this.updateEntityMap(
+            event.selectionInfo.entity,
+            client.parentPartyType,
+        )
+        break
+
+      default:
+    }
+
     this.reasonsInvalid.clearField(field)
     this.setState({client})
   }
@@ -188,6 +205,7 @@ class Client extends Component {
         callbackResults = collectResponse.records.map(system => ({
           label: system.name,
           value: new IdIdentifier(system.id),
+          entity: system,
         }))
         break
 
@@ -203,6 +221,7 @@ class Client extends Component {
         callbackResults = collectResponse.records.map(company => ({
           label: company.name,
           value: new IdIdentifier(company.id),
+          entity: company,
         }))
         break
 
@@ -327,7 +346,11 @@ class Client extends Component {
   }
 
   async collect() {
-    const {NotificationFailure} = this.props
+    const {
+      NotificationFailure,
+      party,
+      claims,
+    } = this.props
 
     this.setState({recordCollectionInProgress: true})
     let collectResponse
@@ -411,6 +434,7 @@ class Client extends Component {
             blankQuery,
         )).records
       }
+      this.updateEntityMap(party, claims.partyType)
     } catch (e) {
       this.entityMap.System = []
       this.entityMap.Company = []
@@ -438,13 +462,7 @@ class Client extends Component {
       selectedRowIdx: rowIdx,
       client: new ClientEntity(rowRecordObj),
       activeState: events.selectExisting,
-      defaultParent: {
-        label: this.getPartyName(
-            rowRecordObj.parentPartyType,
-            rowRecordObj.parentId,
-        ),
         value: rowRecordObj.parentId,
-      },
     })
   }
 
@@ -470,9 +488,31 @@ class Client extends Component {
   }
 
   getPartyName(partyType, partyId) {
+    console.log('retrieve', partyType, partyId, this.entityMap)
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(partyId, list ? list : [])
-    return entity ? entity.name : ''
+    return entity ? entity.name : '-'
+  }
+
+  updateEntityMap(newEntity, entityType) {
+    switch (entityType) {
+      case SystemPartyType:
+        if (this.getPartyName(SystemPartyType,
+            new IdIdentifier(newEntity.id)) === '-') {
+          this.entityMap.System.push(newEntity)
+        }
+        break
+
+      case CompanyPartyType:
+        if (this.getPartyName(CompanyPartyType,
+            new IdIdentifier(newEntity.id)) === '-') {
+          this.entityMap.Company.push(newEntity)
+        }
+        break
+
+      default:
+        console.error('invalid new entity party type', entityType)
+    }
   }
 
   buildColumns() {
@@ -700,7 +740,7 @@ class Client extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {client, defaultParent} = this.state
+        const {client} = this.state
         return <Grid
             container
             direction='column'
@@ -767,8 +807,14 @@ class Client extends Component {
                             : undefined,
                     error: !!fieldValidations.parentId,
                   }}
-                  defaultValue={defaultParent}
-                  loadParentPartyOptions={this.loadParentPartyOptions}
+                  value={{
+                    label: this.getPartyName(
+                        client.parentPartyType,
+                        client.parentId,
+                    ),
+                    value: client.partyId,
+                  }}
+                  loadOptions={this.loadParentPartyOptions}
                   onChange={this.handleFieldChange}
               />
             </Grid>

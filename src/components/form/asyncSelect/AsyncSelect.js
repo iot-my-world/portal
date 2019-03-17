@@ -65,6 +65,7 @@ class AsyncSelect extends Component {
         id: actionInfo.name,
         value: selectionInfo.value,
       },
+      selectionInfo,
     })
   }
 

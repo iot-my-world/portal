@@ -113,8 +113,10 @@ class User extends Component {
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
     this.loadParentPartyOptions = this.loadParentPartyOptions.bind(this)
+    this.loadPartyOptions = this.loadPartyOptions.bind(this)
     this.getPartyName = this.getPartyName.bind(this)
     this.buildColumns = this.buildColumns.bind(this)
+    this.updateEntityMap = this.updateEntityMap.bind(this)
     this.buildColumns()
     this.collectTimeout = () => {
     }
@@ -128,8 +130,6 @@ class User extends Component {
     selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
-    defaultParentSelectOption: {label: '-', value: ''},
-    defaultPartySelectOption: {label: '-', value: ''},
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -151,7 +151,7 @@ class User extends Component {
   }
 
   handleCreateNew() {
-    const {claims, party} = this.props
+    const {claims} = this.props
     let newUserEntity = new UserEntity()
     newUserEntity.partyId = claims.partyId
     newUserEntity.partyType = claims.partyType
@@ -162,29 +162,105 @@ class User extends Component {
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
       user: newUserEntity,
-      defaultParentSelectOption: {
-        label: this.getPartyName(
-            claims.partyType,
-            claims.partyId,
-        ),
-        value: party.id,
-      },
-      defaultPartySelectOption: {
-        label: this.getPartyName(
-            claims.parentPartyType,
-            claims.parentId,
-        ),
-        value: party.id,
-      },
     })
   }
 
   handleFieldChange(event) {
     let {user} = this.state
+
     const field = event.target.id ? event.target.id : event.target.name
     user[field] = event.target.value
+
+    // clear the party and parent party id field if the
+    // party type for that field has changed
+    switch (field) {
+      case 'partyType':
+        user.partyId = new IdIdentifier()
+        break
+
+      case 'partyId':
+        this.updateEntityMap(
+            event.selectionInfo.entity,
+            user.partyType,
+        )
+        break
+
+      case 'parentPartyType':
+        user.parentId = new IdIdentifier()
+        break
+
+      case 'parentId':
+        this.updateEntityMap(
+            event.selectionInfo.entity,
+            user.parentPartyType,
+        )
+        break
+
+      default:
+    }
+
     this.reasonsInvalid.clearField(field)
     this.setState({user})
+  }
+
+  async loadPartyOptions(inputValue, callback) {
+    const {user} = this.state
+    let collectResponse
+    let callbackResults = []
+    switch (user.partyType) {
+      case SystemPartyType:
+        collectResponse = await SystemRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(system => ({
+          label: system.name,
+          value: new IdIdentifier(system.id),
+          entity: system,
+        }))
+        break
+
+      case CompanyPartyType:
+        collectResponse = await CompanyRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(company => ({
+          label: company.name,
+          value: new IdIdentifier(company.id),
+          entity: company,
+        }))
+        break
+
+      case ClientPartyType:
+        collectResponse = await ClientRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(client => ({
+          label: client.name,
+          value: new IdIdentifier(client.id),
+          entity: client,
+        }))
+        break
+
+      default:
+        callbackResults = []
+    }
+    callbackResults = [{label: '-', value: ''}, ...callbackResults]
+    callback(callbackResults)
   }
 
   async loadParentPartyOptions(inputValue, callback) {
@@ -204,6 +280,7 @@ class User extends Component {
         callbackResults = collectResponse.records.map(system => ({
           label: system.name,
           value: new IdIdentifier(system.id),
+          entity: system,
         }))
         break
 
@@ -219,6 +296,23 @@ class User extends Component {
         callbackResults = collectResponse.records.map(company => ({
           label: company.name,
           value: new IdIdentifier(company.id),
+          entity: company,
+        }))
+        break
+
+      case ClientPartyType:
+        collectResponse = await ClientRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(client => ({
+          label: client.name,
+          value: new IdIdentifier(client.id),
+          entity: client,
         }))
         break
 
@@ -343,7 +437,11 @@ class User extends Component {
   }
 
   async collect() {
-    const {NotificationFailure} = this.props
+    const {
+      NotificationFailure,
+      party,
+      claims,
+    } = this.props
 
     this.setState({recordCollectionInProgress: true})
     let collectResponse
@@ -449,6 +547,7 @@ class User extends Component {
             blankQuery,
         )).records
       }
+      this.updateEntityMap(party, claims.partyType)
     } catch (e) {
       this.entityMap.System = []
       this.entityMap.Client = []
@@ -477,13 +576,6 @@ class User extends Component {
       selectedRowIdx: rowIdx,
       user: new UserEntity(rowRecordObj),
       activeState: events.selectExisting,
-      defaultParentSelectOption: {
-        label: this.getPartyName(
-            rowRecordObj.parentPartyType,
-            rowRecordObj.parentId,
-        ),
-        value: rowRecordObj.parentId,
-      },
     })
   }
 
@@ -511,7 +603,35 @@ class User extends Component {
   getPartyName(partyType, partyId) {
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(partyId, list ? list : [])
-    return entity ? entity.name : ''
+    return entity ? entity.name : '-'
+  }
+
+  updateEntityMap(newEntity, entityType) {
+    switch (entityType) {
+      case SystemPartyType:
+        if (this.getPartyName(SystemPartyType,
+            new IdIdentifier(newEntity.id)) === '-') {
+          this.entityMap.System.push(newEntity)
+        }
+        break
+
+      case CompanyPartyType:
+        if (this.getPartyName(CompanyPartyType,
+            new IdIdentifier(newEntity.id)) === '-') {
+          this.entityMap.Company.push(newEntity)
+        }
+        break
+
+      case ClientPartyType:
+        if (this.getPartyName(ClientPartyType,
+            new IdIdentifier(newEntity.id)) === '-') {
+          this.entityMap.Client.push(newEntity)
+        }
+        break
+
+      default:
+        console.error('invalid new entity party type', entityType)
+    }
   }
 
   buildColumns() {
@@ -529,7 +649,7 @@ class User extends Component {
       {
         Header: 'Email Address',
         accessor: 'emailAddress',
-        width: 35,
+        width: 126,
         config: {
           filter: {
             type: Text,
@@ -775,7 +895,9 @@ class User extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {user, defaultParentSelectOption} = this.state
+        const {
+          user,
+        } = this.state
         return <Grid
             container
             direction='column'
@@ -842,8 +964,14 @@ class User extends Component {
                             : undefined,
                     error: !!fieldValidations.parentId,
                   }}
-                  defaultValue={defaultParentSelectOption}
-                  loadParentPartyOptions={this.loadParentPartyOptions}
+                  value={{
+                    label: this.getPartyName(
+                        user.parentPartyType,
+                        user.parentId,
+                    ),
+                    value: user.partyId,
+                  }}
+                  loadOptions={this.loadParentPartyOptions}
                   onChange={this.handleFieldChange}
               />
             </Grid>
@@ -905,8 +1033,14 @@ class User extends Component {
                             : undefined,
                     error: !!fieldValidations.partyId,
                   }}
-                  defaultValue={defaultParentSelectOption}
-                  loadParentPartyOptions={this.loadParentPartyOptions}
+                  value={{
+                    label: this.getPartyName(
+                        user.partyType,
+                        user.partyId,
+                    ),
+                    value: user.partyId,
+                  }}
+                  loadOptions={this.loadPartyOptions}
                   onChange={this.handleFieldChange}
               />
             </Grid>
