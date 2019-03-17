@@ -1,8 +1,8 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import {
-  Company as CompanyPartyType,
-  System as SystemPartyType,
-  Client as ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
+  ClientPartyType,
 } from 'brain/party/types'
 import {Company} from 'brain/party/company'
 import {Client} from 'brain/party/client'

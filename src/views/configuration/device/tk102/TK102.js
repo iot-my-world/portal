@@ -25,7 +25,12 @@ import {
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
 import {SystemRecordHandler} from 'brain/party/system'
-import {allPartyTypes, Company, Client, System} from 'brain/party/types'
+import {
+  allPartyTypes,
+  CompanyPartyType,
+  ClientPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
@@ -86,11 +91,11 @@ const events = {
 
 function recordHandlerSelect(partyType) {
   switch (partyType) {
-    case System:
+    case SystemPartyType:
       return SystemRecordHandler
-    case Company:
+    case CompanyPartyType:
       return CompanyRecordHandler
-    case Client:
+    case ClientPartyType:
       return ClientRecordHandler
     default:
   }
@@ -115,7 +120,7 @@ class TK102 extends Component {
     this.updateEntityMap = this.updateEntityMap.bind(this)
     this.collectTimeout = () => {
     }
-    this.partyIsRoot = props.claims.partyType === System
+    this.partyIsRoot = props.claims.partyType === SystemPartyType
     this.updateEntityMap(props.party, props.claims.partyType)
   }
 
@@ -141,20 +146,23 @@ class TK102 extends Component {
 
   updateEntityMap(newEntity, entityType) {
     switch (entityType) {
-      case System:
-        if (this.getPartyName(System, new IdIdentifier(newEntity.id)) === '') {
+      case SystemPartyType:
+        if (this.getPartyName(SystemPartyType,
+            new IdIdentifier(newEntity.id)) === '') {
           this.entityMap.System.push(newEntity)
         }
         break
 
-      case Company:
-        if (this.getPartyName(Company, new IdIdentifier(newEntity.id)) === '') {
+      case CompanyPartyType:
+        if (this.getPartyName(CompanyPartyType,
+            new IdIdentifier(newEntity.id)) === '') {
           this.entityMap.Company.push(newEntity)
         }
         break
 
-      case Client:
-        if (this.getPartyName(Client, new IdIdentifier(newEntity.id)) === '') {
+      case ClientPartyType:
+        if (this.getPartyName(ClientPartyType,
+            new IdIdentifier(newEntity.id)) === '') {
           this.entityMap.Client.push(newEntity)
         }
         break
@@ -345,17 +353,17 @@ class TK102 extends Component {
     let companyEntityIds = []
     response.records.forEach(record => {
       switch (record.ownerPartyType) {
-        case System:
+        case SystemPartyType:
           if (!systemEntityIds.includes(record.ownerId.id)) {
             systemEntityIds.push(record.ownerId.id)
           }
           break
-        case Company:
+        case CompanyPartyType:
           if (!companyEntityIds.includes(record.ownerId.id)) {
             companyEntityIds.push(record.ownerId.id)
           }
           break
-        case Client:
+        case ClientPartyType:
           if (!clientEntityIds.includes(record.ownerId.id)) {
             clientEntityIds.push(record.ownerId.id)
           }
@@ -364,17 +372,17 @@ class TK102 extends Component {
       }
 
       switch (record.assignedPartyType) {
-        case System:
+        case SystemPartyType:
           if (!systemEntityIds.includes(record.assignedId.id)) {
             systemEntityIds.push(record.assignedId.id)
           }
           break
-        case Company:
+        case CompanyPartyType:
           if (!companyEntityIds.includes(record.assignedId.id)) {
             companyEntityIds.push(record.assignedId.id)
           }
           break
-        case Client:
+        case ClientPartyType:
           if (!clientEntityIds.includes(record.assignedId.id)) {
             clientEntityIds.push(record.assignedId.id)
           }

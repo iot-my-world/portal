@@ -33,8 +33,9 @@ import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {
   allPartyTypes,
-  Client as ClientPartyType, Company,
-  System,
+  ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
 } from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
@@ -175,7 +176,7 @@ class Client extends Component {
     let collectResponse
     let callbackResults = []
     switch (client.parentPartyType) {
-      case System:
+      case SystemPartyType:
         collectResponse = await SystemRecordHandler.Collect(
             [
               new TextCriterion({
@@ -190,7 +191,7 @@ class Client extends Component {
         }))
         break
 
-      case Company:
+      case CompanyPartyType:
         collectResponse = await CompanyRecordHandler.Collect(
             [
               new TextCriterion({
@@ -368,12 +369,12 @@ class Client extends Component {
       let companyEntityIds = []
       collectResponse.records.forEach(record => {
         switch (record.parentPartyType) {
-          case System:
+          case SystemPartyType:
             if (!systemEntityIds.includes(record.parentId.id)) {
               systemEntityIds.push(record.parentId.id)
             }
             break
-          case Company:
+          case CompanyPartyType:
             if (!companyEntityIds.includes(record.parentId.id)) {
               companyEntityIds.push(record.parentId.id)
             }
@@ -383,42 +384,36 @@ class Client extends Component {
       })
 
       // fetch system entities
-      try {
-        if (systemEntityIds.length > 0) {
-          const blankQuery = new Query()
-          blankQuery.limit = 0
-          this.entityMap.System = (await SystemRecordHandler.Collect(
-              [
-                new ListTextCriterion({
-                  field: 'id',
-                  list: systemEntityIds,
-                }),
-              ],
-              blankQuery,
-          )).records
-        }
-
-        if (companyEntityIds.length > 0) {
-          const blankQuery = new Query()
-          blankQuery.limit = 0
-          this.entityMap.Company = (await CompanyRecordHandler.Collect(
-              [
-                new ListTextCriterion({
-                  field: 'id',
-                  list: companyEntityIds,
-                }),
-              ],
-              blankQuery,
-          )).records
-        }
-      } catch (e) {
-        this.entityMap.System = []
-        console.error('error collecting system records', e)
-        NotificationFailure('Failed To Fetch System Records')
-        this.setState({recordCollectionInProgress: false})
-        return
+      if (systemEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.System = (await SystemRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: systemEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+      // fetch company entities
+      if (companyEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: companyEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
       }
     } catch (e) {
+      this.entityMap.System = []
+      this.entityMap.Company = []
       console.error('Failed Getting Parent Party Entities', e)
       NotificationFailure('Failed Getting Parent Party Entities')
       return
@@ -516,7 +511,7 @@ class Client extends Component {
       },
     ]
 
-    if (claims.partyType === System) {
+    if (claims.partyType === SystemPartyType) {
       this.columns = [
         {
           Header: 'Parent Party',
@@ -712,7 +707,7 @@ class Client extends Component {
             spacing={8}
             alignItems={'center'}
         >
-          {(claims.partyType === System) &&
+          {(claims.partyType === SystemPartyType) &&
           <React.Fragment>
             <Grid item>
               <FormControl

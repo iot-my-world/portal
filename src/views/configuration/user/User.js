@@ -25,6 +25,7 @@ import {
 } from 'brain/party/user'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {SystemRecordHandler} from 'brain/party/system'
+import {ClientRecordHandler} from 'brain/party/client'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {TextCriterion} from 'brain/search/criterion'
@@ -33,8 +34,9 @@ import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {
   allPartyTypes,
-  Company,
-  System,
+  CompanyPartyType,
+  SystemPartyType,
+  ClientPartyType,
 } from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
@@ -139,6 +141,7 @@ class User extends Component {
   entityMap = {
     Company: [],
     System: [],
+    Client: [],
   }
 
   columns = []
@@ -150,15 +153,29 @@ class User extends Component {
   handleCreateNew() {
     const {claims, party} = this.props
     let newUserEntity = new UserEntity()
-    newUserEntity.parentId = claims.partyId
-    newUserEntity.parentPartyType = claims.partyType
+    newUserEntity.partyId = claims.partyId
+    newUserEntity.partyType = claims.partyType
+    newUserEntity.parentId = claims.parentId
+    newUserEntity.parentPartyType = claims.parentPartyType
 
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
       user: newUserEntity,
-      defaultParentSelectOption: {label: party.name, value: party.id},
-      defaultPartySelectOption: {label: party.name, value: party.id},
+      defaultParentSelectOption: {
+        label: this.getPartyName(
+            claims.partyType,
+            claims.partyId,
+        ),
+        value: party.id,
+      },
+      defaultPartySelectOption: {
+        label: this.getPartyName(
+            claims.parentPartyType,
+            claims.parentId,
+        ),
+        value: party.id,
+      },
     })
   }
 
@@ -175,7 +192,7 @@ class User extends Component {
     let collectResponse
     let callbackResults = []
     switch (user.parentPartyType) {
-      case System:
+      case SystemPartyType:
         collectResponse = await SystemRecordHandler.Collect(
             [
               new TextCriterion({
@@ -190,7 +207,7 @@ class User extends Component {
         }))
         break
 
-      case Company:
+      case CompanyPartyType:
         collectResponse = await CompanyRecordHandler.Collect(
             [
               new TextCriterion({
@@ -349,16 +366,41 @@ class User extends Component {
       // with these users
       let systemEntityIds = []
       let companyEntityIds = []
+      let clientEntityIds = []
       collectResponse.records.forEach(record => {
         switch (record.parentPartyType) {
-          case System:
+          case SystemPartyType:
             if (!systemEntityIds.includes(record.parentId.id)) {
               systemEntityIds.push(record.parentId.id)
             }
             break
-          case Company:
+          case CompanyPartyType:
             if (!companyEntityIds.includes(record.parentId.id)) {
               companyEntityIds.push(record.parentId.id)
+            }
+            break
+          case ClientPartyType:
+            if (!clientEntityIds.includes(record.parentId.id)) {
+              clientEntityIds.push(record.parentId.id)
+            }
+            break
+          default:
+        }
+
+        switch (record.partyType) {
+          case SystemPartyType:
+            if (!systemEntityIds.includes(record.partyId.id)) {
+              systemEntityIds.push(record.partyId.id)
+            }
+            break
+          case CompanyPartyType:
+            if (!companyEntityIds.includes(record.partyId.id)) {
+              companyEntityIds.push(record.partyId.id)
+            }
+            break
+          case ClientPartyType:
+            if (!clientEntityIds.includes(record.partyId.id)) {
+              clientEntityIds.push(record.partyId.id)
             }
             break
           default:
@@ -366,44 +408,53 @@ class User extends Component {
       })
 
       // fetch system entities
-      try {
-        if (systemEntityIds.length > 0) {
-          const blankQuery = new Query()
-          blankQuery.limit = 0
-          this.entityMap.System = (await SystemRecordHandler.Collect(
-              [
-                new ListTextCriterion({
-                  field: 'id',
-                  list: systemEntityIds,
-                }),
-              ],
-              blankQuery,
-          )).records
-        }
-
-        if (companyEntityIds.length > 0) {
-          const blankQuery = new Query()
-          blankQuery.limit = 0
-          this.entityMap.Company = (await CompanyRecordHandler.Collect(
-              [
-                new ListTextCriterion({
-                  field: 'id',
-                  list: companyEntityIds,
-                }),
-              ],
-              blankQuery,
-          )).records
-        }
-      } catch (e) {
-        this.entityMap.System = []
-        console.error('error collecting system records', e)
-        NotificationFailure('Failed To Fetch System Records')
-        this.setState({recordCollectionInProgress: false})
-        return
+      if (systemEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.System = (await SystemRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: systemEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+      // fetch company entities
+      if (companyEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: companyEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+      // fetch client entities
+      if (clientEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Client = (await ClientRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: clientEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
       }
     } catch (e) {
-      console.error('Failed Getting Parent Party Entities', e)
-      NotificationFailure('Failed Getting Parent Party Entities')
+      this.entityMap.System = []
+      this.entityMap.Client = []
+      this.entityMap.Company = []
+      console.error('Failed Getting Associated Party Entities', e)
+      NotificationFailure('Failed Getting Associated Party Entities')
       return
     }
 
@@ -478,6 +529,7 @@ class User extends Component {
       {
         Header: 'Email Address',
         accessor: 'emailAddress',
+        width: 35,
         config: {
           filter: {
             type: Text,
@@ -517,7 +569,7 @@ class User extends Component {
       },
     ]
 
-    if (claims.partyType === System) {
+    if (claims.partyType === SystemPartyType) {
       this.columns = [
         {
           Header: 'Party',
@@ -730,7 +782,7 @@ class User extends Component {
             spacing={8}
             alignItems={'center'}
         >
-          {(claims.partyType === System) &&
+          {(claims.partyType === SystemPartyType) &&
           <React.Fragment>
             <Grid item>
               <FormControl
@@ -795,6 +847,69 @@ class User extends Component {
                   onChange={this.handleFieldChange}
               />
             </Grid>
+            <Grid item>
+              <FormControl
+                  className={classes.formField}
+                  error={!!fieldValidations.parentPartyType}
+                  aria-describedby='partyType'
+              >
+                <InputLabel htmlFor='partyType'>
+                  Party Type
+                </InputLabel>
+                <Select
+                    id='partyType'
+                    name='partyType'
+                    value={user.partyType}
+                    onChange={this.handleFieldChange}
+                    style={{width: 150}}
+                    disableUnderline={stateIsViewing}
+                    inputProps={{readOnly: stateIsViewing}}
+                >
+                  <MenuItem value=''>
+                    <em>None</em>
+                  </MenuItem>
+                  {allPartyTypes.map((partyType, idx) => {
+                    return (
+                        <MenuItem key={idx} value={partyType}>
+                          {partyType}
+                        </MenuItem>
+                    )
+                  })}
+                </Select>
+                {!!fieldValidations.ownerPartyType && (
+                    <FormHelperText id='partyType'>
+                      {fieldValidations.partyType
+                          ? fieldValidations.partyType.help
+                          : undefined}
+                    </FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <AsyncSelect
+                  cacheOptions
+                  name={'partyId'}
+                  disabled={stateIsViewing}
+                  ExtraTextFieldProps={{
+                    label: 'Party',
+                    InputLabelProps: {
+                      shrink: true,
+                    },
+                    InputProps: {
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    },
+                    helperText:
+                        fieldValidations.partyId
+                            ? fieldValidations.partyId.help
+                            : undefined,
+                    error: !!fieldValidations.partyId,
+                  }}
+                  defaultValue={defaultParentSelectOption}
+                  loadParentPartyOptions={this.loadParentPartyOptions}
+                  onChange={this.handleFieldChange}
+              />
+            </Grid>
           </React.Fragment>
           }
           <Grid item>
@@ -819,20 +934,58 @@ class User extends Component {
           <Grid item>
             <TextField
                 className={classes.formField}
-                id='adminEmailAddress'
-                label='Admin Email'
-                value={user.adminEmailAddress}
+                id='surname'
+                label='Surname'
+                value={user.surname}
                 onChange={this.handleFieldChange}
                 InputProps={{
                   disableUnderline: stateIsViewing,
                   readOnly: stateIsViewing,
                 }}
                 helperText={
-                  fieldValidations.adminEmailAddress
-                      ? fieldValidations.adminEmailAddress.help
+                  fieldValidations.surname
+                      ? fieldValidations.surname.help
                       : undefined
                 }
-                error={!!fieldValidations.adminEmailAddress}
+                error={!!fieldValidations.surname}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='username'
+                label='Username'
+                value={user.username}
+                onChange={this.handleFieldChange}
+                InputProps={{
+                  disableUnderline: stateIsViewing,
+                  readOnly: stateIsViewing,
+                }}
+                helperText={
+                  fieldValidations.username
+                      ? fieldValidations.username.help
+                      : undefined
+                }
+                error={!!fieldValidations.username}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+                className={classes.formField}
+                id='emailAddress'
+                label='emailAddress'
+                value={user.emailAddress}
+                onChange={this.handleFieldChange}
+                InputProps={{
+                  disableUnderline: stateIsViewing,
+                  readOnly: stateIsViewing,
+                }}
+                helperText={
+                  fieldValidations.emailAddress
+                      ? fieldValidations.emailAddress.help
+                      : undefined
+                }
+                error={!!fieldValidations.emailAddress}
             />
           </Grid>
         </Grid>

@@ -35,9 +35,9 @@ import {
   HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
 } from 'brain/security/permission/view/permission'
 import {
-  System,
-  Company,
-  Client,
+  SystemPartyType,
+  CompanyPartyType,
+  ClientPartyType,
 } from 'brain/party/types'
 
 const HomeRoute = {
@@ -48,21 +48,21 @@ const HomeRoute = {
 
 const homeRouteBuilder = partyType => {
   switch (partyType) {
-    case System:
+    case SystemPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
         component: SystemHomeContainer,
       }
-    case Company:
+    case CompanyPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
         component: CompanyHomeContainer,
       }
-    case Client:
+    case ClientPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,

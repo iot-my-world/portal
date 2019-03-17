@@ -1,9 +1,9 @@
-export const System = 'System'
-export const Client = 'Client'
-export const Company = 'Company'
+export const SystemPartyType = 'System'
+export const ClientPartyType = 'Client'
+export const CompanyPartyType = 'Company'
 
 export const allPartyTypes = [
-    System,
-    Client,
-    Company,
+  SystemPartyType,
+  ClientPartyType,
+  CompanyPartyType,
 ]

@@ -21,7 +21,7 @@ import {Text} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
-import {Company as CompanyPartyType} from 'brain/party/types'
+import {CompanyPartyType} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
