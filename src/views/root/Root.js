@@ -11,6 +11,7 @@ import {parseToken} from 'utilities/token/index'
 import {LoginClaims} from 'brain/security/claims/index'
 import FullPageLoader from 'components/loader/FullPage'
 import {Logout} from 'actions/auth'
+import moment from 'moment'
 
 const styles = theme => ({})
 
@@ -49,6 +50,12 @@ class Root extends Component {
     } = prevProps
     if (loggedIn !== prevLoggedIn) {
       if (loggedIn) {
+        console.log(
+            'Login Valid Until:',
+            moment()
+                .add(claims.timeToExpiry, 'ms')
+                .format('dddd, MMMM Do YYYY, h:mm:ss a'),
+        )
         setTimeout(() => Logout(), claims.timeToExpiry)
       } else {
         sessionStorage.removeItem('jwt')

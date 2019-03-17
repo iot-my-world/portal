@@ -148,14 +148,11 @@ class Login extends Component {
           claims.notExpired &&
           (claims.type === LoginClaimsType)
       ) {
-        // call login action creator
-        LoginActionCreator()
         // and set the token in local storage
         sessionStorage.setItem('jwt', loginResult.jwt)
       } else {
         // if the token is expired clear the token state
         sessionStorage.setItem('jwt', null)
-        console.error('given token is expired!', claims)
         this.setState({activeState: events.loginFail})
         return
       }
@@ -168,6 +165,8 @@ class Login extends Component {
     // Finally set the claims which will cause root to navigate
     // to the app
     SetClaims(claims)
+    // call login action creator
+    LoginActionCreator()
   }
 
   errorMessage() {
