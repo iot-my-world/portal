@@ -5,6 +5,10 @@ import {
   NotificationFailure,
   NotificationSuccess,
 } from 'actions/notification'
+import {
+  ShowGlobalLoader,
+  HideGlobalLoader,
+} from 'actions/app'
 
 let FunctionalContainer = props => {
   return <User {...props}/>
@@ -13,6 +17,8 @@ let FunctionalContainer = props => {
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
+    maxViewDimensions: state.app.maxViewDimensions,
+    party: state.auth.party,
   }
 }
 
@@ -21,7 +27,9 @@ FunctionalContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
-    }
+      ShowGlobalLoader,
+      HideGlobalLoader,
+    },
 )(FunctionalContainer)
 
 export default FunctionalContainer

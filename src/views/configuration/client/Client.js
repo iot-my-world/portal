@@ -110,7 +110,7 @@ class Client extends Component {
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
     this.handleStartEditExisting = this.handleStartEditExisting.bind(this)
     this.handleCancelEditExisting = this.handleCancelEditExisting.bind(this)
-    this.loadOptions = this.loadOptions.bind(this)
+    this.loadParentPartyOptions = this.loadParentPartyOptions.bind(this)
     this.getPartyName = this.getPartyName.bind(this)
     this.buildColumns = this.buildColumns.bind(this)
     this.buildColumns()
@@ -170,7 +170,7 @@ class Client extends Component {
     this.setState({client})
   }
 
-  async loadOptions(inputValue, callback) {
+  async loadParentPartyOptions(inputValue, callback) {
     const {client} = this.state
     let collectResponse
     let callbackResults = []
@@ -289,11 +289,11 @@ class Client extends Component {
     // if validation passes, perform update
     try {
       let response = await ClientAdministrator.UpdateAllowedFields({client})
-      const companyIdx = records.findIndex(c => c.id === response.client.id)
-      if (companyIdx < 0) {
+      const clientIdx = records.findIndex(c => c.id === response.client.id)
+      if (clientIdx < 0) {
         console.error('unable to find updated client in records')
       } else {
-        records[companyIdx] = response.client
+        records[clientIdx] = response.client
       }
       NotificationSuccess('Successfully Updated Client')
       this.setState({
@@ -777,7 +777,7 @@ class Client extends Component {
                     error: !!fieldValidations.parentId,
                   }}
                   defaultValue={defaultParent}
-                  loadOptions={this.loadOptions}
+                  loadParentPartyOptions={this.loadParentPartyOptions}
                   onChange={this.handleFieldChange}
               />
             </Grid>
