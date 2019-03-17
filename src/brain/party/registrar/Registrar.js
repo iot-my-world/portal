@@ -28,18 +28,6 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  InviteCompanyUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.InviteCompanyUser',
-      request: {
-        user: user.toPOJO(),
-      },
-    })
-  },
-
-  /**
-   * @param {{user: User}} request
-   */
   RegisterCompanyUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterCompanyUser',
@@ -76,18 +64,6 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  InviteClientUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.InviteClientUser',
-      request: {
-        user: user.toPOJO(),
-      },
-    })
-  },
-
-  /**
-   * @param {{user: User}} request
-   */
   RegisterClientUser({user}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterClientUser',
@@ -100,14 +76,24 @@ const Registrar = {
   /**
    * @param {{partyDetails: []}} request
    */
-  AreAdminsRegistered({partyDetails}){
+  AreAdminsRegistered({partyDetails}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.AreAdminsRegistered',
       request: {
         partyDetails,
       },
     })
-  }
+  },
+
+  async InviteUser({userIdentifier}) {
+    let response = await jsonRpcRequest({
+      method: 'PartyRegistrar.InviteUser',
+      request: {
+        userIdentifier: userIdentifier.toPOJO(),
+      },
+    })
+    return response
+  },
 }
 
 export default Registrar

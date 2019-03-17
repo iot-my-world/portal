@@ -352,7 +352,6 @@ class App extends Component {
 
     if (route.path === '/logout') {
       Logout()
-      history.push(route.path)
       return
     }
 

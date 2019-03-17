@@ -1,6 +1,7 @@
 import {
   setClaims,
-  logout, setMyParty, setMyUser,
+  logout, login,
+  setMyParty, setMyUser,
 } from 'actions/actionTypes'
 import {
   LoginClaims,
@@ -11,6 +12,7 @@ const initState = () => ({
   claims: new LoginClaims(),
   party: {},
   user: new User(),
+  loggedIn: false,
 })
 
 export default function auth(state = initState(), action) {
@@ -31,6 +33,12 @@ export default function auth(state = initState(), action) {
       return {
         ...state,
         user: action.data,
+      }
+
+    case login:
+      return {
+        ...state,
+        loggedIn: true,
       }
 
     case logout:

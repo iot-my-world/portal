@@ -118,6 +118,7 @@ class Login extends Component {
     } = this.state
     const {
       SetClaims,
+      LoginActionCreator,
     } = this.props
 
     this.setState({activeState: events.logIn})
@@ -147,6 +148,8 @@ class Login extends Component {
           claims.notExpired &&
           (claims.type === LoginClaimsType)
       ) {
+        // call login action creator
+        LoginActionCreator()
         // and set the token in local storage
         sessionStorage.setItem('jwt', loginResult.jwt)
       } else {
@@ -281,5 +284,6 @@ let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
+  LoginActionCreator: PropTypes.func.isRequired,
 }
 export default StyledLogin

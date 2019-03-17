@@ -10,6 +10,7 @@ import RegisterUserContainer
 import {parseToken} from 'utilities/token/index'
 import {LoginClaims} from 'brain/security/claims/index'
 import FullPageLoader from 'components/loader/FullPage'
+import {Logout} from 'actions/auth'
 
 const styles = theme => ({})
 
@@ -17,15 +18,42 @@ class Root extends Component {
   constructor(props) {
     super(props)
     this.determineLoggedIn = this.determineLoggedIn.bind(this)
-    this.logout = this.logout.bind(this)
     this.updateAllowedRoutes = this.updateAllowedRoutes.bind(this)
     this.state = {
       allowedRoutes: [],
     }
-    this.loggedIn = this.determineLoggedIn()
   }
 
   updateAllowedRoutes(newAllowedRoots) {
+  }
+
+  componentDidMount() {
+    const {
+      Login,
+    } = this.props
+    if (this.determineLoggedIn()) {
+      Login()
+    } else {
+      Logout()
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      loggedIn,
+      claims,
+      Logout,
+    } = this.props
+    const {
+      loggedIn: prevLoggedIn,
+    } = prevProps
+    if (loggedIn !== prevLoggedIn) {
+      if (loggedIn) {
+        setTimeout(() => Logout(), claims.timeToExpiry)
+      } else {
+        sessionStorage.removeItem('jwt')
+      }
+    }
   }
 
   determineLoggedIn() {
@@ -46,15 +74,8 @@ class Root extends Component {
     }
   }
 
-  logout() {
-    const {Logout} = this.props
-    sessionStorage.removeItem('jwt')
-    this.loggedIn = false
-    Logout()
-  }
-
   render() {
-    const {claims, showGlobalLoader} = this.props
+    const {claims, showGlobalLoader, loggedIn} = this.props
 
     return (
         <BrowserRouter>
@@ -84,17 +105,9 @@ class Root extends Component {
                   }}
               />
               <Route
-                  exact
-                  path='/logout'
-                  render={() => {
-                    this.logout()
-                    return <Redirect to='/'/>
-                  }}
-              />
-              <Route
                   path='/'
                   render={props => {
-                    if (this.loggedIn || claims.notExpired) {
+                    if (loggedIn && claims.notExpired) {
                       return <Redirect to='/app'/>
                     } else {
                       return <LoginContainer {...props} />
@@ -123,6 +136,13 @@ Root.propTypes = {
    * page loader is open or not
    */
   showGlobalLoader: PropTypes.bool.isRequired,
+  /**
+   * redux state flag indicating if the app
+   * is logged in
+   */
+  loggedIn: PropTypes.bool.isRequired,
+  Login: PropTypes.func.isRequired,
+  Logout: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(Root)

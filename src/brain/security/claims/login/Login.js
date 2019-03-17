@@ -108,8 +108,17 @@ class Login extends ClaimsBase {
    * Whether these login are expired or not
    * @returns {boolean}
    */
-  get notExpired(){
+  get notExpired() {
     return moment.utc().isBefore(moment.unix(this._expirationTime).utc())
+  }
+
+  /**
+   * returns milliseconds to expiry
+   */
+  get timeToExpiry() {
+    return moment.unix(this._expirationTime)
+        .utc()
+        .diff(moment.utc(), 'seconds') * 1000
   }
 }
 

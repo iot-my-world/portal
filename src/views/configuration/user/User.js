@@ -106,7 +106,7 @@ class User extends Component {
     this.handleCriteriaQueryChange = this.handleCriteriaQueryChange.bind(this)
     this.collect = this.collect.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
-    this.handleInviteAdmin = this.handleInviteAdmin.bind(this)
+    this.handleInviteUser = this.handleInviteUser.bind(this)
     this.handleCreateNew = this.handleCreateNew.bind(this)
     this.handleCancelCreateNew = this.handleCancelCreateNew.bind(this)
     this.handleSaveChanges = this.handleSaveChanges.bind(this)
@@ -579,7 +579,7 @@ class User extends Component {
     })
   }
 
-  async handleInviteAdmin() {
+  async handleInviteUser() {
     const {user} = this.state
     const {
       NotificationSuccess, NotificationFailure,
@@ -589,13 +589,13 @@ class User extends Component {
     ShowGlobalLoader()
     try {
       // perform the invite
-      await PartyRegistrar.InviteUserAdminUser({
+      await PartyRegistrar.InviteUser({
         userIdentifier: user.identifier,
       })
-      NotificationSuccess('Successfully Invited User Admin User')
+      NotificationSuccess('Successfully Invited User')
     } catch (e) {
-      console.error('Failed to Invite User Admin User', e)
-      NotificationFailure('Failed to Invite User Admin User')
+      console.error('Failed to Invite User', e)
+      NotificationFailure('Failed to Invite User')
     }
     HideGlobalLoader()
   }
@@ -1151,9 +1151,9 @@ class User extends Component {
               <Fab
                   className={classes.button}
                   size={'small'}
-                  onClick={this.handleInviteAdmin}
+                  onClick={this.handleInviteUser}
               >
-                <Tooltip title='Invite Admin'>
+                <Tooltip title='Invite User'>
                   <SendEmailIcon className={classes.buttonIcon}/>
                 </Tooltip>
               </Fab>}

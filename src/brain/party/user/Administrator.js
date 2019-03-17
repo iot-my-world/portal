@@ -21,6 +21,17 @@ const Administrator = {
     response.user = new User(response.user)
     return response
   },
+
+  async Create({user}) {
+    let response = await jsonRpcRequest({
+      method: 'UserAdministrator.Create',
+      request: {
+        user: user.toPOJO(),
+      },
+    })
+    response.user = new User(response.user)
+    return response
+  },
 }
 
 export default Administrator

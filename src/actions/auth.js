@@ -1,6 +1,7 @@
 import {
   setClaims,
-  logout, setMyParty, setMyUser,
+  logout, login,
+  setMyParty, setMyUser,
 } from 'actions/actionTypes'
 
 /**
@@ -22,6 +23,15 @@ export function SetClaims(claims) {
  */
 export function Logout() {
   return {type: logout}
+}
+
+/**
+ * Called on login
+ * @returns {{type: number}}
+ * @constructor
+ */
+export function Login() {
+  return {type: login}
 }
 
 /**

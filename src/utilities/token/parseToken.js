@@ -18,11 +18,14 @@ export function parseToken(jwt) {
         jwt.lastIndexOf('.'))
     const payloadString = atob(payloadData)
     const tokenPOJO = JSON.parse(payloadString)
+    console.log('token pojo', tokenPOJO)
     switch (tokenPOJO.type) {
       case LoginClaims.type:
+        console.log('this type!!!! login')
         return new LoginClaims(tokenPOJO.value)
 
       case RegisterCompanyAdminUserClaims.type:
+        console.log('this type!')
         return new RegisterCompanyAdminUserClaims(tokenPOJO.value)
 
       case RegisterCompanyUserClaims.type:
