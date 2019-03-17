@@ -109,6 +109,7 @@ class RegisterUser extends Component {
     activeState: events.init,
     user: new UserEntity(),
     confirmPassword: '',
+    jwt: '',
   }
   reasonsInvalid = new ReasonsInvalid()
   registrationClaims
@@ -156,6 +157,7 @@ class RegisterUser extends Component {
     const {
       user,
       confirmPassword,
+      jwt,
     } = this.state
     const {
       NotificationSuccess,
@@ -166,6 +168,14 @@ class RegisterUser extends Component {
     if (user.password !== confirmPassword) {
       this.setState({activeState: events.passwordsDoNotMatch})
       return
+    }
+
+    // set the jwt in session storage if not set yet
+    if (
+        (sessionStorage.getItem('jwt') === 'null') ||
+        !sessionStorage.getItem('jwt')
+    ) {
+      sessionStorage.setItem('jwt', jwt)
     }
 
     // validate the new user for create
@@ -249,6 +259,18 @@ class RegisterUser extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      loggedIn,
+      Logout,
+    } = this.props
+
+    if (loggedIn) {
+      Logout()
+    }
+
+  }
+
   handleBackToSite() {
     const {
       history,
@@ -260,7 +282,10 @@ class RegisterUser extends Component {
   componentDidMount() {
     const {
       location,
+      Logout,
     } = this.props
+
+    Logout()
 
     let jwt
     let registrationClaims
@@ -287,12 +312,12 @@ class RegisterUser extends Component {
     // if the claims are not expired
     if (registrationClaims.notExpired) {
       // store the token to be used on registration api
-      sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
       this.setState({
         // set up the user from the claims
         user: new UserEntity(registrationClaims.user),
         activeState: events.tokenParsed,
+        jwt: jwt,
       })
     } else {
       sessionStorage.setItem('jwt', null)
@@ -594,5 +619,11 @@ StyledLogin.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * redux state flag indicating if the app
+   * is logged in
+   */
+  loggedIn: PropTypes.bool.isRequired,
+  Logout: PropTypes.func.isRequired,
 }
 export default StyledLogin

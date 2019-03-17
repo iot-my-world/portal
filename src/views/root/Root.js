@@ -50,7 +50,7 @@ class Root extends Component {
     } = prevProps
     if (loggedIn !== prevLoggedIn) {
       if (loggedIn) {
-        console.log(
+        console.info(
             'Login Valid Until:',
             moment()
                 .add(claims.timeToExpiry, 'ms')
