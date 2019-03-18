@@ -103,6 +103,8 @@ export default class User extends Base {
         this._surname = user.surname
         this._username = user.username
         this._emailAddress = user.emailAddress
+        this._password = user.password
+        this._roles = user.roles
         this._parentPartyType = user.parentPartyType
         this._parentId = new IdIdentifier(user.parentId)
         this._partyType = user.partyType
@@ -194,6 +196,14 @@ export default class User extends Base {
     return this._registered
   }
   // should never be able to set registered
+
+  get roles() {
+    return this._roles
+  }
+
+  set roles(newVal) {
+    this._roles = newVal
+  }
 
   create() {
     return UserRecordHandler.Create(this)

@@ -10,7 +10,10 @@ import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
-import {User as UserEntity} from 'brain/party/user'
+import {
+  User as UserEntity,
+  UserValidator,
+} from 'brain/party/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {
@@ -106,6 +109,7 @@ class RegisterUser extends Component {
     activeState: events.init,
     user: new UserEntity(),
     confirmPassword: '',
+    jwt: '',
   }
   reasonsInvalid = new ReasonsInvalid()
   registrationClaims
@@ -153,6 +157,7 @@ class RegisterUser extends Component {
     const {
       user,
       confirmPassword,
+      jwt,
     } = this.state
     const {
       NotificationSuccess,
@@ -165,29 +170,50 @@ class RegisterUser extends Component {
       return
     }
 
+    // set the jwt in session storage if not set yet
+    if (
+        (sessionStorage.getItem('jwt') === 'null') ||
+        !sessionStorage.getItem('jwt')
+    ) {
+      sessionStorage.setItem('jwt', jwt)
+    }
+
     // validate the new user for create
     let reasonsInvalid
     try {
       this.setState({isLoading: true})
       switch (this.registrationClaims.type) {
         case RegisterCompanyAdminUser:
-          reasonsInvalid = await user.validate('RegisterCompanyAdminUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterCompanyAdminUser',
+          })).reasonsInvalid
           break
 
         case RegisterCompanyUser:
-          reasonsInvalid = await user.validate('RegisterCompanyUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterCompanyUser',
+          })).reasonsInvalid
           break
 
         case RegisterClientAdminUser:
-          reasonsInvalid = await user.validate('RegisterClientAdminUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterClientAdminUser',
+          })).reasonsInvalid
           break
 
         case RegisterClientUser:
-          reasonsInvalid = await user.validate('RegisterClientUser')
+          reasonsInvalid = (await UserValidator.Validate({
+            user,
+            action: 'RegisterClientUser',
+          })).reasonsInvalid
           break
 
         default:
-          throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+          throw new TypeError(
+              'invalid claims type: ' + this.registrationClaims.type)
       }
     } catch (error) {
       console.error('Error Validating User', error)
@@ -219,7 +245,8 @@ class RegisterUser extends Component {
             break
 
           default:
-            throw new TypeError('invalid claims type: ' + this.registrationClaims.type)
+            throw new TypeError(
+                'invalid claims type: ' + this.registrationClaims.type)
         }
         NotificationSuccess('Successfully Registered User')
         this.setState({isLoading: false})
@@ -230,6 +257,18 @@ class RegisterUser extends Component {
       NotificationFailure('Error Registering User')
       this.setState({isLoading: false})
     }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      loggedIn,
+      Logout,
+    } = this.props
+
+    if (loggedIn) {
+      Logout()
+    }
+
   }
 
   handleBackToSite() {
@@ -243,7 +282,10 @@ class RegisterUser extends Component {
   componentDidMount() {
     const {
       location,
+      Logout,
     } = this.props
+
+    Logout()
 
     let jwt
     let registrationClaims
@@ -270,12 +312,12 @@ class RegisterUser extends Component {
     // if the claims are not expired
     if (registrationClaims.notExpired) {
       // store the token to be used on registration api
-      sessionStorage.setItem('jwt', jwt)
       this.registrationClaims = registrationClaims
       this.setState({
         // set up the user from the claims
         user: new UserEntity(registrationClaims.user),
         activeState: events.tokenParsed,
+        jwt: jwt,
       })
     } else {
       sessionStorage.setItem('jwt', null)
@@ -415,7 +457,10 @@ class RegisterUser extends Component {
                                 label='Email Address'
                                 autoComplete='emailAddress'
                                 value={user.emailAddress}
-                                disabled={true}
+                                InputProps={{
+                                  readOnly: true,
+                                  disableUnderline: true,
+                                }}
                                 helperText={
                                   fieldValidations.emailAddress
                                       ? fieldValidations.emailAddress.help
@@ -574,5 +619,11 @@ StyledLogin.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * redux state flag indicating if the app
+   * is logged in
+   */
+  loggedIn: PropTypes.bool.isRequired,
+  Logout: PropTypes.func.isRequired,
 }
 export default StyledLogin

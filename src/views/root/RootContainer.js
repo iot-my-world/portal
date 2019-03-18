@@ -9,7 +9,7 @@ import {
   SetClaims,
 } from 'actions/auth'
 import {
-  Logout,
+  Logout, Login,
 } from 'actions/auth'
 
 class RootContainer extends Component {
@@ -31,7 +31,9 @@ class RootContainer extends Component {
 function mapStateToProps(state) {
   return {
     claims: state.auth.claims,
+    loggedIn: state.auth.loggedIn,
     doneLoading: state.app.doneLoading,
+    showGlobalLoader: state.app.showGlobalLoader,
   }
 }
 
@@ -40,5 +42,6 @@ export default connect(
     {
       SetClaims,
       Logout,
+      Login,
     },
 )(RootContainer)

@@ -10,10 +10,12 @@ import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
 import MapIcon from '@material-ui/icons/Map'
-// Home
+// Home Views
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
+// Profile View
+import ProfileContainer from 'views/profile/ProfileContainer'
 // Configuration
 import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
@@ -33,9 +35,9 @@ import {
   HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
 } from 'brain/security/permission/view/permission'
 import {
-  System,
-  Company,
-  Client,
+  SystemPartyType,
+  CompanyPartyType,
+  ClientPartyType,
 } from 'brain/party/types'
 
 const HomeRoute = {
@@ -46,21 +48,21 @@ const HomeRoute = {
 
 const homeRouteBuilder = partyType => {
   switch (partyType) {
-    case System:
+    case SystemPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
         component: SystemHomeContainer,
       }
-    case Company:
+    case CompanyPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
         component: CompanyHomeContainer,
       }
-    case Client:
+    case ClientPartyType:
       return {
         text: 'Home',
         icon: <HomeIcon/>,
@@ -70,6 +72,15 @@ const homeRouteBuilder = partyType => {
     default:
       throw new TypeError(
           `invalid party type given to home root builder ${partyType}`)
+  }
+}
+
+const profileRouteBuilder = user => {
+  return { // this is an individual route
+    text: user.name,
+    icon: <PersonIcon/>,
+    path: '/app/profile',
+    component: ProfileContainer,
   }
 }
 
@@ -155,10 +166,13 @@ const AppRoutes = [
   ],
 ]
 
-const appRouteBuilder = (partyType, viewPermissions) => {
-  // initialise app routes with applicable home route
+const appRouteBuilder = (partyType, viewPermissions, user) => {
+  // initial routes added here
   let appRoutes = [
     [
+      // build the profile root
+      profileRouteBuilder(user),
+      // build the home root
       homeRouteBuilder(partyType),
       { // this is an individual route
         text: 'Logout',

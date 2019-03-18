@@ -1,6 +1,7 @@
 import {
   setClaims,
-  logout, setMyParty,
+  logout, login,
+  setMyParty, setMyUser,
 } from 'actions/actionTypes'
 
 /**
@@ -25,6 +26,15 @@ export function Logout() {
 }
 
 /**
+ * Called on login
+ * @returns {{type: number}}
+ * @constructor
+ */
+export function Login() {
+  return {type: login}
+}
+
+/**
  * Called to set my party in state
  * @param party
  * @returns {{type: number, data: *}}
@@ -32,4 +42,14 @@ export function Logout() {
  */
 export function SetMyParty(party) {
   return {type: setMyParty, data: party}
+}
+
+/**
+ * Called to set my user in state
+ * @param {User} user
+ * @returns {{type: number, data: *}}
+ * @constructor
+ */
+export function SetMyUser(user) {
+  return {type: setMyUser, data: user}
 }

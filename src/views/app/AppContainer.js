@@ -4,12 +4,14 @@ import App from './App'
 import {
   Logout,
   SetMyParty,
+  SetMyUser,
 } from 'actions/auth'
 import {
   SetViewPermissions,
 } from 'actions/permission'
 import {
   AppDoneLoading,
+  SetMaxViewDimensions,
 } from 'actions/app'
 
 let AppContainer = props => {
@@ -20,6 +22,7 @@ const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
     appDoneLoading: state.app.doneLoading,
+    maxViewDimensions: state.app.maxViewDimensions,
   }
 }
 
@@ -30,6 +33,8 @@ AppContainer = connect(
       SetViewPermissions,
       AppDoneLoading,
       SetMyParty,
+      SetMyUser,
+      SetMaxViewDimensions,
     }
 )(AppContainer)
 

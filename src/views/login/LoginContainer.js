@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {
   SetClaims,
+  Login as LoginActionCreator,
 } from 'actions/auth'
 import Login from './Login'
 
@@ -17,6 +18,7 @@ const mapStateToProps = (state) => {
 LoginContainer = connect(
     mapStateToProps,
     {
+      LoginActionCreator,
       SetClaims,
     }
 )(LoginContainer)

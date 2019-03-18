@@ -1,21 +1,18 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import {
-  Company as CompanyPartyType,
-  System as SystemPartyType,
-  Client as ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
+  ClientPartyType,
 } from 'brain/party/types'
 import {Company} from 'brain/party/company'
 import {Client} from 'brain/party/client'
 import {System} from 'brain/party/system'
 
-const Handler = {
-  /**
-   * @constructor
-   */
+const Administrator = {
   GetMyParty() {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: 'PartyHandler.GetMyParty',
+        method: 'PartyAdministrator.GetMyParty',
         request: {},
       }).then(response => {
         switch (response.partyType) {
@@ -41,4 +38,4 @@ const Handler = {
   },
 }
 
-export default Handler
+export default Administrator

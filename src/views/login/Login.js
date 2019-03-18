@@ -118,6 +118,7 @@ class Login extends Component {
     } = this.state
     const {
       SetClaims,
+      LoginActionCreator,
     } = this.props
 
     this.setState({activeState: events.logIn})
@@ -152,7 +153,6 @@ class Login extends Component {
       } else {
         // if the token is expired clear the token state
         sessionStorage.setItem('jwt', null)
-        console.error('given token is expired!', claims)
         this.setState({activeState: events.loginFail})
         return
       }
@@ -165,6 +165,8 @@ class Login extends Component {
     // Finally set the claims which will cause root to navigate
     // to the app
     SetClaims(claims)
+    // call login action creator
+    LoginActionCreator()
   }
 
   errorMessage() {
@@ -281,5 +283,6 @@ let StyledLogin = withStyles(style)(Login)
 
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
+  LoginActionCreator: PropTypes.func.isRequired,
 }
 export default StyledLogin
