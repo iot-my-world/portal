@@ -3,6 +3,7 @@ import IdIdentifier from './Id'
 import EmailAddressIdentifier from './EmailAddress'
 import AdminEmailAddressIdentifier from './AdminEmailAddress'
 import UsernameIdentifier from './Username'
+import PartyIdentifier from './Party'
 
 export {
   NameIdentifier,
@@ -10,4 +11,5 @@ export {
   EmailAddressIdentifier,
   AdminEmailAddressIdentifier,
   UsernameIdentifier,
+  PartyIdentifier,
 }

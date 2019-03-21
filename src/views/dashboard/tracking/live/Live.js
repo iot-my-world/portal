@@ -23,6 +23,8 @@ import 'components/mapbox/Custom.css'
 import {MapPin, MapPinPopup} from './map'
 import {Reading} from 'brain/tracker/reading'
 import {SystemRecordHandler} from 'brain/party/system'
+import {PartyIdentifier} from 'brain/search/identifier'
+import {SystemPartyType} from 'brain/party/types'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -150,7 +152,10 @@ class Live extends Component {
     this.setState({loading: true})
     try {
       this.systems = (await SystemRecordHandler.Collect()).records
-      this.systemIdentifiers = this.systems.map(system => system.identifier)
+      this.systemIdentifiers = this.systems.map(system => new PartyIdentifier({
+        partyType: SystemPartyType,
+        partyIdIdentifier: system.id,
+      }))
     } catch (e) {
       console.error('error collecting system', e)
       return
@@ -196,9 +201,11 @@ class Live extends Component {
     try {
       this.setState({
         readings: (await TrackingReport.Live({
-          companyIdentifiers: this.companyIdentifiers,
-          clientIdentifiers: this.clientIdentifiers,
-          systemIdentifiers: this.systemIdentifiers
+          partyIdentifiers: [
+            ...this.companyIdentifiers,
+            ...this.clientIdentifiers,
+            ...this.systemIdentifiers,
+          ],
         })).readings
       })
       let usedColors = Object.values(this.readingPinColorMap)

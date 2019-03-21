@@ -1,5 +1,6 @@
 import {PartyIdentifierType} from 'brain/search/identifier/types'
-import {isObject, isString} from 'utilities/type'
+import {isObject} from 'utilities/type'
+import IdIdentifier from './Id'
 import BaseIdentifier from './Base'
 
 export default class Party extends BaseIdentifier {
@@ -12,11 +13,15 @@ export default class Party extends BaseIdentifier {
   _type = Party.identifierType
 
   /**
-   * @type {{party: string}}
+   * @type {{
+   * partyType: string,
+   * partyIdIdentifier: IdIdentifier
+   * }}
    * @private
    */
   _value = {
-    party: '',
+    partyType: '',
+    partyIdIdentifier: new IdIdentifier(),
   }
 
   /**
@@ -30,9 +35,9 @@ export default class Party extends BaseIdentifier {
           (party instanceof Party) ||
           (isObject(party))
       ) {
-        this._value.party = party.party
-      } else if (isString(party)) {
-        this._value.party = party
+        this._value.partyType = party.partyType
+        this._value.partyIdIdentifier =
+            new IdIdentifier(party.partyIdIdentifier)
       } else {
         throw new TypeError(
             'invalid arg passed to Party identifier constructor')
@@ -40,7 +45,11 @@ export default class Party extends BaseIdentifier {
     }
   }
 
-  get party() {
-    return this._value.party
+  get partyType() {
+    return this._value.partyType
+  }
+
+  get partyIdIdentifier() {
+    return this._value.partyIdIdentifier
   }
 }
