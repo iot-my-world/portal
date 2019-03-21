@@ -9,7 +9,6 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
-import MapIcon from '@material-ui/icons/Map'
 // Home Views
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
@@ -24,8 +23,6 @@ import Device from 'views/configuration/device/Device'
 // Dashboards
 import LiveTrackingDashboard from 'views/dashboard/tracking/live/Live'
 import HistoricalTrackingDashboard from 'views/dashboard/tracking/historical/Historical'
-
-import MapsContainer from 'views/maps/MapsContainer'
 
 // View Permissions
 import {
@@ -153,15 +150,6 @@ const AppRoutes = [
           viewPermission: ViewHistoricalTrackingDashboard,
         },
       ],
-    },
-  ],
-
-  [
-    {
-      text: 'MapsTest',
-      icon: <MapIcon/>,
-      path: '/app/maps',
-      component: MapsContainer,
     },
   ],
 ]
