@@ -15,6 +15,15 @@ import moment from 'moment'
 
 const styles = theme => ({})
 
+function willBeSetToLoggedIn() {
+  try {
+    const claims = parseToken(sessionStorage.getItem('jwt'))
+    return claims.notExpired && claims.type === LoginClaims.type
+  } catch (e) {
+    return false
+  }
+}
+
 class Root extends Component {
   constructor(props) {
     super(props)
@@ -93,7 +102,8 @@ class Root extends Component {
                   render={props => {
                     // if the app is done loading then we can check if
                     // this route is allowed
-                    if (this.loggedIn || claims.notExpired) {
+                    if (this.loggedIn || claims.notExpired ||
+                        willBeSetToLoggedIn()) {
                       return (
                           <AppContainer
                               updateAllowedRoutes={this.updateAllowedRoutes}
