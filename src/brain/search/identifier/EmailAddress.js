@@ -1,9 +1,9 @@
-import {EmailAddress as EmailAddressIdentifier} from 'brain/search/identifier/types'
+import {EmailAddressIdentifierType} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class EmailAddress extends BaseIdentifier {
-  static identifierType = EmailAddressIdentifier
+  static identifierType = EmailAddressIdentifierType
 
   /**
    * @type {string}

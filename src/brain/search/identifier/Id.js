@@ -1,9 +1,9 @@
-import {Id as IdIdentifier} from 'brain/search/identifier/types'
+import {IdIdentifierType} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class Id extends BaseIdentifier {
-  static identifierType = IdIdentifier
+  static identifierType = IdIdentifierType
 
   /**
    * @type {string}
