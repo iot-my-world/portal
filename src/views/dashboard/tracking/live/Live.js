@@ -7,6 +7,8 @@ import {
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   Grid,
+  Card,
+  CardContent,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
@@ -76,7 +78,9 @@ const styles = theme => ({
   searchField: {
     width: '100%',
   },
-  map: {},
+  map: {
+    padding: 10,
+  },
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -115,9 +119,9 @@ class Live extends Component {
     this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
-    this.renderDeviceLocations = this.renderDeviceLocations.bind(this)
+    this.renderMapPins = this.renderMapPins.bind(this)
     this.getMapDimensions = this.getMapDimensions.bind(this)
-    this.renderMapPipPopup = this.renderMapPipPopup.bind(this)
+    this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -157,10 +161,12 @@ class Live extends Component {
     try {
       this.systems = (await SystemRecordHandler.Collect()).records
       this.systemIdentifiers = this.systems.map(
-          system => new PartyIdentifier({
-            partyType: SystemPartyType,
-            partyIdIdentifier: system.id,
-          }))
+          system =>
+              new PartyIdentifier({
+                partyType: SystemPartyType,
+                partyIdIdentifier: system.id,
+              }),
+      )
     } catch (e) {
       console.error('error collecting system', e)
       return
@@ -168,10 +174,11 @@ class Live extends Component {
     try {
       this.companies = (await CompanyRecordHandler.Collect()).records
       this.companyIdentifiers = this.companies.map(
-          company => new PartyIdentifier({
-            partyType: CompanyPartyType,
-            partyIdIdentifier: company.id,
-          }),
+          company =>
+              new PartyIdentifier({
+                partyType: CompanyPartyType,
+                partyIdIdentifier: company.id,
+              }),
       )
     } catch (e) {
       console.error('error collecting companies', e)
@@ -180,10 +187,11 @@ class Live extends Component {
     try {
       this.clients = (await ClientRecordHandler.Collect()).records
       this.clientIdentifiers = this.clients.map(
-          client => new PartyIdentifier({
-            partyType: ClientPartyType,
-            partyIdIdentifier: client.id,
-          }),
+          client =>
+              new PartyIdentifier({
+                partyType: ClientPartyType,
+                partyIdIdentifier: client.id,
+              }),
       )
     } catch (e) {
       console.error('error collecting clients', e)
@@ -239,20 +247,22 @@ class Live extends Component {
 
   handleClientFilterChange(selected) {
     this.clientIdentifiers = selected.map(
-        client => new PartyIdentifier({
-          partyType: ClientPartyType,
-          partyIdIdentifier: client.id,
-        }),
+        client =>
+            new PartyIdentifier({
+              partyType: ClientPartyType,
+              partyIdIdentifier: client.id,
+            }),
     )
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   handleCompanyFilterChange(selected) {
     this.companyIdentifiers = selected.map(
-        company => new PartyIdentifier({
-          partyType: CompanyPartyType,
-          partyIdIdentifier: company.id,
-        }),
+        company =>
+            new PartyIdentifier({
+              partyType: CompanyPartyType,
+              partyIdIdentifier: company.id,
+            }),
     )
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
@@ -268,19 +278,24 @@ class Live extends Component {
               onChange={this.handleChange(filterPanels.client)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography className={classes.heading}>Company
-                Filter</Typography>
+              <Typography className={classes.heading}>
+                Company Filter
+              </Typography>
               <Typography className={classes.secondaryHeading}>
                 Select Companies You'd Like Displayed
               </Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Grid container direction='column' spacing={8}
-                    alignItems='center'>
+              <Grid
+                  container
+                  direction="column"
+                  spacing={8}
+                  alignItems="center"
+              >
                 <Grid item>
                   <MultiSelect
-                      displayAccessor='name'
-                      uniqueIdAccessor='id'
+                      displayAccessor="name"
+                      uniqueIdAccessor="id"
                       selected={this.companies}
                       available={[]}
                       onChange={this.handleCompanyFilterChange}
@@ -294,42 +309,30 @@ class Live extends Component {
               onChange={this.handleChange(filterPanels.company)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography className={classes.heading}>Client Filter</Typography>
+              <Typography className={classes.heading}>
+                Client Filter
+              </Typography>
               <Typography className={classes.secondaryHeading}>
                 Select Clients You'd Like Displayed
               </Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Grid container direction='column' spacing={8}
-                    alignItems='center'>
+              <Grid
+                  container
+                  direction="column"
+                  spacing={8}
+                  alignItems="center"
+              >
                 <Grid item>
                   <MultiSelect
-                      displayAccessor='name'
-                      uniqueIdAccessor='id'
+                      displayAccessor="name"
+                      uniqueIdAccessor="id"
                       selected={this.clients}
                       available={[]}
                       onChange={this.handleClientFilterChange}
                   />
                 </Grid>
               </Grid>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <ExpansionPanel
-              expanded={expanded === 'panel3'}
-              onChange={this.handleChange('panel3')}
-          >
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography className={classes.heading}>Map Settings</Typography>
-              <Typography className={classes.secondaryHeading}>
-                Configure How The Map Looks
-              </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Typography>
-                Nunc vitae orci ultricies, auctor nunc in, volutpat nisl.
-                Integer
-                sit amet egestas eros, vitae egestas augue. Duis vel est augue.
-              </Typography>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </div>
@@ -346,7 +349,7 @@ class Live extends Component {
         this.setState({
           mapDimensions: {
             width: element.clientWidth,
-            height: element.clientHeight,
+            height: element.clientHeight - 10,
           },
         })
       }
@@ -355,7 +358,7 @@ class Live extends Component {
     }
   }
 
-  renderDeviceLocations() {
+  renderMapPins() {
     const {readings} = this.state
 
     return readings.map((reading, idx) => {
@@ -370,28 +373,31 @@ class Live extends Component {
                   ...MapPin.defaultProps.style,
                   fill: this.readingPinColorMap[reading.id],
                 }}
-                onClick={() => {
-                  console.log('clicked!!')
-                  this.setState({selectedReading: reading})
-                }}
+                onClick={() => this.setState({
+                  selectedReading: reading,
+                  mapPopUpOpen: true,
+                })}
             />
           </Marker>
       )
     })
   }
 
-  renderMapPipPopup() {
+  renderMapPinPopup() {
     const {selectedReading, mapPopUpOpen} = this.state
 
     return (
         <MapPinPopup
             open={mapPopUpOpen}
             tipSize={5}
-            anchor='top'
+            anchor="top"
+            reading={selectedReading}
             longitude={selectedReading.longitude}
             latitude={selectedReading.latitude}
             closeOnClick={false}
-            onClose={() => this.setState({selectedReading: undefined})}
+            onClose={() => this.setState({
+              mapPopUpOpen: false,
+            })}
         />
     )
   }
@@ -410,19 +416,27 @@ class Live extends Component {
                 alignItems: 'center',
               }}
           >
-            {this.renderFiltersMenu()}
+            <Card>
+              <CardContent>
+                <Grid container>
+                  <Grid item>
+                    {this.renderFiltersMenu()}
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </div>
           <div className={classes.map} ref={this.getMapDimensions}>
             <MapGL
                 {...viewport}
                 width={mapDimensions.width}
                 height={mapDimensions.height}
-                mapStyle='mapbox://styles/mapbox/dark-v9'
+                mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
                 mapboxApiAccessToken={TOKEN}
             >
-              {this.renderDeviceLocations()}
-              {this.renderMapPipPopup()}
+              {this.renderMapPins()}
+              {this.renderMapPinPopup()}
             </MapGL>
           </div>
           <FullPageLoader open={loading}/>
