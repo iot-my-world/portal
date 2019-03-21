@@ -91,7 +91,7 @@ class Root extends Component {
   }
 
   render() {
-    const {claims, showGlobalLoader, loggedIn, doneLoading, loggedOut} = this.props
+    const {claims, showGlobalLoader, loggedIn, loggedOut} = this.props
 
     return (
         <BrowserRouter>
