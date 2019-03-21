@@ -9,22 +9,16 @@ const Report = {
    * @constructor
    */
   async Live({partyIdentifiers}) {
-
-    console.log('party:', partyIdentifiers,
-        partyIdentifiers.map(identifier => identifier.unwrappedPOJO()))
-
-    return {readings: []}
-    // let response = await jsonRpcRequest({
-    //   method: "TrackingReport.Live",
-    //   request: {
-    //     partyIdentifiers: partyIdentifiers.map(identifier =>
-    //         identifier.unwrappedPOJO()
-    //     ),
-    //   }
-    // })
-    //
-    // response.readings = readings.readings.map(reading => new Reading(reading))
-    // return response
+    let response = await jsonRpcRequest({
+      method: 'TrackingReport.Live',
+      request: {
+        partyIdentifiers: partyIdentifiers.map(
+            identifier => identifier.unwrappedPOJO(),
+        ),
+      },
+    })
+    response.readings = response.readings.map(reading => new Reading(reading))
+    return response
   },
 
   /**

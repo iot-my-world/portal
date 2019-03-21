@@ -6,7 +6,7 @@ import {
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
-  Grid
+  Grid,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
@@ -15,7 +15,7 @@ import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
 import {TrackingReport} from 'brain/report/tracking'
 import MapGL, {
-  Marker
+  Marker,
   // Popup,
   // NavigationControl,
 } from 'react-map-gl'
@@ -24,7 +24,11 @@ import {MapPin, MapPinPopup} from './map'
 import {Reading} from 'brain/tracker/reading'
 import {SystemRecordHandler} from 'brain/party/system'
 import {PartyIdentifier} from 'brain/search/identifier'
-import {SystemPartyType} from 'brain/party/types'
+import {
+  ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -40,15 +44,15 @@ const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: '33.33%',
-    flexShrink: 0
+    flexShrink: 0,
   },
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
   },
 
   // select component styles
-  selectRoot: { padding: 10 },
+  selectRoot: {padding: 10},
   availableRoot: {},
   availableWindow: {
     backgroundColor: '#f2f2f2',
@@ -67,12 +71,12 @@ const styles = theme => ({
   },
   chip: {},
   chipWrapper: {
-    padding: 2
+    padding: 2,
   },
   searchField: {
     width: '100%',
   },
-  map: {}
+  map: {},
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -99,7 +103,7 @@ function getRandomColor(exclude = []) {
 
 const filterPanels = {
   company: 0,
-  client: 1
+  client: 1,
 }
 
 class Live extends Component {
@@ -121,18 +125,18 @@ class Live extends Component {
         longitude: 28.095451,
         zoom: 3.5,
         bearing: 0,
-        pitch: 0
+        pitch: 0,
       },
       mapDimensions: {
         width: 0,
-        height: 0
+        height: 0,
       },
       popupInfo: null,
       loading: true,
       readings: [],
 
       mapPopUpOpen: false,
-      selectedReading: new Reading()
+      selectedReading: new Reading(),
     }
     this.systems = []
     this.companies = []
@@ -152,10 +156,11 @@ class Live extends Component {
     this.setState({loading: true})
     try {
       this.systems = (await SystemRecordHandler.Collect()).records
-      this.systemIdentifiers = this.systems.map(system => new PartyIdentifier({
-        partyType: SystemPartyType,
-        partyIdIdentifier: system.id,
-      }))
+      this.systemIdentifiers = this.systems.map(
+          system => new PartyIdentifier({
+            partyType: SystemPartyType,
+            partyIdIdentifier: system.id,
+          }))
     } catch (e) {
       console.error('error collecting system', e)
       return
@@ -163,7 +168,10 @@ class Live extends Component {
     try {
       this.companies = (await CompanyRecordHandler.Collect()).records
       this.companyIdentifiers = this.companies.map(
-        company => company.identifier
+          company => new PartyIdentifier({
+            partyType: CompanyPartyType,
+            partyIdIdentifier: company.id,
+          }),
       )
     } catch (e) {
       console.error('error collecting companies', e)
@@ -171,7 +179,12 @@ class Live extends Component {
     }
     try {
       this.clients = (await ClientRecordHandler.Collect()).records
-      this.clientIdentifiers = this.clients.map(client => client.identifier)
+      this.clientIdentifiers = this.clients.map(
+          client => new PartyIdentifier({
+            partyType: ClientPartyType,
+            partyIdIdentifier: client.id,
+          }),
+      )
     } catch (e) {
       console.error('error collecting clients', e)
       return
@@ -185,7 +198,7 @@ class Live extends Component {
 
   handleChange = panel => (event, expanded) => {
     this.setState({
-      expanded: expanded ? panel : false
+      expanded: expanded ? panel : false,
     })
   }
 
@@ -206,7 +219,7 @@ class Live extends Component {
             ...this.clientIdentifiers,
             ...this.systemIdentifiers,
           ],
-        })).readings
+        })).readings,
       })
       let usedColors = Object.values(this.readingPinColorMap)
       this.state.readings.forEach(reading => {
@@ -225,12 +238,22 @@ class Live extends Component {
   }
 
   handleClientFilterChange(selected) {
-    this.clientIdentifiers = selected.map(client => client.identifier)
+    this.clientIdentifiers = selected.map(
+        client => new PartyIdentifier({
+          partyType: ClientPartyType,
+          partyIdIdentifier: client.id,
+        }),
+    )
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
   handleCompanyFilterChange(selected) {
-    this.companyIdentifiers = selected.map(company => company.identifier)
+    this.companyIdentifiers = selected.map(
+        company => new PartyIdentifier({
+          partyType: CompanyPartyType,
+          partyIdIdentifier: company.id,
+        }),
+    )
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
@@ -239,73 +262,77 @@ class Live extends Component {
     const {expanded} = this.state
 
     return (
-      <div className={classes.root}>
-        <ExpansionPanel
-          expanded={expanded === filterPanels.client}
-          onChange={this.handleChange(filterPanels.client)}
-        >
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Company Filter</Typography>
-            <Typography className={classes.secondaryHeading}>
-              Select Companies You'd Like Displayed
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container direction='column' spacing={8} alignItems='center'>
-              <Grid item>
-                <MultiSelect
-                    displayAccessor='name'
-                    uniqueIdAccessor='id'
-                    selected={this.companies}
-                    available={[]}
-                    onChange={this.handleCompanyFilterChange}
-                />
+        <div className={classes.root}>
+          <ExpansionPanel
+              expanded={expanded === filterPanels.client}
+              onChange={this.handleChange(filterPanels.client)}
+          >
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+              <Typography className={classes.heading}>Company
+                Filter</Typography>
+              <Typography className={classes.secondaryHeading}>
+                Select Companies You'd Like Displayed
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Grid container direction='column' spacing={8}
+                    alignItems='center'>
+                <Grid item>
+                  <MultiSelect
+                      displayAccessor='name'
+                      uniqueIdAccessor='id'
+                      selected={this.companies}
+                      available={[]}
+                      onChange={this.handleCompanyFilterChange}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel
-          expanded={expanded === filterPanels.company}
-          onChange={this.handleChange(filterPanels.company)}
-        >
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Client Filter</Typography>
-            <Typography className={classes.secondaryHeading}>
-              Select Clients You'd Like Displayed
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container direction='column' spacing={8} alignItems='center'>
-              <Grid item>
-                <MultiSelect
-                    displayAccessor='name'
-                    uniqueIdAccessor='id'
-                    selected={this.clients}
-                    available={[]}
-                    onChange={this.handleClientFilterChange}
-                />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel
+              expanded={expanded === filterPanels.company}
+              onChange={this.handleChange(filterPanels.company)}
+          >
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+              <Typography className={classes.heading}>Client Filter</Typography>
+              <Typography className={classes.secondaryHeading}>
+                Select Clients You'd Like Displayed
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Grid container direction='column' spacing={8}
+                    alignItems='center'>
+                <Grid item>
+                  <MultiSelect
+                      displayAccessor='name'
+                      uniqueIdAccessor='id'
+                      selected={this.clients}
+                      available={[]}
+                      onChange={this.handleClientFilterChange}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel
-            expanded={expanded === 'panel3'}
-            onChange={this.handleChange('panel3')}
-        >
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading}>Map Settings</Typography>
-            <Typography className={classes.secondaryHeading}>
-              Configure How The Map Looks
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Typography>
-              Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer
-              sit amet egestas eros, vitae egestas augue. Duis vel est augue.
-            </Typography>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      </div>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel
+              expanded={expanded === 'panel3'}
+              onChange={this.handleChange('panel3')}
+          >
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+              <Typography className={classes.heading}>Map Settings</Typography>
+              <Typography className={classes.secondaryHeading}>
+                Configure How The Map Looks
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Typography>
+                Nunc vitae orci ultricies, auctor nunc in, volutpat nisl.
+                Integer
+                sit amet egestas eros, vitae egestas augue. Duis vel est augue.
+              </Typography>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        </div>
     )
   }
 
@@ -319,8 +346,8 @@ class Live extends Component {
         this.setState({
           mapDimensions: {
             width: element.clientWidth,
-            height: element.clientHeight
-          }
+            height: element.clientHeight,
+          },
         })
       }
     } catch (e) {
@@ -333,22 +360,22 @@ class Live extends Component {
 
     return readings.map((reading, idx) => {
       return (
-        <Marker
-          key={`marker-${idx}`}
-          longitude={reading.longitude}
-          latitude={reading.latitude}
-        >
-          <MapPin
-            style={{
-              ...MapPin.defaultProps.style,
-              fill: this.readingPinColorMap[reading.id]
-            }}
-            onClick={() => {
-              console.log('clicked!!')
-              this.setState({selectedReading: reading})
-            }}
-          />
-        </Marker>
+          <Marker
+              key={`marker-${idx}`}
+              longitude={reading.longitude}
+              latitude={reading.latitude}
+          >
+            <MapPin
+                style={{
+                  ...MapPin.defaultProps.style,
+                  fill: this.readingPinColorMap[reading.id],
+                }}
+                onClick={() => {
+                  console.log('clicked!!')
+                  this.setState({selectedReading: reading})
+                }}
+            />
+          </Marker>
       )
     })
   }
@@ -357,15 +384,15 @@ class Live extends Component {
     const {selectedReading, mapPopUpOpen} = this.state
 
     return (
-      <MapPinPopup
-          open={mapPopUpOpen}
-          tipSize={5}
-          anchor='top'
-          longitude={selectedReading.longitude}
-          latitude={selectedReading.latitude}
-          closeOnClick={false}
-          onClose={() => this.setState({ selectedReading: undefined })}
-      />
+        <MapPinPopup
+            open={mapPopUpOpen}
+            tipSize={5}
+            anchor='top'
+            longitude={selectedReading.longitude}
+            latitude={selectedReading.latitude}
+            closeOnClick={false}
+            onClose={() => this.setState({selectedReading: undefined})}
+        />
     )
   }
 
@@ -374,32 +401,32 @@ class Live extends Component {
     const {loading, viewport, mapDimensions} = this.state
 
     return (
-      <div className={classes.root}>
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          {this.renderFiltersMenu()}
-        </div>
-        <div className={classes.map} ref={this.getMapDimensions}>
-          <MapGL
-              {...viewport}
-              width={mapDimensions.width}
-              height={mapDimensions.height}
-              mapStyle='mapbox://styles/mapbox/dark-v9'
-              onViewportChange={this.updateMapViewport}
-              mapboxApiAccessToken={TOKEN}
+        <div className={classes.root}>
+          <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
           >
-            {this.renderDeviceLocations()}
-            {this.renderMapPipPopup()}
-          </MapGL>
+            {this.renderFiltersMenu()}
+          </div>
+          <div className={classes.map} ref={this.getMapDimensions}>
+            <MapGL
+                {...viewport}
+                width={mapDimensions.width}
+                height={mapDimensions.height}
+                mapStyle='mapbox://styles/mapbox/dark-v9'
+                onViewportChange={this.updateMapViewport}
+                mapboxApiAccessToken={TOKEN}
+            >
+              {this.renderDeviceLocations()}
+              {this.renderMapPipPopup()}
+            </MapGL>
+          </div>
+          <FullPageLoader open={loading}/>
         </div>
-        <FullPageLoader open={loading} />
-      </div>
     )
   }
 }
