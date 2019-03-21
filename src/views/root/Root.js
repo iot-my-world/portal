@@ -91,7 +91,7 @@ class Root extends Component {
   }
 
   render() {
-    const {claims, showGlobalLoader, loggedIn} = this.props
+    const {claims, showGlobalLoader, loggedIn, doneLoading, loggedOut} = this.props
 
     return (
         <BrowserRouter>
@@ -102,8 +102,11 @@ class Root extends Component {
                   render={props => {
                     // if the app is done loading then we can check if
                     // this route is allowed
-                    if (this.loggedIn || claims.notExpired ||
-                        willBeSetToLoggedIn()) {
+                    if (
+                        this.loggedIn ||
+                        claims.notExpired ||
+                        (!loggedOut && willBeSetToLoggedIn())
+                    ) {
                       return (
                           <AppContainer
                               updateAllowedRoutes={this.updateAllowedRoutes}
@@ -148,6 +151,11 @@ Root.propTypes = {
    * has loaded
    */
   doneLoading: PropTypes.bool.isRequired,
+  /**
+   * redux state flag indicating if the app
+   * is loggedOut
+   */
+  loggedOut: PropTypes.bool.isRequired,
   /**
    * controls whether the app-wide full
    * page loader is open or not

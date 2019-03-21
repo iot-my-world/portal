@@ -13,6 +13,7 @@ const initState = () => ({
   party: {},
   user: new User(),
   loggedIn: false,
+  loggedOut: false,
 })
 
 export default function auth(state = initState(), action) {
@@ -39,10 +40,14 @@ export default function auth(state = initState(), action) {
       return {
         ...state,
         loggedIn: true,
+        loggedOut: false,
       }
 
     case logout:
-      return initState()
+      return {
+        ...initState(),
+        loggedOut: true,
+      }
 
     default:
       return state
