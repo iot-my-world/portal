@@ -248,6 +248,7 @@ class Login extends Component {
                     </Grid>
                     <Grid item>
                       <Button
+                          id={'loginButton'}
                           className={classes.button}
                           type={'submit'}
                       >
