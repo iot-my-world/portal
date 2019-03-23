@@ -190,6 +190,7 @@ class App extends Component {
     this.toggleMenuState = this.toggleMenuState.bind(this)
     this.changePath = this.changePath.bind(this)
     this.getViewWindowMaxDimensions = this.getViewWindowMaxDimensions.bind(this)
+    this.viewContentWrapperRef = React.createRef()
 
     this.state = {
       open: true,
@@ -314,16 +315,19 @@ class App extends Component {
 
   toggleDesktopDrawer() {
     const {desktopDrawerOpen} = this.state
-    const {maxViewDimensions, SetMaxViewDimensions} = this.props
+    console.log(this.viewContentWrapperRef.parentNode.clientWidth)
+    const {maxViewDimensions, SetMaxViewDimensions, theme} = this.props
     if (desktopDrawerOpen) {
+      // about to close
       SetMaxViewDimensions({
         ...maxViewDimensions,
-        width: maxViewDimensions.width - drawerWidth,
+        width: this.viewContentWrapperRef.parentNode.clientWidth + 124,
       })
     } else {
+      // about to open
       SetMaxViewDimensions({
         ...maxViewDimensions,
-        width: maxViewDimensions.width + drawerWidth,
+        width: this.viewContentWrapperRef.parentNode.clientWidth - 190,
       })
     }
     this.setState({desktopDrawerOpen: !this.state.desktopDrawerOpen})
@@ -365,12 +369,23 @@ class App extends Component {
   }
 
   getViewWindowMaxDimensions(element) {
-    const {SetMaxViewDimensions} = this.props
+    const {
+      SetMaxViewDimensions,
+      theme,
+    } = this.props
+    this.viewContentWrapperRef = element
     try {
-      SetMaxViewDimensions({
-        width: element.parentNode.clientWidth - 24,
-        height: element.parentNode.clientHeight,
-      })
+      if (element.parentNode.clientWidth < theme.breakpoints.values.md) {
+        SetMaxViewDimensions({
+          width: element.parentNode.clientWidth - 33,
+          height: element.parentNode.clientHeight - 64,
+        })
+      } else {
+        SetMaxViewDimensions({
+          width: element.parentNode.clientWidth - drawerWidth - 33,
+          height: element.parentNode.clientHeight - 64,
+        })
+      }
     } catch (e) {
       // console.error('getViewWindowMaxDimensions error', e)
     }
@@ -382,7 +397,6 @@ class App extends Component {
     } = this.props
     const {
       activeState,
-      desktopDrawerOpen,
     } = this.state
 
     switch (activeState) {
