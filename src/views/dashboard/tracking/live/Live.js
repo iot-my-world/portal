@@ -31,10 +31,6 @@ import {
   CompanyPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-import {
-  PartyCompanyConfiguration,
-  PartyClientConfiguration,
-} from 'brain/security/permission/view/permission'
 import Login from 'brain/security/claims/login/Login'
 
 const TOKEN =
@@ -46,6 +42,7 @@ const styles = theme => ({
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: '1fr',
+    justifyItems: 'center',
   },
   expanderRoot: {},
   heading: {
@@ -57,31 +54,9 @@ const styles = theme => ({
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
   },
-
-  // select component styles
-  selectRoot: {padding: 10},
-  availableRoot: {},
-  availableWindow: {
-    backgroundColor: '#f2f2f2',
-    boxShadow: 'inset 0 0 4px #000000',
-    height: 120,
-    padding: 5,
-    overflow: 'auto',
-  },
-  selectedRoot: {},
-  selectedWindow: {
-    backgroundColor: '#f2f2f2',
-    boxShadow: 'inset 0 0 4px #000000',
-    height: 120,
-    padding: 5,
-    overflow: 'auto',
-  },
-  chip: {},
-  chipWrapper: {
-    padding: 2,
-  },
-  searchField: {
-    width: '100%',
+  panelInfo: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
   },
   map: {
     padding: 10,
@@ -131,7 +106,7 @@ class Live extends Component {
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderMapPins = this.renderMapPins.bind(this)
-    this.getMapDimensions = this.getMapDimensions.bind(this)
+    this.getMapHeight = this.getMapHeight.bind(this)
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
     this.renderPartySwitch = this.renderPartySwitch.bind(this)
     this.state = {
@@ -143,10 +118,7 @@ class Live extends Component {
         bearing: 0,
         pitch: 0,
       },
-      mapDimensions: {
-        width: 0,
-        height: 0,
-      },
+      mapHeight: 0,
       popupInfo: null,
       readings: [],
 
@@ -290,19 +262,21 @@ class Live extends Component {
     const {expanded} = this.state
 
     return (
-        <div className={classes.root}>
+        <div className={classes.expanderRoot}>
           {this.viewCompanyFilter &&
           <ExpansionPanel
               expanded={expanded === filterPanels.client}
               onChange={this.handleChange(filterPanels.client)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography className={classes.heading}>
-                Company Filter
-              </Typography>
-              <Typography className={classes.secondaryHeading}>
-                Select Companies You'd Like Displayed
-              </Typography>
+              <div className={classes.panelInfo}>
+                <Typography className={classes.heading}>
+                  Company Filter
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                  Select Companies You'd Like Displayed
+                </Typography>
+              </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Grid
@@ -328,12 +302,14 @@ class Live extends Component {
               onChange={this.handleChange(filterPanels.company)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <Typography className={classes.heading}>
-                Client Filter
-              </Typography>
-              <Typography className={classes.secondaryHeading}>
-                Select Clients You'd Like Displayed
-              </Typography>
+              <div className={classes.panelInfo}>
+                <Typography className={classes.heading}>
+                  Client Filter
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                  Select Clients You'd Like Displayed
+                </Typography>
+              </div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Grid
@@ -363,15 +339,10 @@ class Live extends Component {
     this.setState({viewport})
   }
 
-  getMapDimensions(element) {
+  getMapHeight(element) {
     try {
       if (element) {
-        this.setState({
-          mapDimensions: {
-            width: element.clientWidth,
-            height: element.clientHeight - 10,
-          },
-        })
+        this.setState({mapHeight: element.clientHeight - 10})
       }
     } catch (e) {
       console.error('error getting map dimensions', e)
@@ -460,8 +431,8 @@ class Live extends Component {
   }
 
   render() {
-    const {classes} = this.props
-    const {viewport, mapDimensions} = this.state
+    const {classes, maxViewDimensions} = this.props
+    const {viewport, mapHeight} = this.state
 
     return (
         <div
@@ -476,7 +447,11 @@ class Live extends Component {
                 alignItems: 'center',
               }}
           >
-            <Card>
+            <Card
+                style={{
+                  maxWidth: maxViewDimensions.width - 20,
+                }}
+            >
               <CardContent>
                 <Grid container direction={'column'}>
                   {this.renderPartySwitch()}
@@ -488,11 +463,11 @@ class Live extends Component {
               </CardContent>
             </Card>
           </div>
-          <div className={classes.map} ref={this.getMapDimensions}>
+          <div className={classes.map} ref={this.getMapHeight}>
             <MapGL
                 {...viewport}
-                width={mapDimensions.width}
-                height={mapDimensions.height}
+                width={maxViewDimensions.width - 20}
+                height={mapHeight}
                 mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
                 mapboxApiAccessToken={TOKEN}
@@ -521,6 +496,10 @@ Live.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(Login),
+  /**
+   * max view dimensions from redux {width: x, height: x}
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
 }
 Live.defaultProps = {}
 
