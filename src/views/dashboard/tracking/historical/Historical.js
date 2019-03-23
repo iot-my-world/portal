@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   ExpansionPanel, ExpansionPanelDetails,
@@ -380,7 +380,16 @@ class Historical extends Component {
 
 Historical = withStyles(styles)(Historical)
 
-Historical.propTypes = {}
+Historical.propTypes = {
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
+}
 Historical.defaultProps = {}
 
 export default Historical

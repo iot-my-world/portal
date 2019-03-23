@@ -21,7 +21,8 @@ import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import Device from 'views/configuration/device/Device'
 // Dashboards
-import LiveTrackingDashboard from 'views/dashboard/tracking/live/Live'
+import LiveTrackingDashboardContainer
+  from 'views/dashboard/tracking/live/LiveContainer'
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
 
@@ -152,7 +153,7 @@ const AppRoutes = [
           text: 'Live Tracking',
           icon: <GPSFixedIcon/>,
           path: '/app/dashboard/liveTracking',
-          component: LiveTrackingDashboard,
+          component: LiveTrackingDashboardContainer,
           viewPermission: ViewLiveTrackingDashboard,
         },
         {

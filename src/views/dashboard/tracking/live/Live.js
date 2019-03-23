@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
   withStyles,
   Typography,
@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
-import {FullPageLoader} from 'components/loader/index'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
 import {TrackingReport} from 'brain/report/tracking'
@@ -136,7 +135,6 @@ class Live extends Component {
         height: 0,
       },
       popupInfo: null,
-      loading: true,
       readings: [],
 
       mapPopUpOpen: false,
@@ -157,7 +155,8 @@ class Live extends Component {
   }
 
   async load() {
-    this.setState({loading: true})
+    const {ShowGlobalLoader, HideGlobalLoader} = this.props
+    ShowGlobalLoader()
     try {
       this.systems = (await SystemRecordHandler.Collect()).records
       this.systemIdentifiers = this.systems.map(
@@ -197,7 +196,7 @@ class Live extends Component {
       console.error('error collecting clients', e)
       return
     }
-    this.setState({loading: false})
+    HideGlobalLoader()
   }
 
   componentDidMount() {
@@ -218,7 +217,8 @@ class Live extends Component {
   }
 
   async loadReport() {
-    this.setState({loading: true})
+    const {ShowGlobalLoader, HideGlobalLoader} = this.props
+    ShowGlobalLoader()
     try {
       this.setState({
         readings: (await TrackingReport.Live({
@@ -242,7 +242,7 @@ class Live extends Component {
     } catch (e) {
       console.error('error loading report', e)
     }
-    this.setState({loading: false})
+    HideGlobalLoader()
   }
 
   handleClientFilterChange(selected) {
@@ -404,7 +404,7 @@ class Live extends Component {
 
   render() {
     const {classes} = this.props
-    const {loading, viewport, mapDimensions} = this.state
+    const {viewport, mapDimensions} = this.state
 
     return (
         <div
@@ -442,7 +442,6 @@ class Live extends Component {
               {this.renderMapPinPopup()}
             </MapGL>
           </div>
-          <FullPageLoader open={loading}/>
         </div>
     )
   }
@@ -450,7 +449,16 @@ class Live extends Component {
 
 Live = withStyles(styles)(Live)
 
-Live.propTypes = {}
+Live.propTypes = {
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
+}
 Live.defaultProps = {}
 
 export default Live
