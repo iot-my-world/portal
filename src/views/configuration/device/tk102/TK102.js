@@ -504,7 +504,9 @@ class TK102 extends Component {
     const {theme, classes} = this.props
 
     return (
-      <div className={classes.root} style={{ gridRowGap: 8 }}>
+        <div
+            id={'tk102ConfigurationRoot'}
+            className={classes.root} style={{gridRowGap: 8}}>
         <div className={classes.detailCardWrapper}>
           <Grid container>
             <Grid item>

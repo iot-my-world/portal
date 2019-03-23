@@ -407,7 +407,10 @@ class Live extends Component {
     const {loading, viewport, mapDimensions} = this.state
 
     return (
-        <div className={classes.root}>
+        <div
+            id={'liveTrackingDashboardRoot'}
+            className={classes.root}
+        >
           <div
               style={{
                 width: '100%',

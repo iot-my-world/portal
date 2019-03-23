@@ -22,7 +22,8 @@ import UserContainer from 'views/configuration/user/UserContainer'
 import Device from 'views/configuration/device/Device'
 // Dashboards
 import LiveTrackingDashboard from 'views/dashboard/tracking/live/Live'
-import HistoricalTrackingDashboard from 'views/dashboard/tracking/historical/Historical'
+import HistoricalTrackingDashboardContainer
+  from 'views/dashboard/tracking/historical/HistoricalContainer'
 
 // View Permissions
 import {
@@ -159,7 +160,7 @@ const AppRoutes = [
           text: 'Historical Tracking',
           icon: <TimelineIcon/>,
           path: '/app/dashboard/historicalTracking',
-          component: HistoricalTrackingDashboard,
+          component: HistoricalTrackingDashboardContainer,
           viewPermission: ViewHistoricalTrackingDashboard,
         },
       ],

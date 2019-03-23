@@ -48,6 +48,10 @@ import ListTextCriterion from 'brain/search/criterion/list/Text'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 
 const styles = theme => ({
+  root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
   formField: {
     height: '60px',
     width: '150px',
@@ -650,11 +654,21 @@ class Client extends Component {
     }
 
     return (
-        <Grid container direction='column' spacing={8} alignItems='center'>
+        <Grid
+            id={'clientConfigurationRoot'}
+            className={classes.root}
+            container
+            direction='column'
+            spacing={8}
+            alignItems='center'
+        >
           <Grid item xl={12}>
             <Grid container>
               <Grid item>
-                <Card className={classes.detailCard}>
+                <Card
+                    id={'clientConfigurationDetailCard'}
+                    className={classes.detailCard}
+                >
                   <CardHeader title={cardTitle}/>
                   <CardContent>
                     {this.renderClientDetails()}
@@ -724,6 +738,7 @@ class Client extends Component {
               </Grid>
               <Grid item>
                 <Fab
+                    id={'clientConfigurationNewClientButton'}
                     color={'primary'}
                     className={classes.button}
                     size={'small'}
@@ -894,6 +909,7 @@ class Client extends Component {
                 </Tooltip>
               </Fab>}
               <Fab
+                  id={'clientConfigurationNewClientButton'}
                   className={classes.button}
                   size={'small'}
                   onClick={this.handleCreateNew}

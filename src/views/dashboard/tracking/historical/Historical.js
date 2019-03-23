@@ -344,32 +344,37 @@ class Historical extends Component {
       mapDimensions,
     } = this.state
 
-    return <div className={classes.root}>
-      <div style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        {this.renderFiltersMenu()}
-      </div>
-      <div
-          className={classes.map}
-          ref={this.getMapDimensions}
-      >
-        <MapGL
-            {...viewport}
-            width={mapDimensions.width}
-            height={mapDimensions.height}
-            mapStyle="mapbox://styles/mapbox/dark-v9"
-            onViewportChange={this.updateMapViewport}
-            mapboxApiAccessToken={TOKEN}
+    return (
+        <div
+            id={'historicalTrackingDashboardRoot'}
+            className={classes.root}
         >
-          {this.renderDeviceLocations()}
-        </MapGL>
-      </div>
-      <FullPageLoader open={loading}/>
-    </div>
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            {this.renderFiltersMenu()}
+          </div>
+          <div
+              className={classes.map}
+              ref={this.getMapDimensions}
+          >
+            <MapGL
+                {...viewport}
+                width={mapDimensions.width}
+                height={mapDimensions.height}
+                mapStyle="mapbox://styles/mapbox/dark-v9"
+                onViewportChange={this.updateMapViewport}
+                mapboxApiAccessToken={TOKEN}
+            >
+              {this.renderDeviceLocations()}
+            </MapGL>
+          </div>
+          <FullPageLoader open={loading}/>
+        </div>
+    )
   }
 }
 
