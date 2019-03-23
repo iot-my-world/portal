@@ -9,6 +9,7 @@ import {
   Grid,
   Card,
   CardContent,
+  Switch,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
@@ -30,6 +31,11 @@ import {
   CompanyPartyType,
   SystemPartyType,
 } from 'brain/party/types'
+import {
+  PartyCompanyConfiguration,
+  PartyClientConfiguration,
+} from 'brain/security/permission/view/permission'
+import Login from 'brain/security/claims/login/Login'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -80,6 +86,12 @@ const styles = theme => ({
   map: {
     padding: 10,
   },
+  partySwitchWrapper: {
+    margin: 2,
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+    gridTemplateColumns: 'auto',
+  },
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -121,12 +133,13 @@ class Live extends Component {
     this.renderMapPins = this.renderMapPins.bind(this)
     this.getMapDimensions = this.getMapDimensions.bind(this)
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
+    this.renderPartySwitch = this.renderPartySwitch.bind(this)
     this.state = {
       expanded: null,
       viewport: {
         latitude: -26.046573,
         longitude: 28.095451,
-        zoom: 3.5,
+        zoom: 5,
         bearing: 0,
         pitch: 0,
       },
@@ -140,6 +153,11 @@ class Live extends Component {
       mapPopUpOpen: false,
       selectedReading: new Reading(),
     }
+    this.viewCompanyFilter =
+        (props.claims.partyType === SystemPartyType)
+    this.viewClientFilter =
+        (props.claims.partyType === SystemPartyType) ||
+        (props.claims.partyType === CompanyPartyType)
     this.systems = []
     this.companies = []
     this.clients = []
@@ -273,6 +291,7 @@ class Live extends Component {
 
     return (
         <div className={classes.root}>
+          {this.viewCompanyFilter &&
           <ExpansionPanel
               expanded={expanded === filterPanels.client}
               onChange={this.handleChange(filterPanels.client)}
@@ -303,7 +322,7 @@ class Live extends Component {
                 </Grid>
               </Grid>
             </ExpansionPanelDetails>
-          </ExpansionPanel>
+          </ExpansionPanel>}
           <ExpansionPanel
               expanded={expanded === filterPanels.company}
               onChange={this.handleChange(filterPanels.company)}
@@ -340,6 +359,7 @@ class Live extends Component {
   }
 
   updateMapViewport = viewport => {
+    console.log('viewport', viewport)
     this.setState({viewport})
   }
 
@@ -402,6 +422,43 @@ class Live extends Component {
     )
   }
 
+  renderPartySwitch() {
+    const {claims, classes} = this.props
+    let msg = ''
+    switch (claims.partyType) {
+      case SystemPartyType:
+        msg = 'Show Devices Owned System and not assigned to any parties'
+        break
+      case CompanyPartyType:
+        msg = 'Show Devices Owned my Company that are not yet assigned to any clients'
+        break
+      default:
+        return
+    }
+    return (
+        <Grid item>
+          <div className={classes.partySwitchWrapper}>
+            <div>
+              <Typography>
+                {msg}
+              </Typography>
+            </div>
+            <div>
+              <Switch
+                  // checked={activeState === states.recording}
+                  // onChange={this.handleBookRecordChange('switch')}
+                  // classes={{
+                  //   switchBase: classes.colorSwitchBase,
+                  //   checked: classes.colorChecked,
+                  //   bar: classes.colorBar,
+                  // }}
+              />
+            </div>
+          </div>
+        </Grid>
+    )
+  }
+
   render() {
     const {classes} = this.props
     const {viewport, mapDimensions} = this.state
@@ -421,10 +478,12 @@ class Live extends Component {
           >
             <Card>
               <CardContent>
-                <Grid container>
+                <Grid container direction={'column'}>
+                  {this.renderPartySwitch()}
+                  {(this.viewCompanyFilter || this.viewClientFilter) &&
                   <Grid item>
                     {this.renderFiltersMenu()}
-                  </Grid>
+                  </Grid>}
                 </Grid>
               </CardContent>
             </Card>
@@ -458,6 +517,10 @@ Live.propTypes = {
    * Hide Global Loader Action Creator
    */
   HideGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(Login),
 }
 Live.defaultProps = {}
 

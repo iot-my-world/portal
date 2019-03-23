@@ -8,7 +8,9 @@ let HistoricalContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    claims: state.auth.claims,
+  }
 }
 
 HistoricalContainer = connect(
