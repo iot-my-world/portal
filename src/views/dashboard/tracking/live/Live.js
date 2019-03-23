@@ -8,10 +8,13 @@ import {
   ExpansionPanelSummary,
   Grid,
   Card,
-  CardContent,
   Switch, Divider,
+  Collapse,
+  IconButton,
+  Tooltip,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 import MultiSelect from 'components/multiSelect'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
@@ -69,6 +72,9 @@ const styles = theme => ({
     gridTemplateColumns: 'auto auto',
     alignItems: 'center',
   },
+  button: {
+    margin: theme.spacing.unit,
+  },
 })
 
 // const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -104,6 +110,7 @@ class Live extends Component {
     super(props)
     this.getPartyName = this.getPartyName.bind(this)
     this.loadReport = this.loadReport.bind(this)
+    this.renderFilterShowHideIcon = this.renderFilterShowHideIcon.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
     this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
     this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(this)
@@ -116,6 +123,7 @@ class Live extends Component {
     this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
     this.state = {
       expanded: null,
+      showControls: false,
       viewport: {
         latitude: -26.046573,
         longitude: 28.095451,
@@ -529,9 +537,43 @@ class Live extends Component {
     )
   }
 
+  renderFilterShowHideIcon() {
+    const {classes} = this.props
+    const {showControls} = this.state
+    if (showControls) {
+      return (
+          <Tooltip
+              title='Hide Filters'
+              placement={'right'}
+          >
+            <IconButton
+                onClick={() => this.setState({showControls: !showControls})}
+                className={classes.button} aria-label='collapse'
+            >
+              <ExpandLessIcon/>
+            </IconButton>
+          </Tooltip>
+      )
+    } else {
+      return (
+          <Tooltip
+              title='Show Filters'
+              placement={'right'}
+          >
+            <IconButton
+                onClick={() => this.setState({showControls: !showControls})}
+                className={classes.button} aria-label='expand'
+            >
+              <ExpandMoreIcon/>
+            </IconButton>
+          </Tooltip>
+      )
+    }
+  }
+
   render() {
     const {classes, maxViewDimensions} = this.props
-    const {viewport, mapHeight} = this.state
+    const {viewport, mapHeight, showControls} = this.state
 
     return (
         <div
@@ -551,13 +593,16 @@ class Live extends Component {
                   maxWidth: maxViewDimensions.width - 20,
                 }}
             >
-              <CardContent>
-                <Grid container direction={'column'}>
-                  <Grid item>
-                    {this.renderFiltersMenu()}
-                  </Grid>
+              <Grid container direction={'column'} alignItems={'center'}>
+                <Grid item>
+                  {this.renderFilterShowHideIcon()}
                 </Grid>
-              </CardContent>
+                <Grid item>
+                  <Collapse in={showControls}>
+                    {this.renderFiltersMenu()}
+                  </Collapse>
+                </Grid>
+              </Grid>
             </Card>
           </div>
           <div className={classes.map} ref={this.getMapHeight}>
