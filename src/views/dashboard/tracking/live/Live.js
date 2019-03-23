@@ -32,6 +32,7 @@ import {
   SystemPartyType,
 } from 'brain/party/types'
 import Login from 'brain/security/claims/login/Login'
+import {retrieveFromList} from 'brain/search/identifier/utilities'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -101,6 +102,7 @@ const filterPanels = {
 class Live extends Component {
   constructor(props) {
     super(props)
+    this.getPartyName = this.getPartyName.bind(this)
     this.loadReport = this.loadReport.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
     this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
@@ -135,9 +137,12 @@ class Live extends Component {
     this.viewClientFilter =
         (props.claims.partyType === SystemPartyType) ||
         (props.claims.partyType === CompanyPartyType)
-    this.systems = []
-    this.companies = []
-    this.clients = []
+
+    this.entityMap = {
+      Company: [],
+      Client: [],
+      System: [],
+    }
 
     this.systemIdentifiers = []
     this.companyIdentifiers = []
@@ -149,12 +154,18 @@ class Live extends Component {
     }
   }
 
+  getPartyName(partyType, partyId) {
+    const list = this.entityMap[partyType]
+    const entity = retrieveFromList(partyId, list ? list : [])
+    return entity ? entity.name : ''
+  }
+
   async load() {
     const {ShowGlobalLoader, HideGlobalLoader, claims} = this.props
     ShowGlobalLoader()
     try {
-      this.systems = (await SystemRecordHandler.Collect()).records
-      this.systemIdentifiers = this.systems.map(
+      this.entityMap.System = (await SystemRecordHandler.Collect()).records
+      this.systemIdentifiers = this.entityMap.System.map(
           system =>
               new PartyIdentifier({
                 partyType: SystemPartyType,
@@ -166,8 +177,8 @@ class Live extends Component {
       return
     }
     try {
-      this.companies = (await CompanyRecordHandler.Collect()).records
-      this.companyIdentifiers = this.companies.map(
+      this.entityMap.Company = (await CompanyRecordHandler.Collect()).records
+      this.companyIdentifiers = this.entityMap.Company.map(
           company =>
               new PartyIdentifier({
                 partyType: CompanyPartyType,
@@ -179,8 +190,8 @@ class Live extends Component {
       return
     }
     try {
-      this.clients = (await ClientRecordHandler.Collect()).records
-      this.clientIdentifiers = this.clients.map(
+      this.entityMap.Client = (await ClientRecordHandler.Collect()).records
+      this.clientIdentifiers = this.entityMap.Client.map(
           client =>
               new PartyIdentifier({
                 partyType: ClientPartyType,
@@ -353,7 +364,7 @@ class Live extends Component {
                   <MultiSelect
                       displayAccessor="name"
                       uniqueIdAccessor="id"
-                      selected={this.companies}
+                      selected={this.entityMap.Company}
                       available={[]}
                       onChange={this.handleCompanyFilterChange}
                   />
@@ -387,7 +398,7 @@ class Live extends Component {
                   <MultiSelect
                       displayAccessor="name"
                       uniqueIdAccessor="id"
-                      selected={this.clients}
+                      selected={this.entityMap.Client}
                       available={[]}
                       onChange={this.handleClientFilterChange}
                   />
@@ -466,6 +477,7 @@ class Live extends Component {
             open={mapPopUpOpen}
             tipSize={5}
             anchor="top"
+            getPartyName={this.getPartyName}
             reading={selectedReading}
             longitude={selectedReading.longitude}
             latitude={selectedReading.latitude}
