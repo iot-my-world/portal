@@ -41,24 +41,30 @@ class Device extends Component {
   render() {
     const {classes} = this.props
     const {activeTab} = this.state
-    return <div className={classes.root}>
-      <div className={classes.tabBarWrapper}>
-        <Paper>
-          <Tabs
-              value={activeTab}
-              onChange={this.handleTabChange}
-              indicatorColor='primary'
-              textColor='primary'
-              centered
-          >
-            <Tab label={TK102} value={tabs.TK102}/>
-          </Tabs>
-        </Paper>
-      </div>
-      <div className={classes.contentWrapper}>
-        {this.renderTabContent()}
-      </div>
-    </div>
+    return (
+        <div
+            className={classes.root}
+            id={'deviceConfigurationRoot'}
+        >
+          <div className={classes.tabBarWrapper}>
+            <Paper>
+              <Tabs
+                  id={'deviceConfigurationTabBar'}
+                  value={activeTab}
+                  onChange={this.handleTabChange}
+                  indicatorColor='primary'
+                  textColor='primary'
+                  centered
+              >
+                <Tab id={'tk102Tab'} label={TK102} value={tabs.TK102}/>
+              </Tabs>
+            </Paper>
+          </div>
+          <div className={classes.contentWrapper}>
+            {this.renderTabContent()}
+          </div>
+        </div>
+    )
   }
 
   renderTabContent() {

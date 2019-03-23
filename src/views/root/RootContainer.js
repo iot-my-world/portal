@@ -32,6 +32,7 @@ function mapStateToProps(state) {
   return {
     claims: state.auth.claims,
     loggedIn: state.auth.loggedIn,
+    loggedOut: state.auth.loggedOut,
     doneLoading: state.app.doneLoading,
     showGlobalLoader: state.app.showGlobalLoader,
   }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   ExpansionPanel, ExpansionPanelDetails,
@@ -122,7 +122,7 @@ class Historical extends Component {
         height: 0,
       },
       popupInfo: null,
-      loading: true,
+      loading: false,
       readings: [],
     }
     this.companies = []
@@ -159,7 +159,7 @@ class Historical extends Component {
   }
 
   componentDidMount() {
-    this.load().then(() => this.loadReport())
+    // this.load().then(() => this.loadReport())
   }
 
   handleChange = panel => (event, expanded) => {
@@ -344,38 +344,52 @@ class Historical extends Component {
       mapDimensions,
     } = this.state
 
-    return <div className={classes.root}>
-      <div style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        {this.renderFiltersMenu()}
-      </div>
-      <div
-          className={classes.map}
-          ref={this.getMapDimensions}
-      >
-        <MapGL
-            {...viewport}
-            width={mapDimensions.width}
-            height={mapDimensions.height}
-            mapStyle="mapbox://styles/mapbox/dark-v9"
-            onViewportChange={this.updateMapViewport}
-            mapboxApiAccessToken={TOKEN}
+    return (
+        <div
+            id={'historicalTrackingDashboardRoot'}
+            className={classes.root}
         >
-          {this.renderDeviceLocations()}
-        </MapGL>
-      </div>
-      <FullPageLoader open={loading}/>
-    </div>
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            {this.renderFiltersMenu()}
+          </div>
+          <div
+              className={classes.map}
+              ref={this.getMapDimensions}
+          >
+            <MapGL
+                {...viewport}
+                width={mapDimensions.width}
+                height={mapDimensions.height}
+                mapStyle="mapbox://styles/mapbox/dark-v9"
+                onViewportChange={this.updateMapViewport}
+                mapboxApiAccessToken={TOKEN}
+            >
+              {this.renderDeviceLocations()}
+            </MapGL>
+          </div>
+          <FullPageLoader open={loading}/>
+        </div>
+    )
   }
 }
 
 Historical = withStyles(styles)(Historical)
 
-Historical.propTypes = {}
+Historical.propTypes = {
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
+}
 Historical.defaultProps = {}
 
 export default Historical

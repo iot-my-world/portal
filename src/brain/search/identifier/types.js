@@ -1,14 +1,15 @@
-
-export const Id = 'Id'
-export const Name = 'Name'
-export const EmailAddress = 'EmailAddress'
-export const Username = 'Username'
-export const AdminEmailAddress = 'AdminEmailAddress'
+export const IdIdentifierType = 'Id'
+export const NameIdentifierType = 'Name'
+export const EmailAddressIdentifierType = 'EmailAddress'
+export const UsernameIdentifierType = 'Username'
+export const AdminEmailAddressIdentifierType = 'AdminEmailAddress'
+export const PartyIdentifierType = 'Party'
 
 export const Types = {
-  Id,
-  Name,
-  EmailAddress,
-  Username,
-  AdminEmailAddress,
+  IdIdentifierType,
+  NameIdentifierType,
+  EmailAddressIdentifierType,
+  UsernameIdentifierType,
+  AdminEmailAddressIdentifierType,
+  PartyIdentifierType,
 }

@@ -1,9 +1,9 @@
-import {Username as UsernameIdentifier} from 'brain/search/identifier/types'
+import {UsernameIdentifierType} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class Username extends BaseIdentifier {
-  static identifierType = UsernameIdentifier
+  static identifierType = UsernameIdentifierType
 
   /**
    * @type {string}

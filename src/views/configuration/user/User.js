@@ -49,6 +49,10 @@ import ListTextCriterion from 'brain/search/criterion/list/Text'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 
 const styles = theme => ({
+  root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
   formField: {
     height: '60px',
     width: '150px',
@@ -805,11 +809,20 @@ class User extends Component {
     }
 
     return (
-        <Grid container direction='column' spacing={8} alignItems='center'>
+        <Grid
+            id={'userConfigurationRoot'}
+            className={classes.root}
+            container direction='column'
+            spacing={8}
+            alignItems='center'
+        >
           <Grid item xl={12}>
             <Grid container>
               <Grid item>
-                <Card className={classes.detailCard}>
+                <Card
+                    id={'userConfigurationDetailCard'}
+                    className={classes.detailCard}
+                >
                   <CardHeader title={cardTitle}/>
                   <CardContent>
                     {this.renderUserDetails()}
@@ -879,6 +892,7 @@ class User extends Component {
               </Grid>
               <Grid item>
                 <Fab
+                    id={'userConfigurationNewUserButton'}
                     color={'primary'}
                     className={classes.button}
                     size={'small'}
@@ -1158,6 +1172,7 @@ class User extends Component {
                 </Tooltip>
               </Fab>}
               <Fab
+                  id={'userConfigurationNewUserButton'}
                   className={classes.button}
                   size={'small'}
                   onClick={this.handleCreateNew}

@@ -1,9 +1,9 @@
-import {AdminEmailAddress as AdminEmailAddressIdentifier} from 'brain/search/identifier/types'
+import {AdminEmailAddressIdentifierType} from 'brain/search/identifier/types'
 import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class AdminEmailAddress extends BaseIdentifier {
-  static identifierType = AdminEmailAddressIdentifier
+  static identifierType = AdminEmailAddressIdentifierType
 
   /**
    * @type {string}

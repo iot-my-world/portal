@@ -30,6 +30,10 @@ import {
 } from 'react-icons/md'
 
 const styles = theme => ({
+  root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
   formField: {
     height: '60px',
     width: '150px',
@@ -396,11 +400,20 @@ class Company extends Component {
     }
 
     return (
-        <Grid container direction='column' spacing={8} alignItems='center'>
+        <Grid
+            id={'companyConfigurationRoot'}
+            className={classes.root}
+            container direction='column'
+            spacing={8}
+            alignItems='center'
+        >
           <Grid item xl={12}>
             <Grid container>
               <Grid item>
-                <Card className={classes.detailCard}>
+                <Card
+                    id={'companyConfigurationDetailCard'}
+                    className={classes.detailCard}
+                >
                   <CardHeader title={cardTitle}/>
                   <CardContent>
                     {this.renderCompanyDetails()}
@@ -503,6 +516,7 @@ class Company extends Component {
               </Grid>
               <Grid item>
                 <Fab
+                    id={'companyConfigurationNewCompanyButton'}
                     color={'primary'}
                     className={classes.button}
                     size={'small'}
@@ -597,6 +611,7 @@ class Company extends Component {
                 </Tooltip>
               </Fab>}
               <Fab
+                  id={'companyConfigurationNewCompanyButton'}
                   className={classes.button}
                   size={'small'}
                   onClick={this.handleCreateNew}

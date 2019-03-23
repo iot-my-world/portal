@@ -22,6 +22,7 @@ let FullPage = props => {
   } = props
 
   return <Dialog
+      id={'fullPageLoader'}
       open={open}
       BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
       PaperProps={{classes: {root: classes.progressSpinnerDialog}}}

@@ -21,8 +21,10 @@ import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import Device from 'views/configuration/device/Device'
 // Dashboards
-import LiveTrackingDashboard from 'views/dashboard/tracking/live/Live'
-import HistoricalTrackingDashboard from 'views/dashboard/tracking/historical/Historical'
+import LiveTrackingDashboardContainer
+  from 'views/dashboard/tracking/live/LiveContainer'
+import HistoricalTrackingDashboardContainer
+  from 'views/dashboard/tracking/historical/HistoricalContainer'
 
 // View Permissions
 import {
@@ -38,6 +40,7 @@ import {
 } from 'brain/party/types'
 
 const HomeRoute = {
+  id: 'sidebarHomeLink',
   text: 'Home',
   icon: <HomeIcon/>,
   path: '/app',
@@ -47,6 +50,7 @@ const homeRouteBuilder = partyType => {
   switch (partyType) {
     case SystemPartyType:
       return {
+        id: 'sidebarHomeLink',
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
@@ -54,6 +58,7 @@ const homeRouteBuilder = partyType => {
       }
     case CompanyPartyType:
       return {
+        id: 'sidebarHomeLink',
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
@@ -61,6 +66,7 @@ const homeRouteBuilder = partyType => {
       }
     case ClientPartyType:
       return {
+        id: 'sidebarHomeLink',
         text: 'Home',
         icon: <HomeIcon/>,
         path: '/app',
@@ -74,6 +80,7 @@ const homeRouteBuilder = partyType => {
 
 const profileRouteBuilder = user => {
   return { // this is an individual route
+    id: 'sidebarProfileLink',
     text: user.name,
     icon: <PersonIcon/>,
     path: '/app/profile',
@@ -92,10 +99,12 @@ const AppRoutes = [
     { // this is a route group
       group: true,
       viewPermission: Configuration,
+      id: 'sidebarConfigurationMenuOpen',
       text: 'Configuration',
       icon: <ConfigurationIcon/>,
       routes: [
         { // this is an individual route
+          id: 'sidebarCompanyConfigurationLink',
           text: 'Company',
           icon: <DomainIcon/>,
           path: '/app/configuration/company',
@@ -103,6 +112,7 @@ const AppRoutes = [
           viewPermission: PartyCompanyConfiguration,
         },
         {
+          id: 'sidebarClientConfigurationLink',
           text: 'Client',
           icon: <PeopleIcon/>,
           path: '/app/configuration/client',
@@ -110,6 +120,7 @@ const AppRoutes = [
           viewPermission: PartyClientConfiguration,
         },
         {
+          id: 'sidebarUserConfigurationLink',
           text: 'User',
           icon: <PersonIcon/>,
           path: '/app/configuration/user',
@@ -117,6 +128,7 @@ const AppRoutes = [
           viewPermission: PartyUserConfiguration,
         },
         {
+          id: 'sidebarDeviceConfigurationLink',
           text: 'Device',
           icon: <DeviceIcon/>,
           path: '/app/configuration/device',
@@ -132,21 +144,24 @@ const AppRoutes = [
     { // this is a route group
       group: true,
       viewPermission: Dashboards,
+      id: 'sidebarDashboardsMenuOpen',
       text: 'Dashboards',
       icon: <DashboardIcon/>,
       routes: [
         {
+          id: 'sidebarLiveTrackingDashboardLink',
           text: 'Live Tracking',
           icon: <GPSFixedIcon/>,
           path: '/app/dashboard/liveTracking',
-          component: LiveTrackingDashboard,
+          component: LiveTrackingDashboardContainer,
           viewPermission: ViewLiveTrackingDashboard,
         },
         {
+          id: 'sidebarHistoricalTrackingDashboardLink',
           text: 'Historical Tracking',
           icon: <TimelineIcon/>,
           path: '/app/dashboard/historicalTracking',
-          component: HistoricalTrackingDashboard,
+          component: HistoricalTrackingDashboardContainer,
           viewPermission: ViewHistoricalTrackingDashboard,
         },
       ],
@@ -163,6 +178,7 @@ const appRouteBuilder = (partyType, viewPermissions, user) => {
       // build the home root
       homeRouteBuilder(partyType),
       { // this is an individual route
+        id: 'sidebarLogoutLink',
         text: 'Logout',
         icon: <LockIcon/>,
         path: '/logout',
@@ -200,6 +216,7 @@ const appRouteBuilder = (partyType, viewPermissions, user) => {
         // then we build the route group
         let routeGroup = {
           group: true,
+          id: appRoute.id,
           viewPermission: appRoute.viewPermission,
           text: appRoute.text,
           icon: appRoute.icon,

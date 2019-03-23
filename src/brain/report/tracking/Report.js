@@ -1,39 +1,24 @@
-import { jsonRpcRequest } from "utilities/network";
-import { Reading } from "brain/tracker/reading";
+import {jsonRpcRequest} from 'utilities/network'
+import {Reading} from 'brain/tracker/reading'
 
 const Report = {
   /**
    * Get the Live Tracking Report
-   * @param companyIdentifiers
-   * @param clientIdentifiers
+   * @param partyIdentifiers
    * @returns {Promise<any>}
    * @constructor
    */
-  Live({ systemIdentifiers, companyIdentifiers, clientIdentifiers }) {
-    console.log("systemIdentifiers", systemIdentifiers);
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: "TrackingReport.Live",
-        request: {
-          systemIdentifiers: systemIdentifiers.map(identifier =>
-            identifier.toPOJO()
-          ),
-          companyIdentifiers: companyIdentifiers.map(identifier =>
-            identifier.toPOJO()
-          ),
-          clientIdentifiers: clientIdentifiers.map(identifier =>
-            identifier.toPOJO()
-          )
-        }
-      })
-        .then(result => {
-          result.readings = result.readings.map(
-            reading => new Reading(reading)
-          );
-          resolve(result);
-        })
-        .catch(error => reject(error));
-    });
+  async Live({partyIdentifiers}) {
+    let response = await jsonRpcRequest({
+      method: 'TrackingReport.Live',
+      request: {
+        partyIdentifiers: partyIdentifiers.map(
+            identifier => identifier.unwrappedPOJO(),
+        ),
+      },
+    })
+    response.readings = response.readings.map(reading => new Reading(reading))
+    return response
   },
 
   /**
@@ -53,10 +38,10 @@ const Report = {
         }
       })
         .then(result => {
-          resolve(result);
+          resolve(result)
         })
-        .catch(error => reject(error));
-    });
+          .catch(error => reject(error))
+    })
   }
-};
-export default Report;
+}
+export default Report
