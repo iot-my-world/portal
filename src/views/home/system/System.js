@@ -11,6 +11,10 @@ import {grayColor} from 'components/timDashboard/timDashboard'
 import LiveTrackingImage from 'assets/images/liveTracking.png'
 
 const styles = theme => ({
+  root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
   cardCategory: {
     color: grayColor[0],
     margin: '0',
@@ -59,16 +63,13 @@ const styles = theme => ({
 class System extends Component {
   render() {
     const {
-      // classes,
+      classes,
       history,
     } = this.props
 
     return (
         <Grid
-            style={{
-              margin: 0,
-              width: 'calc(100% - 16px)',
-            }}
+            className={classes.root}
             container
             direction='column'
             id={'systemHomeRoot'}
