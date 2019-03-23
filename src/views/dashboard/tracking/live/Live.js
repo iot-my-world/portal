@@ -128,7 +128,7 @@ class Live extends Component {
       mapPopUpOpen: false,
       selectedReading: new Reading(),
 
-      showDevicesOwnedByPartyAndNotAssigned: true,
+      hideUnassignedDevices: true,
     }
     this.viewCompanyFilter =
         (props.claims.partyType === SystemPartyType)
@@ -150,7 +150,7 @@ class Live extends Component {
   }
 
   async load() {
-    const {ShowGlobalLoader, HideGlobalLoader} = this.props
+    const {ShowGlobalLoader, HideGlobalLoader, claims} = this.props
     ShowGlobalLoader()
     try {
       this.systems = (await SystemRecordHandler.Collect()).records
@@ -191,6 +191,25 @@ class Live extends Component {
       console.error('error collecting clients', e)
       return
     }
+
+    // remove my party from applicable list. this is because by default
+    // hideUnassignedDevices is set to false
+    switch (claims.partyType) {
+      case SystemPartyType:
+        this.systemIdentifiers = this.systemIdentifiers.filter(identifier =>
+            identifier.partyIdIdentifier.id !== claims.partyId.id,
+        )
+        break
+
+      case CompanyPartyType:
+        this.companyIdentifiers = this.companyIdentifiers.filter(identifier =>
+            identifier.partyIdIdentifier.id !== claims.partyId.id,
+        )
+        break
+
+      default:
+    }
+
     HideGlobalLoader()
   }
 
@@ -263,9 +282,43 @@ class Live extends Component {
   }
 
   handlePartySwitchChange(event) {
-    this.setState({
-      showDevicesOwnedByPartyAndNotAssigned: event.target.checked,
-    })
+    const {claims} = this.props
+    this.setState({hideUnassignedDevices: event.target.checked})
+
+    switch (claims.partyType) {
+      case SystemPartyType:
+        if (event.target.checked) {
+          // just checked, so remove party
+          this.systemIdentifiers = this.systemIdentifiers.filter(identifier =>
+              identifier.partyIdIdentifier.id !== claims.partyId.id,
+          )
+        } else {
+          // just unchecked, add party
+          this.systemIdentifiers.push(new PartyIdentifier({
+            partyType: claims.partyType,
+            partyIdIdentifier: claims.partyId.id,
+          }))
+        }
+        break
+
+      case CompanyPartyType:
+        if (event.target.checked) {
+          // just checked, so remove party
+          this.companyIdentifiers = this.companyIdentifiers.filter(identifier =>
+              identifier.partyIdIdentifier.id !== claims.partyId.id,
+          )
+        } else {
+          // just unchecked, add party
+          this.companyIdentifiers.push(new PartyIdentifier({
+            partyType: claims.partyType,
+            partyIdIdentifier: claims.partyId.id,
+          }))
+        }
+        break
+
+      default:
+    }
+    this.loadReportTimeout = setTimeout(this.loadReport, 100)
   }
 
   renderFiltersMenu() {
@@ -367,7 +420,6 @@ class Live extends Component {
   }
 
   updateMapViewport = viewport => {
-    console.log('viewport', viewport)
     this.setState({viewport})
   }
 
@@ -439,7 +491,7 @@ class Live extends Component {
       default:
         return
     }
-    const {showDevicesOwnedByPartyAndNotAssigned} = this.state
+    const {hideUnassignedDevices} = this.state
 
     return (
         <Grid item>
@@ -451,7 +503,7 @@ class Live extends Component {
             </div>
             <div>
               <Switch
-                  checked={showDevicesOwnedByPartyAndNotAssigned}
+                  checked={hideUnassignedDevices}
                   onChange={this.handlePartySwitchChange}
               />
             </div>
