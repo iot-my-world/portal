@@ -122,7 +122,7 @@ class Historical extends Component {
         height: 0,
       },
       popupInfo: null,
-      loading: true,
+      loading: false,
       readings: [],
     }
     this.companies = []
@@ -159,7 +159,7 @@ class Historical extends Component {
   }
 
   componentDidMount() {
-    this.load().then(() => this.loadReport())
+    // this.load().then(() => this.loadReport())
   }
 
   handleChange = panel => (event, expanded) => {
