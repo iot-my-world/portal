@@ -66,22 +66,20 @@ const styles = theme => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
-    width: theme.spacing.unit * 7 + 1,
+    width: theme.spacing.unit * 7,
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing.unit * 9 + 1,
+      width: theme.spacing.unit * 9,
     },
   },
   contentRoot: {
     flexGrow: 1,
-    width: '100%',
-    // height: '100%',
     padding: theme.spacing.unit * 2,
     paddingTop: '0',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: '1fr',
     backgroundColor: theme.palette.background.main,
-    overflow: 'scroll',
+    overflow: 'hidden',
   },
   toolbar: {
     display: 'flex',
@@ -384,6 +382,7 @@ class App extends Component {
     } = this.props
     const {
       activeState,
+      desktopDrawerOpen,
     } = this.state
 
     switch (activeState) {
@@ -445,6 +444,7 @@ class App extends Component {
         </Toolbar>
       </AppBar>
       <Drawer
+          id={'sidebarRoot'}
           variant='permanent'
           className={classNames(classes.drawer, {
             [classes.drawerOpen]: desktopDrawerOpen,
@@ -501,6 +501,7 @@ class App extends Component {
         </Toolbar>
       </AppBar>
       <Drawer
+          id={'sidebarRoot'}
           variant='temporary'
           // keep mounted for better open performance on mobile
           ModalProps={{keepMounted: true}}
@@ -543,8 +544,12 @@ class App extends Component {
               if (routeGroupOrRoute.group) {
                 return <React.Fragment
                     key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}>
-                  <ListItem button onClick={() => this.toggleMenuState(
-                      routeSectionIdx, routeGroupOrRouteIdx)}>
+                  <ListItem
+                      id={routeGroupOrRoute.id}
+                      button
+                      onClick={() => this.toggleMenuState(routeSectionIdx,
+                          routeGroupOrRouteIdx)}
+                  >
                     <ListItemIcon>
                       {routeGroupOrRoute.icon}
                     </ListItemIcon>
@@ -559,6 +564,7 @@ class App extends Component {
                     <List component="div" disablePadding>
                       {routeGroupOrRoute.routes.map((route, routeIdx) => {
                         return <ListItem
+                            id={route.id}
                             button
                             className={classes.nested}
                             key={`${routeSectionIdx}${routeGroupOrRouteIdx}${routeIdx}`}
@@ -576,10 +582,12 @@ class App extends Component {
                 </React.Fragment>
               } else {
                 return <ListItem
+                    id={routeGroupOrRoute.id}
                     button
                     key={`${routeSectionIdx}${routeGroupOrRouteIdx}`}
-                    onClick={() => this.changePath(routeGroupOrRoute,
-                        usedMobileDrawer)}
+                    onClick={() =>
+                        this.changePath(routeGroupOrRoute, usedMobileDrawer)
+                    }
                 >
                   <ListItemIcon>
                     {routeGroupOrRoute.icon}

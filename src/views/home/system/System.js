@@ -63,88 +63,98 @@ class System extends Component {
       history,
     } = this.props
 
-    return <Grid container direction='column'>
-      <Grid item xs={12}>
-        <Grid container spacing={16}>
-          <Grid item>
-            <TimCard>
-              <TimCardHeader color='success' stats icon>
-                <TimCardIcon color='success'>
-                  <DeviceIcon/>
-                </TimCardIcon>
-              </TimCardHeader>
-              <TimCardBody>
-                <Typography color='primary' variant='subtitle1'>
-                  Active Devices
-                </Typography>
-                <Typography variant='body1'>
-                  5
-                </Typography>
-              </TimCardBody>
-            </TimCard>
+    return (
+        <Grid
+            style={{
+              margin: 0,
+              width: 'calc(100% - 16px)',
+            }}
+            container
+            direction='column'
+            id={'systemHomeRoot'}
+        >
+          <Grid item xs={12}>
+            <Grid container spacing={16}>
+              <Grid item>
+                <TimCard>
+                  <TimCardHeader color='success' stats icon>
+                    <TimCardIcon color='success'>
+                      <DeviceIcon/>
+                    </TimCardIcon>
+                  </TimCardHeader>
+                  <TimCardBody>
+                    <Typography color='primary' variant='subtitle1'>
+                      Active Devices
+                    </Typography>
+                    <Typography variant='body1'>
+                      5
+                    </Typography>
+                  </TimCardBody>
+                </TimCard>
+              </Grid>
+              <Grid item>
+                <TimCard>
+                  <TimCardHeader color='warning' stats icon>
+                    <TimCardIcon color='warning'>
+                      <DeviceIcon/>
+                    </TimCardIcon>
+                  </TimCardHeader>
+                  <TimCardBody>
+                    <Typography color='primary' variant='subtitle1'>
+                      Devices In Transit
+                    </Typography>
+                    <Typography variant='body1'>
+                      100
+                    </Typography>
+                  </TimCardBody>
+                </TimCard>
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item>
-            <TimCard>
-              <TimCardHeader color='warning' stats icon>
-                <TimCardIcon color='warning'>
-                  <DeviceIcon/>
-                </TimCardIcon>
-              </TimCardHeader>
-              <TimCardBody>
-                <Typography color='primary' variant='subtitle1'>
-                  Devices In Transit
-                </Typography>
-                <Typography variant='body1'>
-                  100
-                </Typography>
-              </TimCardBody>
-            </TimCard>
+          <Grid item xs={12}>
+            <Grid container spacing={16}>
+              <Grid item>
+                <TimCard
+                    onClick={() => history.push('/app/dashboard/liveTracking')}>
+                  <TimCardHeader color='primary'>
+                    <img id='photo' src={LiveTrackingImage} alt='' style={{
+                      width: 300,
+                      borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
+                    }}/>
+                  </TimCardHeader>
+                  <TimCardBody>
+                    <Typography color='primary' variant='h6'>
+                      Live Asset Tracking
+                    </Typography>
+                    <Typography variant='subtitle2'>
+                      The Latest Location Of All Of Your Tracked Assets
+                    </Typography>
+                  </TimCardBody>
+                </TimCard>
+              </Grid>
+              <Grid item>
+                <TimCard onClick={() => history.push(
+                    '/app/dashboard/historicalTracking')}>
+                  <TimCardHeader color='primary'>
+                    <img id='photo' src={LiveTrackingImage} alt='' style={{
+                      width: 300,
+                      borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
+                    }}/>
+                  </TimCardHeader>
+                  <TimCardBody>
+                    <Typography color='primary' variant='h6'>
+                      Historical Asset Tracking
+                    </Typography>
+                    <Typography variant='subtitle2'>
+                      The Path Your Assets Have Travelled
+                    </Typography>
+                  </TimCardBody>
+                </TimCard>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={16}>
-          <Grid item>
-            <TimCard
-                onClick={() => history.push('/app/dashboard/liveTracking')}>
-              <TimCardHeader color='primary'>
-                <img id='photo' src={LiveTrackingImage} alt='' style={{
-                  width: 300,
-                  borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
-                }}/>
-              </TimCardHeader>
-              <TimCardBody>
-                <Typography color='primary' variant='h6'>
-                  Live Asset Tracking
-                </Typography>
-                <Typography variant='subtitle2'>
-                  The Latest Location Of All Of Your Tracked Assets
-                </Typography>
-              </TimCardBody>
-            </TimCard>
-          </Grid>
-          <Grid item>
-            <TimCard onClick={() => history.push(
-                '/app/dashboard/historicalTracking')}>
-              <TimCardHeader color='primary'>
-                <img id='photo' src={LiveTrackingImage} alt='' style={{
-                  width: 300,
-                  borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0',
-                }}/>
-              </TimCardHeader>
-              <TimCardBody>
-                <Typography color='primary' variant='h6'>
-                  Historical Asset Tracking
-                </Typography>
-                <Typography variant='subtitle2'>
-                  The Path Your Assets Have Travelled
-                </Typography>
-              </TimCardBody>
-            </TimCard>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+    )
   }
 }
 

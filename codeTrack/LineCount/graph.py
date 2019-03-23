@@ -17,6 +17,12 @@ lineCounts = {
         "dirsToIgnore": [],
         "fileExts": [".go"],
     },
+    "chamber": {
+        "dirToSearch": "/Users/bernardbussy/projects/gitlab/iotTracker/chamber",
+        "csvToSaveTo": "/Users/bernardbussy/projects/gitlab/iotTracker/portal/codeTrack/LineCount/csv/chamber.csv",
+        "dirsToIgnore": ["node_modules"],
+        "fileExts": [".js"],
+    },
 }
 
 if __name__ == "__main__":
