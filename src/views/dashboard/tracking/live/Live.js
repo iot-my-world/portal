@@ -9,7 +9,7 @@ import {
   Grid,
   Card,
   CardContent,
-  Switch,
+  Switch, Divider,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import MultiSelect from 'components/multiSelect'
@@ -65,7 +65,8 @@ const styles = theme => ({
     margin: 2,
     display: 'grid',
     gridTemplateRows: 'auto auto',
-    gridTemplateColumns: 'auto',
+    gridTemplateColumns: 'auto auto',
+    alignItems: 'center',
   },
 })
 
@@ -94,6 +95,7 @@ function getRandomColor(exclude = []) {
 const filterPanels = {
   company: 0,
   client: 1,
+  other: 2,
 }
 
 class Live extends Component {
@@ -109,6 +111,7 @@ class Live extends Component {
     this.getMapHeight = this.getMapHeight.bind(this)
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
     this.renderPartySwitch = this.renderPartySwitch.bind(this)
+    this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
     this.state = {
       expanded: null,
       viewport: {
@@ -124,6 +127,8 @@ class Live extends Component {
 
       mapPopUpOpen: false,
       selectedReading: new Reading(),
+
+      showDevicesOwnedByPartyAndNotAssigned: true,
     }
     this.viewCompanyFilter =
         (props.claims.partyType === SystemPartyType)
@@ -257,6 +262,12 @@ class Live extends Component {
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
+  handlePartySwitchChange(event) {
+    this.setState({
+      showDevicesOwnedByPartyAndNotAssigned: event.target.checked,
+    })
+  }
+
   renderFiltersMenu() {
     const {classes} = this.props
     const {expanded} = this.state
@@ -297,6 +308,7 @@ class Live extends Component {
               </Grid>
             </ExpansionPanelDetails>
           </ExpansionPanel>}
+          {this.viewClientFilter &&
           <ExpansionPanel
               expanded={expanded === filterPanels.company}
               onChange={this.handleChange(filterPanels.company)}
@@ -328,6 +340,26 @@ class Live extends Component {
                   />
                 </Grid>
               </Grid>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>}
+          <ExpansionPanel
+              expanded={expanded === filterPanels.other}
+              onChange={this.handleChange(filterPanels.other)}
+          >
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+              <div className={classes.panelInfo}>
+                <Typography className={classes.heading}>
+                  Other
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                  Additional Filter Options
+                </Typography>
+              </div>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Divider/>
+              {this.renderPartySwitch()}
+              <Divider/>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </div>
@@ -394,36 +426,39 @@ class Live extends Component {
   }
 
   renderPartySwitch() {
-    const {claims, classes} = this.props
+    const {claims, classes, party} = this.props
+
     let msg = ''
     switch (claims.partyType) {
       case SystemPartyType:
-        msg = 'Show Devices Owned System and not assigned to any parties'
+        msg = 'hide devices owned by system that are not assigned'
         break
       case CompanyPartyType:
-        msg = 'Show Devices Owned my Company that are not yet assigned to any clients'
+        msg = `hide devices owned by ${party.name} that are not assigned to any clients`
         break
       default:
         return
     }
+    const {showDevicesOwnedByPartyAndNotAssigned} = this.state
+
     return (
         <Grid item>
           <div className={classes.partySwitchWrapper}>
             <div>
               <Typography>
-                {msg}
+                Hide Unassigned
               </Typography>
             </div>
             <div>
               <Switch
-                  // checked={activeState === states.recording}
-                  // onChange={this.handleBookRecordChange('switch')}
-                  // classes={{
-                  //   switchBase: classes.colorSwitchBase,
-                  //   checked: classes.colorChecked,
-                  //   bar: classes.colorBar,
-                  // }}
+                  checked={showDevicesOwnedByPartyAndNotAssigned}
+                  onChange={this.handlePartySwitchChange}
               />
+            </div>
+            <div style={{gridColumn: '1/3'}}>
+              <Typography variant={'caption'}>
+                {msg}
+              </Typography>
             </div>
           </div>
         </Grid>
@@ -454,11 +489,9 @@ class Live extends Component {
             >
               <CardContent>
                 <Grid container direction={'column'}>
-                  {this.renderPartySwitch()}
-                  {(this.viewCompanyFilter || this.viewClientFilter) &&
                   <Grid item>
                     {this.renderFiltersMenu()}
-                  </Grid>}
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
@@ -496,6 +529,10 @@ Live.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(Login),
+  /**
+   * my party entity
+   */
+  party: PropTypes.object.isRequired,
   /**
    * max view dimensions from redux {width: x, height: x}
    */

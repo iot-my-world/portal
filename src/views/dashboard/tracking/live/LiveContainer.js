@@ -10,6 +10,7 @@ let HistoricalContainer = props => {
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
+    party: state.auth.party,
     maxViewDimensions: state.app.maxViewDimensions,
   }
 }
