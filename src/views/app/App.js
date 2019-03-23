@@ -316,7 +316,7 @@ class App extends Component {
   toggleDesktopDrawer() {
     const {desktopDrawerOpen} = this.state
     console.log(this.viewContentWrapperRef.parentNode.clientWidth)
-    const {maxViewDimensions, SetMaxViewDimensions, theme} = this.props
+    const {maxViewDimensions, SetMaxViewDimensions} = this.props
     if (desktopDrawerOpen) {
       // about to close
       SetMaxViewDimensions({
