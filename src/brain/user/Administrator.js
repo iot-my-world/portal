@@ -31,6 +31,16 @@ const Administrator = {
     })
   },
 
+  async UpdatePassword({existingPassword, newPassword}) {
+    return await jsonRpcRequest({
+      method: 'UserAdministrator.UpdatePassword',
+      request: {
+        existingPassword,
+        newPassword,
+      },
+    })
+  },
+
   async Create({user}) {
     let response = await jsonRpcRequest({
       method: 'UserAdministrator.Create',

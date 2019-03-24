@@ -46,6 +46,7 @@ const states = {
 const events = {
   startChangingPassword: states.changingPassword,
   cancelChangingPassword: states.nop,
+  finishedChangingPassword: states.nop,
 }
 
 class Security extends Component {
@@ -108,7 +109,6 @@ class Security extends Component {
         data: oldPassword,
       }))
     }
-
     if (newPassword === '') {
       this.reasonsInvalid.addReason(new ReasonInvalid({
         field: 'newPassword',
@@ -117,7 +117,6 @@ class Security extends Component {
         data: newPassword,
       }))
     }
-
     if (confirmNewPassword === '') {
       this.reasonsInvalid.addReason(new ReasonInvalid({
         field: 'confirmNewPassword',
@@ -153,6 +152,7 @@ class Security extends Component {
       return
     }
 
+    // update password
     try {
       if (!(await UserAdministrator.CheckPassword({
         password: oldPassword,
@@ -167,6 +167,7 @@ class Security extends Component {
     } catch (e) {
       console.error('error checking existing password', e)
       NotificationFailure('Failed To Change Password')
+      HideGlobalLoader()
       return
     }
     if (this.reasonsInvalid.count > 0) {
@@ -175,6 +176,26 @@ class Security extends Component {
       return
     }
 
+    try {
+      await UserAdministrator.UpdatePassword({
+        existingPassword: oldPassword,
+        newPassword: newPassword,
+      })
+    } catch (e) {
+      console.error('error changing password', e)
+      NotificationFailure('Failed To Change Password')
+      HideGlobalLoader()
+      return
+    }
+
+    NotificationSuccess('Password Changed Successfully')
+    this.setState({
+      activeState: events.finishedChangingPassword,
+      oldPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
+    })
+    HideGlobalLoader()
   }
 
   handleTextChange(e) {
