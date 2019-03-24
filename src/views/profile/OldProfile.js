@@ -17,12 +17,6 @@ import LockIcon from '@material-ui/icons/Lock'
 
 const styles = theme => ({
   detailCard: {},
-  detailCardTitle: {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    gridTemplateRows: '1fr',
-    alignItems: 'center',
-  },
   button: {
     margin: theme.spacing.unit,
   },
@@ -170,7 +164,7 @@ class Profile extends Component {
 
   render() {
     const {classes} = this.props
-    const {user activeState} = this.state
+    const {user, activeState} = this.state
 
     const editingState = activeState === states.editing
 

@@ -9,7 +9,9 @@ let GeneralContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    user: state.auth.user,
+  }
 }
 
 GeneralContainer = connect(
