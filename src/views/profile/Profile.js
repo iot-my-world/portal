@@ -5,264 +5,84 @@ import {
   withStyles,
   Card,
   CardContent,
-  CardHeader, TextField, Typography, Fab, Tooltip,
+  Tabs, Tab, AppBar,
 } from '@material-ui/core'
-import {User, UserAdministrator} from 'brain/party/user'
-import {
-  MdClear as CancelIcon,
-  MdEdit as EditIcon,
-  MdSave as SaveIcon,
-} from 'react-icons/md'
+import LockIcon from '@material-ui/icons/Lock'
+import PersonIcon from '@material-ui/icons/Person'
 
 const styles = theme => ({
-  detailCard: {},
-  detailCardTitle: {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    gridTemplateRows: '1fr',
-    alignItems: 'center',
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-  buttonIcon: {
-    fontSize: '20px',
-  },
+  rootCard: {},
 })
 
-const states = {
-  nop: 0,
-  editing: 1,
-}
-
-const events = {
-  init: states.nop,
-  startEditing: states.editing,
-  saveChanges: states.nop,
-  cancelEditing: states.nop,
+const tabs = {
+  general: 0,
+  security: 1,
 }
 
 class Profile extends Component {
   constructor(props) {
     super(props)
-    this.handleStartEditing = this.handleStartEditing.bind(this)
-    this.renderControlIcons = this.renderControlIcons.bind(this)
-    this.handleSaveChanges = this.handleSaveChanges.bind(this)
-    this.handleCancel = this.handleCancel.bind(this)
-    this.handleFieldChange = this.handleFieldChange.bind(this)
+    this.renderTabContent = this.renderTabContent.bind(this)
+    this.handleTabChange = this.handleTabChange.bind(this)
     this.state = {
-      user: new User(props.user),
-      userCopy: new User(),
-      activeState: events.init,
+      activeTab: tabs.general,
     }
   }
 
-  handleStartEditing() {
-    const {user} = this.state
-    this.setState({
-      userCopy: new User(user),
-      activeState: events.startEditing,
-    })
-  }
+  renderTabContent() {
+    const {activeTab} = this.state
 
-  async handleSaveChanges() {
-    const {user} = this.state
-    const {
-      ShowGlobalLoader,
-      HideGlobalLoader,
-      NotificationSuccess,
-      NotificationFailure,
-    } = this.props
-
-    ShowGlobalLoader()
-    try {
-      await UserAdministrator.UpdateAllowedFields({user})
-    } catch (e) {
-      console.error('error updating allowed fields', e)
-      HideGlobalLoader()
-      NotificationFailure('Error Updating Profile')
-      return
-    }
-
-    this.setState({
-      activeState: events.saveChanges,
-    })
-    NotificationSuccess('Successfully Updated Profile')
-    HideGlobalLoader()
-  }
-
-  handleCancel() {
-    const {userCopy} = this.state
-    this.setState({
-      user: new User(userCopy),
-      activeState: events.cancelEditing,
-    })
-  }
-
-  renderControlIcons() {
-    const {activeState} = this.state
-    const {classes} = this.props
-    switch (activeState) {
-      case states.editing:
-        return (
-            <React.Fragment>
-              <Fab
-                  color={'primary'}
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleSaveChanges}
-              >
-                <Tooltip title='Save Changes'>
-                  <SaveIcon className={classes.buttonIcon}/>
-                </Tooltip>
-              </Fab>
-              <Fab
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleCancel}
-              >
-                <Tooltip title='Cancel'>
-                  <CancelIcon className={classes.buttonIcon}/>
-                </Tooltip>
-              </Fab>
-            </React.Fragment>
-        )
-
-      case states.nop:
+    switch (activeTab) {
+      case tabs.general:
+        return 'general'
+      case tabs.security:
+        return 'security'
       default:
-        return (
-            <React.Fragment>
-              <Fab
-                  color={'primary'}
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleStartEditing}
-              >
-                <Tooltip title='Edit'>
-                  <EditIcon className={classes.buttonIcon}/>
-                </Tooltip>
-              </Fab>
-            </React.Fragment>
-        )
+        return null
     }
   }
 
-  handleFieldChange(e) {
-    let {user} = this.state
-    user[e.target.id] = e.target.value
-    this.setState({user})
+  handleTabChange(muiClass, nextTab) {
+    this.setState({activeTab: nextTab})
   }
 
   render() {
-    const {classes} = this.props
-    const {user, activeState} = this.state
+    const {classes, maxViewDimensions} = this.props
+    const {activeTab} = this.state
 
-    const editingState = activeState === states.editing
-
-    return <Grid container direction='column' spacing={8} alignItems='center'>
-      <Grid item>
-        <Card className={classes.detailCard}>
-          <CardHeader title={
-            <div className={classes.detailCardTitle}>
-              <Typography variant={'h6'}>
-                Profile
-              </Typography>
-              <Grid container
-                    direction='row'
-                    justify='flex-end'
-              >
-                <Grid item>
-                  {this.renderControlIcons()}
-                </Grid>
-              </Grid>
-            </div>
-          }/>
-          <CardContent>
-            <Grid container direction='column' spacing={8}
-                  alignItems={'center'}>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='name'
-                    label='Name'
-                    value={user.name}
-                    InputProps={{
-                      disableUnderline: !editingState,
-                      readOnly: !editingState,
-                    }}
-                    onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.name ? fieldValidations.name.help : undefined
-                    // }
-                    // error={!!fieldValidations.name}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='surname'
-                    label='Surname'
-                    value={user.surname}
-                    InputProps={{
-                      disableUnderline: !editingState,
-                      readOnly: !editingState,
-                    }}
-                    onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.surname
-                    //       ? fieldValidations.surname.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.surname}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='username'
-                    label='Username'
-                    value={user.username}
-                    InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
-                    }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.username
-                    //       ? fieldValidations.username.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.username}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='emailAddress'
-                    label='EmailAddress'
-                    value={user.emailAddress}
-                    InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
-                    }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.emailAddress
-                    //       ? fieldValidations.emailAddress.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.emailAddress}
-                />
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    return (
+        <Grid container direction='column' spacing={8} alignItems='center'>
+          <Grid item>
+            <Card
+                className={classes.rootCard}
+                style={{maxWidth: maxViewDimensions.width}}
+            >
+              <AppBar position="static">
+                <Tabs
+                    value={activeTab}
+                    onChange={this.handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="on"
+                >
+                  <Tab
+                      value={tabs.general}
+                      label="General"
+                      icon={<PersonIcon/>}
+                  />
+                  <Tab
+                      value={tabs.security}
+                      label="Security"
+                      icon={<LockIcon/>}
+                  />
+                </Tabs>
+              </AppBar>
+              <CardContent>
+                {this.renderTabContent()}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+    )
   }
 }
 
@@ -270,25 +90,9 @@ Profile = withStyles(styles)(Profile)
 
 Profile.propTypes = {
   /**
-   * Logged in user from redux
+   * maxViewDimensions from redux state
    */
-  user: PropTypes.instanceOf(User).isRequired,
-  /**
-   * Success Action Creator
-   */
-  NotificationSuccess: PropTypes.func.isRequired,
-  /**
-   * Failure Action Creator
-   */
-  NotificationFailure: PropTypes.func.isRequired,
-  /**
-   * Show Global Loader Action Creator
-   */
-  ShowGlobalLoader: PropTypes.func.isRequired,
-  /**
-   * Hide Global Loader Action Creator
-   */
-  HideGlobalLoader: PropTypes.func.isRequired,
+  maxViewDimensions: PropTypes.object.isRequired,
 }
 Profile.defaultProps = {}
 
