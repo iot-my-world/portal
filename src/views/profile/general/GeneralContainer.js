@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {NotificationFailure, NotificationSuccess} from 'actions/notification'
 import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 import General from './General'
+import {SetMyUser} from 'actions/auth'
 
 let GeneralContainer = props => {
   return <General {...props}/>
@@ -21,6 +22,7 @@ GeneralContainer = connect(
       NotificationFailure,
       ShowGlobalLoader,
       HideGlobalLoader,
+      SetMyUser,
     },
 )(GeneralContainer)
 

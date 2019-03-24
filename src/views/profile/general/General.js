@@ -13,6 +13,8 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
+import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
+import UserValidator from 'brain/party/user/Validator'
 
 const styles = theme => ({
   detailCard: {},
@@ -54,6 +56,8 @@ class General extends Component {
     }
   }
 
+  reasonsInvalid = new ReasonsInvalid()
+
   handleStartEditing() {
     const {user} = this.state
     this.setState({
@@ -64,6 +68,7 @@ class General extends Component {
 
   async handleSaveChanges() {
     const {user} = this.state
+    const {SetMyUser} = this.props
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -72,8 +77,34 @@ class General extends Component {
     } = this.props
 
     ShowGlobalLoader()
+
+    // perform validation
     try {
-      await UserAdministrator.UpdateAllowedFields({user})
+      const reasonsInvalid = (await UserValidator.Validate({
+        user,
+        action: 'UpdateAllowedFields',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating User', e)
+      NotificationFailure('Error Validating User')
+      HideGlobalLoader()
+      return
+    }
+
+    try {
+      // perform update
+      const response = await UserAdministrator.UpdateAllowedFields({user})
+      // update user in redux state
+      SetMyUser(response.user)
+      this.setState({
+        user: response.user,
+        activeState: events.saveChanges,
+      })
     } catch (e) {
       console.error('error updating allowed fields', e)
       HideGlobalLoader()
@@ -81,9 +112,6 @@ class General extends Component {
       return
     }
 
-    this.setState({
-      activeState: events.saveChanges,
-    })
     NotificationSuccess('Successfully Updated General')
     HideGlobalLoader()
   }
@@ -154,7 +182,7 @@ class General extends Component {
   render() {
     const {classes} = this.props
     const {user, activeState} = this.state
-
+    const fieldValidations = this.reasonsInvalid.toMap()
     const editingState = activeState === states.editing
 
     return <Grid container direction='column' spacing={8} alignItems='center'>
@@ -184,11 +212,12 @@ class General extends Component {
                       readOnly: !editingState,
                     }}
                     onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.name ? fieldValidations.name.help : undefined
-                    // }
-                    // error={!!fieldValidations.name}
+                    helperText={
+                      fieldValidations.name ?
+                          fieldValidations.name.help :
+                          undefined
+                    }
+                    error={!!fieldValidations.name}
                 />
               </Grid>
               <Grid item>
@@ -202,13 +231,12 @@ class General extends Component {
                       readOnly: !editingState,
                     }}
                     onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.surname
-                    //       ? fieldValidations.surname.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.surname}
+                    helperText={
+                      fieldValidations.surname
+                          ? fieldValidations.surname.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.surname}
                 />
               </Grid>
               <Grid item>
@@ -218,17 +246,16 @@ class General extends Component {
                     label='Username'
                     value={user.username}
                     InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
+                      disableUnderline: !editingState,
+                      readOnly: !editingState,
                     }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.username
-                    //       ? fieldValidations.username.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.username}
+                    onChange={this.handleFieldChange}
+                    helperText={
+                      fieldValidations.username
+                          ? fieldValidations.username.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.username}
                 />
               </Grid>
               <Grid item>
@@ -282,6 +309,10 @@ General.propTypes = {
    * Hide Global Loader Action Creator
    */
   HideGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * SetMyUser action creator
+   */
+  SetMyUser: PropTypes.func.isRequired,
 }
 General.defaultProps = {}
 
