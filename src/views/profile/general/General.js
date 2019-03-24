@@ -5,7 +5,7 @@ import {
   withStyles,
   Card,
   CardContent,
-  CardHeader, TextField, Typography, Fab, Tooltip,
+  CardHeader, TextField, Fab, Tooltip,
 } from '@material-ui/core'
 import {User, UserAdministrator} from 'brain/party/user'
 import {
@@ -13,7 +13,6 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
-import LockIcon from '@material-ui/icons/Lock'
 
 const styles = theme => ({
   detailCard: {},
@@ -60,12 +59,6 @@ class General extends Component {
     this.setState({
       userCopy: new User(user),
       activeState: events.startEditing,
-    })
-  }
-
-  handleStartChangingPassword() {
-    this.setState({
-      activeState: events.startChangingPassword,
     })
   }
 
