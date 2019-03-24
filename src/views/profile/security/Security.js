@@ -11,6 +11,7 @@ import {
 import {
   FaKey as KeyIcon,
 } from 'react-icons/fa'
+import {UserAdministrator} from 'brain/user'
 import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Clear'
@@ -83,7 +84,7 @@ class Security extends Component {
     })
   }
 
-  handleSavePasswordChanges() {
+  async handleSavePasswordChanges() {
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -145,6 +146,28 @@ class Security extends Component {
         help: 'don\'t match',
         data: confirmNewPassword,
       }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
+
+    try {
+      if (!(await UserAdministrator.CheckPassword({
+        password: oldPassword,
+      })).result) {
+        this.reasonsInvalid.addReason(new ReasonInvalid({
+          field: 'oldPassword',
+          type: 'invalid',
+          help: 'incorrect',
+          data: oldPassword,
+        }))
+      }
+    } catch (e) {
+      console.error('error checking existing password', e)
+      NotificationFailure('Failed To Change Password')
+      return
     }
     if (this.reasonsInvalid.count > 0) {
       HideGlobalLoader()

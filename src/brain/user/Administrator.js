@@ -22,6 +22,15 @@ const Administrator = {
     return response
   },
 
+  async CheckPassword({password}) {
+    return await jsonRpcRequest({
+      method: 'UserAdministrator.CheckPassword',
+      request: {
+        password,
+      },
+    })
+  },
+
   async Create({user}) {
     let response = await jsonRpcRequest({
       method: 'UserAdministrator.Create',
