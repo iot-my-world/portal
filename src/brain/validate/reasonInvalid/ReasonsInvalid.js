@@ -85,4 +85,8 @@ export default class ReasonsInvalid {
   get count() {
     return this._reasonsInvalid.length
   }
+
+  addReason(reasonInvalid) {
+    this._reasonsInvalid.push(reasonInvalid)
+  }
 }

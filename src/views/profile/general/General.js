@@ -118,6 +118,7 @@ class General extends Component {
 
   handleCancel() {
     const {userCopy} = this.state
+    this.reasonsInvalid.clearAll()
     this.setState({
       user: new User(userCopy),
       activeState: events.cancelEditing,

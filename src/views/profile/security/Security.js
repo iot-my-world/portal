@@ -15,6 +15,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Clear'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
+import ReasonInvalid from 'brain/validate/reasonInvalid/ReasonInvalid'
 
 const styles = theme => ({
   securityItemWrapper: {
@@ -76,17 +77,87 @@ class Security extends Component {
   }
 
   handleCancelChangingPassword() {
+    this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.cancelChangingPassword,
     })
   }
 
   handleSavePasswordChanges() {
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+    const {
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
+    } = this.state
+
+    ShowGlobalLoader()
+
+    // blank checks
+    if (oldPassword === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'oldPassword',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: oldPassword,
+      }))
+    }
+
+    if (newPassword === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'newPassword',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: newPassword,
+      }))
+    }
+
+    if (confirmNewPassword === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'confirmNewPassword',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: confirmNewPassword,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
+
+    // passwords are the same check
+    if (newPassword !== confirmNewPassword) {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'newPassword',
+        type: 'invalid',
+        help: 'don\'t match',
+        data: newPassword,
+      }))
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'confirmNewPassword',
+        type: 'invalid',
+        help: 'don\'t match',
+        data: confirmNewPassword,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
+
 
   }
 
   handleTextChange(e) {
     this.setState({[e.target.id]: e.target.value})
+    this.reasonsInvalid.clearField(e.target.id)
   }
 
   renderChangePasswordControl() {
@@ -212,8 +283,8 @@ class Security extends Component {
                   </Grid>
                   <Grid item>
                     <Fab
-                        color="primary"
-                        aria-label="Save"
+                        color='primary'
+                        aria-label='Save'
                         size={'medium'}
                         className={classes.button}
                         onClick={this.handleSavePasswordChanges}
