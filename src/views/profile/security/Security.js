@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   Card,
   CardContent,
-  CardHeader,
   Grid, TextField,
   withStyles,
   Typography, Fab, Tooltip,
@@ -57,6 +56,9 @@ class Security extends Component {
         this.renderChangePasswordControl.bind(this)
     this.handleCancelChangingPassword =
         this.handleCancelChangingPassword.bind(this)
+    this.handleSavePasswordChanges =
+        this.handleSavePasswordChanges.bind(this)
+    this.handleTextChange = this.handleTextChange.bind(this)
     this.state = {
       activeState: states.nop,
       oldPassword: '',
@@ -77,6 +79,14 @@ class Security extends Component {
     this.setState({
       activeState: events.cancelChangingPassword,
     })
+  }
+
+  handleSavePasswordChanges() {
+
+  }
+
+  handleTextChange(e) {
+    this.setState({[e.target.id]: e.target.value})
   }
 
   renderChangePasswordControl() {
@@ -148,78 +158,72 @@ class Security extends Component {
                 </div>
               </Grid>
               <Collapse in={activeState === states.changingPassword}>
-                <Grid item>
-                  <TextField
-                      className={classes.formField}
-                      id='oldPassword'
-                      label='Old Password'
-                      value={oldPassword}
-                      // InputProps={{
-                      //   disableUnderline: true,
-                      //   readOnly: true,
-                      // }}
-                      // onChange={this.handleFieldChange}
-                      // disabled={disableFields}
-                      // helperText={
-                      //   fieldValidations.emailAddress
-                      //       ? fieldValidations.emailAddress.help
-                      //       : undefined
-                      // }
-                      // error={!!fieldValidations.emailAddress}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                      className={classes.formField}
-                      id='newPassword'
-                      label='New Password'
-                      value={newPassword}
-                      // InputProps={{
-                      //   disableUnderline: true,
-                      //   readOnly: true,
-                      // }}
-                      // onChange={this.handleFieldChange}
-                      // disabled={disableFields}
-                      // helperText={
-                      //   fieldValidations.emailAddress
-                      //       ? fieldValidations.emailAddress.help
-                      //       : undefined
-                      // }
-                      // error={!!fieldValidations.emailAddress}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                      className={classes.formField}
-                      id='confirmNewPassword'
-                      label='Confirm New'
-                      value={confirmNewPassword}
-                      // InputProps={{
-                      //   disableUnderline: true,
-                      //   readOnly: true,
-                      // }}
-                      // onChange={this.handleFieldChange}
-                      // disabled={disableFields}
-                      // helperText={
-                      //   fieldValidations.emailAddress
-                      //       ? fieldValidations.emailAddress.help
-                      //       : undefined
-                      // }
-                      // error={!!fieldValidations.emailAddress}
-                  />
-                </Grid>
-                <Grid item>
-                  <Fab
-                      color="primary"
-                      aria-label="Save"
-                      size={'medium'}
-                      className={classes.button}
-                  >
-                    <Tooltip title='Save Changes'>
-                      <SaveIcon className={classes.buttonIcon}/>
-                    </Tooltip>
-                  </Fab>
-                </Grid>
+                <form>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        type='password'
+                        id='oldPassword'
+                        label='Old Password'
+                        autoComplete='current-password'
+                        value={oldPassword}
+                        onChange={this.handleTextChange}
+                        helperText={
+                          fieldValidations.oldPassword
+                              ? fieldValidations.oldPassword.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.oldPassword}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        type='password'
+                        id='newPassword'
+                        label='New Password'
+                        autoComplete='new-password'
+                        value={newPassword}
+                        onChange={this.handleTextChange}
+                        helperText={
+                          fieldValidations.newPassword
+                              ? fieldValidations.newPassword.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.newPassword}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                        className={classes.formField}
+                        type='password'
+                        id='confirmNewPassword'
+                        label='Confirm New'
+                        autoComplete='new-password'
+                        value={confirmNewPassword}
+                        onChange={this.handleTextChange}
+                        helperText={
+                          fieldValidations.confirmNewPassword
+                              ? fieldValidations.confirmNewPassword.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.confirmNewPassword}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Fab
+                        color="primary"
+                        aria-label="Save"
+                        size={'medium'}
+                        className={classes.button}
+                        onClick={this.handleSavePasswordChanges}
+                    >
+                      <Tooltip title='Save Changes'>
+                        <SaveIcon className={classes.buttonIcon}/>
+                      </Tooltip>
+                    </Fab>
+                  </Grid>
+                </form>
               </Collapse>
             </Grid>
           </CardContent>
@@ -231,7 +235,24 @@ class Security extends Component {
 
 Security = withStyles(styles)(Security)
 
-Security.propTypes = {}
+Security.propTypes = {
+  /**
+   * Success Action Creator
+   */
+  NotificationSuccess: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
+}
 Security.defaultProps = {}
 
 export default Security
