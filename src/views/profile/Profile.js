@@ -57,7 +57,7 @@ class Profile extends Component {
           <Grid item>
             <Card
                 className={classes.rootCard}
-                style={{maxWidth: maxViewDimensions.width}}
+                style={{width: maxViewDimensions.width}}
             >
               <AppBar position="static">
                 <Tabs
