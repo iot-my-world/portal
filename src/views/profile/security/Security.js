@@ -7,11 +7,14 @@ import {
   Grid, TextField,
   withStyles,
   Typography, Fab, Tooltip,
+  Collapse,
 } from '@material-ui/core'
-import {FaKey as KeyIcon} from 'react-icons/fa'
 import {
-  MdEdit as EditIcon,
-} from 'react-icons/md'
+  FaKey as KeyIcon,
+} from 'react-icons/fa'
+import EditIcon from '@material-ui/icons/Edit'
+import SaveIcon from '@material-ui/icons/Save'
+import CancelIcon from '@material-ui/icons/Clear'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const styles = theme => ({
@@ -29,23 +32,93 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
   },
+  buttonIcon: {
+    margin: theme.spacing.unit,
+  },
 })
+
+const states = {
+  nop: 0,
+  changingPassword: 1,
+}
+
+const events = {
+  startChangingPassword: states.changingPassword,
+  cancelChangingPassword: states.nop,
+}
 
 class Security extends Component {
 
   constructor(props) {
     super(props)
+    this.handleStartChangingPassword =
+        this.handleStartChangingPassword.bind(this)
+    this.renderChangePasswordControl =
+        this.renderChangePasswordControl.bind(this)
+    this.handleCancelChangingPassword =
+        this.handleCancelChangingPassword.bind(this)
     this.state = {
-      password: '',
-      confirmPassword: '',
+      activeState: states.nop,
+      oldPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
     }
   }
 
   reasonsInvalid = new ReasonsInvalid()
 
+  handleStartChangingPassword() {
+    this.setState({
+      activeState: events.startChangingPassword,
+    })
+  }
+
+  handleCancelChangingPassword() {
+    this.setState({
+      activeState: events.cancelChangingPassword,
+    })
+  }
+
+  renderChangePasswordControl() {
+    const {activeState} = this.state
+    const {classes} = this.props
+
+    if (activeState === states.changingPassword) {
+      return (
+          <Fab
+              className={classes.button}
+              size={'medium'}
+              onClick={this.handleCancelChangingPassword}
+          >
+            <Tooltip title='Cancel'>
+              <CancelIcon className={classes.buttonIcon}/>
+            </Tooltip>
+          </Fab>
+      )
+    } else {
+      return (
+          <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'medium'}
+              onClick={this.handleStartChangingPassword}
+          >
+            <Tooltip title='Edit'>
+              <EditIcon className={classes.buttonIcon}/>
+            </Tooltip>
+          </Fab>
+      )
+    }
+  }
+
   render() {
     const {classes} = this.props
-    const {password, confirmPassword} = this.state
+    const {
+      activeState,
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
+    } = this.state
 
     const fieldValidations = this.reasonsInvalid.toMap()
 
@@ -70,58 +143,84 @@ class Security extends Component {
                     </Typography>
                   </div>
                   <div style={{gridColumn: '3/4', gridRow: '1/3'}}>
-                    <Fab
-                        color={'primary'}
-                        className={classes.button}
-                        size={'small'}
-                    >
-                      <Tooltip title='Edit'>
-                        <EditIcon className={classes.buttonIcon}/>
-                      </Tooltip>
-                    </Fab>
+                    {this.renderChangePasswordControl()}
                   </div>
                 </div>
               </Grid>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='password'
-                    label='Password'
-                    value={password}
-                    InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
-                    }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.emailAddress
-                    //       ? fieldValidations.emailAddress.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.emailAddress}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                    className={classes.formField}
-                    id='confirmPassword'
-                    label='Confirm Password'
-                    value={password}
-                    InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
-                    }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.emailAddress
-                    //       ? fieldValidations.emailAddress.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.emailAddress}
-                />
-              </Grid>
+              <Collapse in={activeState === states.changingPassword}>
+                <Grid item>
+                  <TextField
+                      className={classes.formField}
+                      id='oldPassword'
+                      label='Old Password'
+                      value={oldPassword}
+                      // InputProps={{
+                      //   disableUnderline: true,
+                      //   readOnly: true,
+                      // }}
+                      // onChange={this.handleFieldChange}
+                      // disabled={disableFields}
+                      // helperText={
+                      //   fieldValidations.emailAddress
+                      //       ? fieldValidations.emailAddress.help
+                      //       : undefined
+                      // }
+                      // error={!!fieldValidations.emailAddress}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                      className={classes.formField}
+                      id='newPassword'
+                      label='New Password'
+                      value={newPassword}
+                      // InputProps={{
+                      //   disableUnderline: true,
+                      //   readOnly: true,
+                      // }}
+                      // onChange={this.handleFieldChange}
+                      // disabled={disableFields}
+                      // helperText={
+                      //   fieldValidations.emailAddress
+                      //       ? fieldValidations.emailAddress.help
+                      //       : undefined
+                      // }
+                      // error={!!fieldValidations.emailAddress}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                      className={classes.formField}
+                      id='confirmNewPassword'
+                      label='Confirm New'
+                      value={confirmNewPassword}
+                      // InputProps={{
+                      //   disableUnderline: true,
+                      //   readOnly: true,
+                      // }}
+                      // onChange={this.handleFieldChange}
+                      // disabled={disableFields}
+                      // helperText={
+                      //   fieldValidations.emailAddress
+                      //       ? fieldValidations.emailAddress.help
+                      //       : undefined
+                      // }
+                      // error={!!fieldValidations.emailAddress}
+                  />
+                </Grid>
+                <Grid item>
+                  <Fab
+                      color="primary"
+                      aria-label="Save"
+                      size={'medium'}
+                      className={classes.button}
+                  >
+                    <Tooltip title='Save Changes'>
+                      <SaveIcon className={classes.buttonIcon}/>
+                    </Tooltip>
+                  </Fab>
+                </Grid>
+              </Collapse>
             </Grid>
           </CardContent>
         </Card>
