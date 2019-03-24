@@ -9,6 +9,8 @@ import {
 } from '@material-ui/core'
 import LockIcon from '@material-ui/icons/Lock'
 import PersonIcon from '@material-ui/icons/Person'
+import GeneralContainer from './general/GeneralContainer'
+import SecurityContainer from './security/SecurityContainer'
 
 const styles = theme => ({
   rootCard: {},
@@ -34,9 +36,9 @@ class Profile extends Component {
 
     switch (activeTab) {
       case tabs.general:
-        return 'general'
+        return <GeneralContainer/>
       case tabs.security:
-        return 'security'
+        return <SecurityContainer/>
       default:
         return null
     }
