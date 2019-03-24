@@ -163,7 +163,7 @@ class General extends Component {
                   onClick={this.handleStartEditing}
               >
                 <Tooltip title='Edit'>
-                  <EditIcon className={classes.buttonIcon}/>
+                  <EditIcon/>
                 </Tooltip>
               </Fab>
             </React.Fragment>

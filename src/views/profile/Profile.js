@@ -27,7 +27,8 @@ class Profile extends Component {
     this.renderTabContent = this.renderTabContent.bind(this)
     this.handleTabChange = this.handleTabChange.bind(this)
     this.state = {
-      activeTab: tabs.general,
+      // activeTab: tabs.general,
+      activeTab: tabs.security,
     }
   }
 
