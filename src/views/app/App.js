@@ -18,6 +18,7 @@ import PermissionHandler from 'brain/security/permission/handler/Handler'
 import {LoginClaims} from 'brain/security/claims'
 import {PartyAdministrator} from 'brain/party/administrator'
 import {UserAdministrator} from 'brain/party/user'
+import User from 'brain/party/user/User'
 
 const drawerWidth = 230
 
@@ -190,6 +191,7 @@ class App extends Component {
     this.toggleMenuState = this.toggleMenuState.bind(this)
     this.changePath = this.changePath.bind(this)
     this.getViewWindowMaxDimensions = this.getViewWindowMaxDimensions.bind(this)
+    this.rebuildRoutes = this.rebuildRoutes.bind(this)
     this.viewContentWrapperRef = React.createRef()
 
     this.state = {
@@ -216,10 +218,12 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState, snapShot) {
     const {
+      user: prevUser,
       claims: prevClaims,
       appDoneLoading: prevAppDoneLoading,
     } = prevProps
     const {
+      user,
       claims,
       appDoneLoading,
     } = this.props
@@ -238,6 +242,34 @@ class App extends Component {
         && appDoneLoading
     ) {
       this.setState({activeState: events.doneLoading})
+    }
+
+    if (user.name !== prevUser.name) {
+      this.rebuildRoutes()
+      return
+    }
+  }
+
+  rebuildRoutes() {
+    const {claims, viewPermissions, user} = this.props
+    try {
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
+      this.appContentRoutes = buildContentRoutes(this.appRoutes)
+      this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
+      let menuState = {}
+      this.appRoutes.forEach((routeSection, routeSectionIdx) => {
+        if (!menuState.hasOwnProperty(`${routeSectionIdx}`)) {
+          menuState[`${routeSectionIdx}`] = {}
+        }
+        routeSection.forEach((routeGroupOrRoute, routeGroupOrRouteIdx) => {
+          if (routeGroupOrRoute.group) {
+            menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] = false
+          }
+        })
+      })
+      this.setState({menuState})
+    } catch (e) {
+      console.error('error rebuilding app routes', e)
     }
   }
 
@@ -668,6 +700,14 @@ App.propTypes = {
    * not have the required view permission
    */
   updateAllowedRoutes: PropTypes.func.isRequired,
+  /**
+   * Logged in user from redux
+   */
+  user: PropTypes.instanceOf(User).isRequired,
+  /**
+   * View permissions from redux
+   */
+  viewPermissions: PropTypes.array.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)

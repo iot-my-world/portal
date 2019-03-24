@@ -176,6 +176,7 @@ class General extends Component {
   handleFieldChange(e) {
     let {user} = this.state
     user[e.target.id] = e.target.value
+    this.reasonsInvalid.clearField(e.target.id)
     this.setState({user})
   }
 
