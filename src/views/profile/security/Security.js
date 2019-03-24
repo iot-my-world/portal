@@ -100,6 +100,8 @@ class Security extends Component {
 
     ShowGlobalLoader()
 
+    this.reasonsInvalid.clearAll()
+
     // blank checks
     if (oldPassword === '') {
       this.reasonsInvalid.addReason(new ReasonInvalid({
@@ -199,8 +201,28 @@ class Security extends Component {
   }
 
   handleTextChange(e) {
-    this.setState({[e.target.id]: e.target.value})
-    this.reasonsInvalid.clearField(e.target.id)
+    const field = e.target.id
+
+    // check if related field should be cleared
+    if (field === 'newPassword') {
+      if (
+          this.reasonsInvalid.errorOnField('confirmNewPassword') &&
+          this.reasonsInvalid.errorOnField('confirmNewPassword').help ===
+          'don\'t match'
+      ) {
+        this.reasonsInvalid.clearField('confirmNewPassword')
+      }
+    } else if (field === 'confirmNewPassword') {
+      if (
+          this.reasonsInvalid.errorOnField('newPassword') &&
+          this.reasonsInvalid.errorOnField('newPassword').help ===
+          'don\'t match'
+      ) {
+        this.reasonsInvalid.clearField('newPassword')
+      }
+    }
+    this.reasonsInvalid.clearField(field)
+    this.setState({[field]: e.target.value})
   }
 
   renderChangePasswordControl() {
