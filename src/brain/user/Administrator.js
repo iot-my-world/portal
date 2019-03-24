@@ -1,5 +1,5 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
-import {User} from 'brain/party/user'
+import {User} from 'brain/user/index'
 
 const Administrator = {
   async GetMyUser() {

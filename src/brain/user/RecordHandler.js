@@ -1,4 +1,4 @@
-import {jsonRpcRequest} from 'utilities/network'
+import {jsonRpcRequest} from 'utilities/network/index'
 import User from './User'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 

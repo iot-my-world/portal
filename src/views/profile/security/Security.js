@@ -152,7 +152,6 @@ class Security extends Component {
       return
     }
 
-
   }
 
   handleTextChange(e) {

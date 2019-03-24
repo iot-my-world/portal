@@ -4,7 +4,7 @@ import {
   UsernameIdentifier,
   EmailAddressIdentifier,
   IdIdentifier,
-} from 'brain/search/identifier'
+} from 'brain/search/identifier/index'
 import UserRecordHandler from './RecordHandler'
 import {stringToBytes} from 'utilities/type/type'
 
