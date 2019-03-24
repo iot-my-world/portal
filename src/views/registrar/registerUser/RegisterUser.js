@@ -13,7 +13,7 @@ import {parseToken} from 'utilities/token'
 import {
   User as UserEntity,
   UserValidator,
-} from 'brain/party/user'
+} from 'brain/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {

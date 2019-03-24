@@ -3,7 +3,7 @@ import {IdIdentifier} from 'brain/search/identifier/index'
 import ClaimsBase from 'brain/security/claims/Base'
 import {isObject} from 'utilities/type/index'
 import {RegisterClientUser as RegisterClientUserClaimsType} from 'brain/security/claims/types'
-import {User} from 'brain/party/user/index'
+import {User} from 'brain/user/index'
 
 class RegisterClientUser extends ClaimsBase {
   static type = RegisterClientUserClaimsType

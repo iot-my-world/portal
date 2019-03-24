@@ -23,6 +23,8 @@ const mapStateToProps = (state) => {
     claims: state.auth.claims,
     appDoneLoading: state.app.doneLoading,
     maxViewDimensions: state.app.maxViewDimensions,
+    user: state.auth.user,
+    viewPermissions: state.permission.view,
   }
 }
 
