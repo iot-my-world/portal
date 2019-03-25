@@ -68,10 +68,14 @@ const style = theme => {
 
 const states = {
   loggingIn: 0,
+  logInFail: 1,
+  errorContactingServer: 2,
 }
 
 const events = {
   init: states.nop,
+  logInFail: states.logInFail,
+  errorContactingServer: states.errorContactingServer,
 }
 
 class Login extends Component {
@@ -91,6 +95,7 @@ class Login extends Component {
   }
 
   handleInputChange(event) {
+    this.reasonsInvalid.clearField(event.target.id)
     this.setState({
       [event.target.id]: event.target.value,
       activeState: events.init,
@@ -114,7 +119,17 @@ class Login extends Component {
 
     ShowGlobalLoader()
 
+    this.reasonsInvalid.clearAll()
+
     // blank checks
+    if (usernameOrEmailAddress === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'usernameOrEmailAddress',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: usernameOrEmailAddress,
+      }))
+    }
     if (password === '') {
       this.reasonsInvalid.addReason(new ReasonInvalid({
         field: 'password',
@@ -123,37 +138,32 @@ class Login extends Component {
         data: password,
       }))
     }
-    if (password === '') {
-      this.reasonsInvalid.addReason(new ReasonInvalid({
-        field: 'usernameOrEmailAddress',
-        type: 'blank',
-        help: 'can\'t be blank',
-        data: usernameOrEmailAddress,
-      }))
-    }
     if (this.reasonsInvalid.count > 0) {
       HideGlobalLoader()
       this.forceUpdate()
       return
     }
 
-    // [1] Login
+    // login
     let loginResult
     try {
       loginResult = await LoginService.Login(usernameOrEmailAddress, password)
     } catch (error) {
       switch (true) {
         case error instanceof MethodFailed:
-          this.setState({activeState: events.loginFail})
-          break
+          this.setState({activeState: events.logInFail})
+          HideGlobalLoader()
+          return
+
         case error instanceof ContactFailed:
         default:
-          this.setState({activeState: events.serverContactError})
+          this.setState({activeState: events.errorContactingServer})
+          HideGlobalLoader()
+          return
       }
-      return
     }
 
-    // [2] If login was successful
+    // if login was successful
     let claims
     try {
       claims = parseToken(loginResult.jwt)
@@ -167,15 +177,18 @@ class Login extends Component {
       } else {
         // if the token is expired clear the token state
         sessionStorage.setItem('jwt', null)
-        this.setState({activeState: events.loginFail})
+        this.setState({activeState: events.logInFail})
+        HideGlobalLoader()
         return
       }
     } catch (e) {
       console.error(`error parsing claims and setting redux: ${e}`)
-      this.setState({activeState: events.loginFail})
+      this.setState({activeState: events.logInFail})
+      HideGlobalLoader()
       return
     }
 
+    HideGlobalLoader()
     // Finally set the claims which will cause root to navigate
     // to the app
     SetClaims(claims)
@@ -189,9 +202,9 @@ class Login extends Component {
     } = this.state
 
     switch (activeState) {
-      case states.incorrectCredentials:
+      case states.logInFail:
         return 'Incorrect Credentials'
-      case states.unableToContactServer:
+      case states.errorContactingServer:
         return 'Unable To Contact Server'
       default:
         return undefined
@@ -203,7 +216,6 @@ class Login extends Component {
       classes,
     } = this.props
     const {
-      activeState,
       usernameOrEmailAddress,
       password,
       cursorOverForgotPassword,
@@ -279,12 +291,12 @@ class Login extends Component {
                         Login
                       </Button>
                     </Grid>
-                    {/*{errorState &&*/}
-                    {/*<Grid item>*/}
-                    {/*<Typography color={'error'}>*/}
-                    {/*{this.errorMessage()}*/}
-                    {/*</Typography>*/}
-                    {/*</Grid>}*/}
+                    {(!!this.errorMessage()) &&
+                    <Grid item>
+                      <Typography color={'error'}>
+                        {this.errorMessage()}
+                      </Typography>
+                    </Grid>}
                     <Grid item>
                       <Typography
                           className={classes.forgotPassword}
