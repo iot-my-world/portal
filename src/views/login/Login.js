@@ -3,16 +3,16 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
-  TextField, Button, Dialog,
+  TextField, Button,
   FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
-import {ScaleLoader as Spinner} from 'react-spinners'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
 import {Login as LoginClaimsType} from 'brain/security/claims/types'
+import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 
 const style = theme => {
   return {
@@ -60,17 +60,6 @@ const style = theme => {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
     },
-    progressSpinnerDialog: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none',
-      overflow: 'hidden',
-    },
-    progressSpinnerDialogBackdrop: {
-      // backgroundColor: 'transparent',
-    },
-    cardHeaderRoot: {
-      paddingBottom: 0,
-    },
     forgotPassword: {
       cursor: 'pointer',
     },
@@ -78,17 +67,11 @@ const style = theme => {
 }
 
 const states = {
-  nop: 0,
-  loggingIn: 1,
-  incorrectCredentials: 2,
-  unableToContactServer: 3,
+  loggingIn: 0,
 }
 
 const events = {
   init: states.nop,
-  logIn: states.loggingIn,
-  loginFail: states.incorrectCredentials,
-  serverContactError: states.unableToContactServer,
 }
 
 class Login extends Component {
@@ -114,6 +97,8 @@ class Login extends Component {
     })
   }
 
+  reasonsInvalid = new ReasonsInvalid()
+
   async handleLogin(submitEvent) {
     submitEvent.preventDefault()
     const {
@@ -123,9 +108,34 @@ class Login extends Component {
     const {
       SetClaims,
       LoginActionCreator,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     } = this.props
 
-    this.setState({activeState: events.logIn})
+    ShowGlobalLoader()
+
+    // blank checks
+    if (password === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'password',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: password,
+      }))
+    }
+    if (password === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'usernameOrEmailAddress',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: usernameOrEmailAddress,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
 
     // [1] Login
     let loginResult
@@ -199,8 +209,7 @@ class Login extends Component {
       cursorOverForgotPassword,
     } = this.state
 
-    const errorState = (activeState === states.incorrectCredentials) ||
-        (activeState === states.unableToContactServer)
+    const fieldValidations = this.reasonsInvalid.toMap()
 
     return <div
         className={classes.fullPageBackground}
@@ -234,7 +243,12 @@ class Login extends Component {
                             autoComplete='username'
                             value={usernameOrEmailAddress}
                             onChange={this.handleInputChange}
-                            error={errorState}
+                            helperText={
+                              fieldValidations.usernameOrEmailAddress
+                                  ? fieldValidations.usernameOrEmailAddress.help
+                                  : undefined
+                            }
+                            error={!!fieldValidations.usernameOrEmailAddress}
                         />
                       </FormControl>
                     </Grid>
@@ -247,7 +261,12 @@ class Login extends Component {
                             autoComplete='current-password'
                             value={password}
                             onChange={this.handleInputChange}
-                            error={errorState}
+                            helperText={
+                              fieldValidations.password
+                                  ? fieldValidations.password.help
+                                  : undefined
+                            }
+                            error={!!fieldValidations.password}
                         />
                       </FormControl>
                     </Grid>
@@ -260,12 +279,12 @@ class Login extends Component {
                         Login
                       </Button>
                     </Grid>
-                    {errorState &&
-                    <Grid item>
-                      <Typography color={'error'}>
-                        {this.errorMessage()}
-                      </Typography>
-                    </Grid>}
+                    {/*{errorState &&*/}
+                    {/*<Grid item>*/}
+                    {/*<Typography color={'error'}>*/}
+                    {/*{this.errorMessage()}*/}
+                    {/*</Typography>*/}
+                    {/*</Grid>}*/}
                     <Grid item>
                       <Typography
                           className={classes.forgotPassword}
@@ -287,14 +306,6 @@ class Login extends Component {
           </div>
         </div>
       </div>
-      <Dialog
-          open={activeState === states.loggingIn}
-          BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
-          PaperProps={{classes: {root: classes.progressSpinnerDialog}}}
-          className={classes.progressSpinnerDialog}
-      >
-        <Spinner isLoading/>
-      </Dialog>
     </div>
   }
 }
@@ -304,5 +315,13 @@ let StyledLogin = withStyles(style)(Login)
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
   LoginActionCreator: PropTypes.func.isRequired,
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
 }
 export default StyledLogin

@@ -15,8 +15,7 @@ import {UserAdministrator} from 'brain/user'
 import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Clear'
-import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
-import ReasonInvalid from 'brain/validate/reasonInvalid/ReasonInvalid'
+import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 
 const styles = theme => ({
   securityItemWrapper: {
