@@ -5,6 +5,7 @@ import {
   Card, CardContent, Grid,
   TextField, Button,
   FormControl, CardHeader,
+  Collapse,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
@@ -70,12 +71,14 @@ const states = {
   loggingIn: 0,
   logInFail: 1,
   errorContactingServer: 2,
+  forgottenPassword: 3,
 }
 
 const events = {
-  init: states.nop,
+  init: states.loggingIn,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
+  forgotPassword: states.forgottenPassword,
 }
 
 class Login extends Component {
@@ -92,6 +95,8 @@ class Login extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
     this.errorMessage = this.errorMessage.bind(this)
+    this.renderLogInCard = this.renderLogInCard.bind(this)
+    this.renderForgotPasswordCard = this.renderForgotPasswordCard.bind(this)
   }
 
   handleInputChange(event) {
@@ -211,7 +216,7 @@ class Login extends Component {
     }
   }
 
-  render() {
+  renderLogInCard() {
     const {
       classes,
     } = this.props
@@ -222,6 +227,129 @@ class Login extends Component {
     } = this.state
 
     const fieldValidations = this.reasonsInvalid.toMap()
+
+    return (
+        <Card>
+          <CardHeader
+              title={'Login'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <form onSubmit={this.handleLogin}>
+              <Grid container direction={'column'} alignItems={'center'}
+                    spacing={8}>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='usernameOrEmailAddress'
+                        label='Username or Email Address'
+                        autoComplete='username'
+                        value={usernameOrEmailAddress}
+                        onChange={this.handleInputChange}
+                        helperText={
+                          fieldValidations.usernameOrEmailAddress
+                              ? fieldValidations.usernameOrEmailAddress.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.usernameOrEmailAddress}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='password'
+                        label='Password'
+                        type='password'
+                        autoComplete='current-password'
+                        value={password}
+                        onChange={this.handleInputChange}
+                        helperText={
+                          fieldValidations.password
+                              ? fieldValidations.password.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.password}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <Button
+                      id={'loginButton'}
+                      className={classes.button}
+                      type={'submit'}
+                  >
+                    Login
+                  </Button>
+                </Grid>
+                {(!!this.errorMessage()) &&
+                <Grid item>
+                  <Typography color={'error'}>
+                    {this.errorMessage()}
+                  </Typography>
+                </Grid>}
+                <Grid item>
+                  <Typography
+                      className={classes.forgotPassword}
+                      onMouseEnter={() => this.setState({
+                        cursorOverForgotPassword: true,
+                      })}
+                      onMouseLeave={() => this.setState({
+                        cursorOverForgotPassword: false,
+                      })}
+                      onClick={() => this.setState({
+                        activeState: events.forgotPassword,
+                      })}
+                      color={cursorOverForgotPassword ?
+                          'secondary' :
+                          'primary'}
+                  >
+                    Forgot Password
+                  </Typography>
+                </Grid>
+              </Grid>
+            </form>
+          </CardContent>
+        </Card>
+    )
+  }
+
+  renderForgotPasswordCard() {
+    const {classes} = this.props
+    return (
+        <Card>
+          <CardHeader
+              title={'Forgot Password'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <Grid container direction={'column'} alignItems={'center'}
+                  spacing={8}>
+              <Grid item>
+                Hello
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+    )
+  }
+
+  render() {
+    const {
+      classes,
+    } = this.props
+    const {
+      activeState,
+    } = this.state
+
+    const showLoginCard =
+        (activeState === states.loggingIn) ||
+        (activeState === states.errorContactingServer) ||
+        (activeState === states.logInFail)
+    const showForgottenPassword =
+        (activeState === states.forgottenPassword)
 
     return <div
         className={classes.fullPageBackground}
@@ -237,84 +365,12 @@ class Login extends Component {
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
-            <Card>
-              <CardHeader
-                  title={'Login'}
-                  titleTypographyProps={{color: 'primary', align: 'center'}}
-                  classes={{root: classes.cardHeaderRoot}}
-              />
-              <CardContent>
-                <form onSubmit={this.handleLogin}>
-                  <Grid container direction={'column'} alignItems={'center'}
-                        spacing={8}>
-                    <Grid item>
-                      <FormControl className={classes.formField}>
-                        <TextField
-                            id='usernameOrEmailAddress'
-                            label='Username or Email Address'
-                            autoComplete='username'
-                            value={usernameOrEmailAddress}
-                            onChange={this.handleInputChange}
-                            helperText={
-                              fieldValidations.usernameOrEmailAddress
-                                  ? fieldValidations.usernameOrEmailAddress.help
-                                  : undefined
-                            }
-                            error={!!fieldValidations.usernameOrEmailAddress}
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl className={classes.formField}>
-                        <TextField
-                            id='password'
-                            label='Password'
-                            type='password'
-                            autoComplete='current-password'
-                            value={password}
-                            onChange={this.handleInputChange}
-                            helperText={
-                              fieldValidations.password
-                                  ? fieldValidations.password.help
-                                  : undefined
-                            }
-                            error={!!fieldValidations.password}
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <Button
-                          id={'loginButton'}
-                          className={classes.button}
-                          type={'submit'}
-                      >
-                        Login
-                      </Button>
-                    </Grid>
-                    {(!!this.errorMessage()) &&
-                    <Grid item>
-                      <Typography color={'error'}>
-                        {this.errorMessage()}
-                      </Typography>
-                    </Grid>}
-                    <Grid item>
-                      <Typography
-                          className={classes.forgotPassword}
-                          onMouseEnter={() => this.setState(
-                              {cursorOverForgotPassword: true})}
-                          onMouseLeave={() => this.setState(
-                              {cursorOverForgotPassword: false})}
-                          color={cursorOverForgotPassword ?
-                              'secondary' :
-                              'primary'}
-                      >
-                        Forgot Password
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </form>
-              </CardContent>
-            </Card>
+            <Collapse in={showLoginCard}>
+              {this.renderLogInCard()}
+            </Collapse>
+            <Collapse in={showForgottenPassword}>
+              {this.renderForgotPasswordCard()}
+            </Collapse>
           </div>
         </div>
       </div>
