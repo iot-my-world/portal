@@ -1,12 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {withStyles} from '@material-ui/core'
-
-const styles = theme => ({
-  canvas: {
-    backgroundColor: '#ffffff',
-  },
-})
+import {
+  withStyles, Collapse, Card, CardContent,
+} from '@material-ui/core'
 
 class Letter {
 
@@ -50,6 +46,30 @@ class Letter {
 
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&+='
 
+const styles = theme => ({
+  canvas: {
+    backgroundColor: '#ffffff',
+  },
+  askingForCaptcha: {
+    display: 'grid',
+    gridTemplateRows: '1fr',
+    gridTemplateColumns: 'auto 1fr',
+    alignItems: 'center',
+  },
+})
+
+const states = {
+  askingForCaptcha: 0,
+  performingCaptcha: 1,
+  captchaSuccess: 2,
+  captchaFailure: 3,
+}
+
+const events = {
+  init: states.askingForCaptcha,
+  startCaptcha: states.performingCaptcha,
+}
+
 class MeinCaptcha extends Component {
   constructor(props) {
     super(props)
@@ -57,6 +77,7 @@ class MeinCaptcha extends Component {
     this.updateCanvas = this.updateCanvas.bind(this)
     this.generateCaptcha = this.generateCaptcha.bind(this)
     this.state = {
+      activeState: events.init,
       canvasElement: undefined,
     }
     this.captcha = this.generateCaptcha()
@@ -73,7 +94,7 @@ class MeinCaptcha extends Component {
           {
             x: (width / (captchaLength + 1)) * (i),
             y: height / 2,
-          }
+          },
       ))
     }
     return captcha
@@ -126,14 +147,30 @@ class MeinCaptcha extends Component {
 
   render() {
     const {classes, width, height} = this.props
-    return <div>
-      <canvas
-          className={classes.canvas}
-          ref={this.getCanvasElement}
-          width={width}
-          height={height}
-      />
-    </div>
+    const {activeState} = this.state
+    return <Card style={{width: width + 32}}>
+      <CardContent>
+        <Collapse in={activeState === states.askingForCaptcha}>
+          <div className={classes.askingForCaptcha} style={{width, height}}>
+            <div>tick</div>
+            <div
+                onClick={() => this.setState(
+                    {activeState: events.startCaptcha})}
+            >
+              Please captcha?
+            </div>
+          </div>
+        </Collapse>
+        <Collapse in={activeState === states.performingCaptcha}>
+          <canvas
+              className={classes.canvas}
+              ref={this.getCanvasElement}
+              width={width}
+              height={height}
+          />
+        </Collapse>
+      </CardContent>
+    </Card>
   }
 }
 
