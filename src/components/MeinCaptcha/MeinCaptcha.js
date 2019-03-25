@@ -73,7 +73,7 @@ class MeinCaptcha extends Component {
           {
             x: (width / (captchaLength + 1)) * (i),
             y: height / 2,
-          },
+          }
       ))
     }
     return captcha
