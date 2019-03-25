@@ -2,8 +2,11 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Collapse, Card, CardContent,
-  Typography, Checkbox, Input,
+  Typography, Checkbox, Input, Tooltip, Fab,
 } from '@material-ui/core'
+import {
+  MdSave as SaveIcon,
+} from 'react-icons/md'
 import green from '@material-ui/core/colors/green'
 
 class Letter {
@@ -70,7 +73,17 @@ const styles = theme => ({
   },
   checkBoxChecked: {},
   captchaRoot: {},
-  captchaCard: {},
+  captchaCard: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+    gridTemplateColumns: 'auto auto',
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    margin: theme.spacing.unit,
+  },
 })
 
 const states = {
@@ -223,12 +236,24 @@ class MeinCaptcha extends Component {
                   <CardContent>
                     <div className={classes.captchaCard}>
                       <canvas
+                          style={{gridColumn: '1/3'}}
                           className={classes.canvas}
                           ref={this.getCanvasElement}
                           width={width - 32}
                           height={height - 50}
                       />
                       <Input/>
+                      <Fab
+                          color='primary'
+                          aria-label='Save'
+                          size={'small'}
+                          className={classes.button}
+                          // onClick={this.handleSavePasswordChanges}
+                      >
+                        <Tooltip title='Submit'>
+                          <SaveIcon className={classes.buttonIcon}/>
+                        </Tooltip>
+                      </Fab>
                     </div>
                   </CardContent>
                 </Card>
