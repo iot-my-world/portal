@@ -71,6 +71,9 @@ const style = theme => {
     cardHeaderRoot: {
       paddingBottom: 0,
     },
+    forgotPassword: {
+      cursor: 'pointer',
+    },
   }
 }
 
@@ -94,6 +97,7 @@ class Login extends Component {
     activeState: events.init,
     usernameOrEmailAddress: '',
     password: '',
+    cursorOverForgotPassword: false,
   }
 
   constructor(props) {
@@ -192,6 +196,7 @@ class Login extends Component {
       activeState,
       usernameOrEmailAddress,
       password,
+      cursorOverForgotPassword,
     } = this.state
 
     const errorState = (activeState === states.incorrectCredentials) ||
@@ -261,6 +266,20 @@ class Login extends Component {
                         {this.errorMessage()}
                       </Typography>
                     </Grid>}
+                    <Grid item>
+                      <Typography
+                          className={classes.forgotPassword}
+                          onMouseEnter={() => this.setState(
+                              {cursorOverForgotPassword: true})}
+                          onMouseLeave={() => this.setState(
+                              {cursorOverForgotPassword: false})}
+                          color={cursorOverForgotPassword ?
+                              'secondary' :
+                              'primary'}
+                      >
+                        Forgot Password
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </form>
               </CardContent>
