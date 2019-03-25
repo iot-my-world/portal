@@ -76,8 +76,8 @@ const states = {
 }
 
 const events = {
-  // init: states.loggingIn,
-  init: states.forgottenPassword,
+  init: states.loggingIn,
+  // init: states.forgottenPassword,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
   forgotPassword: states.forgottenPassword,
@@ -90,6 +90,7 @@ class Login extends Component {
     usernameOrEmailAddress: '',
     password: '',
     cursorOverForgotPassword: false,
+    cursorOverReturn: false,
   }
 
   constructor(props) {
@@ -319,6 +320,7 @@ class Login extends Component {
 
   renderForgotPasswordCard() {
     const {classes} = this.props
+    const {cursorOverReturn} = this.state
     return (
         <Card>
           <CardHeader
@@ -331,6 +333,25 @@ class Login extends Component {
                   spacing={8}>
               <Grid item>
                 <MeinCaptcha/>
+              </Grid>
+              <Grid item>
+                <Typography
+                    className={classes.forgotPassword}
+                    onMouseEnter={() => this.setState({
+                      cursorOverReturn: true,
+                    })}
+                    onMouseLeave={() => this.setState({
+                      cursorOverReturn: false,
+                    })}
+                    onClick={() => this.setState({
+                      activeState: events.init,
+                    })}
+                    color={cursorOverReturn ?
+                        'secondary' :
+                        'primary'}
+                >
+                  Return to Login
+                </Typography>
               </Grid>
             </Grid>
           </CardContent>

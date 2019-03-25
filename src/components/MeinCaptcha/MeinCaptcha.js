@@ -152,6 +152,7 @@ class MeinCaptcha extends Component {
       case states.performingCaptcha:
         msg = 'Enter the letters which you see'
         break
+      default:
     }
     return (
         <Card style={{width: width + 32}}>
@@ -164,53 +165,45 @@ class MeinCaptcha extends Component {
                 {msg}
               </Typography>
               <Collapse in={activeState === states.askingForCaptcha}>
-                <Card style={{height: height + 56}}>
-                  <CardContent>
-                    <div className={classes.askingForCaptchaCard}>
-                      <Checkbox
-                          onChange={this.handleNotARobot}
-                          value='notARobot'
-                          classes={{
-                            root: classes.checkBoxRoot,
-                            checked: classes.checkBoxChecked,
-                          }}
-                      />
-                      <Typography
-                          variant={'body1'}
-                          color={'textPrimary'}
-                      >
-                        I'm not a robot
-                      </Typography>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className={classes.askingForCaptchaCard}>
+                  <Checkbox
+                      onChange={this.handleNotARobot}
+                      value='notARobot'
+                      classes={{
+                        root: classes.checkBoxRoot,
+                        checked: classes.checkBoxChecked,
+                      }}
+                  />
+                  <Typography
+                      variant={'body1'}
+                      color={'textPrimary'}
+                  >
+                    I'm not a robot
+                  </Typography>
+                </div>
               </Collapse>
               <Collapse in={activeState === states.performingCaptcha}>
-                <Card>
-                  <CardContent>
-                    <div className={classes.captchaCard}>
-                      <canvas
-                          style={{gridColumn: '1/3'}}
-                          className={classes.canvas}
-                          ref={this.getCanvasElement}
-                          width={width}
-                          height={height}
-                      />
-                      <Input/>
-                      <Fab
-                          color='primary'
-                          aria-label='Save'
-                          size={'small'}
-                          className={classes.button}
-                          // onClick={this.handleSavePasswordChanges}
-                      >
-                        <Tooltip title='Submit'>
-                          <SaveIcon className={classes.buttonIcon}/>
-                        </Tooltip>
-                      </Fab>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className={classes.captchaCard}>
+                  <canvas
+                      style={{gridColumn: '1/3'}}
+                      className={classes.canvas}
+                      ref={this.getCanvasElement}
+                      width={width}
+                      height={height}
+                  />
+                  <Input/>
+                  <Fab
+                      color='primary'
+                      aria-label='Save'
+                      size={'small'}
+                      className={classes.button}
+                      // onClick={this.handleSavePasswordChanges}
+                  >
+                    <Tooltip title='Submit'>
+                      <SaveIcon className={classes.buttonIcon}/>
+                    </Tooltip>
+                  </Fab>
+                </div>
               </Collapse>
             </div>
           </CardContent>
