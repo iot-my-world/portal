@@ -14,6 +14,7 @@ import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
 import {Login as LoginClaimsType} from 'brain/security/claims/types'
 import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
+import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
 
 const style = theme => {
   return {
@@ -75,7 +76,8 @@ const states = {
 }
 
 const events = {
-  init: states.loggingIn,
+  // init: states.loggingIn,
+  init: states.forgottenPassword,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
   forgotPassword: states.forgottenPassword,
@@ -328,7 +330,7 @@ class Login extends Component {
             <Grid container direction={'column'} alignItems={'center'}
                   spacing={8}>
               <Grid item>
-                Hello
+                <MeinCaptcha/>
               </Grid>
             </Grid>
           </CardContent>
