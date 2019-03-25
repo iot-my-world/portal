@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Collapse, Card, CardContent,
-  Typography, Checkbox,
+  Typography, Checkbox, Input,
 } from '@material-ui/core'
 import green from '@material-ui/core/colors/green'
 
@@ -69,6 +69,8 @@ const styles = theme => ({
     },
   },
   checkBoxChecked: {},
+  captchaRoot: {},
+  captchaCard: {},
 })
 
 const states = {
@@ -89,6 +91,7 @@ class MeinCaptcha extends Component {
     this.getCanvasElement = this.getCanvasElement.bind(this)
     this.updateCanvas = this.updateCanvas.bind(this)
     this.generateCaptcha = this.generateCaptcha.bind(this)
+    this.handleNotARobot = this.handleNotARobot.bind(this)
     this.state = {
       activeState: events.init,
       canvasElement: undefined,
@@ -105,8 +108,8 @@ class MeinCaptcha extends Component {
       captcha.push(new Letter(
           possible.charAt(Math.floor(Math.random() * possible.length)),
           {
-            x: (width / (captchaLength + 1)) * (i),
-            y: height / 2,
+            x: ((width - 32) / (captchaLength + 1)) * (i),
+            y: (height - 50) / 2,
           },
       ))
     }
@@ -154,6 +157,12 @@ class MeinCaptcha extends Component {
     this.forceUpdate()
   }
 
+  handleNotARobot(e, checked) {
+    if (checked) {
+      this.setState({activeState: events.startCaptcha})
+    }
+  }
+
   getCanvasElement(canvasElement) {
     this.setState({canvasElement})
   }
@@ -180,8 +189,7 @@ class MeinCaptcha extends Component {
                   <CardContent>
                     <div className={classes.askingForCaptchaCard}>
                       <Checkbox
-                          // checked={this.state.checkedG}
-                          // onChange={this.handleChange('checkedG')}
+                          onChange={this.handleNotARobot}
                           value='notARobot'
                           classes={{
                             root: classes.checkBoxRoot,
@@ -200,12 +208,31 @@ class MeinCaptcha extends Component {
               </div>
             </Collapse>
             <Collapse in={activeState === states.performingCaptcha}>
-              <canvas
-                  className={classes.canvas}
-                  ref={this.getCanvasElement}
-                  width={width}
-                  height={height}
-              />
+              <div
+                  className={classes.captchaRoot}
+                  style={{width}}
+              >
+                <Typography
+                    variant={'body1'}
+                    color={'textPrimary'}
+                    style={{paddingBottom: 10}}
+                >
+                  Please type the letters that you see
+                </Typography>
+                <Card>
+                  <CardContent>
+                    <div className={classes.captchaCard}>
+                      <canvas
+                          className={classes.canvas}
+                          ref={this.getCanvasElement}
+                          width={width - 32}
+                          height={height - 50}
+                      />
+                      <Input/>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </Collapse>
           </CardContent>
         </Card>
