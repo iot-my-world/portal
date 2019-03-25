@@ -52,12 +52,12 @@ class Letter {
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&+='
 
 const styles = theme => ({
-  canvas: {
-    backgroundColor: '#ffffff',
-  },
-  askingForCaptchaRoot: {
+  root: {
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
+  },
+  canvas: {
+    backgroundColor: '#ffffff',
   },
   askingForCaptchaCard: {
     display: 'grid',
@@ -72,7 +72,6 @@ const styles = theme => ({
     },
   },
   checkBoxChecked: {},
-  captchaRoot: {},
   captchaCard: {
     display: 'grid',
     gridTemplateRows: 'auto auto',
@@ -121,8 +120,8 @@ class MeinCaptcha extends Component {
       captcha.push(new Letter(
           possible.charAt(Math.floor(Math.random() * possible.length)),
           {
-            x: ((width - 32) / (captchaLength + 1)) * (i),
-            y: (height - 50) / 2,
+            x: (width / (captchaLength + 1)) * (i),
+            y: height / 2,
           },
       ))
     }
@@ -183,22 +182,28 @@ class MeinCaptcha extends Component {
   render() {
     const {classes, width, height} = this.props
     const {activeState} = this.state
+    let msg = ''
+    switch (activeState) {
+      case states.askingForCaptcha:
+        msg = 'Please show that you are not a robot'
+        break
+
+      case states.performingCaptcha:
+        msg = 'Enter the letters which you see'
+        break
+    }
     return (
         <Card style={{width: width + 32}}>
           <CardContent>
-            <Collapse in={activeState === states.askingForCaptcha}>
-              <div
-                  className={classes.askingForCaptchaRoot}
-                  style={{width, height: height + 10}}
+            <div className={classes.root}>
+              <Typography
+                  variant={'body1'}
+                  color={'textPrimary'}
               >
-                <Typography
-                    variant={'body1'}
-                    color={'textPrimary'}
-                    style={{paddingBottom: 10}}
-                >
-                  Please show that you are not a robot
-                </Typography>
-                <Card>
+                {msg}
+              </Typography>
+              <Collapse in={activeState === states.askingForCaptcha}>
+                <Card style={{height: height + 56}}>
                   <CardContent>
                     <div className={classes.askingForCaptchaCard}>
                       <Checkbox
@@ -218,20 +223,8 @@ class MeinCaptcha extends Component {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            </Collapse>
-            <Collapse in={activeState === states.performingCaptcha}>
-              <div
-                  className={classes.captchaRoot}
-                  style={{width}}
-              >
-                <Typography
-                    variant={'body1'}
-                    color={'textPrimary'}
-                    style={{paddingBottom: 10}}
-                >
-                  Please type the letters that you see
-                </Typography>
+              </Collapse>
+              <Collapse in={activeState === states.performingCaptcha}>
                 <Card>
                   <CardContent>
                     <div className={classes.captchaCard}>
@@ -239,8 +232,8 @@ class MeinCaptcha extends Component {
                           style={{gridColumn: '1/3'}}
                           className={classes.canvas}
                           ref={this.getCanvasElement}
-                          width={width - 32}
-                          height={height - 50}
+                          width={width}
+                          height={height}
                       />
                       <Input/>
                       <Fab
@@ -257,8 +250,8 @@ class MeinCaptcha extends Component {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            </Collapse>
+              </Collapse>
+            </div>
           </CardContent>
         </Card>
     )
@@ -274,7 +267,7 @@ MeinCaptcha.propTypes = {
 }
 MeinCaptcha.defaultProps = {
   width: 280,
-  height: 100,
+  height: 80,
   captchaLength: 5,
 }
 
