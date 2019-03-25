@@ -2,7 +2,9 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Collapse, Card, CardContent,
+  Typography, Checkbox,
 } from '@material-ui/core'
+import green from '@material-ui/core/colors/green'
 
 class Letter {
 
@@ -50,12 +52,23 @@ const styles = theme => ({
   canvas: {
     backgroundColor: '#ffffff',
   },
-  askingForCaptcha: {
+  askingForCaptchaRoot: {
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr',
+  },
+  askingForCaptchaCard: {
     display: 'grid',
     gridTemplateRows: '1fr',
     gridTemplateColumns: 'auto 1fr',
     alignItems: 'center',
   },
+  checkBoxRoot: {
+    color: green[600],
+    '&$checked': {
+      color: green[500],
+    },
+  },
+  checkBoxChecked: {},
 })
 
 const states = {
@@ -148,29 +161,55 @@ class MeinCaptcha extends Component {
   render() {
     const {classes, width, height} = this.props
     const {activeState} = this.state
-    return <Card style={{width: width + 32}}>
-      <CardContent>
-        <Collapse in={activeState === states.askingForCaptcha}>
-          <div className={classes.askingForCaptcha} style={{width, height}}>
-            <div>tick</div>
-            <div
-                onClick={() => this.setState(
-                    {activeState: events.startCaptcha})}
-            >
-              Please captcha?
-            </div>
-          </div>
-        </Collapse>
-        <Collapse in={activeState === states.performingCaptcha}>
-          <canvas
-              className={classes.canvas}
-              ref={this.getCanvasElement}
-              width={width}
-              height={height}
-          />
-        </Collapse>
-      </CardContent>
-    </Card>
+    return (
+        <Card style={{width: width + 32}}>
+          <CardContent>
+            <Collapse in={activeState === states.askingForCaptcha}>
+              <div
+                  className={classes.askingForCaptchaRoot}
+                  style={{width, height: height + 10}}
+              >
+                <Typography
+                    variant={'body1'}
+                    color={'textPrimary'}
+                    style={{paddingBottom: 10}}
+                >
+                  Please show that you are not a robot
+                </Typography>
+                <Card>
+                  <CardContent>
+                    <div className={classes.askingForCaptchaCard}>
+                      <Checkbox
+                          // checked={this.state.checkedG}
+                          // onChange={this.handleChange('checkedG')}
+                          value='notARobot'
+                          classes={{
+                            root: classes.checkBoxRoot,
+                            checked: classes.checkBoxChecked,
+                          }}
+                      />
+                      <Typography
+                          variant={'body1'}
+                          color={'textPrimary'}
+                      >
+                        I'm not a robot
+                      </Typography>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </Collapse>
+            <Collapse in={activeState === states.performingCaptcha}>
+              <canvas
+                  className={classes.canvas}
+                  ref={this.getCanvasElement}
+                  width={width}
+                  height={height}
+              />
+            </Collapse>
+          </CardContent>
+        </Card>
+    )
   }
 }
 
@@ -182,7 +221,7 @@ MeinCaptcha.propTypes = {
   captchaLength: PropTypes.number,
 }
 MeinCaptcha.defaultProps = {
-  width: 200,
+  width: 280,
   height: 100,
   captchaLength: 5,
 }
