@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Collapse, Card, CardContent,
   Typography, Checkbox, Input, Tooltip, Fab,
-  FormControl, FormHelperText,
 } from '@material-ui/core'
 import SendIcon from '@material-ui/icons/Send'
 import RefreshIcon from '@material-ui/icons/Refresh'
 import green from '@material-ui/core/colors/green'
 import Letter from './Letter'
+import ErrorIcon from '@material-ui/icons/ErrorOutline'
+import BackIcon from '@material-ui/icons/KeyboardArrowLeft'
 
 const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&+='
 
@@ -43,18 +44,32 @@ const styles = theme => ({
   buttonIcon: {
     margin: theme.spacing.unit,
   },
+  extendedButtonIcon: {
+    marginRight: theme.spacing.unit,
+  },
+  captchaFailureCard: {
+    display: 'grid',
+    gridTemplateRows: '1fr auto',
+    gridTemplateColumns: '1fr',
+    alignItems: 'center',
+    justifyItems: 'center',
+  },
+  errorIcon: {
+    fontSize: 100,
+    color: theme.palette.error.main,
+  },
 })
 
 const states = {
   askingForCaptcha: 0,
   performingCaptcha: 1,
-  captchaSuccess: 2,
-  captchaFailure: 3,
+  captchaFailure: 2,
 }
 
 const events = {
   init: states.askingForCaptcha,
   startCaptcha: states.performingCaptcha,
+  captchaFailure: states.captchaFailure,
 }
 
 class MeinCaptcha extends Component {
@@ -68,12 +83,14 @@ class MeinCaptcha extends Component {
     this.handleCaptchaAnswerChange = this.handleCaptchaAnswerChange.bind(this)
     this.reset = this.reset.bind(this)
     this.handleSubmitCaptcha = this.handleSubmitCaptcha.bind(this)
+    this.renderAskingForCaptcha = this.renderAskingForCaptcha.bind(this)
+    this.renderCaptcha = this.renderCaptcha.bind(this)
+    this.renderCaptchaFailure = this.renderCaptchaFailure.bind(this)
     this.state = {
       activeState: events.init,
       notARobotAnswer: false,
       canvasElement: undefined,
       captchaAnswer: '',
-      captchaWarning: undefined,
     }
     this.captcha = this.generateCaptcha()
     this.updateInterval = () => {
@@ -86,7 +103,6 @@ class MeinCaptcha extends Component {
       activeState: events.init,
       notARobotAnswer: false,
       captchaAnswer: '',
-      captchaWarning: undefined,
     })
   }
 
@@ -109,7 +125,6 @@ class MeinCaptcha extends Component {
     this.captcha = this.generateCaptcha()
     this.setState({
       captchaAnswer: '',
-      captchaWarning: undefined,
     })
   }
 
@@ -176,33 +191,110 @@ class MeinCaptcha extends Component {
   handleCaptchaAnswerChange(e) {
     this.setState({
       captchaAnswer: e.target.value,
-      captchaWarning: undefined,
     })
   }
 
   handleSubmitCaptcha() {
     const {captchaAnswer} = this.state
     if (captchaAnswer.length !== this.captcha.length) {
-      this.setState({captchaWarning: 'incorrect'})
+      this.setState({activeState: events.captchaFailure})
       return
     }
 
     for (let i = 0; i < captchaAnswer.length; i++) {
       const letter = captchaAnswer[i]
       if (letter !== this.captcha[i].letter) {
-        this.setState({captchaWarning: 'incorrect'})
+        this.setState({activeState: events.captchaFailure})
         return
       }
     }
   }
 
-  render() {
+  renderAskingForCaptcha() {
+    const {classes} = this.props
+    const {
+      notARobotAnswer,
+    } = this.state
+    return (
+        <div className={classes.askingForCaptchaCard}>
+          <Checkbox
+              onChange={this.handleNotARobot}
+              checked={notARobotAnswer}
+              classes={{
+                root: classes.checkBoxRoot,
+                checked: classes.checkBoxChecked,
+              }}
+          />
+          <Typography
+              variant={'body1'}
+              color={'textPrimary'}
+          >
+            I'm not a robot
+          </Typography>
+        </div>
+    )
+  }
+
+  renderCaptcha() {
     const {classes, width, height} = this.props
     const {
-      activeState,
-      notARobotAnswer,
       captchaAnswer,
-      captchaWarning,
+    } = this.state
+    return (
+        <div className={classes.captchaCard}>
+          <canvas
+              style={{gridColumn: '1/3'}}
+              className={classes.canvas}
+              ref={this.getCanvasElement}
+              width={width}
+              height={height}
+          />
+          <div style={{alignSelf: 'end'}}>
+            <Input id='captchaAnswer'
+                   value={captchaAnswer}
+                   onChange={this.handleCaptchaAnswerChange}
+            />
+          </div>
+          <Fab
+              style={{alignSelf: 'end'}}
+              color='primary'
+              aria-label='Save'
+              size={'small'}
+              className={classes.button}
+              onClick={this.handleSubmitCaptcha}
+          >
+            <Tooltip title='Submit'>
+              <SendIcon className={classes.buttonIcon}/>
+            </Tooltip>
+          </Fab>
+        </div>
+    )
+  }
+
+  renderCaptchaFailure() {
+    const {classes} = this.props
+    return (
+        <div className={classes.captchaFailureCard}>
+          <ErrorIcon className={classes.errorIcon}/>
+          <Fab
+              variant='extended'
+              size='small'
+              color='primary'
+              aria-label='Try Again'
+              className={classes.button}
+              onClick={this.reset}
+          >
+            <BackIcon className={classes.extendedButtonIcon}/>
+            Try Again
+          </Fab>
+        </div>
+    )
+  }
+
+  render() {
+    const {classes, width} = this.props
+    const {
+      activeState,
     } = this.state
     let msg = ''
     switch (activeState) {
@@ -245,6 +337,18 @@ class MeinCaptcha extends Component {
             </div>
         )
         break
+
+      case states.captchaFailure:
+        msg = (
+            <Typography
+                variant={'body1'}
+                color={'error'}
+            >
+              Incorrect
+            </Typography>
+        )
+        break
+
       default:
     }
     return (
@@ -253,59 +357,13 @@ class MeinCaptcha extends Component {
             <div className={classes.root}>
               {msg}
               <Collapse in={activeState === states.askingForCaptcha}>
-                <div className={classes.askingForCaptchaCard}>
-                  <Checkbox
-                      onChange={this.handleNotARobot}
-                      checked={notARobotAnswer}
-                      classes={{
-                        root: classes.checkBoxRoot,
-                        checked: classes.checkBoxChecked,
-                      }}
-                  />
-                  <Typography
-                      variant={'body1'}
-                      color={'textPrimary'}
-                  >
-                    I'm not a robot
-                  </Typography>
-                </div>
+                {this.renderAskingForCaptcha()}
               </Collapse>
               <Collapse in={activeState === states.performingCaptcha}>
-                <div className={classes.captchaCard}>
-                  <canvas
-                      style={{gridColumn: '1/3'}}
-                      className={classes.canvas}
-                      ref={this.getCanvasElement}
-                      width={width}
-                      height={height}
-                  />
-                  <div>
-                    <FormControl
-                        error={!!captchaWarning}
-                        aria-describedby='captchaAnswer'
-                    >
-                      <Input id='captchaAnswer'
-                             value={captchaAnswer}
-                             onChange={this.handleCaptchaAnswerChange}
-                      />
-                      {(!!captchaWarning) &&
-                      <FormHelperText id='captchaAnswer'>
-                        {captchaWarning}
-                      </FormHelperText>}
-                    </FormControl>
-                  </div>
-                  <Fab
-                      color='primary'
-                      aria-label='Save'
-                      size={'small'}
-                      className={classes.button}
-                      onClick={this.handleSubmitCaptcha}
-                  >
-                    <Tooltip title='Submit'>
-                      <SendIcon className={classes.buttonIcon}/>
-                    </Tooltip>
-                  </Fab>
-                </div>
+                {this.renderCaptcha()}
+              </Collapse>
+              <Collapse in={activeState === states.captchaFailure}>
+                {this.renderCaptchaFailure()}
               </Collapse>
             </div>
           </CardContent>
