@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Collapse, Card, CardContent,
   Typography, Checkbox, Input, Tooltip, Fab,
+  FormControl, FormHelperText,
 } from '@material-ui/core'
 import SendIcon from '@material-ui/icons/Send'
 import RefreshIcon from '@material-ui/icons/Refresh'
@@ -64,11 +65,15 @@ class MeinCaptcha extends Component {
     this.generateCaptcha = this.generateCaptcha.bind(this)
     this.handleNotARobot = this.handleNotARobot.bind(this)
     this.handleRegenerate = this.handleRegenerate.bind(this)
+    this.handleCaptchaAnswerChange = this.handleCaptchaAnswerChange.bind(this)
     this.reset = this.reset.bind(this)
+    this.handleSubmitCaptcha = this.handleSubmitCaptcha.bind(this)
     this.state = {
       activeState: events.init,
       notARobotAnswer: false,
       canvasElement: undefined,
+      captchaAnswer: '',
+      captchaWarning: undefined,
     }
     this.captcha = this.generateCaptcha()
     this.updateInterval = () => {
@@ -80,6 +85,8 @@ class MeinCaptcha extends Component {
     this.setState({
       activeState: events.init,
       notARobotAnswer: false,
+      captchaAnswer: '',
+      captchaWarning: undefined,
     })
   }
 
@@ -100,7 +107,10 @@ class MeinCaptcha extends Component {
 
   handleRegenerate() {
     this.captcha = this.generateCaptcha()
-    this.forceUpdate()
+    this.setState({
+      captchaAnswer: '',
+      captchaWarning: undefined,
+    })
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -163,9 +173,37 @@ class MeinCaptcha extends Component {
     this.setState({canvasElement})
   }
 
+  handleCaptchaAnswerChange(e) {
+    this.setState({
+      captchaAnswer: e.target.value,
+      captchaWarning: undefined,
+    })
+  }
+
+  handleSubmitCaptcha() {
+    const {captchaAnswer} = this.state
+    if (captchaAnswer.length !== this.captcha.length) {
+      this.setState({captchaWarning: 'incorrect'})
+      return
+    }
+
+    for (let i = 0; i < captchaAnswer.length; i++) {
+      const letter = captchaAnswer[i]
+      if (letter !== this.captcha[i].letter) {
+        this.setState({captchaWarning: 'incorrect'})
+        return
+      }
+    }
+  }
+
   render() {
     const {classes, width, height} = this.props
-    const {activeState, notARobotAnswer} = this.state
+    const {
+      activeState,
+      notARobotAnswer,
+      captchaAnswer,
+      captchaWarning,
+    } = this.state
     let msg = ''
     switch (activeState) {
       case states.askingForCaptcha:
@@ -241,13 +279,27 @@ class MeinCaptcha extends Component {
                       width={width}
                       height={height}
                   />
-                  <Input/>
+                  <div>
+                    <FormControl
+                        error={!!captchaWarning}
+                        aria-describedby='captchaAnswer'
+                    >
+                      <Input id='captchaAnswer'
+                             value={captchaAnswer}
+                             onChange={this.handleCaptchaAnswerChange}
+                      />
+                      {(!!captchaWarning) &&
+                      <FormHelperText id='captchaAnswer'>
+                        {captchaWarning}
+                      </FormHelperText>}
+                    </FormControl>
+                  </div>
                   <Fab
                       color='primary'
                       aria-label='Save'
                       size={'small'}
                       className={classes.button}
-                      // onClick={this.handleSavePasswordChanges}
+                      onClick={this.handleSubmitCaptcha}
                   >
                     <Tooltip title='Submit'>
                       <SendIcon className={classes.buttonIcon}/>

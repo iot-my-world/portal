@@ -18,6 +18,10 @@ export default class Letter {
     this._center = center
   }
 
+  get letter() {
+    return this._letter
+  }
+
   draw(canvas) {
     let ctx
     try {
