@@ -123,6 +123,7 @@ class MeinCaptcha extends Component {
 
   handleRegenerate() {
     this.captcha = this.generateCaptcha()
+    this.updateCanvas()
     this.setState({
       captchaAnswer: '',
     })
@@ -322,7 +323,7 @@ class MeinCaptcha extends Component {
                   variant={'body1'}
                   color={'textPrimary'}
               >
-                Enter the letters which you see
+                Enter the characters which you see
               </Typography>
               <Fab
                   color='primary'

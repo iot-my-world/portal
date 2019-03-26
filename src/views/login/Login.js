@@ -377,7 +377,7 @@ class Login extends Component {
 
     return <div
         className={classes.fullPageBackground}
-        // style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
         <div className={classes.contentWrapper}>
