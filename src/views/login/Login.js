@@ -319,7 +319,9 @@ class Login extends Component {
 
   renderForgotPasswordCard() {
     const {classes} = this.props
-    const {cursorOverReturn} = this.state
+    const {cursorOverReturn, activeState} = this.state
+    const showForgottenPassword =
+        (activeState === states.forgottenPassword)
     return (
         <Card>
           <CardHeader
@@ -331,7 +333,7 @@ class Login extends Component {
             <Grid container direction={'column'} alignItems={'center'}
                   spacing={8}>
               <Grid item>
-                <MeinCaptcha/>
+                <MeinCaptcha resetToggle={showForgottenPassword}/>
               </Grid>
               <Grid item>
                 <Typography

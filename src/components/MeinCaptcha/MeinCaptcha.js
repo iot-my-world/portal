@@ -63,13 +63,23 @@ class MeinCaptcha extends Component {
     this.updateCanvas = this.updateCanvas.bind(this)
     this.generateCaptcha = this.generateCaptcha.bind(this)
     this.handleNotARobot = this.handleNotARobot.bind(this)
+    this.reset = this.reset.bind(this)
     this.state = {
       activeState: events.init,
+      notARobotAnswer: false,
       canvasElement: undefined,
     }
     this.captcha = this.generateCaptcha()
     this.updateInterval = () => {
     }
+  }
+
+  reset() {
+    this.captcha = this.generateCaptcha()
+    this.setState({
+      activeState: events.init,
+      notARobotAnswer: false,
+    })
   }
 
   generateCaptcha() {
@@ -90,11 +100,17 @@ class MeinCaptcha extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const {canvasElement} = this.state
     const {canvasElement: prevCanvasElement} = prevState
+    const {resetToggle} = this.props
+    const {resetToggle: prevResetToggle} = prevProps
     if (
         (prevCanvasElement === undefined) &&
         (canvasElement !== undefined)
     ) {
       this.updateInterval = setInterval(this.updateCanvas, 500)
+    }
+
+    if (resetToggle !== prevResetToggle) {
+      this.reset()
     }
   }
 
@@ -130,7 +146,10 @@ class MeinCaptcha extends Component {
 
   handleNotARobot(e, checked) {
     if (checked) {
-      this.setState({activeState: events.startCaptcha})
+      this.setState({
+        activeState: events.startCaptcha,
+        notARobotAnswer: checked,
+      })
     }
   }
 
@@ -140,7 +159,7 @@ class MeinCaptcha extends Component {
 
   render() {
     const {classes, width, height} = this.props
-    const {activeState} = this.state
+    const {activeState, notARobotAnswer} = this.state
     let msg = ''
     switch (activeState) {
       case states.askingForCaptcha:
@@ -166,7 +185,7 @@ class MeinCaptcha extends Component {
                 <div className={classes.askingForCaptchaCard}>
                   <Checkbox
                       onChange={this.handleNotARobot}
-                      value='notARobot'
+                      checked={notARobotAnswer}
                       classes={{
                         root: classes.checkBoxRoot,
                         checked: classes.checkBoxChecked,
@@ -216,6 +235,10 @@ MeinCaptcha.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   captchaLength: PropTypes.number,
+  /**
+   * can be toggled by a parent to reset MeinCaptcha
+   */
+  resetToggle: PropTypes.bool.isRequired,
 }
 MeinCaptcha.defaultProps = {
   width: 280,
