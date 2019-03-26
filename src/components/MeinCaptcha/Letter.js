@@ -1,3 +1,15 @@
+const angles = [
+  -10,
+  10,
+  -20,
+  20,
+  -30,
+  30,
+  -35,
+  35,
+  15,
+]
+
 export default class Letter {
   /**
    * the letter to draw
@@ -40,6 +52,11 @@ export default class Letter {
     }
 
     try {
+      // letterCanvasCtx.beginPath()
+      // letterCanvasCtx.rect(0, 0, this._dimensions.width, this._dimensions.height)
+      // letterCanvasCtx.fillStyle = "red"
+      // letterCanvasCtx.fill()
+
       // warp with transform matrix
       // below is the identity matrix
       // ctx.setTransform(
@@ -55,8 +72,8 @@ export default class Letter {
       // x' = a*x + c*y + e
       // y' = b*x + d*y + f
       const a = 1
-      const b = 0.5
-      const c = 0.5
+      const b = Math.random() * 0.8
+      const c = Math.random() * 0.8
       const d = 1
       const e = 0
       const f = 0
@@ -71,8 +88,8 @@ export default class Letter {
           e,
           f,
       )
-
-      letterCanvasCtx.font = '25px Roboto'
+      // letterCanvasCtx.fillStyle = "black"
+      letterCanvasCtx.font = '28px Roboto'
       letterCanvasCtx.fillText(
           this._letter,
           this._dimensions.width / 2 +
@@ -86,6 +103,8 @@ export default class Letter {
               this._dimensions.height / 2,
           ),
       )
+      // reset to to identity translation matrix
+      letterCanvasCtx.setTransform(1, 0, 0, 1, 0, 0)
     } catch (e) {
       console.error('error drawing on letter canvas', e)
       return
@@ -102,8 +121,22 @@ export default class Letter {
 
     // draw the letter canvas onto the given canvas
     try {
-      ctx.drawImage(letterCanvas, this._center.x,
-          this._center.y - this._dimensions.height / 2)
+      ctx.translate(
+          this._center.x + this._dimensions.width / 2,
+          this._center.y,
+      )
+      ctx.rotate(
+          (Math.PI / 180) * angles[Math.floor(Math.random() * angles.length)])
+      ctx.translate(
+          -(this._center.x + this._dimensions.width / 2),
+          -this._center.y,
+      )
+      ctx.drawImage(
+          letterCanvas,
+          this._center.x,
+          this._center.y - this._dimensions.height / 2,
+      )
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
     } catch (e) {
       console.error('error drawing leter canvas onto given canvas', e)
     }

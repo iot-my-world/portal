@@ -15,7 +15,7 @@ const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 const styles = theme => ({
   root: {
-    backgroundColor: '#28ff3a',
+    // backgroundColor: '#28ff3a',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
   },
@@ -101,6 +101,7 @@ class MeinCaptcha extends Component {
 
   reset() {
     this.captcha = this.generateCaptcha()
+    this.updateCanvas()
     this.setState({
       activeState: events.init,
       notARobotAnswer: false,
@@ -331,7 +332,7 @@ class MeinCaptcha extends Component {
                   variant={'body1'}
                   color={'textPrimary'}
               >
-                Enter the characters which you see
+                Enter the characters
               </Typography>
               <Fab
                   color='primary'
@@ -394,7 +395,7 @@ MeinCaptcha.propTypes = {
   resetToggle: PropTypes.bool.isRequired,
 }
 MeinCaptcha.defaultProps = {
-  width: 280,
+  width: 250,
   height: 80,
   captchaLength: 5,
 }
