@@ -137,7 +137,8 @@ class MeinCaptcha extends Component {
         (prevCanvasElement === undefined) &&
         (canvasElement !== undefined)
     ) {
-      this.updateInterval = setInterval(this.updateCanvas, 500)
+      this.updateCanvas()
+      // this.updateInterval = setInterval(this.updateCanvas, 500)
     }
 
     if (resetToggle !== prevResetToggle) {

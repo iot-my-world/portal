@@ -46,16 +46,15 @@ export default class Letter {
       // (x,y) --> (x',y') where:
       // x' = a*x + c*y + e
       // y' = b*x + d*y + f
-      // thus:
-      // y = (y' - f - b*x)/d
-      // x = (x' - e - d*y)/f
 
       const a = 1
-      const b = 0
-      const c = 0
+      const b = 0.5
+      const c = 0.2
       const d = 1
       const e = 0
       const f = 0
+      const xShift = (x, y) => x - (a * x + c * y + e)
+      const yShift = (x, y) => y - (b * x + d * y + f)
 
       ctx.setTransform(
           a,
@@ -65,8 +64,12 @@ export default class Letter {
           e,
           f,
       )
-      ctx.font = '14px Roboto'
-      ctx.fillText(this._letter, this._center.x, this._center.y)
+      ctx.font = '25px Roboto'
+      ctx.fillText(
+          this._letter,
+          this._center.x + xShift(this._center.x, this._center.y),
+          this._center.y + yShift(this._center.x, this._center.y),
+      )
     } catch (e) {
       console.error('error drawing on canvas', e)
     }
