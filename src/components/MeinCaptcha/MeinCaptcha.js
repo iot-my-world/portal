@@ -15,6 +15,7 @@ const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 const styles = theme => ({
   root: {
+    backgroundColor: '#28ff3a',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
   },
@@ -67,7 +68,8 @@ const states = {
 }
 
 const events = {
-  init: states.askingForCaptcha,
+  // init: states.askingForCaptcha,
+  init: states.performingCaptcha,
   startCaptcha: states.performingCaptcha,
   captchaFailure: states.captchaFailure,
 }
@@ -109,12 +111,18 @@ class MeinCaptcha extends Component {
   generateCaptcha() {
     const {captchaLength, width, height} = this.props
     let captcha = []
+    const letterCanvasWidth = (width / (captchaLength + 1))
+    const letterCanvasHeight = height * 0.8
     for (let i = 1; i <= captchaLength; i++) {
       captcha.push(new Letter(
           possible.charAt(Math.floor(Math.random() * possible.length)),
           {
-            x: (width / (captchaLength + 1)) * (i),
+            x: (letterCanvasWidth * i) - letterCanvasWidth / 2,
             y: height / 2,
+          },
+          {
+            width: letterCanvasWidth,
+            height: letterCanvasHeight,
           },
       ))
     }
