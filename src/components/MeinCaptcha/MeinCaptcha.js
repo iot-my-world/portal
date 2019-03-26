@@ -5,6 +5,7 @@ import {
   Typography, Checkbox, Input, Tooltip, Fab,
 } from '@material-ui/core'
 import SendIcon from '@material-ui/icons/Send'
+import RefreshIcon from '@material-ui/icons/Refresh'
 import green from '@material-ui/core/colors/green'
 import Letter from './Letter'
 
@@ -62,6 +63,7 @@ class MeinCaptcha extends Component {
     this.updateCanvas = this.updateCanvas.bind(this)
     this.generateCaptcha = this.generateCaptcha.bind(this)
     this.handleNotARobot = this.handleNotARobot.bind(this)
+    this.handleRegenerate = this.handleRegenerate.bind(this)
     this.reset = this.reset.bind(this)
     this.state = {
       activeState: events.init,
@@ -94,6 +96,11 @@ class MeinCaptcha extends Component {
       ))
     }
     return captcha
+  }
+
+  handleRegenerate() {
+    this.captcha = this.generateCaptcha()
+    this.forceUpdate()
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -162,11 +169,43 @@ class MeinCaptcha extends Component {
     let msg = ''
     switch (activeState) {
       case states.askingForCaptcha:
-        msg = 'Please show that you are not a robot'
+        msg = (
+            <Typography
+                variant={'body1'}
+                color={'textPrimary'}
+            >
+              Please show that you are not a robot
+            </Typography>
+        )
         break
 
       case states.performingCaptcha:
-        msg = 'Enter the letters which you see'
+        msg = (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr',
+              alignItems: 'center',
+              justifyItems: 'center',
+            }}>
+              <Typography
+                  variant={'body1'}
+                  color={'textPrimary'}
+              >
+                Enter the letters which you see
+              </Typography>
+              <Fab
+                  color='primary'
+                  aria-label='Refresh'
+                  size={'small'}
+                  className={classes.button}
+                  onClick={this.handleRegenerate}
+              >
+                <Tooltip title='Regenerate'>
+                  <RefreshIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </div>
+        )
         break
       default:
     }
@@ -174,12 +213,7 @@ class MeinCaptcha extends Component {
         <Card style={{width: width + 32}}>
           <CardContent>
             <div className={classes.root}>
-              <Typography
-                  variant={'body1'}
-                  color={'textPrimary'}
-              >
-                {msg}
-              </Typography>
+              {msg}
               <Collapse in={activeState === states.askingForCaptcha}>
                 <div className={classes.askingForCaptchaCard}>
                   <Checkbox
