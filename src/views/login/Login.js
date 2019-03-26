@@ -75,8 +75,8 @@ const states = {
 }
 
 const events = {
-  // init: states.loggingIn,
-  init: states.forgottenPassword,
+  init: states.loggingIn,
+  // init: states.forgottenPassword,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
   forgotPassword: states.forgottenPassword,

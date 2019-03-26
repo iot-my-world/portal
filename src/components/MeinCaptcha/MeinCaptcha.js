@@ -68,8 +68,8 @@ const states = {
 }
 
 const events = {
-  // init: states.askingForCaptcha,
-  init: states.performingCaptcha,
+  init: states.askingForCaptcha,
+  // init: states.performingCaptcha,
   startCaptcha: states.performingCaptcha,
   captchaFailure: states.captchaFailure,
 }
