@@ -26,11 +26,10 @@ const styles = theme => ({
   },
   checkBoxRoot: {
     color: green[600],
-    '&$checked': {
-      color: green[500],
-    },
   },
-  checkBoxChecked: {},
+  checkBoxChecked: {
+    color: green[500],
+  },
   captchaCard: {
     display: 'grid',
     gridTemplateRows: 'auto auto',
