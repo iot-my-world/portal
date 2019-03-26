@@ -32,7 +32,39 @@ export default class Letter {
     }
 
     try {
-      // clear canvas
+      // warp with transform matrix
+      // below is the identity matrix
+      // ctx.setTransform(
+      //     1,    // a: scale horizontally
+      //     0,    // b: skew horizontally
+      //     0,    // c: skew vertically
+      //     1,    // d: scale vertically
+      //     0,    // e: move horizontally
+      //     0,    // f: move vertically
+      // )
+      // matrix results in translation of each point:
+      // (x,y) --> (x',y') where:
+      // x' = a*x + c*y + e
+      // y' = b*x + d*y + f
+      // thus:
+      // y = (y' - f - b*x)/d
+      // x = (x' - e - d*y)/f
+
+      const a = 1
+      const b = 0
+      const c = 0
+      const d = 1
+      const e = 0
+      const f = 0
+
+      ctx.setTransform(
+          a,
+          b,
+          c,
+          d,
+          e,
+          f,
+      )
       ctx.font = '14px Roboto'
       ctx.fillText(this._letter, this._center.x, this._center.y)
     } catch (e) {
