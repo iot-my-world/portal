@@ -4,9 +4,7 @@ import {
   withStyles, Collapse, Card, CardContent,
   Typography, Checkbox, Input, Tooltip, Fab,
 } from '@material-ui/core'
-import {
-  MdSave as SaveIcon,
-} from 'react-icons/md'
+import SendIcon from '@material-ui/icons/Send'
 import green from '@material-ui/core/colors/green'
 import Letter from './Letter'
 
@@ -200,7 +198,7 @@ class MeinCaptcha extends Component {
                       // onClick={this.handleSavePasswordChanges}
                   >
                     <Tooltip title='Submit'>
-                      <SaveIcon className={classes.buttonIcon}/>
+                      <SendIcon className={classes.buttonIcon}/>
                     </Tooltip>
                   </Fab>
                 </div>

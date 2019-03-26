@@ -57,7 +57,6 @@ const style = theme => {
     formField: {
       width: '200px',
     },
-    loginCardWrapper: {},
     button: {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
@@ -376,7 +375,7 @@ class Login extends Component {
 
     return <div
         className={classes.fullPageBackground}
-        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+        // style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
         <div className={classes.contentWrapper}>
@@ -387,14 +386,16 @@ class Login extends Component {
               SpotNav
             </Typography>
           </div>
-          <div className={classes.loginCardWrapper}>
-            <Collapse in={showLoginCard}>
+          <Collapse in={showLoginCard}>
+            <div>
               {this.renderLogInCard()}
-            </Collapse>
-            <Collapse in={showForgottenPassword}>
+            </div>
+          </Collapse>
+          <Collapse in={showForgottenPassword}>
+            <div>
               {this.renderForgotPasswordCard()}
-            </Collapse>
-          </div>
+            </div>
+          </Collapse>
         </div>
       </div>
     </div>
