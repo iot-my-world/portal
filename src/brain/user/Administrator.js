@@ -51,6 +51,15 @@ const Administrator = {
     response.user = new User(response.user)
     return response
   },
+
+  async ForgotPassword({usernameOrEmailAddress}) {
+    return await jsonRpcRequest({
+      method: 'UserAdministrator.ForgotPassword',
+      request: {
+        usernameOrEmailAddress,
+      },
+    })
+  },
 }
 
 export default Administrator

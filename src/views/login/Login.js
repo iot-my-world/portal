@@ -15,6 +15,7 @@ import {MethodFailed, ContactFailed} from 'brain/apiError'
 import {Login as LoginClaimsType} from 'brain/security/claims/types'
 import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
+import {UserAdministrator} from 'brain/user'
 
 const style = theme => {
   return {
@@ -71,15 +72,17 @@ const states = {
   loggingIn: 0,
   logInFail: 1,
   errorContactingServer: 2,
-  forgottenPassword: 3,
+  forgotPasswordCaptcha: 3,
+  forgotPasswordDetailsEnter: 4,
 }
 
 const events = {
   init: states.loggingIn,
-  // init: states.forgottenPassword,
+  // init: states.forgotPasswordCaptcha,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
-  forgotPassword: states.forgottenPassword,
+  forgotPassword: states.forgotPasswordCaptcha,
+  captchaSuccess: states.forgotPasswordDetailsEnter,
 }
 
 class Login extends Component {
@@ -98,7 +101,10 @@ class Login extends Component {
     this.handleLogin = this.handleLogin.bind(this)
     this.errorMessage = this.errorMessage.bind(this)
     this.renderLogInCard = this.renderLogInCard.bind(this)
-    this.renderForgotPasswordCard = this.renderForgotPasswordCard.bind(this)
+    this.renderForgotPasswordCaptchaCard =
+        this.renderForgotPasswordCaptchaCard.bind(this)
+    this.renderForgotPasswordDetailsEnterCard =
+        this.renderForgotPasswordDetailsEnterCard.bind(this)
   }
 
   handleInputChange(event) {
@@ -317,11 +323,11 @@ class Login extends Component {
     )
   }
 
-  renderForgotPasswordCard() {
+  renderForgotPasswordCaptchaCard() {
     const {classes} = this.props
     const {cursorOverReturn, activeState} = this.state
-    const showForgottenPassword =
-        (activeState === states.forgottenPassword)
+    const showCaptcha =
+        (activeState === states.forgotPasswordCaptcha)
     return (
         <Card>
           <CardHeader
@@ -333,7 +339,12 @@ class Login extends Component {
             <Grid container direction={'column'} alignItems={'center'}
                   spacing={8}>
               <Grid item>
-                <MeinCaptcha resetToggle={showForgottenPassword}/>
+                <MeinCaptcha
+                    resetToggle={showCaptcha}
+                    onSuccess={() => this.setState({
+                      activeState: events.captchaSuccess,
+                    })}
+                />
               </Grid>
               <Grid item>
                 <Typography
@@ -360,6 +371,31 @@ class Login extends Component {
     )
   }
 
+  renderForgotPasswordDetailsEnterCard() {
+    const {classes} = this.props
+
+    return (
+        <Card>
+          <CardHeader
+              title={'Forgot Password'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <Grid container direction={'column'} alignItems={'center'}
+                  spacing={8}>
+              <Grid item>
+                Enter your details
+              </Grid>
+              <Grid item>
+                Email address
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+    )
+  }
+
   render() {
     const {
       classes,
@@ -372,12 +408,10 @@ class Login extends Component {
         (activeState === states.loggingIn) ||
         (activeState === states.errorContactingServer) ||
         (activeState === states.logInFail)
-    const showForgottenPassword =
-        (activeState === states.forgottenPassword)
 
     return <div
         className={classes.fullPageBackground}
-        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+        // style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
         <div className={classes.contentWrapper}>
@@ -393,9 +427,14 @@ class Login extends Component {
               {this.renderLogInCard()}
             </div>
           </Collapse>
-          <Collapse in={showForgottenPassword}>
+          <Collapse in={activeState === states.forgotPasswordCaptcha}>
             <div>
-              {this.renderForgotPasswordCard()}
+              {this.renderForgotPasswordCaptchaCard()}
+            </div>
+          </Collapse>
+          <Collapse in={activeState === states.forgotPasswordDetailsEnter}>
+            <div>
+              {this.renderForgotPasswordDetailsEnterCard()}
             </div>
           </Collapse>
         </div>

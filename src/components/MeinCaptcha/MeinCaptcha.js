@@ -207,6 +207,7 @@ class MeinCaptcha extends Component {
 
   handleSubmitCaptcha() {
     const {captchaAnswer} = this.state
+    const {onSuccess} = this.props
     if (captchaAnswer.length !== this.captcha.length) {
       this.setState({activeState: events.captchaFailure})
       return
@@ -219,6 +220,8 @@ class MeinCaptcha extends Component {
         return
       }
     }
+
+    onSuccess()
   }
 
   renderAskingForCaptcha() {
@@ -393,6 +396,10 @@ MeinCaptcha.propTypes = {
    * can be toggled by a parent to reset MeinCaptcha
    */
   resetToggle: PropTypes.bool.isRequired,
+  /**
+   * called on successful captcha
+   */
+  onSuccess: PropTypes.func.isRequired,
 }
 MeinCaptcha.defaultProps = {
   width: 250,
