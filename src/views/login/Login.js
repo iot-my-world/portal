@@ -6,7 +6,7 @@ import {
   TextField, Button,
   FormControl, CardHeader,
   Collapse, Tooltip, Input,
-  Fab,
+  Fab, FormHelperText,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
@@ -98,6 +98,7 @@ class Login extends Component {
     password: '',
     cursorOverForgotPassword: false,
     cursorOverReturn: false,
+    forgotPasswordUsernameOrEmailAddress: '',
   }
 
   constructor(props) {
@@ -110,6 +111,9 @@ class Login extends Component {
         this.renderForgotPasswordCaptchaCard.bind(this)
     this.renderForgotPasswordDetailsEnterCard =
         this.renderForgotPasswordDetailsEnterCard.bind(this)
+    this.handleForgotPasswordUsernameEmailInputChange =
+        this.handleForgotPasswordUsernameEmailInputChange.bind(this)
+    this.handleForgotPassword = this.handleForgotPassword.bind(this)
   }
 
   handleInputChange(event) {
@@ -118,6 +122,11 @@ class Login extends Component {
       [event.target.id]: event.target.value,
       activeState: events.init,
     })
+  }
+
+  handleForgotPasswordUsernameEmailInputChange(event) {
+    this.reasonsInvalid.clearField('forgotPasswordUsernameOrEmailAddress')
+    this.setState({[event.target.id]: event.target.value})
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -212,6 +221,32 @@ class Login extends Component {
     SetClaims(claims)
     // call login action creator
     LoginActionCreator()
+  }
+
+  async handleForgotPassword() {
+    const {forgotPasswordUsernameOrEmailAddress} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+    } = this.props
+
+    ShowGlobalLoader()
+
+    if (forgotPasswordUsernameOrEmailAddress === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'forgotPasswordUsernameOrEmailAddress',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: forgotPasswordUsernameOrEmailAddress,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
+
+    HideGlobalLoader()
   }
 
   errorMessage() {
@@ -378,7 +413,12 @@ class Login extends Component {
 
   renderForgotPasswordDetailsEnterCard() {
     const {classes} = this.props
-    const {cursorOverReturn} = this.state
+    const {
+      cursorOverReturn,
+      forgotPasswordUsernameOrEmailAddress,
+    } = this.state
+
+    const fieldValidations = this.reasonsInvalid.toMap()
 
     return (
         <Card>
@@ -404,8 +444,25 @@ class Login extends Component {
                   gridTemplateColumns: 'auto 1fr',
                 }}>
                   <div style={{alignSelf: 'end'}}>
-                    <Input id='captchaAnswer'
-                    />
+                    <FormControl
+                        error={!!fieldValidations.forgotPasswordUsernameOrEmailAddress}
+                        aria-describedby='forgotPasswordUsernameOrEmailAddress'
+                    >
+                      <Input
+                          id='forgotPasswordUsernameOrEmailAddress'
+                          value={forgotPasswordUsernameOrEmailAddress}
+                          onChange={this.handleForgotPasswordUsernameEmailInputChange}
+                      />
+                      {!!fieldValidations.forgotPasswordUsernameOrEmailAddress &&
+                      <FormHelperText
+                          id='forgotPasswordUsernameOrEmailAddress'>
+                        {fieldValidations.forgotPasswordUsernameOrEmailAddress
+                            ?
+                            fieldValidations.forgotPasswordUsernameOrEmailAddress.help
+                            :
+                            undefined}
+                      </FormHelperText>}
+                    </FormControl>
                   </div>
                   <Fab
                       style={{alignSelf: 'center'}}
@@ -413,6 +470,7 @@ class Login extends Component {
                       aria-label='Save'
                       size={'small'}
                       className={classes.button}
+                      onClick={this.handleForgotPassword}
                   >
                     <Tooltip title='Submit'>
                       <SendIcon className={classes.buttonIcon}/>
