@@ -246,6 +246,14 @@ class Login extends Component {
       return
     }
 
+    try {
+      await UserAdministrator.ForgotPassword({
+        usernameOrEmailAddress: forgotPasswordUsernameOrEmailAddress,
+      })
+    } catch (e) {
+      console.error('error calling forgot password', e)
+    }
+
     HideGlobalLoader()
   }
 
