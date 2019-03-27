@@ -5,10 +5,12 @@ import {
   Card, CardContent, Grid,
   TextField, Button,
   FormControl, CardHeader,
-  Collapse,
+  Collapse, Tooltip, Input,
+  Fab,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
+import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
@@ -61,6 +63,9 @@ const style = theme => {
     button: {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
+    },
+    buttonIcon: {
+      margin: theme.spacing.unit,
     },
     forgotPassword: {
       cursor: 'pointer',
@@ -373,6 +378,7 @@ class Login extends Component {
 
   renderForgotPasswordDetailsEnterCard() {
     const {classes} = this.props
+    const {cursorOverReturn} = this.state
 
     return (
         <Card>
@@ -385,10 +391,53 @@ class Login extends Component {
             <Grid container direction={'column'} alignItems={'center'}
                   spacing={8}>
               <Grid item>
-                Enter your details
+                <Typography
+                    variant={'body1'}
+                    color={'textPrimary'}
+                >
+                  Enter your username or email address
+                </Typography>
               </Grid>
               <Grid item>
-                Email address
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 1fr',
+                }}>
+                  <div style={{alignSelf: 'end'}}>
+                    <Input id='captchaAnswer'
+                    />
+                  </div>
+                  <Fab
+                      style={{alignSelf: 'center'}}
+                      color='primary'
+                      aria-label='Save'
+                      size={'small'}
+                      className={classes.button}
+                  >
+                    <Tooltip title='Submit'>
+                      <SendIcon className={classes.buttonIcon}/>
+                    </Tooltip>
+                  </Fab>
+                </div>
+              </Grid>
+              <Grid item>
+                <Typography
+                    className={classes.forgotPassword}
+                    onMouseEnter={() => this.setState({
+                      cursorOverReturn: true,
+                    })}
+                    onMouseLeave={() => this.setState({
+                      cursorOverReturn: false,
+                    })}
+                    onClick={() => this.setState({
+                      activeState: events.init,
+                    })}
+                    color={cursorOverReturn ?
+                        'secondary' :
+                        'primary'}
+                >
+                  Return to Login
+                </Typography>
               </Grid>
             </Grid>
           </CardContent>
