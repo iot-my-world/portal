@@ -7,13 +7,12 @@ import {
   CardContent,
   CardActions,
   Typography,
-  Button,
   TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText, Tooltip, Fab, CardHeader,
 } from '@material-ui/core'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {BEPTable} from 'components/table/index'
@@ -41,18 +40,16 @@ import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
+import {
+  MdAdd as AddIcon, MdClear as CancelIcon,
+  MdEdit as EditIcon,
+  MdSave as SaveIcon,
+} from 'react-icons/md'
 
 const styles = theme => ({
   root: {
-    display: 'grid',
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr',
-  },
-  detailCardWrapper: {
-    justifySelf: 'center',
-  },
-  tableWrapper: {
-    overflow: 'auto',
+    width: 'calc(100% - 16px)',
+    margin: 0,
   },
   formField: {
     height: '60px',
@@ -62,10 +59,29 @@ const styles = theme => ({
     margin: 2
   },
   detailCard: {},
+  detailCardTitle: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+  },
   tk102Icon: {
     fontSize: 100,
     color: theme.palette.primary.main
-  }
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    fontSize: '20px',
+  },
+
+  detailCardWrapper: {
+    justifySelf: 'center',
+  },
+  tableWrapper: {
+    overflow: 'auto',
+  },
 })
 
 const states = {
@@ -104,7 +120,7 @@ function recordHandlerSelect(partyType) {
 class TK102 extends Component {
   constructor(props) {
     super(props)
-    this.renderControls = this.renderControls.bind(this)
+    this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderTK102Details = this.renderTK102Details.bind(this)
     this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
@@ -499,26 +515,100 @@ class TK102 extends Component {
       recordCollectionInProgress,
       selectedRowIdx,
       records,
-      totalNoRecords
+      totalNoRecords,
+      activeState,
     } = this.state
-    const {theme, classes} = this.props
+    const {
+      theme,
+      classes,
+      maxViewDimensions
+    } = this.props
+
+    let cardTitle = (
+      <Typography variant={'h6'}>
+        Select A TK102 to View or Edit
+      </Typography>
+    )
+    switch (activeState) {
+      case states.editingNew:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              New User
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      case states.editingExisting:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              Editing
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      case states.viewingExisting:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              Details
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      default:
+    }
 
     return (
-        <div
-            id={'tk102ConfigurationRoot'}
-            className={classes.root} style={{gridRowGap: 8}}>
-        <div className={classes.detailCardWrapper}>
+      <Grid
+        id={'userConfigurationRoot'}
+        className={classes.root}
+        container direction='column'
+        spacing={8}
+        alignItems='center'
+      >
+        <Grid item xl={12}>
           <Grid container>
             <Grid item>
-              <Card className={classes.detailCard}>
-                <CardContent>{this.renderTK102Details()}</CardContent>
-                {this.renderControls()}
+              <Card
+                id={'userConfigurationDetailCard'}
+                className={classes.detailCard}
+              >
+                <CardHeader title={cardTitle}/>
+                <CardContent>
+                  {this.renderTK102Details()}
+                </CardContent>
               </Card>
             </Grid>
           </Grid>
-        </div>
-        <div className={classes.tableWrapper}>
-          <Card>
+        </Grid>
+        <Grid item xl={12}>
+          <Card style={{maxWidth: maxViewDimensions.width - 10}}>
             <CardContent>
               <BEPTable
                   loading={recordCollectionInProgress}
@@ -646,9 +736,8 @@ class TK102 extends Component {
               />
             </CardContent>
           </Card>
-        </div>
-        <FullPageLoader open={isLoading} />
-      </div>
+        </Grid>
+      </Grid>
     )
   }
   renderTK102Details() {
@@ -663,29 +752,28 @@ class TK102 extends Component {
     switch (activeState) {
       case states.nop:
         return (
-            <Grid container direction='column' spacing={8}
+            <Grid container
+                  direction='column'
+                  spacing={8}
                   alignItems={'center'}>
-            <Grid item>
-              <Typography variant={'body1'} align={'center'} color={'primary'}>
-                Select A TK102 to View or Edit
-              </Typography>
-            </Grid>
             <Grid item>
               <DeviceIcon className={classes.tk102Icon} />
             </Grid>
             <Grid item>
-              <Button
-                  size='small'
-                  color='primary'
-                  variant='contained'
-                  onClick={this.handleCreateNew}
+              <Fab
+                id={'userConfigurationNewUserButton'}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleCreateNew}
               >
-                Create New
-              </Button>
+                <Tooltip title='Add New Device'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
             </Grid>
           </Grid>
         )
-
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
@@ -896,73 +984,84 @@ class TK102 extends Component {
     }
   }
 
-  renderControls() {
+  renderControlIcons() {
     const {activeState} = this.state
+    const {classes} = this.props
 
     switch (activeState) {
       case states.viewingExisting:
         return (
-          <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleStartEditExisting}
+          <React.Fragment>
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleStartEditExisting}
             >
-              Edit
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCreateNew}
+              <Tooltip title='Edit'>
+                <EditIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              id={'deviceConfigurationNewUserButton'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCreateNew}
             >
-              Create New
-            </Button>
-          </CardActions>
+              <Tooltip title='Add New Device'>
+                <AddIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+          </React.Fragment>
         )
 
       case states.editingNew:
         return (
           <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleSaveNew}
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleSaveNew}
             >
-              Save New
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCancelCreateNew}
+              <Tooltip title='Save New Device'>
+                <SaveIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCancelCreateNew}
             >
-              Cancel
-            </Button>
+              <Tooltip title='Cancel'>
+                <CancelIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
           </CardActions>
         )
 
       case states.editingExisting:
         return (
           <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleSaveChanges}
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleSaveChanges}
             >
-              Save Changes
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCancelEditExisting}
+              <Tooltip title='Save Changes'>
+                <SaveIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCancelEditExisting}
             >
-              Cancel
-            </Button>
+              <Tooltip title='Cancel'>
+                <CancelIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
           </CardActions>
         )
 
