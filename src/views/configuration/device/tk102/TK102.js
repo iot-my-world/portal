@@ -30,7 +30,6 @@ import {
   ClientPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {Text} from 'brain/search/criterion/types'
 import {ListTextCriterion} from 'brain/search/criterion/list'
@@ -74,13 +73,6 @@ const styles = theme => ({
   },
   buttonIcon: {
     fontSize: '20px',
-  },
-
-  detailCardWrapper: {
-    justifySelf: 'center',
-  },
-  tableWrapper: {
-    overflow: 'auto',
   },
 })
 
@@ -142,7 +134,6 @@ class TK102 extends Component {
 
   state = {
     recordCollectionInProgress: false,
-    isLoading: false,
     activeState: events.init,
     original: new TK102Entity(),
     selected: new TK102Entity(),
@@ -246,20 +237,16 @@ class TK102 extends Component {
     const {selected} = this.state
     const {NotificationSuccess, NotificationFailure} = this.props
 
-    this.setState({isLoading: true})
-
     // perform validation
     try {
       const reasonsInvalid = await selected.validate('Create')
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
-        this.setState({isLoading: false})
         return
       }
     } catch (e) {
       console.error('Error Validating TK102', e)
       NotificationFailure('Error Validating TK102')
-      this.setState({isLoading: false})
       return
     }
 
@@ -269,11 +256,9 @@ class TK102 extends Component {
       NotificationSuccess('Successfully Created TK102')
       this.setState({activeState: events.createNewSuccess})
       await this.collect()
-      this.setState({isLoading: false})
     } catch (e) {
       console.error('Error Creating TK102', e)
       NotificationFailure('Error Creating TK102')
-      this.setState({isLoading: false})
     }
   }
 
@@ -286,20 +271,16 @@ class TK102 extends Component {
     const {original, selected} = this.state
     const {NotificationSuccess, NotificationFailure} = this.props
 
-    this.setState({isLoading: true})
-
     // perform validation
     try {
       const reasonsInvalid = await selected.validate('Update')
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
-        this.setState({isLoading: false})
         return
       }
     } catch (e) {
       console.error('Error Validating TK102', e)
       NotificationFailure('Error Validating TK102')
-      this.setState({isLoading: false})
       return
     }
 
@@ -316,14 +297,12 @@ class TK102 extends Component {
       } catch (e) {
         console.error('Error Changing Ownership and Assignment', e)
         NotificationFailure('Error Changing Ownership and Assignment')
-        this.setState({isLoading: false})
         return
       }
     }
 
     this.setState({
       activeState: events.finishEditExisting,
-      isLoading: false
     })
     NotificationSuccess('Successfully Updated TK102')
   }
@@ -511,7 +490,6 @@ class TK102 extends Component {
 
   render() {
     const {
-      isLoading,
       recordCollectionInProgress,
       selectedRowIdx,
       records,
@@ -741,13 +719,12 @@ class TK102 extends Component {
     )
   }
   renderTK102Details() {
-    const {isLoading, activeState} = this.state
+    const {activeState} = this.state
     const {classes} = this.props
-
     const fieldValidations = this.reasonsInvalid.toMap()
     const helperText = field =>
         fieldValidations[field] ? fieldValidations[field].help : undefined
-    const disableFields = activeState === states.viewingExisting || isLoading
+    const disableFields = activeState === states.viewingExisting
 
     switch (activeState) {
       case states.nop:
