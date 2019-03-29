@@ -5,7 +5,13 @@ import {
   Login as LoginActionCreator,
 } from 'actions/auth'
 import Login from './Login'
-import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
+import {
+  HideGlobalLoader,
+  ShowGlobalLoader,
+} from 'actions/app'
+import {
+  NotificationSuccess,
+} from 'actions/notification'
 
 let LoginContainer = props => {
   return <Login {...props} />
@@ -21,6 +27,7 @@ LoginContainer = connect(
     {
       LoginActionCreator,
       SetClaims,
+      NotificationSuccess,
       ShowGlobalLoader,
       HideGlobalLoader,
     }

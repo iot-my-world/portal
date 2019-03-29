@@ -272,6 +272,7 @@ class ResetPassword extends Component {
     }
 
     HideGlobalLoader()
+    this.handleBackToSite()
   }
 
   render() {

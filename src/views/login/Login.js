@@ -228,9 +228,9 @@ class Login extends Component {
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
     } = this.props
-
-    ShowGlobalLoader()
 
     if (forgotPasswordUsernameOrEmailAddress === '') {
       this.reasonsInvalid.addReason(new ReasonInvalid({
@@ -241,19 +241,31 @@ class Login extends Component {
       }))
     }
     if (this.reasonsInvalid.count > 0) {
-      HideGlobalLoader()
       this.forceUpdate()
       return
     }
 
+    ShowGlobalLoader()
     try {
       await UserAdministrator.ForgotPassword({
         usernameOrEmailAddress: forgotPasswordUsernameOrEmailAddress,
       })
     } catch (e) {
+      HideGlobalLoader()
+      NotificationFailure('Error Submitting Reset Password Request')
       console.error('error calling forgot password', e)
+      return
     }
-
+    NotificationSuccess(
+        'If You Have an Account With us a Reset Email Will be Sent to You')
+    this.setState({
+      activeState: events.init,
+      usernameOrEmailAddress: '',
+      password: '',
+      cursorOverForgotPassword: false,
+      cursorOverReturn: false,
+      forgotPasswordUsernameOrEmailAddress: '',
+    })
     HideGlobalLoader()
   }
 
@@ -571,5 +583,13 @@ StyledLogin.propTypes = {
    * Hide Global Loader Action Creator
    */
   HideGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Success Action Creator
+   */
+  NotificationSuccess: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 export default StyledLogin
