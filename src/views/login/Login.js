@@ -14,7 +14,7 @@ import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
-import {Login as LoginClaimsType} from 'brain/security/claims/types'
+import {LoginClaimsType} from 'brain/security/claims/types'
 import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
 import {UserAdministrator} from 'brain/user'
@@ -526,7 +526,7 @@ class Login extends Component {
 
     return <div
         className={classes.fullPageBackground}
-        // style={{backgroundImage: 'url(' + backgroundImage + ')'}}
+        style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>
         <div className={classes.contentWrapper}>

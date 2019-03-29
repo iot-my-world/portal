@@ -2,10 +2,10 @@ import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
 import ClaimsBase from 'brain/security/claims/Base'
 import {isObject} from 'utilities/type/index'
-import {LoginClaimsType} from '../types'
+import {ResetPasswordClaimsType} from '../types'
 
-class Login extends ClaimsBase {
-  static type = LoginClaimsType
+class ResetPassword extends ClaimsBase {
+  static type = ResetPasswordClaimsType
 
   /**
    * @type {IdIdentifier}
@@ -50,15 +50,15 @@ class Login extends ClaimsBase {
   _partyId = new IdIdentifier()
 
   /**
-   * construct a Login Object
-   * @param {Login|Object} [login]
+   * construct a ResetPassword Object
+   * @param {ResetPassword|Object} [login]
    */
   constructor(login) {
     super()
     if (
         (login !== undefined) &&
         (
-            (login instanceof Login) ||
+            (login instanceof ResetPassword) ||
             isObject(login)
         )
     ) {
@@ -122,4 +122,4 @@ class Login extends ClaimsBase {
   }
 }
 
-export default Login
+export default ResetPassword

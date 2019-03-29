@@ -1,8 +1,9 @@
 /**
  * Types of Claims
  */
-export const Login = 'Login'
-export const RegisterCompanyAdminUser = 'RegisterCompanyAdminUser'
-export const RegisterCompanyUser = 'RegisterCompanyUser'
-export const RegisterClientAdminUser = 'RegisterClientAdminUser'
-export const RegisterClientUser = 'RegisterClientUser'
+export const LoginClaimsType = 'Login'
+export const RegisterCompanyAdminUserClaimsType = 'RegisterCompanyAdminUser'
+export const RegisterCompanyUserClaimsType = 'RegisterCompanyUser'
+export const RegisterClientAdminUserClaimsType = 'RegisterClientAdminUser'
+export const RegisterClientUserClaimsType = 'RegisterClientUser'
+export const ResetPasswordClaimsType = 'ResetPassword'
