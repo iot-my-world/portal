@@ -12,6 +12,8 @@ import {LoginClaims} from 'brain/security/claims/index'
 import FullPageLoader from 'components/loader/FullPage'
 import {Logout} from 'actions/auth'
 import moment from 'moment'
+import ResetPasswordContainer
+  from 'views/registrar/resetPassword/ResetPasswordContainer'
 
 const styles = theme => ({})
 
@@ -122,6 +124,12 @@ class Root extends Component {
                   path='/register'
                   render={props => {
                     return <RegisterUserContainer {...props} />
+                  }}
+              />
+              <Route
+                  path='/resetPassword'
+                  render={props => {
+                    return <ResetPasswordContainer {...props} />
                   }}
               />
               <Route

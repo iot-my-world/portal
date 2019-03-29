@@ -3,23 +3,16 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
-  TextField, Button, Dialog,
+  TextField, Button,
   FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
-import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
-import {
-  User as UserEntity,
-} from 'brain/user'
+import {UserAdministrator} from 'brain/user'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
-import {
-  RegisterCompanyAdminUser, RegisterCompanyUser,
-  RegisterClientAdminUser, RegisterClientUser,
-} from 'brain/security/claims/types'
-import {PartyRegistrar} from 'brain/party/registrar'
+import ReasonInvalid from 'brain/validate/reasonInvalid/ReasonInvalid'
 
 const style = theme => {
   return {
@@ -104,9 +97,10 @@ const events = {
 class ResetPassword extends Component {
 
   state = {
-    isLoading: false,
     activeState: events.init,
     jwt: '',
+    newPassword: '',
+    confirmNewPassword: '',
   }
   reasonsInvalid = new ReasonsInvalid()
   resetPasswordClaims
@@ -117,35 +111,32 @@ class ResetPassword extends Component {
     this.renderTokenExpired = this.renderTokenExpired.bind(this)
     this.renderParsingToken = this.renderParsingToken.bind(this)
     this.handleBackToSite = this.handleBackToSite.bind(this)
+    this.handleResetPassword = this.handleResetPassword.bind(this)
   }
 
   handleChange(event) {
-    let {
-      user,
-    } = this.state
-    const {
-      activeState,
-    } = this.state
-    this.reasonsInvalid.clearField(event.target.id)
-    if (event.target.id === 'confirmPassword') {
-      this.setState({confirmPassword: event.target.value})
-    } else {
-      user[event.target.id] = event.target.value
-      // this.reasonsInvalid.clearField(event.target.id)
-      this.setState({user})
+    const field = event.target.id
+
+    // check if related field should be cleared
+    if (field === 'newPassword') {
+      if (
+          this.reasonsInvalid.errorOnField('confirmNewPassword') &&
+          this.reasonsInvalid.errorOnField('confirmNewPassword').help ===
+          'don\'t match'
+      ) {
+        this.reasonsInvalid.clearField('confirmNewPassword')
+      }
+    } else if (field === 'confirmNewPassword') {
+      if (
+          this.reasonsInvalid.errorOnField('newPassword') &&
+          this.reasonsInvalid.errorOnField('newPassword').help ===
+          'don\'t match'
+      ) {
+        this.reasonsInvalid.clearField('newPassword')
+      }
     }
-    if (
-        (
-            (activeState === states.passwordsDoNotMatch) ||
-            (activeState === states.passwordBlank)
-        ) &&
-        (
-            (event.target.id === 'confirmPassword') ||
-            (event.target.id === 'password')
-        )
-    ) {
-      this.setState({activeState: events.reInit})
-    }
+    this.reasonsInvalid.clearField(field)
+    this.setState({[field]: event.target.value})
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -203,8 +194,6 @@ class ResetPassword extends Component {
       // store the token to be used on registration api
       this.resetPasswordClaims = resetPasswordClaims
       this.setState({
-        // set up the user from the claims
-        user: new UserEntity(resetPasswordClaims.user),
         activeState: events.tokenParsed,
         jwt: jwt,
       })
@@ -214,15 +203,85 @@ class ResetPassword extends Component {
     }
   }
 
+  async handleResetPassword() {
+    const {
+      newPassword,
+      confirmNewPassword,
+      jwt,
+    } = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    // blank checks
+    if (newPassword === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'newPassword',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: newPassword,
+      }))
+    }
+    if (confirmNewPassword === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'confirmNewPassword',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: confirmNewPassword,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      this.forceUpdate()
+      return
+    }
+    // check for that they are the same
+    if (newPassword !== confirmNewPassword) {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'newPassword',
+        type: 'invalid',
+        help: 'don\'t match',
+        data: newPassword,
+      }))
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'confirmNewPassword',
+        type: 'invalid',
+        help: 'don\'t match',
+        data: confirmNewPassword,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      this.forceUpdate()
+      return
+    }
+
+    ShowGlobalLoader()
+
+    try {
+      sessionStorage.setItem('jwt', jwt)
+      await UserAdministrator.SetPassword({
+        identifier: this.resetPasswordClaims.userId,
+        newPassword: newPassword,
+      })
+      NotificationSuccess('Successfully Reset Password')
+    } catch (e) {
+      NotificationFailure('Error Setting Password')
+      console.error('error setting password: ', e)
+    }
+
+    HideGlobalLoader()
+  }
+
   render() {
     const {
       classes,
     } = this.props
     const {
       activeState,
-      user,
-      confirmPassword,
-      isLoading,
+      newPassword,
+      confirmNewPassword,
     } = this.state
 
     switch (activeState) {
@@ -238,9 +297,6 @@ class ResetPassword extends Component {
     }
 
     const fieldValidations = this.reasonsInvalid.toMap()
-
-    const errorState = (activeState === states.incorrectCredentials) ||
-        (activeState === states.unableToContactServer)
 
     return <div
         className={classes.fullPageBackground}
@@ -261,7 +317,7 @@ class ResetPassword extends Component {
                 <Card>
                   <CardHeader
                       classes={{root: classes.cardHeaderRoot}}
-                      title={'User Registration'}
+                      title={'Reset Password'}
                       titleTypographyProps={{color: 'primary', align: 'center'}}
                   />
                   <CardContent>
@@ -271,116 +327,47 @@ class ResetPassword extends Component {
                         <Grid item>
                           <FormControl className={classes.formField}>
                             <TextField
-                                id='name'
-                                label='Name'
-                                autoComplete='name'
-                                value={user.name}
-                                onChange={this.handleChange}
-                                helperText={
-                                  fieldValidations.name
-                                      ? fieldValidations.name.help
-                                      : undefined
-                                }
-                                error={!!fieldValidations.name}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='surname'
-                                label='Surname'
-                                autoComplete='surname'
-                                value={user.surname}
-                                onChange={this.handleChange}
-                                helperText={
-                                  fieldValidations.surname
-                                      ? fieldValidations.surname.help
-                                      : undefined
-                                }
-                                error={!!fieldValidations.surname}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='username'
-                                label='Username'
-                                autoComplete='username'
-                                value={user.username}
-                                onChange={this.handleChange}
-                                helperText={
-                                  fieldValidations.username
-                                      ? fieldValidations.username.help
-                                      : undefined
-                                }
-                                error={!!fieldValidations.username}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='emailAddress'
-                                label='Email Address'
-                                autoComplete='emailAddress'
-                                value={user.emailAddress}
-                                InputProps={{
-                                  readOnly: true,
-                                  disableUnderline: true,
-                                }}
-                                helperText={
-                                  fieldValidations.emailAddress
-                                      ? fieldValidations.emailAddress.help
-                                      : undefined
-                                }
-                                error={!!fieldValidations.emailAddress}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item>
-                          <FormControl className={classes.formField}>
-                            <TextField
-                                id='password'
-                                label='Password'
                                 type='password'
-                                autoComplete='current-password'
-                                value={user.password}
+                                id='newPassword'
+                                label='New Password'
+                                autoComplete='new-password'
+                                value={newPassword}
                                 onChange={this.handleChange}
-                                helperText={this.passwordMessage()}
-                                error={!!this.passwordMessage()}
+                                helperText={
+                                  fieldValidations.newPassword
+                                      ? fieldValidations.newPassword.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.newPassword}
                             />
                           </FormControl>
                         </Grid>
                         <Grid item>
                           <FormControl className={classes.formField}>
                             <TextField
-                                id='confirmPassword'
-                                label='Confirm Password'
                                 type='password'
-                                autoComplete='current-password'
-                                value={confirmPassword}
+                                id='confirmNewPassword'
+                                label='Confirm New'
+                                autoComplete='new-password'
+                                value={confirmNewPassword}
                                 onChange={this.handleChange}
-                                helperText={this.passwordMessage()}
-                                error={!!this.passwordMessage()}
+                                helperText={
+                                  fieldValidations.confirmNewPassword
+                                      ? fieldValidations.confirmNewPassword.help
+                                      : undefined
+                                }
+                                error={!!fieldValidations.confirmNewPassword}
                             />
                           </FormControl>
                         </Grid>
                         <Grid item>
                           <Button
                               className={classes.button}
-                              onClick={this.handleRegister}
+                              onClick={this.handleResetPassword}
                           >
-                            Register
+                            Reset
                           </Button>
                         </Grid>
-                        {errorState &&
-                        <Grid item>
-                          <Typography color={'error'}>
-                            {this.errorMessage()}
-                          </Typography>
-                        </Grid>}
                       </Grid>
                     </form>
                   </CardContent>
@@ -390,14 +377,6 @@ class ResetPassword extends Component {
           </div>
         </div>
       </div>
-      <Dialog
-          open={isLoading}
-          BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
-          PaperProps={{classes: {root: classes.progressSpinnerDialog}}}
-          className={classes.progressSpinnerDialog}
-      >
-        <Spinner isLoading/>
-      </Dialog>
     </div>
   }
 
@@ -439,9 +418,8 @@ class ResetPassword extends Component {
                       </Grid>
                       <Grid item>
                         <Typography>
-                          Please contact your administrator to get a new
-                          registration link
                         </Typography>
+                        Please go Back To Site and Select Forgot Password Again
                       </Grid>
                       <Grid item>
                         <Button
@@ -488,6 +466,14 @@ StyledLogin.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
   /**
    * redux state flag indicating if the app
    * is logged in

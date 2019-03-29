@@ -60,6 +60,16 @@ const Administrator = {
       },
     })
   },
+
+  async SetPassword({identifier, newPassword}) {
+    return await jsonRpcRequest({
+      method: 'UserAdministrator.SetPassword',
+      request: {
+        identifier: identifier.toPOJO(),
+        newPassword,
+      },
+    })
+  },
 }
 
 export default Administrator
