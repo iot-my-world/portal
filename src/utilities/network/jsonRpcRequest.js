@@ -4,6 +4,7 @@ import config from 'react-global-configuration'
 
 const methodsWithoutAuthorization = [
   'Auth.Login',
+  'UserAdministrator.ForgotPassword',
 ]
 
 /**
@@ -50,7 +51,8 @@ export default function jsonRpcRequest({url, method, request}) {
       return responseObject.json()
     }).then(response => {
       if (response.result) {
-        console.debug(`API Response Success: ${body.method} -->`, response.result)
+        console.debug(`API Response Success: ${body.method} -->`,
+            response.result)
         resolve(response.result)
       } else {
         console.error(`API Response Error: ${body.method} -->`, response.error)

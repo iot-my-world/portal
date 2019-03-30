@@ -11,6 +11,7 @@ import {
 } from 'actions/app'
 import {
   NotificationSuccess,
+  NotificationFailure,
 } from 'actions/notification'
 
 let LoginContainer = props => {
@@ -30,6 +31,7 @@ LoginContainer = connect(
       NotificationSuccess,
       ShowGlobalLoader,
       HideGlobalLoader,
+      NotificationFailure,
     }
 )(LoginContainer)
 
