@@ -186,28 +186,28 @@ class RegisterUser extends Component {
         case RegisterCompanyAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
-            action: 'RegisterCompanyAdminUserClaimsType',
+            action: 'RegisterCompanyAdminUser',
           })).reasonsInvalid
           break
 
         case RegisterCompanyUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
-            action: 'RegisterCompanyUserClaimsType',
+            action: 'RegisterCompanyUser',
           })).reasonsInvalid
           break
 
         case RegisterClientAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
-            action: 'RegisterClientAdminUserClaimsType',
+            action: 'RegisterClientAdminUser',
           })).reasonsInvalid
           break
 
         case RegisterClientUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
-            action: 'RegisterClientUserClaimsType',
+            action: 'RegisterClientUser',
           })).reasonsInvalid
           break
 
@@ -229,19 +229,19 @@ class RegisterUser extends Component {
       } else {
         switch (this.registrationClaims.type) {
           case RegisterCompanyAdminUserClaimsType:
-            await PartyRegistrar.RegisterCompanyAdminUserClaimsType({user})
+            await PartyRegistrar.RegisterCompanyAdminUser({user})
             break
 
           case RegisterCompanyUserClaimsType:
-            await PartyRegistrar.RegisterCompanyUserClaimsType({user})
+            await PartyRegistrar.RegisterCompanyUser({user})
             break
 
           case RegisterClientAdminUserClaimsType:
-            await PartyRegistrar.RegisterClientAdminUserClaimsType({user})
+            await PartyRegistrar.RegisterClientAdminUser({user})
             break
 
           case RegisterClientUserClaimsType:
-            await PartyRegistrar.RegisterClientUserClaimsType({user})
+            await PartyRegistrar.RegisterClientUser({user})
             break
 
           default:
