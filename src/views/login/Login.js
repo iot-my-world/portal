@@ -3,16 +3,21 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
-  TextField, Button, Dialog,
+  TextField, Button,
   FormControl, CardHeader,
+  Collapse, Tooltip, Input,
+  Fab, FormHelperText,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
-import {ScaleLoader as Spinner} from 'react-spinners'
+import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
-import {Login as LoginClaimsType} from 'brain/security/claims/types'
+import {LoginClaimsType} from 'brain/security/claims/types'
+import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
+import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
+import {UserAdministrator} from 'brain/user'
 
 const style = theme => {
   return {
@@ -55,37 +60,34 @@ const style = theme => {
     formField: {
       width: '200px',
     },
-    loginCardWrapper: {},
     button: {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
     },
-    progressSpinnerDialog: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none',
-      overflow: 'hidden',
+    buttonIcon: {
+      margin: theme.spacing.unit,
     },
-    progressSpinnerDialogBackdrop: {
-      // backgroundColor: 'transparent',
-    },
-    cardHeaderRoot: {
-      paddingBottom: 0,
+    forgotPassword: {
+      cursor: 'pointer',
     },
   }
 }
 
 const states = {
-  nop: 0,
-  loggingIn: 1,
-  incorrectCredentials: 2,
-  unableToContactServer: 3,
+  loggingIn: 0,
+  logInFail: 1,
+  errorContactingServer: 2,
+  forgotPasswordCaptcha: 3,
+  forgotPasswordDetailsEnter: 4,
 }
 
 const events = {
-  init: states.nop,
-  logIn: states.loggingIn,
-  loginFail: states.incorrectCredentials,
-  serverContactError: states.unableToContactServer,
+  init: states.loggingIn,
+  // init: states.forgotPasswordCaptcha,
+  logInFail: states.logInFail,
+  errorContactingServer: states.errorContactingServer,
+  forgotPassword: states.forgotPasswordCaptcha,
+  captchaSuccess: states.forgotPasswordDetailsEnter,
 }
 
 class Login extends Component {
@@ -94,6 +96,9 @@ class Login extends Component {
     activeState: events.init,
     usernameOrEmailAddress: '',
     password: '',
+    cursorOverForgotPassword: false,
+    cursorOverReturn: false,
+    forgotPasswordUsernameOrEmailAddress: '',
   }
 
   constructor(props) {
@@ -101,14 +106,30 @@ class Login extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleLogin = this.handleLogin.bind(this)
     this.errorMessage = this.errorMessage.bind(this)
+    this.renderLogInCard = this.renderLogInCard.bind(this)
+    this.renderForgotPasswordCaptchaCard =
+        this.renderForgotPasswordCaptchaCard.bind(this)
+    this.renderForgotPasswordDetailsEnterCard =
+        this.renderForgotPasswordDetailsEnterCard.bind(this)
+    this.handleForgotPasswordUsernameEmailInputChange =
+        this.handleForgotPasswordUsernameEmailInputChange.bind(this)
+    this.handleForgotPassword = this.handleForgotPassword.bind(this)
   }
 
   handleInputChange(event) {
+    this.reasonsInvalid.clearField(event.target.id)
     this.setState({
       [event.target.id]: event.target.value,
       activeState: events.init,
     })
   }
+
+  handleForgotPasswordUsernameEmailInputChange(event) {
+    this.reasonsInvalid.clearField('forgotPasswordUsernameOrEmailAddress')
+    this.setState({[event.target.id]: event.target.value})
+  }
+
+  reasonsInvalid = new ReasonsInvalid()
 
   async handleLogin(submitEvent) {
     submitEvent.preventDefault()
@@ -119,27 +140,57 @@ class Login extends Component {
     const {
       SetClaims,
       LoginActionCreator,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     } = this.props
 
-    this.setState({activeState: events.logIn})
+    ShowGlobalLoader()
 
-    // [1] Login
+    this.reasonsInvalid.clearAll()
+
+    // blank checks
+    if (usernameOrEmailAddress === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'usernameOrEmailAddress',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: usernameOrEmailAddress,
+      }))
+    }
+    if (password === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'password',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: password,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      HideGlobalLoader()
+      this.forceUpdate()
+      return
+    }
+
+    // login
     let loginResult
     try {
       loginResult = await LoginService.Login(usernameOrEmailAddress, password)
     } catch (error) {
       switch (true) {
         case error instanceof MethodFailed:
-          this.setState({activeState: events.loginFail})
-          break
+          this.setState({activeState: events.logInFail})
+          HideGlobalLoader()
+          return
+
         case error instanceof ContactFailed:
         default:
-          this.setState({activeState: events.serverContactError})
+          this.setState({activeState: events.errorContactingServer})
+          HideGlobalLoader()
+          return
       }
-      return
     }
 
-    // [2] If login was successful
+    // if login was successful
     let claims
     try {
       claims = parseToken(loginResult.jwt)
@@ -153,20 +204,69 @@ class Login extends Component {
       } else {
         // if the token is expired clear the token state
         sessionStorage.setItem('jwt', null)
-        this.setState({activeState: events.loginFail})
+        this.setState({activeState: events.logInFail})
+        HideGlobalLoader()
         return
       }
     } catch (e) {
       console.error(`error parsing claims and setting redux: ${e}`)
-      this.setState({activeState: events.loginFail})
+      this.setState({activeState: events.logInFail})
+      HideGlobalLoader()
       return
     }
 
+    HideGlobalLoader()
     // Finally set the claims which will cause root to navigate
     // to the app
     SetClaims(claims)
     // call login action creator
     LoginActionCreator()
+  }
+
+  async handleForgotPassword() {
+    const {forgotPasswordUsernameOrEmailAddress} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    if (forgotPasswordUsernameOrEmailAddress === '') {
+      this.reasonsInvalid.addReason(new ReasonInvalid({
+        field: 'forgotPasswordUsernameOrEmailAddress',
+        type: 'blank',
+        help: 'can\'t be blank',
+        data: forgotPasswordUsernameOrEmailAddress,
+      }))
+    }
+    if (this.reasonsInvalid.count > 0) {
+      this.forceUpdate()
+      return
+    }
+
+    ShowGlobalLoader()
+    try {
+      await UserAdministrator.ForgotPassword({
+        usernameOrEmailAddress: forgotPasswordUsernameOrEmailAddress,
+      })
+    } catch (e) {
+      HideGlobalLoader()
+      NotificationFailure('Error Submitting Reset Password Request')
+      console.error('error calling forgot password', e)
+      return
+    }
+    NotificationSuccess(
+        'If You Have an Account With us a Reset Email Will be Sent to You')
+    this.setState({
+      activeState: events.init,
+      usernameOrEmailAddress: '',
+      password: '',
+      cursorOverForgotPassword: false,
+      cursorOverReturn: false,
+      forgotPasswordUsernameOrEmailAddress: '',
+    })
+    HideGlobalLoader()
   }
 
   errorMessage() {
@@ -175,13 +275,252 @@ class Login extends Component {
     } = this.state
 
     switch (activeState) {
-      case states.incorrectCredentials:
+      case states.logInFail:
         return 'Incorrect Credentials'
-      case states.unableToContactServer:
+      case states.errorContactingServer:
         return 'Unable To Contact Server'
       default:
         return undefined
     }
+  }
+
+  renderLogInCard() {
+    const {
+      classes,
+    } = this.props
+    const {
+      usernameOrEmailAddress,
+      password,
+      cursorOverForgotPassword,
+    } = this.state
+
+    const fieldValidations = this.reasonsInvalid.toMap()
+
+    return (
+        <Card>
+          <CardHeader
+              title={'Login'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <form onSubmit={this.handleLogin}>
+              <Grid container direction={'column'} alignItems={'center'}
+                    spacing={8}>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='usernameOrEmailAddress'
+                        label='Username or Email Address'
+                        autoComplete='username'
+                        value={usernameOrEmailAddress}
+                        onChange={this.handleInputChange}
+                        helperText={
+                          fieldValidations.usernameOrEmailAddress
+                              ? fieldValidations.usernameOrEmailAddress.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.usernameOrEmailAddress}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <FormControl className={classes.formField}>
+                    <TextField
+                        id='password'
+                        label='Password'
+                        type='password'
+                        autoComplete='current-password'
+                        value={password}
+                        onChange={this.handleInputChange}
+                        helperText={
+                          fieldValidations.password
+                              ? fieldValidations.password.help
+                              : undefined
+                        }
+                        error={!!fieldValidations.password}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item>
+                  <Button
+                      id={'loginButton'}
+                      className={classes.button}
+                      type={'submit'}
+                  >
+                    Login
+                  </Button>
+                </Grid>
+                {(!!this.errorMessage()) &&
+                <Grid item>
+                  <Typography color={'error'}>
+                    {this.errorMessage()}
+                  </Typography>
+                </Grid>}
+                <Grid item>
+                  <Typography
+                      className={classes.forgotPassword}
+                      onMouseEnter={() => this.setState({
+                        cursorOverForgotPassword: true,
+                      })}
+                      onMouseLeave={() => this.setState({
+                        cursorOverForgotPassword: false,
+                      })}
+                      onClick={() => this.setState({
+                        activeState: events.forgotPassword,
+                      })}
+                      color={cursorOverForgotPassword ?
+                          'secondary' :
+                          'primary'}
+                  >
+                    Forgot Password
+                  </Typography>
+                </Grid>
+              </Grid>
+            </form>
+          </CardContent>
+        </Card>
+    )
+  }
+
+  renderForgotPasswordCaptchaCard() {
+    const {classes} = this.props
+    const {cursorOverReturn, activeState} = this.state
+    const showCaptcha =
+        (activeState === states.forgotPasswordCaptcha)
+    return (
+        <Card>
+          <CardHeader
+              title={'Forgot Password'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <Grid container direction={'column'} alignItems={'center'}
+                  spacing={8}>
+              <Grid item>
+                <MeinCaptcha
+                    resetToggle={showCaptcha}
+                    onSuccess={() => this.setState({
+                      activeState: events.captchaSuccess,
+                    })}
+                />
+              </Grid>
+              <Grid item>
+                <Typography
+                    className={classes.forgotPassword}
+                    onMouseEnter={() => this.setState({
+                      cursorOverReturn: true,
+                    })}
+                    onMouseLeave={() => this.setState({
+                      cursorOverReturn: false,
+                    })}
+                    onClick={() => this.setState({
+                      activeState: events.init,
+                    })}
+                    color={cursorOverReturn ?
+                        'secondary' :
+                        'primary'}
+                >
+                  Return to Login
+                </Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+    )
+  }
+
+  renderForgotPasswordDetailsEnterCard() {
+    const {classes} = this.props
+    const {
+      cursorOverReturn,
+      forgotPasswordUsernameOrEmailAddress,
+    } = this.state
+
+    const fieldValidations = this.reasonsInvalid.toMap()
+
+    return (
+        <Card>
+          <CardHeader
+              title={'Forgot Password'}
+              titleTypographyProps={{color: 'primary', align: 'center'}}
+              classes={{root: classes.cardHeaderRoot}}
+          />
+          <CardContent>
+            <Grid container direction={'column'} alignItems={'center'}
+                  spacing={8}>
+              <Grid item>
+                <Typography
+                    variant={'body1'}
+                    color={'textPrimary'}
+                >
+                  Enter your username or email address
+                </Typography>
+              </Grid>
+              <Grid item>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 1fr',
+                }}>
+                  <div style={{alignSelf: 'end'}}>
+                    <FormControl
+                        error={!!fieldValidations.forgotPasswordUsernameOrEmailAddress}
+                        aria-describedby='forgotPasswordUsernameOrEmailAddress'
+                    >
+                      <Input
+                          id='forgotPasswordUsernameOrEmailAddress'
+                          value={forgotPasswordUsernameOrEmailAddress}
+                          onChange={this.handleForgotPasswordUsernameEmailInputChange}
+                      />
+                      {!!fieldValidations.forgotPasswordUsernameOrEmailAddress &&
+                      <FormHelperText
+                          id='forgotPasswordUsernameOrEmailAddress'>
+                        {fieldValidations.forgotPasswordUsernameOrEmailAddress
+                            ?
+                            fieldValidations.forgotPasswordUsernameOrEmailAddress.help
+                            :
+                            undefined}
+                      </FormHelperText>}
+                    </FormControl>
+                  </div>
+                  <Fab
+                      style={{alignSelf: 'center'}}
+                      color='primary'
+                      aria-label='Save'
+                      size={'small'}
+                      className={classes.button}
+                      onClick={this.handleForgotPassword}
+                  >
+                    <Tooltip title='Submit'>
+                      <SendIcon className={classes.buttonIcon}/>
+                    </Tooltip>
+                  </Fab>
+                </div>
+              </Grid>
+              <Grid item>
+                <Typography
+                    className={classes.forgotPassword}
+                    onMouseEnter={() => this.setState({
+                      cursorOverReturn: true,
+                    })}
+                    onMouseLeave={() => this.setState({
+                      cursorOverReturn: false,
+                    })}
+                    onClick={() => this.setState({
+                      activeState: events.init,
+                    })}
+                    color={cursorOverReturn ?
+                        'secondary' :
+                        'primary'}
+                >
+                  Return to Login
+                </Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+    )
   }
 
   render() {
@@ -190,12 +529,12 @@ class Login extends Component {
     } = this.props
     const {
       activeState,
-      usernameOrEmailAddress,
-      password,
     } = this.state
 
-    const errorState = (activeState === states.incorrectCredentials) ||
-        (activeState === states.unableToContactServer)
+    const showLoginCard =
+        (activeState === states.loggingIn) ||
+        (activeState === states.errorContactingServer) ||
+        (activeState === states.logInFail)
 
     return <div
         className={classes.fullPageBackground}
@@ -210,72 +549,23 @@ class Login extends Component {
               SpotNav
             </Typography>
           </div>
-          <div className={classes.loginCardWrapper}>
-            <Card>
-              <CardHeader
-                  title={'Login'}
-                  titleTypographyProps={{color: 'primary', align: 'center'}}
-                  classes={{root: classes.cardHeaderRoot}}
-              />
-              <CardContent>
-                <form onSubmit={this.handleLogin}>
-                  <Grid container direction={'column'} alignItems={'center'}
-                        spacing={8}>
-                    <Grid item>
-                      <FormControl className={classes.formField}>
-                        <TextField
-                            id='usernameOrEmailAddress'
-                            label='Username or Email Address'
-                            autoComplete='username'
-                            value={usernameOrEmailAddress}
-                            onChange={this.handleInputChange}
-                            error={errorState}
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl className={classes.formField}>
-                        <TextField
-                            id='password'
-                            label='Password'
-                            type='password'
-                            autoComplete='current-password'
-                            value={password}
-                            onChange={this.handleInputChange}
-                            error={errorState}
-                        />
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <Button
-                          id={'loginButton'}
-                          className={classes.button}
-                          type={'submit'}
-                      >
-                        Login
-                      </Button>
-                    </Grid>
-                    {errorState &&
-                    <Grid item>
-                      <Typography color={'error'}>
-                        {this.errorMessage()}
-                      </Typography>
-                    </Grid>}
-                  </Grid>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+          <Collapse in={showLoginCard}>
+            <div>
+              {this.renderLogInCard()}
+            </div>
+          </Collapse>
+          <Collapse in={activeState === states.forgotPasswordCaptcha}>
+            <div>
+              {this.renderForgotPasswordCaptchaCard()}
+            </div>
+          </Collapse>
+          <Collapse in={activeState === states.forgotPasswordDetailsEnter}>
+            <div>
+              {this.renderForgotPasswordDetailsEnterCard()}
+            </div>
+          </Collapse>
         </div>
       </div>
-      <Dialog
-          open={activeState === states.loggingIn}
-          BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
-          PaperProps={{classes: {root: classes.progressSpinnerDialog}}}
-          className={classes.progressSpinnerDialog}
-      >
-        <Spinner isLoading/>
-      </Dialog>
     </div>
   }
 }
@@ -285,5 +575,21 @@ let StyledLogin = withStyles(style)(Login)
 StyledLogin.propTypes = {
   SetClaims: PropTypes.func.isRequired,
   LoginActionCreator: PropTypes.func.isRequired,
+  /**
+   * Show Global Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Success Action Creator
+   */
+  NotificationSuccess: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 export default StyledLogin

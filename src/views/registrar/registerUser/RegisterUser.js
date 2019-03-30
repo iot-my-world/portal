@@ -17,8 +17,8 @@ import {
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {
-  RegisterCompanyAdminUser, RegisterCompanyUser,
-  RegisterClientAdminUser, RegisterClientUser,
+  RegisterCompanyAdminUserClaimsType, RegisterCompanyUserClaimsType,
+  RegisterClientAdminUserClaimsType, RegisterClientUserClaimsType,
 } from 'brain/security/claims/types'
 import {PartyRegistrar} from 'brain/party/registrar'
 
@@ -183,28 +183,28 @@ class RegisterUser extends Component {
     try {
       this.setState({isLoading: true})
       switch (this.registrationClaims.type) {
-        case RegisterCompanyAdminUser:
+        case RegisterCompanyAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterCompanyAdminUser',
           })).reasonsInvalid
           break
 
-        case RegisterCompanyUser:
+        case RegisterCompanyUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterCompanyUser',
           })).reasonsInvalid
           break
 
-        case RegisterClientAdminUser:
+        case RegisterClientAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterClientAdminUser',
           })).reasonsInvalid
           break
 
-        case RegisterClientUser:
+        case RegisterClientUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterClientUser',
@@ -228,19 +228,19 @@ class RegisterUser extends Component {
         this.setState({isLoading: false})
       } else {
         switch (this.registrationClaims.type) {
-          case RegisterCompanyAdminUser:
+          case RegisterCompanyAdminUserClaimsType:
             await PartyRegistrar.RegisterCompanyAdminUser({user})
             break
 
-          case RegisterCompanyUser:
+          case RegisterCompanyUserClaimsType:
             await PartyRegistrar.RegisterCompanyUser({user})
             break
 
-          case RegisterClientAdminUser:
+          case RegisterClientAdminUserClaimsType:
             await PartyRegistrar.RegisterClientAdminUser({user})
             break
 
-          case RegisterClientUser:
+          case RegisterClientUserClaimsType:
             await PartyRegistrar.RegisterClientUser({user})
             break
 
