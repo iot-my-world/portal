@@ -8,14 +8,15 @@ import {
   ExpansionPanelSummary,
   Grid,
   Card,
-  Switch, Divider,
+  Switch,
   Collapse,
   IconButton,
-  Tooltip,
+  Tooltip, CardContent,
+  CardHeader, Avatar,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
-import MultiSelect from 'components/multiSelect'
+// import MultiSelect from 'components/multiSelect'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
 import {TrackingReport} from 'brain/report/tracking'
@@ -36,6 +37,8 @@ import {
 } from 'brain/party/types'
 import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
+import BEPTable from 'components/table/bepTable/BEPTable'
+import {Text} from 'brain/search/criterion/types'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -100,9 +103,7 @@ function getRandomColor(exclude = []) {
 }
 
 const filterPanels = {
-  company: 0,
-  client: 1,
-  other: 2,
+  device: 0,
 }
 
 class Historical extends Component {
@@ -123,7 +124,8 @@ class Historical extends Component {
     this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
     this.state = {
       expanded: null,
-      showControls: false,
+      // showControls: false,
+      showControls: true,
       viewport: {
         latitude: -26.046573,
         longitude: 28.095451,
@@ -139,12 +141,10 @@ class Historical extends Component {
       selectedReading: new Reading(),
 
       hideUnassignedDevices: true,
+
+      showAvailableDevicesTable: false,
+      showSelectedDevicesTable: false,
     }
-    this.viewCompanyFilter =
-        (props.claims.partyType === SystemPartyType)
-    this.viewClientFilter =
-        (props.claims.partyType === SystemPartyType) ||
-        (props.claims.partyType === CompanyPartyType)
 
     this.entityMap = {
       Company: [],
@@ -233,7 +233,7 @@ class Historical extends Component {
   }
 
   componentDidMount() {
-    this.load().then(() => this.loadReport())
+    // this.load().then(() => this.loadReport())
   }
 
   handleChange = panel => (event, expanded) => {
@@ -341,23 +341,26 @@ class Historical extends Component {
   }
 
   renderFiltersMenu() {
-    const {classes} = this.props
-    const {expanded} = this.state
+    const {classes, maxViewDimensions} = this.props
+    const {
+      expanded,
+      showAvailableDevicesTable,
+      showSelectedDevicesTable,
+    } = this.state
 
     return (
         <div className={classes.expanderRoot}>
-          {this.viewCompanyFilter &&
           <ExpansionPanel
-              expanded={expanded === filterPanels.client}
-              onChange={this.handleChange(filterPanels.client)}
+              expanded={expanded === filterPanels.device}
+              onChange={this.handleChange(filterPanels.device)}
           >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
               <div className={classes.panelInfo}>
                 <Typography className={classes.heading}>
-                  Company Filter
+                  Device Filter
                 </Typography>
                 <Typography className={classes.secondaryHeading}>
-                  Select Companies You'd Like Displayed
+                  Select The Devices You'd Like Displayed
                 </Typography>
               </div>
             </ExpansionPanelSummary>
@@ -369,69 +372,284 @@ class Historical extends Component {
                   alignItems="center"
               >
                 <Grid item>
-                  <MultiSelect
-                      displayAccessor="name"
-                      uniqueIdAccessor="id"
-                      selected={this.entityMap.Company}
-                      available={[]}
-                      onChange={this.handleCompanyFilterChange}
-                  />
+                  <Card
+                      style={{
+                        width: maxViewDimensions.width - 60,
+                      }}
+                  >
+                    <CardHeader
+                        avatar={
+                          <Avatar aria-label='available'
+                                  className={classes.avatar}>
+                            R
+                          </Avatar>
+                        }
+                        action={
+                          <IconButton
+                              onClick={() => this.setState({
+                                showSelectedDevicesTable:
+                                    !showSelectedDevicesTable,
+                              })}
+                          >
+                            {showSelectedDevicesTable
+                                ? <ExpandLessIcon/>
+                                : <ExpandMoreIcon/>
+                            }
+                          </IconButton>
+                        }
+                        title='Selected'
+                        subheader='Devices You Have Selected'
+                    />
+                    <Collapse in={showSelectedDevicesTable}>
+                      <CardContent>
+                        <BEPTable
+                            loading={false}
+                            totalNoRecords={5}
+                            noDataText={'No Clients Found'}
+                            data={[{}]}
+                            onCriteriaQueryChange={() => {
+                            }}
+
+                            columns={[
+                              {
+                                Header: 'Owner Party Type',
+                                accessor: 'ownerPartyType',
+                                width: 136,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Owned By',
+                                accessor: 'ownerId',
+                                width: 150,
+                                Cell: rowCellInfo => {
+                                  try {
+                                    return this.getPartyName(
+                                        rowCellInfo.original.ownerPartyType,
+                                        rowCellInfo.value,
+                                    )
+                                  } catch (e) {
+                                    console.error('error getting owner info', e)
+                                    return '-'
+                                  }
+                                },
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Assigned Party Type',
+                                accessor: 'assignedPartyType',
+                                width: 160,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Assigned To',
+                                accessor: 'assignedId',
+                                width: 150,
+                                Cell: rowCellInfo => {
+                                  try {
+                                    return this.getPartyName(
+                                        rowCellInfo.original.assignedPartyType,
+                                        rowCellInfo.value,
+                                    )
+                                  } catch (e) {
+                                    console.error('error getting assigned info',
+                                        e)
+                                    return '-'
+                                  }
+                                },
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Sim Country Code',
+                                accessor: 'simCountryCode',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Sim Number',
+                                accessor: 'simNumber',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Manufacturer Id',
+                                accessor: 'manufacturerId',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                            ]}
+                        />
+                      </CardContent>
+                    </Collapse>
+                  </Card>
                 </Grid>
-              </Grid>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>}
-          {this.viewClientFilter &&
-          <ExpansionPanel
-              expanded={expanded === filterPanels.company}
-              onChange={this.handleChange(filterPanels.company)}
-          >
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <div className={classes.panelInfo}>
-                <Typography className={classes.heading}>
-                  Client Filter
-                </Typography>
-                <Typography className={classes.secondaryHeading}>
-                  Select Clients You'd Like Displayed
-                </Typography>
-              </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Grid
-                  container
-                  direction="column"
-                  spacing={8}
-                  alignItems="center"
-              >
                 <Grid item>
-                  <MultiSelect
-                      displayAccessor="name"
-                      uniqueIdAccessor="id"
-                      selected={this.entityMap.Client}
-                      available={[]}
-                      onChange={this.handleClientFilterChange}
-                  />
+                  <Card
+                      style={{
+                        width: maxViewDimensions.width - 60,
+                      }}
+                  >
+                    <CardHeader
+                        avatar={
+                          <Avatar aria-label='available'
+                                  className={classes.avatar}>
+                            R
+                          </Avatar>
+                        }
+                        action={
+                          <IconButton
+                              onClick={() => this.setState({
+                                showAvailableDevicesTable:
+                                    !showAvailableDevicesTable,
+                              })}
+                          >
+                            {showAvailableDevicesTable
+                                ? <ExpandLessIcon/>
+                                : <ExpandMoreIcon/>
+                            }
+                          </IconButton>
+                        }
+                        title='Available'
+                        subheader='Devices That You Can Select'
+                    />
+                    <Collapse in={showAvailableDevicesTable}>
+                      <CardContent>
+                        <BEPTable
+                            loading={false}
+                            totalNoRecords={5}
+                            noDataText={'No Clients Found'}
+                            data={[{}]}
+                            onCriteriaQueryChange={() => {
+                            }}
+
+                            columns={[
+                              {
+                                Header: 'Owner Party Type',
+                                accessor: 'ownerPartyType',
+                                width: 136,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Owned By',
+                                accessor: 'ownerId',
+                                width: 150,
+                                Cell: rowCellInfo => {
+                                  try {
+                                    return this.getPartyName(
+                                        rowCellInfo.original.ownerPartyType,
+                                        rowCellInfo.value,
+                                    )
+                                  } catch (e) {
+                                    console.error('error getting owner info', e)
+                                    return '-'
+                                  }
+                                },
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Assigned Party Type',
+                                accessor: 'assignedPartyType',
+                                width: 160,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Assigned To',
+                                accessor: 'assignedId',
+                                width: 150,
+                                Cell: rowCellInfo => {
+                                  try {
+                                    return this.getPartyName(
+                                        rowCellInfo.original.assignedPartyType,
+                                        rowCellInfo.value,
+                                    )
+                                  } catch (e) {
+                                    console.error('error getting assigned info',
+                                        e)
+                                    return '-'
+                                  }
+                                },
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Sim Country Code',
+                                accessor: 'simCountryCode',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Sim Number',
+                                accessor: 'simNumber',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                              {
+                                Header: 'Manufacturer Id',
+                                accessor: 'manufacturerId',
+                                width: 150,
+                                config: {
+                                  filter: {
+                                    type: Text,
+                                  },
+                                },
+                              },
+                            ]}
+                        />
+                      </CardContent>
+                    </Collapse>
+                  </Card>
                 </Grid>
               </Grid>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>}
-          <ExpansionPanel
-              expanded={expanded === filterPanels.other}
-              onChange={this.handleChange(filterPanels.other)}
-          >
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
-              <div className={classes.panelInfo}>
-                <Typography className={classes.heading}>
-                  Other
-                </Typography>
-                <Typography className={classes.secondaryHeading}>
-                  Additional Filter Options
-                </Typography>
-              </div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Divider/>
-              {this.renderPartySwitch()}
-              <Divider/>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </div>
@@ -590,7 +808,7 @@ class Historical extends Component {
           >
             <Card
                 style={{
-                  maxWidth: maxViewDimensions.width - 20,
+                  width: maxViewDimensions.width - 20,
                 }}
             >
               <Grid container direction={'column'} alignItems={'center'}>
