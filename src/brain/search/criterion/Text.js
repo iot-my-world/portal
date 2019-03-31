@@ -1,8 +1,8 @@
-import Base from 'brain/Base'
+import BaseCriterion from 'brain/search/criterion/Base'
 import {Text as TextCriterion} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
-export default class Text extends Base {
+export default class Text extends BaseCriterion {
   static Type = TextCriterion
 
   /**
