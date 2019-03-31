@@ -13,7 +13,7 @@ const Report = {
       method: 'TrackingReport.Live',
       request: {
         partyIdentifiers: partyIdentifiers.map(
-            identifier => identifier.unwrappedPOJO(),
+            identifier => identifier.toPOJO(),
         ),
       },
     })
