@@ -46,6 +46,7 @@ import {
 import {AsyncSelect} from 'components/form'
 import ListTextCriterion from 'brain/search/criterion/list/Text'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
+import PartyIdentifier from 'brain/search/identifier/Party'
 
 const styles = theme => ({
   root: {
@@ -376,11 +377,11 @@ class Client extends Component {
       // find the admin user registration status of these clients
       this.clientRegistration =
           (await PartyRegistrar.AreAdminsRegistered({
-            partyDetails: collectResponse.records.map(client => {
-              return {
-                partyId: (new IdIdentifier(client.id)).value,
+            partyIdentifiers: collectResponse.records.map(client => {
+              return new PartyIdentifier({
+                partyIdIdentifier: new IdIdentifier(client.id),
                 partyType: ClientPartyType,
-              }
+              })
             }),
           })).result
     } catch (e) {
@@ -492,7 +493,6 @@ class Client extends Component {
   }
 
   getPartyName(partyType, partyId) {
-    console.log('retrieve', partyType, partyId, this.entityMap)
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(partyId, list ? list : [])
     return entity ? entity.name : '-'

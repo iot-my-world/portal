@@ -13,6 +13,9 @@ import {
   AppDoneLoading,
   SetMaxViewDimensions,
 } from 'actions/app'
+import {
+  NotificationFailure,
+} from 'actions/notification'
 
 let AppContainer = props => {
   return <App {...props}/>
@@ -37,6 +40,7 @@ AppContainer = connect(
       SetMyParty,
       SetMyUser,
       SetMaxViewDimensions,
+      NotificationFailure,
     }
 )(AppContainer)
 

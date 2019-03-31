@@ -3,21 +3,13 @@ import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class Name extends BaseIdentifier {
-  static identifierType = NameIdentifierType
+  static Type = NameIdentifierType
 
   /**
    * @type {string}
    * @private
    */
-  _type = Name.identifierType
-
-  /**
-   * @type {{name: string}}
-   * @private
-   */
-  _value = {
-    name: '',
-  }
+  _name = ''
 
   /**
    * construct a new name identifier
@@ -30,9 +22,9 @@ export default class Name extends BaseIdentifier {
           (name instanceof Name) ||
           (isObject(name))
       ) {
-        this._value.name = name.name
+        this._name = name.name
       } else if (isString(name)) {
-        this._value.name = name
+        this._name = name
       } else {
         throw new TypeError('invalid arg passed to Name identifier constructor')
       }
@@ -40,6 +32,6 @@ export default class Name extends BaseIdentifier {
   }
 
   get name() {
-    return this._value.name
+    return this._name
   }
 }

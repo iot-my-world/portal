@@ -3,21 +3,13 @@ import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class Username extends BaseIdentifier {
-  static identifierType = UsernameIdentifierType
+  static Type = UsernameIdentifierType
 
   /**
    * @type {string}
    * @private
    */
-  _type = Username.identifierType
-
-  /**
-   * @type {{username: string}}
-   * @private
-   */
-  _value = {
-    username: '',
-  }
+  _username = ''
 
   /**
    * construct a new username identifier
@@ -30,9 +22,9 @@ export default class Username extends BaseIdentifier {
           (username instanceof Username) ||
           (isObject(username))
       ) {
-        this._value.username = username.username
+        this._username = username.username
       } else if (isString(username)) {
-        this._value.username = username
+        this._username = username
       } else {
         throw new TypeError('invalid arg passed to Username identifier constructor')
       }
@@ -40,6 +32,6 @@ export default class Username extends BaseIdentifier {
   }
 
   get username() {
-    return this._value.username
+    return this._username
   }
 }

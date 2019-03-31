@@ -280,6 +280,8 @@ class App extends Component {
       AppDoneLoading,
       SetMyParty,
       SetMyUser,
+      Logout,
+      NotificationFailure,
     } = this.props
 
     // catch in case setup starts before claims are set
@@ -292,13 +294,16 @@ class App extends Component {
     let viewPermissions = []
     try {
       // TODO: remove redundant passing of user id
-      const response = await PermissionHandler.GetAllUsersViewPermissions(
-          claims.userId)
+      const response = await PermissionHandler.GetAllUsersViewPermissions({
+        userIdentifier: claims.userId,
+      })
       // update view permissions in state
       SetViewPermissions(response.permission)
       viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
@@ -307,6 +312,8 @@ class App extends Component {
       SetMyParty(response.party)
     } catch (e) {
       console.error('error getting my party', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
@@ -317,6 +324,8 @@ class App extends Component {
       user = response.user
     } catch (e) {
       console.error('error getting my user', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
@@ -339,6 +348,9 @@ class App extends Component {
       this.setState({menuState})
     } catch (e) {
       console.error('error building app routes', e)
+      NotificationFailure('error logging in')
+      Logout()
+      return
     }
 
     // all data for the app is done loading, indicate
@@ -708,6 +720,10 @@ App.propTypes = {
    * View permissions from redux
    */
   viewPermissions: PropTypes.array.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)
