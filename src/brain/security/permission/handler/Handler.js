@@ -5,11 +5,11 @@ const Handler = {
    * @param {Object} userIdentifier - any valid search.identifier
    * @constructor
    */
-  GetAllUsersViewPermissions(userIdentifier) {
+  GetAllUsersViewPermissions({userIdentifier}) {
     return jsonRpcRequest({
       method: 'PermissionHandler.GetAllUsersViewPermissions',
       request: {
-        userIdentifier: userIdentifier.toPOJO(),
+        userIdentifier: userIdentifier.wrap(),
       },
     })
   },
