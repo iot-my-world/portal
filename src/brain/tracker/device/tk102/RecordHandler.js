@@ -53,7 +53,7 @@ const RecordHandler = {
         method: 'TK102DeviceRecordHandler.Collect',
         request: {
           criteria: criteria
-              ? criteria.map(criterion => criterion.toPOJO())
+              ? criteria.map(criterion => criterion.wrap())
               : undefined,
           query: query
               ? query.toPOJO()

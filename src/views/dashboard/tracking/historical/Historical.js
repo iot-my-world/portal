@@ -126,7 +126,8 @@ class Historical extends Component {
     this.renderTK102DevicesAvailableTable =
         this.renderTK102DevicesAvailableTable.bind(this)
     this.state = {
-      expanded: null,
+      // expanded: null,
+      expanded: filterPanels.device,
       // showControls: false,
       showControls: true,
       viewport: {
@@ -145,7 +146,8 @@ class Historical extends Component {
 
       hideUnassignedDevices: true,
 
-      showAvailableDevicesTable: false,
+      // showAvailableDevicesTable: false,
+      showAvailableDevicesTable: true,
       showSelectedDevicesTable: false,
 
       tk102DeviceRecords: {

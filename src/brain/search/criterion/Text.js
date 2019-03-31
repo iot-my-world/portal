@@ -3,22 +3,19 @@ import {Text as TextCriterion} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
 export default class Text extends Base {
-  static type = TextCriterion
+  static Type = TextCriterion
 
   /**
-   * @type {Text}
+   * @type {string}
    * @private
    */
-  _type = Text.type
+  _field = ''
 
   /**
-   * @type {{field: string, text: string}}
+   * @type {string}
    * @private
    */
-  _value = {
-    field: '',
-    text: '',
-  }
+  _text = ''
 
   constructor(text) {
     super()
@@ -30,40 +27,32 @@ export default class Text extends Base {
               isObject(text)
           )
       ) {
-        this._value.text = text.text
-        this._value.field = text.field
+        this._text = text.text
+        this._field = text.field
       }
     } catch (e) {
       throw new Error(`error constructing text criterion object: ${e}`)
     }
   }
 
-  get type() {
-    return this._type
-  }
-
-  get value() {
-    return this._value
-  }
-
   get field() {
-    return this._value.field
+    return this._field
   }
 
   set field(newVal) {
-    this._value.field = newVal
+    this._field = newVal
   }
 
   get text() {
-    return this._value.text
+    return this._text
   }
 
   set text(newVal) {
-    this._value.text = newVal
+    this._text = newVal
   }
 
   get blank() {
-    return this._value.text === ''
+    return this._text === ''
   }
 
 }
