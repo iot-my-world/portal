@@ -23,6 +23,7 @@ import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {CompanyPartyType} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
+import PartyIdentifier from 'brain/search/identifier/Party'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
@@ -270,11 +271,11 @@ class Company extends Component {
 
       // find the admin user registration status of these companies
       this.companyRegistration = (await PartyRegistrar.AreAdminsRegistered({
-        partyDetails: collectResponse.records.map(company => {
-          return {
-            partyId: new IdIdentifier(company.id).value,
+        partyIdentifiers: collectResponse.records.map(company => {
+          return new PartyIdentifier({
+            partyIdIdentifier: new IdIdentifier(company.id),
             partyType: CompanyPartyType,
-          }
+          })
         }),
       })).result
     } catch (e) {
