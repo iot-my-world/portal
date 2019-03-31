@@ -39,6 +39,8 @@ import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {Text} from 'brain/search/criterion/types'
+import Query from 'brain/search/Query'
+import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
@@ -122,6 +124,9 @@ class Historical extends Component {
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
     this.renderPartySwitch = this.renderPartySwitch.bind(this)
     this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
+    this.handleDeviceCriteriaQueryChange = this.handleDeviceCriteriaQueryChange.bind(
+        this)
+    this.collectDevices = this.collectDevices.bind(this)
     this.state = {
       expanded: null,
       // showControls: false,
@@ -144,6 +149,12 @@ class Historical extends Component {
 
       showAvailableDevicesTable: false,
       showSelectedDevicesTable: false,
+
+      deviceRecords: {
+        records: [],
+        totalNo: 0,
+        loading: false,
+      },
     }
 
     this.entityMap = {
@@ -160,6 +171,9 @@ class Historical extends Component {
 
     this.loadReportTimeout = () => {
     }
+
+    this.deviceCollectionCriteria = []
+    this.deviceCollectionQuery = new Query()
   }
 
   getPartyName(partyType, partyId) {
@@ -340,12 +354,49 @@ class Historical extends Component {
     this.loadReportTimeout = setTimeout(this.loadReport, 100)
   }
 
+  async collectDevices() {
+    const {NotificationFailure} = this.props
+    const {deviceRecords} = this.state
+    this.setState({
+      deviceRecords: {
+        ...deviceRecords,
+        loading: true,
+      },
+    })
+
+    // fetch tk102 records
+    let response
+    try {
+      response = await TK102RecordHandler.Collect(
+          this.collectCriteria,
+          this.collectQuery,
+      )
+    } catch (e) {
+      console.error('error collecting device records', e)
+      NotificationFailure('Failed To Fetch Devices')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    this.setState({
+      deviceRecords: {
+        ...deviceRecords,
+        loading: false,
+      },
+    })
+  }
+
+  handleDeviceCriteriaQueryChange() {
+
+  }
+
   renderFiltersMenu() {
     const {classes, maxViewDimensions} = this.props
     const {
       expanded,
       showAvailableDevicesTable,
       showSelectedDevicesTable,
+      deviceRecords,
     } = this.state
 
     return (
@@ -542,10 +593,10 @@ class Historical extends Component {
                     <Collapse in={showAvailableDevicesTable}>
                       <CardContent>
                         <BEPTable
-                            loading={false}
-                            totalNoRecords={5}
+                            loading={deviceRecords.loading}
+                            totalNoRecords={deviceRecords.totalNo}
                             noDataText={'No Clients Found'}
-                            data={[{}]}
+                            data={deviceRecords.data}
                             onCriteriaQueryChange={() => {
                             }}
 
@@ -575,11 +626,11 @@ class Historical extends Component {
                                     return '-'
                                   }
                                 },
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
+                                // config: {
+                                //   filter: {
+                                //     type: Text,
+                                //   },
+                                // },
                               },
                               {
                                 Header: 'Assigned Party Type',
@@ -864,6 +915,10 @@ Historical.propTypes = {
    * max view dimensions from redux {width: x, height: x}
    */
   maxViewDimensions: PropTypes.object.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 Historical.defaultProps = {}
 
