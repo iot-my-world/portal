@@ -8,7 +8,6 @@ import {
   ExpansionPanelSummary,
   Grid,
   Card,
-  Switch,
   Collapse,
   IconButton,
   Tooltip, CardContent,
@@ -17,9 +16,9 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ExpandLessIcon from '@material-ui/icons/ExpandLess'
 // import MultiSelect from 'components/multiSelect'
-import {CompanyRecordHandler} from 'brain/party/company'
-import {ClientRecordHandler} from 'brain/party/client'
-import {TrackingReport} from 'brain/report/tracking'
+// import {CompanyRecordHandler} from 'brain/party/company'
+// import {ClientRecordHandler} from 'brain/party/client'
+// import {TrackingReport} from 'brain/report/tracking'
 import MapGL, {
   Marker,
   // Popup,
@@ -28,13 +27,13 @@ import MapGL, {
 import 'components/mapbox/Custom.css'
 import {MapPin, MapPinPopup} from './map'
 import {Reading} from 'brain/tracker/reading'
-import {SystemRecordHandler} from 'brain/party/system'
-import {PartyIdentifier} from 'brain/search/identifier'
-import {
-  ClientPartyType,
-  CompanyPartyType,
-  SystemPartyType,
-} from 'brain/party/types'
+// import {SystemRecordHandler} from 'brain/party/system'
+// import {PartyIdentifier} from 'brain/search/identifier'
+// import {
+//   ClientPartyType,
+//   CompanyPartyType,
+//   SystemPartyType,
+// } from 'brain/party/types'
 import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
@@ -82,27 +81,25 @@ const styles = theme => ({
   },
 })
 
-// const TOKEN = 'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
-
 /**
  * returns a random color
  * @param {string[]} [exclude] - colors to exclude
  * @returns {string}
  */
-function getRandomColor(exclude = []) {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
-  let firstTime = true
-  while (exclude.includes(color) || firstTime) {
-    firstTime = false
-    color = '#'
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)]
-    }
-  }
-
-  return color
-}
+// function getRandomColor(exclude = []) {
+//   const letters = '0123456789ABCDEF'
+//   let color = '#'
+//   let firstTime = true
+//   while (exclude.includes(color) || firstTime) {
+//     firstTime = false
+//     color = '#'
+//     for (let i = 0; i < 6; i++) {
+//       color += letters[Math.floor(Math.random() * 16)]
+//     }
+//   }
+//
+//   return color
+// }
 
 const filterPanels = {
   device: 0,
