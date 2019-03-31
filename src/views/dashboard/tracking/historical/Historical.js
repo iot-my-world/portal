@@ -114,7 +114,7 @@ class Historical extends Component {
     this.getPartyName = this.getPartyName.bind(this)
     this.loadReport = this.loadReport.bind(this)
     this.renderFilterShowHideIcon = this.renderFilterShowHideIcon.bind(this)
-    this.renderContolsExpanders = this.renderContolsExpanders.bind(this)
+    this.renderControls = this.renderControls.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderMapPins = this.renderMapPins.bind(this)
@@ -123,8 +123,8 @@ class Historical extends Component {
     this.handleTK102DeviceCriteriaQueryChange =
         this.handleTK102DeviceCriteriaQueryChange.bind(this)
     this.collectTK102Devices = this.collectTK102Devices.bind(this)
-    this.renderTK102DevicesAvailableTable = this.renderTK102DevicesAvailableTable.bind(
-        this)
+    this.renderTK102DevicesAvailableTable =
+        this.renderTK102DevicesAvailableTable.bind(this)
     this.state = {
       expanded: null,
       // showControls: false,
@@ -181,11 +181,17 @@ class Historical extends Component {
   async load() {
     const {ShowGlobalLoader, HideGlobalLoader} = this.props
     ShowGlobalLoader()
+    try {
+      await this.collectTK102Devices()
+    } catch (e) {
+      console.error('error loading historical tracking dashboard', e)
+    }
     HideGlobalLoader()
   }
 
   componentDidMount() {
     // this.load().then(() => this.loadReport())
+    this.load()
   }
 
   handleChange = panel => (event, expanded) => {
@@ -212,6 +218,7 @@ class Historical extends Component {
     HideGlobalLoader()
   }
 
+  // TK102 Device Methods
   async collectTK102Devices() {
     const {NotificationFailure} = this.props
     const {tk102DeviceRecords} = this.state
@@ -251,7 +258,7 @@ class Historical extends Component {
   handleTK102DeviceCriteriaQueryChange(criteria, query) {
     this.tk102DeviceCriteria = criteria
     this.tk102DeviceQuery = query
-
+    this.collectTK102DevicesTimeout = setTimeout(this.collectTK102Devices, 300)
   }
 
   renderTK102DevicesAvailableTable() {
@@ -262,9 +269,8 @@ class Historical extends Component {
             loading={tk102DeviceRecords.loading}
             totalNoRecords={tk102DeviceRecords.total}
             noDataText={'No TK102 Devices Found'}
-            data={tk102DeviceRecords.data}
-            onCriteriaQueryChange={() => {
-            }}
+            data={tk102DeviceRecords.records}
+            onCriteriaQueryChange={this.handleTK102DeviceCriteriaQueryChange}
 
             columns={[
               {
@@ -292,11 +298,11 @@ class Historical extends Component {
                     return '-'
                   }
                 },
-                // config: {
-                //   filter: {
-                //     type: Text,
-                //   },
-                // },
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
               },
               {
                 Header: 'Assigned Party Type',
@@ -365,7 +371,7 @@ class Historical extends Component {
     )
   }
 
-  renderContolsExpanders() {
+  renderControls() {
     const {classes, maxViewDimensions} = this.props
     const {
       expanded,
@@ -699,7 +705,7 @@ class Historical extends Component {
                 </Grid>
                 <Grid item>
                   <Collapse in={showControls}>
-                    {this.renderContolsExpanders()}
+                    {this.renderControls()}
                   </Collapse>
                 </Grid>
               </Grid>
