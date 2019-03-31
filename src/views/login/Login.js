@@ -114,6 +114,7 @@ class Login extends Component {
     this.handleForgotPasswordUsernameEmailInputChange =
         this.handleForgotPasswordUsernameEmailInputChange.bind(this)
     this.handleForgotPassword = this.handleForgotPassword.bind(this)
+    this.handleSelectForgotPassword = this.handleSelectForgotPassword.bind(this)
   }
 
   handleInputChange(event) {
@@ -130,6 +131,18 @@ class Login extends Component {
   }
 
   reasonsInvalid = new ReasonsInvalid()
+
+  handleSelectForgotPassword() {
+    this.reasonsInvalid.clearAll()
+    this.setState({
+      activeState: events.forgotPassword,
+      usernameOrEmailAddress: '',
+      password: '',
+      cursorOverForgotPassword: false,
+      cursorOverReturn: false,
+      forgotPasswordUsernameOrEmailAddress: '',
+    })
+  }
 
   async handleLogin(submitEvent) {
     submitEvent.preventDefault()
@@ -366,9 +379,7 @@ class Login extends Component {
                       onMouseLeave={() => this.setState({
                         cursorOverForgotPassword: false,
                       })}
-                      onClick={() => this.setState({
-                        activeState: events.forgotPassword,
-                      })}
+                      onClick={this.handleSelectForgotPassword}
                       color={cursorOverForgotPassword ?
                           'secondary' :
                           'primary'}
@@ -535,6 +546,10 @@ class Login extends Component {
         (activeState === states.loggingIn) ||
         (activeState === states.errorContactingServer) ||
         (activeState === states.logInFail)
+    const showForgotPasswordCaptcha =
+        (activeState === states.forgotPasswordCaptcha)
+    const showForgotPasswordDetails =
+        (activeState === states.forgotPasswordDetailsEnter)
 
     return <div
         className={classes.fullPageBackground}
@@ -551,17 +566,19 @@ class Login extends Component {
           </div>
           <Collapse in={showLoginCard}>
             <div>
-              {this.renderLogInCard()}
+              {showLoginCard && this.renderLogInCard()}
             </div>
           </Collapse>
-          <Collapse in={activeState === states.forgotPasswordCaptcha}>
+          <Collapse in={showForgotPasswordCaptcha}>
             <div>
-              {this.renderForgotPasswordCaptchaCard()}
+              {showForgotPasswordCaptcha &&
+              this.renderForgotPasswordCaptchaCard()}
             </div>
           </Collapse>
-          <Collapse in={activeState === states.forgotPasswordDetailsEnter}>
+          <Collapse in={showForgotPasswordDetails}>
             <div>
-              {this.renderForgotPasswordDetailsEnterCard()}
+              {showForgotPasswordDetails &&
+              this.renderForgotPasswordDetailsEnterCard()}
             </div>
           </Collapse>
         </div>
