@@ -1,9 +1,9 @@
 import Base from 'brain/Base'
-import {Or as OrCriterion} from 'brain/search/criterion/types'
+import {OrCriterionType} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
 export default class Or extends Base {
-  static type = OrCriterion
+  static type = OrCriterionType
 
   /**
    * @type {Or}

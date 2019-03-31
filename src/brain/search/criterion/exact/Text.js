@@ -1,9 +1,9 @@
 import BaseCriterion from 'brain/search/criterion/Base'
-import {TextCriterionType} from 'brain/search/criterion/types'
+import {ExactTextCriterionType} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
 export default class Text extends BaseCriterion {
-  static Type = TextCriterionType
+  static Type = ExactTextCriterionType
 
   /**
    * @type {string}

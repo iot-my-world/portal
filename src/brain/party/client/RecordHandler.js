@@ -52,7 +52,7 @@ const RecordHandler = {
         method: 'ClientRecordHandler.Collect',
         request: {
           criteria: criteria
-              ? criteria.map(criterion => criterion.toPOJO())
+              ? criteria.map(criterion => criterion.wrap())
               : undefined,
           query: query
               ? query.toPOJO()
