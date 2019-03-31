@@ -115,15 +115,11 @@ class Historical extends Component {
     this.loadReport = this.loadReport.bind(this)
     this.renderFilterShowHideIcon = this.renderFilterShowHideIcon.bind(this)
     this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
-    this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
-    this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderMapPins = this.renderMapPins.bind(this)
     this.getMapHeight = this.getMapHeight.bind(this)
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
-    this.renderPartySwitch = this.renderPartySwitch.bind(this)
-    this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
     this.handleDeviceCriteriaQueryChange = this.handleDeviceCriteriaQueryChange.bind(
         this)
     this.collectDevices = this.collectDevices.bind(this)
@@ -150,7 +146,7 @@ class Historical extends Component {
       showAvailableDevicesTable: false,
       showSelectedDevicesTable: false,
 
-      deviceRecords: {
+      tk102DeviceRecords: {
         records: [],
         totalNo: 0,
         loading: false,
@@ -163,17 +159,10 @@ class Historical extends Component {
       System: [],
     }
 
-    this.systemIdentifiers = []
-    this.companyIdentifiers = []
-    this.clientIdentifiers = []
-
     this.readingPinColorMap = {}
 
     this.loadReportTimeout = () => {
     }
-
-    this.deviceCollectionCriteria = []
-    this.deviceCollectionQuery = new Query()
   }
 
   getPartyName(partyType, partyId) {
@@ -183,66 +172,8 @@ class Historical extends Component {
   }
 
   async load() {
-    const {ShowGlobalLoader, HideGlobalLoader, claims} = this.props
+    const {ShowGlobalLoader, HideGlobalLoader} = this.props
     ShowGlobalLoader()
-    try {
-      this.entityMap.System = (await SystemRecordHandler.Collect()).records
-      this.systemIdentifiers = this.entityMap.System.map(
-          system =>
-              new PartyIdentifier({
-                partyType: SystemPartyType,
-                partyIdIdentifier: system.id,
-              }),
-      )
-    } catch (e) {
-      console.error('error collecting system', e)
-      return
-    }
-    try {
-      this.entityMap.Company = (await CompanyRecordHandler.Collect()).records
-      this.companyIdentifiers = this.entityMap.Company.map(
-          company =>
-              new PartyIdentifier({
-                partyType: CompanyPartyType,
-                partyIdIdentifier: company.id,
-              }),
-      )
-    } catch (e) {
-      console.error('error collecting companies', e)
-      return
-    }
-    try {
-      this.entityMap.Client = (await ClientRecordHandler.Collect()).records
-      this.clientIdentifiers = this.entityMap.Client.map(
-          client =>
-              new PartyIdentifier({
-                partyType: ClientPartyType,
-                partyIdIdentifier: client.id,
-              }),
-      )
-    } catch (e) {
-      console.error('error collecting clients', e)
-      return
-    }
-
-    // remove my party from applicable list. this is because by default
-    // hideUnassignedDevices is set to false
-    switch (claims.partyType) {
-      case SystemPartyType:
-        this.systemIdentifiers = this.systemIdentifiers.filter(identifier =>
-            identifier.partyIdIdentifier.id !== claims.partyId.id,
-        )
-        break
-
-      case CompanyPartyType:
-        this.companyIdentifiers = this.companyIdentifiers.filter(identifier =>
-            identifier.partyIdIdentifier.id !== claims.partyId.id,
-        )
-        break
-
-      default:
-    }
-
     HideGlobalLoader()
   }
 
@@ -267,99 +198,19 @@ class Historical extends Component {
     const {ShowGlobalLoader, HideGlobalLoader} = this.props
     ShowGlobalLoader()
     try {
-      this.setState({
-        readings: (await TrackingReport.Live({
-          partyIdentifiers: [
-            ...this.companyIdentifiers,
-            ...this.clientIdentifiers,
-            ...this.systemIdentifiers,
-          ],
-        })).readings,
-      })
-      let usedColors = Object.values(this.readingPinColorMap)
-      this.state.readings.forEach(reading => {
-        if (this.readingPinColorMap[reading.id] === undefined) {
-          // if a color has not yet been assigned for this reading id then
-          // assign one now
-          const fill = getRandomColor(usedColors)
-          usedColors.push(fill)
-          this.readingPinColorMap[reading.id] = fill
-        }
-      })
+
     } catch (e) {
       console.error('error loading report', e)
     }
     HideGlobalLoader()
   }
 
-  handleClientFilterChange(selected) {
-    this.clientIdentifiers = selected.map(
-        client =>
-            new PartyIdentifier({
-              partyType: ClientPartyType,
-              partyIdIdentifier: client.id,
-            }),
-    )
-    this.loadReportTimeout = setTimeout(this.loadReport, 500)
-  }
-
-  handleCompanyFilterChange(selected) {
-    this.companyIdentifiers = selected.map(
-        company =>
-            new PartyIdentifier({
-              partyType: CompanyPartyType,
-              partyIdIdentifier: company.id,
-            }),
-    )
-    this.loadReportTimeout = setTimeout(this.loadReport, 500)
-  }
-
-  handlePartySwitchChange(event) {
-    const {claims} = this.props
-    this.setState({hideUnassignedDevices: event.target.checked})
-
-    switch (claims.partyType) {
-      case SystemPartyType:
-        if (event.target.checked) {
-          // just checked, so remove party
-          this.systemIdentifiers = this.systemIdentifiers.filter(identifier =>
-              identifier.partyIdIdentifier.id !== claims.partyId.id,
-          )
-        } else {
-          // just unchecked, add party
-          this.systemIdentifiers.push(new PartyIdentifier({
-            partyType: claims.partyType,
-            partyIdIdentifier: claims.partyId.id,
-          }))
-        }
-        break
-
-      case CompanyPartyType:
-        if (event.target.checked) {
-          // just checked, so remove party
-          this.companyIdentifiers = this.companyIdentifiers.filter(identifier =>
-              identifier.partyIdIdentifier.id !== claims.partyId.id,
-          )
-        } else {
-          // just unchecked, add party
-          this.companyIdentifiers.push(new PartyIdentifier({
-            partyType: claims.partyType,
-            partyIdIdentifier: claims.partyId.id,
-          }))
-        }
-        break
-
-      default:
-    }
-    this.loadReportTimeout = setTimeout(this.loadReport, 100)
-  }
-
   async collectDevices() {
     const {NotificationFailure} = this.props
-    const {deviceRecords} = this.state
+    const {tk102DeviceRecords} = this.state
     this.setState({
-      deviceRecords: {
-        ...deviceRecords,
+      tk102DeviceRecords: {
+        ...tk102DeviceRecords,
         loading: true,
       },
     })
@@ -379,8 +230,8 @@ class Historical extends Component {
     }
 
     this.setState({
-      deviceRecords: {
-        ...deviceRecords,
+      tk102DeviceRecords: {
+        ...tk102DeviceRecords,
         loading: false,
       },
     })
@@ -396,7 +247,7 @@ class Historical extends Component {
       expanded,
       showAvailableDevicesTable,
       showSelectedDevicesTable,
-      deviceRecords,
+      tk102DeviceRecords,
     } = this.state
 
     return (
@@ -593,10 +444,10 @@ class Historical extends Component {
                     <Collapse in={showAvailableDevicesTable}>
                       <CardContent>
                         <BEPTable
-                            loading={deviceRecords.loading}
-                            totalNoRecords={deviceRecords.totalNo}
+                            loading={tk102DeviceRecords.loading}
+                            totalNoRecords={tk102DeviceRecords.totalNo}
                             noDataText={'No Clients Found'}
-                            data={deviceRecords.data}
+                            data={tk102DeviceRecords.data}
                             onCriteriaQueryChange={() => {
                             }}
 
@@ -763,46 +614,6 @@ class Historical extends Component {
               mapPopUpOpen: false,
             })}
         />
-    )
-  }
-
-  renderPartySwitch() {
-    const {claims, classes, party} = this.props
-
-    let msg = ''
-    switch (claims.partyType) {
-      case SystemPartyType:
-        msg = 'hide devices owned by system that are not assigned'
-        break
-      case CompanyPartyType:
-        msg = `hide devices owned by ${party.name} that are not assigned to any clients`
-        break
-      default:
-        return
-    }
-    const {hideUnassignedDevices} = this.state
-
-    return (
-        <Grid item>
-          <div className={classes.partySwitchWrapper}>
-            <div>
-              <Typography>
-                Hide Unassigned
-              </Typography>
-            </div>
-            <div>
-              <Switch
-                  checked={hideUnassignedDevices}
-                  onChange={this.handlePartySwitchChange}
-              />
-            </div>
-            <div style={{gridColumn: '1/3'}}>
-              <Typography variant={'caption'}>
-                {msg}
-              </Typography>
-            </div>
-          </div>
-        </Grid>
     )
   }
 
