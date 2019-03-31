@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Table from 'components/table/reactTable/Table'
+import classNames from 'classnames'
 import {
   withStyles, CircularProgress, Typography,
+  Grid, IconButton, Tooltip, Icon,
 } from '@material-ui/core'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {isString, isObject, isArray} from 'utilities/type/type'
@@ -13,6 +15,9 @@ import {
   Text as TextCriterionType,
 } from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
+import {
+  FiFilter as FilterIcon,
+} from 'react-icons/fi'
 
 const styles = theme => ({
   processingDisplay: {
@@ -34,6 +39,21 @@ const styles = theme => ({
   },
   errorIcon: {
     fontSize: 80,
+  },
+  root: {},
+  controlsWrapper: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    justifyItems: 'end',
+  },
+  icon: {},
+  filledIcon: {
+    fill: theme.palette.grey[600],
+    color: theme.palette.grey[600],
+  },
+  outlinedIcon: {
+    fill: 'none',
+    color: theme.palette.grey[600],
   },
 })
 
@@ -78,6 +98,7 @@ class BEPTable extends Component {
       errors: {},
       page: 0,
       query: new Query(props.query),
+      showFilters: true,
     }
   }
 
@@ -235,6 +256,7 @@ class BEPTable extends Component {
       activeState,
       page,
       query,
+      showFilters,
     } = this.state
     const {
       classes,
@@ -244,18 +266,46 @@ class BEPTable extends Component {
 
     switch (true) {
       case activeState === states.nop:
-        return <Table
-            {...rest}
-            filterable
-            columns={this.columns}
-            manual={true}
-            page={page}
-            pages={Math.ceil(totalNoRecords / query.limit)}
-            defaultPageSize={query.limit}
-            onSortedChange={this.handleQuerySortChange}
-            onPageSizeChange={this.handleQueryLimitChange}
-            onPageChange={this.handleQueryOffsetChange}
-        />
+        return <div>
+          <div className={classes.controlsWrapper}>
+            <div>
+              <Grid container>
+                <Grid item>
+                  <IconButton
+                      onClick={() => this.setState({
+                        showFilters: !showFilters,
+                      })}>
+                    <Tooltip
+                        title={'Toggle Filter'}
+                        placement={'top'}
+                    >
+                      <Icon>
+                        <FilterIcon
+                            className={classNames(classes.icon, {
+                              [classes.filledIcon]: showFilters,
+                              [classes.outlinedIcon]: !showFilters,
+                            })}
+                        />
+                      </Icon>
+                    </Tooltip>
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </div>
+          </div>
+          <Table
+              {...rest}
+              filterable={showFilters}
+              columns={this.columns}
+              manual={true}
+              page={page}
+              pages={Math.ceil(totalNoRecords / query.limit)}
+              defaultPageSize={query.limit}
+              onSortedChange={this.handleQuerySortChange}
+              onPageSizeChange={this.handleQueryLimitChange}
+              onPageChange={this.handleQueryOffsetChange}
+          />
+        </div>
       case Object.values(processingStates).includes(activeState):
         return this.renderProcessing()
       case Object.values(errorStates).includes(activeState):
