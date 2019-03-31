@@ -114,15 +114,17 @@ class Historical extends Component {
     this.getPartyName = this.getPartyName.bind(this)
     this.loadReport = this.loadReport.bind(this)
     this.renderFilterShowHideIcon = this.renderFilterShowHideIcon.bind(this)
-    this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
+    this.renderContolsExpanders = this.renderContolsExpanders.bind(this)
     this.load = this.load.bind(this)
     this.updateMapViewport = this.updateMapViewport.bind(this)
     this.renderMapPins = this.renderMapPins.bind(this)
     this.getMapHeight = this.getMapHeight.bind(this)
     this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
-    this.handleDeviceCriteriaQueryChange = this.handleDeviceCriteriaQueryChange.bind(
+    this.handleTK102DeviceCriteriaQueryChange =
+        this.handleTK102DeviceCriteriaQueryChange.bind(this)
+    this.collectTK102Devices = this.collectTK102Devices.bind(this)
+    this.renderTK102DevicesAvailableTable = this.renderTK102DevicesAvailableTable.bind(
         this)
-    this.collectDevices = this.collectDevices.bind(this)
     this.state = {
       expanded: null,
       // showControls: false,
@@ -148,9 +150,14 @@ class Historical extends Component {
 
       tk102DeviceRecords: {
         records: [],
-        totalNo: 0,
+        total: 0,
         loading: false,
       },
+    }
+
+    this.tk102DeviceCriteria = []
+    this.tk102DeviceQuery = new Query()
+    this.collectTK102DevicesTimeout = () => {
     }
 
     this.entityMap = {
@@ -205,7 +212,7 @@ class Historical extends Component {
     HideGlobalLoader()
   }
 
-  async collectDevices() {
+  async collectTK102Devices() {
     const {NotificationFailure} = this.props
     const {tk102DeviceRecords} = this.state
     this.setState({
@@ -219,35 +226,151 @@ class Historical extends Component {
     let response
     try {
       response = await TK102RecordHandler.Collect(
-          this.collectCriteria,
-          this.collectQuery,
+          this.tk102DeviceCriteria,
+          this.tk102DeviceQuery,
       )
+      this.setState({
+        tk102DeviceRecords: {
+          records: response.records,
+          total: response.total,
+          loading: false,
+        },
+      })
     } catch (e) {
       console.error('error collecting device records', e)
-      NotificationFailure('Failed To Fetch Devices')
-      this.setState({recordCollectionInProgress: false})
-      return
+      NotificationFailure('Failed To Fetch TK102 Devices')
+      this.setState({
+        tk102DeviceRecords: {
+          ...tk102DeviceRecords,
+          loading: false,
+        },
+      })
     }
-
-    this.setState({
-      tk102DeviceRecords: {
-        ...tk102DeviceRecords,
-        loading: false,
-      },
-    })
   }
 
-  handleDeviceCriteriaQueryChange() {
+  handleTK102DeviceCriteriaQueryChange(criteria, query) {
+    this.tk102DeviceCriteria = criteria
+    this.tk102DeviceQuery = query
 
   }
 
-  renderFiltersMenu() {
+  renderTK102DevicesAvailableTable() {
+    const {tk102DeviceRecords} = this.state
+
+    return (
+        <BEPTable
+            loading={tk102DeviceRecords.loading}
+            totalNoRecords={tk102DeviceRecords.total}
+            noDataText={'No TK102 Devices Found'}
+            data={tk102DeviceRecords.data}
+            onCriteriaQueryChange={() => {
+            }}
+
+            columns={[
+              {
+                Header: 'Owner Party Type',
+                accessor: 'ownerPartyType',
+                width: 136,
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+              {
+                Header: 'Owned By',
+                accessor: 'ownerId',
+                width: 150,
+                Cell: rowCellInfo => {
+                  try {
+                    return this.getPartyName(
+                        rowCellInfo.original.ownerPartyType,
+                        rowCellInfo.value,
+                    )
+                  } catch (e) {
+                    console.error('error getting owner info', e)
+                    return '-'
+                  }
+                },
+                // config: {
+                //   filter: {
+                //     type: Text,
+                //   },
+                // },
+              },
+              {
+                Header: 'Assigned Party Type',
+                accessor: 'assignedPartyType',
+                width: 160,
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+              {
+                Header: 'Assigned To',
+                accessor: 'assignedId',
+                width: 150,
+                Cell: rowCellInfo => {
+                  try {
+                    return this.getPartyName(
+                        rowCellInfo.original.assignedPartyType,
+                        rowCellInfo.value,
+                    )
+                  } catch (e) {
+                    console.error('error getting assigned info',
+                        e)
+                    return '-'
+                  }
+                },
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+              {
+                Header: 'Sim Country Code',
+                accessor: 'simCountryCode',
+                width: 150,
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+              {
+                Header: 'Sim Number',
+                accessor: 'simNumber',
+                width: 150,
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+              {
+                Header: 'Manufacturer Id',
+                accessor: 'manufacturerId',
+                width: 150,
+                config: {
+                  filter: {
+                    type: Text,
+                  },
+                },
+              },
+            ]}
+        />
+    )
+  }
+
+  renderContolsExpanders() {
     const {classes, maxViewDimensions} = this.props
     const {
       expanded,
       showAvailableDevicesTable,
       showSelectedDevicesTable,
-      tk102DeviceRecords,
     } = this.state
 
     return (
@@ -443,110 +566,7 @@ class Historical extends Component {
                     />
                     <Collapse in={showAvailableDevicesTable}>
                       <CardContent>
-                        <BEPTable
-                            loading={tk102DeviceRecords.loading}
-                            totalNoRecords={tk102DeviceRecords.totalNo}
-                            noDataText={'No Clients Found'}
-                            data={tk102DeviceRecords.data}
-                            onCriteriaQueryChange={() => {
-                            }}
-
-                            columns={[
-                              {
-                                Header: 'Owner Party Type',
-                                accessor: 'ownerPartyType',
-                                width: 136,
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                              {
-                                Header: 'Owned By',
-                                accessor: 'ownerId',
-                                width: 150,
-                                Cell: rowCellInfo => {
-                                  try {
-                                    return this.getPartyName(
-                                        rowCellInfo.original.ownerPartyType,
-                                        rowCellInfo.value,
-                                    )
-                                  } catch (e) {
-                                    console.error('error getting owner info', e)
-                                    return '-'
-                                  }
-                                },
-                                // config: {
-                                //   filter: {
-                                //     type: Text,
-                                //   },
-                                // },
-                              },
-                              {
-                                Header: 'Assigned Party Type',
-                                accessor: 'assignedPartyType',
-                                width: 160,
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                              {
-                                Header: 'Assigned To',
-                                accessor: 'assignedId',
-                                width: 150,
-                                Cell: rowCellInfo => {
-                                  try {
-                                    return this.getPartyName(
-                                        rowCellInfo.original.assignedPartyType,
-                                        rowCellInfo.value,
-                                    )
-                                  } catch (e) {
-                                    console.error('error getting assigned info',
-                                        e)
-                                    return '-'
-                                  }
-                                },
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                              {
-                                Header: 'Sim Country Code',
-                                accessor: 'simCountryCode',
-                                width: 150,
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                              {
-                                Header: 'Sim Number',
-                                accessor: 'simNumber',
-                                width: 150,
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                              {
-                                Header: 'Manufacturer Id',
-                                accessor: 'manufacturerId',
-                                width: 150,
-                                config: {
-                                  filter: {
-                                    type: Text,
-                                  },
-                                },
-                              },
-                            ]}
-                        />
+                        {this.renderTK102DevicesAvailableTable()}
                       </CardContent>
                     </Collapse>
                   </Card>
@@ -679,7 +699,7 @@ class Historical extends Component {
                 </Grid>
                 <Grid item>
                   <Collapse in={showControls}>
-                    {this.renderFiltersMenu()}
+                    {this.renderContolsExpanders()}
                   </Collapse>
                 </Grid>
               </Grid>
