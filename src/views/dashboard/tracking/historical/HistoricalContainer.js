@@ -8,7 +8,11 @@ let HistoricalContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    claims: state.auth.claims,
+    party: state.auth.party,
+    maxViewDimensions: state.app.maxViewDimensions,
+  }
 }
 
 HistoricalContainer = connect(
