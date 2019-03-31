@@ -107,10 +107,4 @@ export default class Client extends Base {
           `cannot create identifier for client if id and adminEmailAddress are both blank`)
     }
   }
-
-  toPOJO(){
-    let retObj = super.toPOJO()
-    retObj.parentId = this.parentId.value
-    return retObj
-  }
 }
