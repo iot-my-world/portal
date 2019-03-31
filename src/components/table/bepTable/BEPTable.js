@@ -11,9 +11,7 @@ import {isString, isObject, isArray} from 'utilities/type/type'
 import {
   Text as TextFilter,
 } from './filters'
-import {
-  Text as TextCriterionType,
-} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
 import {
   FiFilter as FilterIcon,

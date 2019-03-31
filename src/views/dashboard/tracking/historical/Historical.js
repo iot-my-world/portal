@@ -38,7 +38,7 @@ import {
 import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import {Text} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
 
@@ -281,7 +281,7 @@ class Historical extends Component {
                 width: 136,
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -302,7 +302,7 @@ class Historical extends Component {
                 },
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -312,7 +312,7 @@ class Historical extends Component {
                 width: 160,
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -334,7 +334,7 @@ class Historical extends Component {
                 },
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -344,7 +344,7 @@ class Historical extends Component {
                 width: 150,
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -354,7 +354,7 @@ class Historical extends Component {
                 width: 150,
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -364,7 +364,7 @@ class Historical extends Component {
                 width: 150,
                 config: {
                   filter: {
-                    type: Text,
+                    type: TextCriterionType,
                   },
                 },
               },
@@ -450,7 +450,7 @@ class Historical extends Component {
                                 width: 136,
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -471,7 +471,7 @@ class Historical extends Component {
                                 },
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -481,7 +481,7 @@ class Historical extends Component {
                                 width: 160,
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -503,7 +503,7 @@ class Historical extends Component {
                                 },
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -513,7 +513,7 @@ class Historical extends Component {
                                 width: 150,
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -523,7 +523,7 @@ class Historical extends Component {
                                 width: 150,
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },
@@ -533,7 +533,7 @@ class Historical extends Component {
                                 width: 150,
                                 config: {
                                   filter: {
-                                    type: Text,
+                                    type: TextCriterionType,
                                   },
                                 },
                               },

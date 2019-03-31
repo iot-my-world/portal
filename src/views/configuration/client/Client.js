@@ -26,7 +26,7 @@ import {
 import {CompanyRecordHandler} from 'brain/party/company'
 import {SystemRecordHandler} from 'brain/party/system'
 import {ReasonsInvalid} from 'brain/validate/index'
-import {Text} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import {TextCriterion} from 'brain/search/criterion'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
@@ -527,7 +527,7 @@ class Client extends Component {
         accessor: 'name',
         config: {
           filter: {
-            type: Text,
+            type: TextCriterionType,
           },
         },
       },
@@ -536,7 +536,7 @@ class Client extends Component {
         accessor: 'adminEmailAddress',
         config: {
           filter: {
-            type: Text,
+            type: TextCriterionType,
           },
         },
       },

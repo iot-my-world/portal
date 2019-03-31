@@ -33,7 +33,7 @@ import {
 } from 'brain/party/types'
 import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
-import {Text} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import {ListTextCriterion} from 'brain/search/criterion/list'
 import {Query} from 'brain/search/index'
 import {LoginClaims} from 'brain/security/claims'
@@ -533,7 +533,7 @@ class TK102 extends Component {
                     width: 136,
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -554,7 +554,7 @@ class TK102 extends Component {
                     },
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -564,7 +564,7 @@ class TK102 extends Component {
                     width: 160,
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -585,7 +585,7 @@ class TK102 extends Component {
                     },
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -595,7 +595,7 @@ class TK102 extends Component {
                     width: 150,
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -605,7 +605,7 @@ class TK102 extends Component {
                     width: 150,
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   },
@@ -615,7 +615,7 @@ class TK102 extends Component {
                     width: 150,
                     config: {
                       filter: {
-                        type: Text
+                        type: TextCriterionType,
                       }
                     }
                   }
@@ -834,7 +834,7 @@ class TK102 extends Component {
                             accessor: 'name',
                             config: {
                               filter: {
-                                type: Text
+                                type: TextCriterionType,
                               }
                             }
                           }
@@ -866,7 +866,7 @@ class TK102 extends Component {
                             accessor: 'name',
                             config: {
                               filter: {
-                                type: Text
+                                type: TextCriterionType,
                               }
                             }
                           }

@@ -1,9 +1,9 @@
 import BaseCriterion from 'brain/search/criterion/Base'
-import {ListText as ListTextCriterion} from 'brain/search/criterion/types'
+import {ListTextCriterionType} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
 export default class ListText extends BaseCriterion {
-  static Type = ListTextCriterion
+  static Type = ListTextCriterionType
 
   /**
    * @type {string}

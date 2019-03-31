@@ -17,7 +17,7 @@ import {
   CompanyAdministrator,
 } from 'brain/party/company'
 import {ReasonsInvalid} from 'brain/validate/index'
-import {Text} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
@@ -438,7 +438,7 @@ class Company extends Component {
                         accessor: 'name',
                         config: {
                           filter: {
-                            type: Text,
+                            type: TextCriterionType,
                           },
                         },
                       },
@@ -447,7 +447,7 @@ class Company extends Component {
                         accessor: 'adminEmailAddress',
                         config: {
                           filter: {
-                            type: Text,
+                            type: TextCriterionType,
                           },
                         },
                       },
