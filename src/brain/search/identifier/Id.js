@@ -3,21 +3,13 @@ import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class Id extends BaseIdentifier {
-  static identifierType = IdIdentifierType
+  static Type = IdIdentifierType
 
   /**
    * @type {string}
    * @private
    */
-  _type = Id.identifierType
-
-  /**
-   * @type {{id: string}}
-   * @private
-   */
-  _value = {
-    id: '',
-  }
+  _id = ''
 
   /**
    * construct a new id identifier
@@ -30,9 +22,9 @@ export default class Id extends BaseIdentifier {
           (id instanceof Id) ||
           (isObject(id))
       ) {
-        this._value.id = id.id
+        this._id = id.id
       } else if (isString(id)) {
-        this._value.id = id
+        this._id = id
       } else {
         throw new TypeError('invalid arg passed to Id identifier constructor')
       }
@@ -40,6 +32,6 @@ export default class Id extends BaseIdentifier {
   }
 
   get id() {
-    return this._value.id
+    return this._id
   }
 }
