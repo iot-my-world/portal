@@ -493,7 +493,6 @@ class Client extends Component {
   }
 
   getPartyName(partyType, partyId) {
-    console.log('retrieve', partyType, partyId, this.entityMap)
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(partyId, list ? list : [])
     return entity ? entity.name : '-'
