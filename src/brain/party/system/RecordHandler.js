@@ -12,9 +12,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: "SystemRecordHandler.Collect",
         request: {
-          criteria: criteria
-              ? criteria.map(criterion => criterion.wrap())
-            : undefined,
+          criteria,
           query: query ? query.toPOJO() : undefined
         }
       })

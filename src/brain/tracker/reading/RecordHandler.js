@@ -11,9 +11,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'ReadingRecordHandler.Collect',
         request: {
-          criteria: criteria
-              ? criteria.map(criterion => criterion.wrap())
-              : undefined,
+          criteria,
           query: query
               ? query.toPOJO()
               : undefined,

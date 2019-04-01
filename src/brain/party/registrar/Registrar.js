@@ -8,7 +8,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        companyIdentifier: companyIdentifier.wrap(),
+        companyIdentifier: companyIdentifier,
       },
     })
   },
@@ -44,7 +44,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteClientAdminUser',
       request: {
-        clientIdentifier: clientIdentifier.wrap(),
+        clientIdentifier: clientIdentifier,
       },
     })
   },
@@ -89,7 +89,7 @@ const Registrar = {
     return await jsonRpcRequest({
       method: 'PartyRegistrar.InviteUser',
       request: {
-        userIdentifier: userIdentifier.wrap(),
+        userIdentifier: userIdentifier,
       },
     })
   },
