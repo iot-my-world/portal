@@ -1,5 +1,7 @@
-import Text from './Text'
+import TextFilter from './Text'
+import TextOptionsFilter from './TextOptions'
 
 export {
-  Text,
+  TextFilter,
+  TextOptionsFilter,
 }

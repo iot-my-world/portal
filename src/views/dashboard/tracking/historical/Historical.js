@@ -29,20 +29,25 @@ import {MapPin, MapPinPopup} from './map'
 import {Reading} from 'brain/tracker/reading'
 // import {SystemRecordHandler} from 'brain/party/system'
 // import {PartyIdentifier} from 'brain/search/identifier'
-// import {
-//   ClientPartyType,
-//   CompanyPartyType,
-//   SystemPartyType,
-// } from 'brain/party/types'
+import {
+  // ClientPartyType,
+  // CompanyPartyType,
+  // SystemPartyType,
+  allPartyTypes,
+} from 'brain/party/types'
 import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import {TextCriterionType} from 'brain/search/criterion/types'
+import {
+  TextCriterionType, ExactTextCriterionType,
+} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
+const partyTypeOptions = allPartyTypes.map(
+    partyType => ({value: partyType, display: partyType}))
 
 const styles = theme => ({
   root: {
@@ -309,7 +314,10 @@ class Historical extends Component {
                 width: 160,
                 config: {
                   filter: {
-                    type: TextCriterionType,
+                    type: ExactTextCriterionType,
+                    options: partyTypeOptions,
+                    valueAccessor: 'value',
+                    displayAccessor: 'display',
                   },
                 },
               },
