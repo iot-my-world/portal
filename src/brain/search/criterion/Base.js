@@ -13,4 +13,11 @@ export default class BaseCriterion extends Base {
       value: this.toPOJO(),
     }
   }
+  toJSON() {
+    console.log('Calling toJSON on identifier on crit')
+    return {
+      type: this.type,
+      value: this.toPOJO(),
+    };
+  }
 }

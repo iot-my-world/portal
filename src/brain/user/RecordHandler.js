@@ -34,6 +34,7 @@ const RecordHandler = {
         request: {
           user: user.toPOJO(),
           method,
+
         },
       }).then(result => {
         resolve(new ReasonsInvalid(result.reasonsInvalid))
@@ -51,9 +52,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'UserRecordHandler.Collect',
         request: {
-          criteria: criteria
-              ? criteria.map(criterion => criterion.wrap())
-              : undefined,
+          criteria,
           query: query
               ? query.toPOJO()
               : undefined,
