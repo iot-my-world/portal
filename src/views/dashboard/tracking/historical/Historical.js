@@ -39,7 +39,7 @@ import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {
-  TextCriterionType, ExactTextCriterionType,
+  TextCriterionType, ExactTextCriterionType, ListTextCriterionType,
 } from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
@@ -459,7 +459,7 @@ class Historical extends Component {
                 },
                 config: {
                   filter: {
-                    type: TextCriterionType,
+                    type: ListTextCriterionType,
                   },
                 },
               },
