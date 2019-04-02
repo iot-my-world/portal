@@ -65,7 +65,7 @@ const Administrator = {
     return await jsonRpcRequest({
       method: 'UserAdministrator.SetPassword',
       request: {
-        identifier: identifier.toPOJO(),
+        identifier: identifier,
         newPassword,
       },
     })

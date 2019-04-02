@@ -12,9 +12,7 @@ const Report = {
     let response = await jsonRpcRequest({
       method: 'TrackingReport.Live',
       request: {
-        partyIdentifiers: partyIdentifiers.map(
-            identifier => identifier.toPOJO(),
-        ),
+        partyIdentifiers,
       },
     })
     response.readings = response.readings.map(reading => new Reading(reading))

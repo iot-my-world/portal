@@ -80,7 +80,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.AreAdminsRegistered',
       request: {
-        partyIdentifiers: partyIdentifiers.map(partyId => partyId.toPOJO()),
+        partyIdentifiers,
       },
     })
   },
