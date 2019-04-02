@@ -11,9 +11,11 @@ import {isString, isObject, isArray} from 'utilities/type/type'
 import {
   TextFilter,
   TextOptionsFilter,
+  ListTextFilter,
 } from './filters'
 import {
   ExactTextCriterionType,
+  ListTextCriterionType,
   TextCriterionType,
 } from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
@@ -192,6 +194,14 @@ class BEPTable extends Component {
                   onChange={this.handleFilterChange}
               />
             }
+            break
+
+          case ListTextCriterionType:
+            col.Filter = () => <ListTextFilter
+                field={columnId}
+                config={col.config.filter}
+                onChange={this.handleFilterChange}
+            />
             break
 
           default:
