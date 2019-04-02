@@ -14,7 +14,7 @@ class ListText extends Component {
   constructor(props) {
     super(props)
     this.setFilterHeight = this.setFilterHeight.bind(this)
-    this.onSearchTextChange = this.onSearchTextChange.bind(this)
+    this.onSearchBoxKeyPress = this.onSearchBoxKeyPress.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleItemSelect = this.handleItemSelect.bind(this)
     this.state = {
@@ -23,7 +23,7 @@ class ListText extends Component {
         field: props.field,
         text: '',
       }),
-      menuOpen: false,
+      searchMenuOpen: false,
       searchValue: '',
     }
     this.searchInputRef = React.createRef()
@@ -47,16 +47,38 @@ class ListText extends Component {
     }
   }
 
-  onSearchTextChange(e) {
-    const {searchValue, menuOpen} = this.state
-    if (!menuOpen) {
-      this.setState({menuOpen: true})
+  onSearchBoxKeyPress(e) {
+    const {searchValue, searchMenuOpen} = this.state
+    try {
+      e.stopPropagation() 
+    } catch (e) {
+      console.error('error stopping key press propagation', e)
     }
-    this.setState({searchValue: searchValue + e.key})
+    // open the search menu
+    if (!searchMenuOpen) {
+      this.setState({searchMenuOpen: true})
+    }
+
+    console.log(e.key, e.code, !e.key)
+
+    try {
+       if (e.key.length > 1) {
+         switch (e.key) {
+           case 'Backspace':
+             if (searchValue.length > 0) {
+               this.setState({searchValue: searchValue.slice(0, searchValue.length - 1)})
+             }
+         }
+       } else {
+         this.setState({searchValue: searchValue + e.key})
+       }
+    } catch (e) {
+      console.error('error processing key press', e)
+    }
   }
 
   handleItemSelect() {
-    this.setState({menuOpen: false})
+    this.setState({searchMenuOpen: false})
   }
 
   setFilterHeight(element) {
@@ -66,7 +88,7 @@ class ListText extends Component {
   render() {
     const {
       criterion,
-      menuOpen,
+      searchMenuOpen,
       maxFilterHeight,
       searchValue,
     } = this.state
@@ -80,17 +102,17 @@ class ListText extends Component {
     >
       <Input
           disableUnderline={true}
-          onChange={this.onSearchTextChange}
+          onChange={this.onSearchBoxKeyPress}
           value={searchValue}
-          onKeyPress={this.onSearchTextChange}
+          onKeyDown={this.onSearchBoxKeyPress}
       />
       {(this.searchInputRef.current) &&
       <Menu
           id="simple-menu"
           anchorEl={this.searchInputRef.current}
-          open={menuOpen}
-          onClose={() => this.setState({menuOpen: false})}
-          onKeyPress={this.onSearchTextChange}
+          open={searchMenuOpen}
+          onClose={() => this.setState({searchMenuOpen: false})}
+          onKeyDown={this.onSearchBoxKeyPress}
           keepMounted={true}
       >
         <MenuItem onClick={this.handleItemSelect}>Profile</MenuItem>
