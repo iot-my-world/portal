@@ -33,7 +33,7 @@ import {
   // ClientPartyType,
   // CompanyPartyType,
   // SystemPartyType,
-  allPartyTypes,
+  allPartyTypes, ClientPartyType, CompanyPartyType, SystemPartyType,
 } from 'brain/party/types'
 import Login from 'brain/security/claims/login/Login'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
@@ -43,11 +43,16 @@ import {
 } from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
+import SystemRecordHandler from 'brain/party/system/RecordHandler'
+import ListTextCriterion from 'brain/search/criterion/list/Text'
+import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import ClientRecordHandler from 'brain/party/client/RecordHandler'
 
 const TOKEN =
     'pk.eyJ1IjoiaW1yYW5wYXJ1ayIsImEiOiJjanJ5eTRqNzEwem1iM3lwazhmN3R1NWU4In0.FdWdZYUaovv2FY5QcQWVHg'
-const partyTypeOptions = allPartyTypes.map(
-    partyType => ({value: partyType, display: partyType}))
+const partyTypeOptions = allPartyTypes.map(partyType =>
+    ({value: partyType, display: partyType}),
+)
 
 const styles = theme => ({
   root: {
@@ -240,13 +245,6 @@ class Historical extends Component {
           this.tk102DeviceCriteria,
           this.tk102DeviceQuery,
       )
-      this.setState({
-        tk102DeviceRecords: {
-          records: response.records,
-          total: response.total,
-          loading: false,
-        },
-      })
     } catch (e) {
       console.error('error collecting device records', e)
       NotificationFailure('Failed To Fetch TK102 Devices')
@@ -257,6 +255,128 @@ class Historical extends Component {
         },
       })
     }
+
+    // compile list criteria for retrieval of client and company
+    // entities associated with these TK102 devices
+    let systemEntityIds = []
+    let clientEntityIds = []
+    let companyEntityIds = []
+    response.records.forEach(record => {
+      switch (record.ownerPartyType) {
+        case SystemPartyType:
+          if (!systemEntityIds.includes(record.ownerId.id)) {
+            systemEntityIds.push(record.ownerId.id)
+          }
+          break
+        case CompanyPartyType:
+          if (!companyEntityIds.includes(record.ownerId.id)) {
+            companyEntityIds.push(record.ownerId.id)
+          }
+          break
+        case ClientPartyType:
+          if (!clientEntityIds.includes(record.ownerId.id)) {
+            clientEntityIds.push(record.ownerId.id)
+          }
+          break
+        default:
+      }
+
+      switch (record.assignedPartyType) {
+        case SystemPartyType:
+          if (!systemEntityIds.includes(record.assignedId.id)) {
+            systemEntityIds.push(record.assignedId.id)
+          }
+          break
+        case CompanyPartyType:
+          if (!companyEntityIds.includes(record.assignedId.id)) {
+            companyEntityIds.push(record.assignedId.id)
+          }
+          break
+        case ClientPartyType:
+          if (!clientEntityIds.includes(record.assignedId.id)) {
+            clientEntityIds.push(record.assignedId.id)
+          }
+          break
+        default:
+      }
+    })
+
+    // fetch system entities
+    try {
+      if (systemEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.System = (await SystemRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: systemEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+    } catch (e) {
+      this.entityMap.System = []
+      console.error('error collecting system records', e)
+      NotificationFailure('Failed To Fetch System Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    // fetch company entities
+    try {
+      if (companyEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: companyEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+    } catch (e) {
+      this.entityMap.Company = []
+      console.error('error collecting company records', e)
+      NotificationFailure('Failed To Fetch Company Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    // fetch client entities
+    try {
+      if (clientEntityIds.length > 0) {
+        const blankQuery = new Query()
+        blankQuery.limit = 0
+        this.entityMap.Client = (await ClientRecordHandler.Collect(
+            [
+              new ListTextCriterion({
+                field: 'id',
+                list: clientEntityIds,
+              }),
+            ],
+            blankQuery,
+        )).records
+      }
+    } catch (e) {
+      this.entityMap.Client = []
+      console.error('error collecting client records', e)
+      NotificationFailure('Failed To Fetch Client Records')
+      this.setState({recordCollectionInProgress: false})
+      return
+    }
+
+    this.setState({
+      tk102DeviceRecords: {
+        records: response.records,
+        total: response.total,
+        loading: false,
+      },
+    })
   }
 
   handleTK102DeviceCriteriaQueryChange(criteria, query) {
