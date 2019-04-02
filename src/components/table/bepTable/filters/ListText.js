@@ -1,45 +1,32 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, Input, IconButton, MenuItem, Menu,
+  withStyles, Input, Menu, MenuItem,
 } from '@material-ui/core'
 import {
   TextCriterion,
 } from 'brain/search/criterion'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 
 const styles = (theme) => ({})
-
-const ITEM_HEIGHT = 48
-
-const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel',
-]
 
 class ListText extends Component {
 
   constructor(props) {
     super(props)
+    this.setFilterHeight = this.setFilterHeight.bind(this)
+    this.onSearchTextChange = this.onSearchTextChange.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleItemSelect = this.handleItemSelect.bind(this)
     this.state = {
+      maxFilterHeight: 31,
       criterion: new TextCriterion({
         field: props.field,
         text: '',
       }),
+      menuOpen: false,
+      searchValue: '',
     }
+    this.searchInputRef = React.createRef()
   }
 
   handleChange(event) {
@@ -60,61 +47,61 @@ class ListText extends Component {
     }
   }
 
-  handleClick = event => {
-    this.setState({anchorEl: event.currentTarget})
+  onSearchTextChange(e) {
+    const {searchValue, menuOpen} = this.state
+    if (!menuOpen) {
+      this.setState({menuOpen: true})
+    }
+    this.setState({searchValue: searchValue + e.key})
   }
 
-  handleClose = () => {
-    this.setState({anchorEl: null})
+  handleItemSelect() {
+    this.setState({menuOpen: false})
+  }
+
+  setFilterHeight(element) {
+    this.setState({maxFilterHeight: element.clientHeight})
   }
 
   render() {
     const {
       criterion,
+      menuOpen,
+      maxFilterHeight,
+      searchValue,
     } = this.state
 
-    // return <div>
-    //   <Input
-    //       disableUnderline={true}
-    //       onChange={this.handleChange}
-    //       value={criterion.text}
-    //   />
-    // </div>
-
-    const {anchorEl} = this.state
-    const open = Boolean(anchorEl)
-
-    return (
-        <div>
-          <IconButton
-              aria-label="More"
-              aria-owns={open ? 'long-menu' : undefined}
-              aria-haspopup="true"
-              onClick={this.handleClick}
-          >
-            <MoreVertIcon/>
-          </IconButton>
-          <Menu
-              id="long-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={this.handleClose}
-              PaperProps={{
-                style: {
-                  maxHeight: ITEM_HEIGHT * 4.5,
-                  width: 200,
-                },
-              }}
-          >
-            {options.map(option => (
-                <MenuItem key={option} selected={option === 'Pyxis'}
-                          onClick={this.handleClose}>
-                  {option}
-                </MenuItem>
-            ))}
-          </Menu>
-        </div>
-    )
+    return <div
+        ref={this.setFilterHeight}
+        style={{
+          maxHeight: maxFilterHeight,
+          overflow: 'hidden',
+        }}
+    >
+      <Input
+          disableUnderline={true}
+          onChange={this.onSearchTextChange}
+          value={searchValue}
+          onKeyPress={this.onSearchTextChange}
+      />
+      {(this.searchInputRef.current) &&
+      <Menu
+          id="simple-menu"
+          anchorEl={this.searchInputRef.current}
+          open={menuOpen}
+          onClose={() => this.setState({menuOpen: false})}
+          onKeyPress={this.onSearchTextChange}
+          keepMounted={true}
+      >
+        <MenuItem onClick={this.handleItemSelect}>Profile</MenuItem>
+        <MenuItem onClick={this.handleItemSelect}>My account</MenuItem>
+        <MenuItem onClick={this.handleItemSelect}>Logout</MenuItem>
+      </Menu>}
+      <div
+          ref={this.searchInputRef}
+          style={{height: maxFilterHeight * 2}}
+      />
+    </div>
   }
 }
 
