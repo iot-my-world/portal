@@ -14,7 +14,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'TK102DeviceRecordHandler.Create',
         request: {
-          tk102: tk102.toPOJO(),
+          tk102,
         },
       }).then(result => {
         resolve(new TK102(result.tk102))
@@ -33,7 +33,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'TK102DeviceRecordHandler.Validate',
         request: {
-          tk102: tk102.toPOJO(),
+          tk102,
           method,
         },
       }).then(result => {

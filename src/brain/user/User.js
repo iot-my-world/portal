@@ -225,7 +225,6 @@ export default class User extends Base {
           `cannot create identifier for user if id, username and email address are all blank`)
     }
   }
-
   toPOJO() {
     let retObj = super.toPOJO()
     retObj.password = stringToBytes(this._password)

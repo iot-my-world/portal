@@ -13,7 +13,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'UserRecordHandler.Create',
         request: {
-          user: user.toPOJO(),
+          user,
         },
       }).then(result => {
         resolve(new User(result.user))
