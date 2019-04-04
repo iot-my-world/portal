@@ -7,15 +7,7 @@ export default class BaseIdentifier extends Base {
     return this.constructor.Type
   }
 
-  wrap() {
-    return {
-      type: this.type,
-      value: this.toPOJO(),
-    }
-  }
-
   toJSON() {
-    console.log('Calling toJSON on identifier on IIIIDDDD')
     return {
       type: this.type,
       value: this.toPOJO(),

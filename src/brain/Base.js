@@ -39,7 +39,6 @@ export default class Base {
   }
 
   toJSON() {
-    console.log('calling TOJSON ON BASE CLASS')
     return this.toPOJO()
   }
 
