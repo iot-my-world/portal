@@ -32,7 +32,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'UserRecordHandler.Validate',
         request: {
-          user: user.toPOJO(),
+          user,
           method,
 
         },

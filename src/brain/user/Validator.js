@@ -12,7 +12,7 @@ const Validator = {
     let response = await jsonRpcRequest({
       method: 'UserValidator.Validate',
       request: {
-        user: user.toPOJO(),
+        user,
         action,
       },
     })
