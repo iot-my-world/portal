@@ -13,7 +13,7 @@ const RecordHandler = {
         method: "SystemRecordHandler.Collect",
         request: {
           criteria,
-          query: query ? query.toPOJO() : undefined
+          query,
         }
       })
         .then(result => {

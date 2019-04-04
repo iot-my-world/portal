@@ -13,9 +13,7 @@ const RecordHandler = {
         method: 'CompanyRecordHandler.Collect',
         request: {
           criteria,
-          query: query
-              ? query.toPOJO()
-              : undefined,
+          query,
         },
       }).then(result => {
         result.records = result.records.map(company => new Company(company))

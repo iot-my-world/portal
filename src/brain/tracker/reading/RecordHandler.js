@@ -12,9 +12,7 @@ const RecordHandler = {
         method: 'ReadingRecordHandler.Collect',
         request: {
           criteria,
-          query: query
-              ? query.toPOJO()
-              : undefined,
+          query,
         },
       }).then(result => {
         resolve(result)
