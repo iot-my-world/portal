@@ -13,7 +13,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'ClientRecordHandler.Create',
         request: {
-          client: client.toPOJO(),
+          client,
         },
       }).then(result => {
         resolve(new Client(result.client))
@@ -32,7 +32,7 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'ClientRecordHandler.Validate',
         request: {
-          client: client.toPOJO(),
+          client,
           method,
         },
       }).then(result => {
@@ -51,12 +51,8 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'ClientRecordHandler.Collect',
         request: {
-          criteria: criteria
-              ? criteria.map(criterion => criterion.wrap())
-              : undefined,
-          query: query
-              ? query.toPOJO()
-              : undefined,
+          criteria,
+          query,
         },
       }).then(result => {
         result.records = result.records.map(client => new Client(client))

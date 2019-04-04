@@ -15,7 +15,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'UserAdministrator.UpdateAllowedFields',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
     response.user = new User(response.user)
@@ -45,7 +45,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'UserAdministrator.Create',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
     response.user = new User(response.user)
@@ -65,7 +65,7 @@ const Administrator = {
     return await jsonRpcRequest({
       method: 'UserAdministrator.SetPassword',
       request: {
-        identifier: identifier.toPOJO(),
+        identifier,
         newPassword,
       },
     })
