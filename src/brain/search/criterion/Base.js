@@ -7,10 +7,10 @@ export default class BaseCriterion extends Base {
     return this.constructor.Type
   }
 
-  wrap() {
+  toJSON() {
     return {
       type: this.type,
       value: this.toPOJO(),
-    }
+    };
   }
 }
