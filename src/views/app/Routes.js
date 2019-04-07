@@ -38,6 +38,7 @@ import {
   CompanyPartyType,
   ClientPartyType,
 } from 'brain/party/types'
+import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 
 const HomeRoute = {
   id: 'sidebarHomeLink',
@@ -85,6 +86,16 @@ const profileRouteBuilder = user => {
     icon: <PersonIcon/>,
     path: '/app/profile',
     component: ProfileContainer,
+  }
+}
+
+const partyProfileRouteBuilder = party => {
+  return { // this is an individual route
+    id: 'sidebarProfileLink',
+    text: party.name,
+    icon: <PersonIcon/>,
+    path: '/app/partyProfile',
+    component: PartyProfileContainer,
   }
 }
 
@@ -169,12 +180,15 @@ const AppRoutes = [
   ],
 ]
 
-const appRouteBuilder = (partyType, viewPermissions, user) => {
+const appRouteBuilder = (partyType, viewPermissions, user, party) => {
+  console.log('user, party!!!!', user, party)
   // initial routes added here
   let appRoutes = [
     [
       // build the profile root
       profileRouteBuilder(user),
+      // build the party profile route
+      partyProfileRouteBuilder(party),
       // build the home root
       homeRouteBuilder(partyType),
       { // this is an individual route
