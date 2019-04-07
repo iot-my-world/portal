@@ -27,7 +27,7 @@ import LiveTrackingDashboardContainer
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
 
-import BarcodeTest from 'views/barcodeTest/BarcodeTest'
+import BarcodeTestContainer from 'views/barcodeTest/BarcodeTestContainer'
 
 // View Permissions
 import {
@@ -176,7 +176,7 @@ const AppRoutes = [
       text: 'Barcode Test',
       icon: <CameraIcon/>,
       path: '/app/barcodeTest',
-      component: BarcodeTest,
+      component: BarcodeTestContainer,
     },
   ],
 ]
