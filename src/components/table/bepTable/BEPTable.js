@@ -9,9 +9,15 @@ import {
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {isString, isObject, isArray} from 'utilities/type/type'
 import {
-  Text as TextFilter,
+  TextFilter,
+  TextOptionsFilter,
+  ListTextFilter,
 } from './filters'
-import {TextCriterionType} from 'brain/search/criterion/types'
+import {
+  ExactTextCriterionType,
+  ListTextCriterionType,
+  TextCriterionType,
+} from 'brain/search/criterion/types'
 import {Query} from 'brain/search'
 import {
   FiFilter as FilterIcon,
@@ -168,6 +174,30 @@ class BEPTable extends Component {
         switch (col.config.filter.type) {
           case TextCriterionType:
             col.Filter = () => <TextFilter
+                field={columnId}
+                config={col.config.filter}
+                onChange={this.handleFilterChange}
+            />
+            break
+
+          case ExactTextCriterionType:
+            if (col.config.filter.options) {
+              col.Filter = () => <TextOptionsFilter
+                  field={columnId}
+                  config={col.config.filter}
+                  onChange={this.handleFilterChange}
+              />
+            } else {
+              col.Filter = () => <TextFilter
+                  field={columnId}
+                  config={col.config.filter}
+                  onChange={this.handleFilterChange}
+              />
+            }
+            break
+
+          case ListTextCriterionType:
+            col.Filter = () => <ListTextFilter
                 field={columnId}
                 config={col.config.filter}
                 onChange={this.handleFilterChange}

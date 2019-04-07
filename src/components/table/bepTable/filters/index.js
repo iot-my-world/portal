@@ -1,5 +1,9 @@
-import Text from './Text'
+import TextFilter from './Text'
+import TextOptionsFilter from './TextOptions'
+import ListTextFilter from './ListText'
 
 export {
-  Text,
+  TextFilter,
+  TextOptionsFilter,
+  ListTextFilter,
 }
