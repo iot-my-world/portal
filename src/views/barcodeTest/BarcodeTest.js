@@ -4,6 +4,7 @@ import {
   Card, Grid, withStyles, CardContent,
 } from '@material-ui/core'
 import ImageCapture from 'components/imageCapture/ImageCapture'
+import {BarcodeScanner} from 'brain/barcode'
 
 const styles = theme => ({
   root: {
@@ -13,6 +14,16 @@ const styles = theme => ({
 })
 
 class BarcodeTest extends Component {
+
+  handleScanBarcode = async imageData => {
+    try {
+      const response = await BarcodeScanner.Scan({imageData})
+      console.log('scanning response', response)
+    } catch (e) {
+      console.error('error scanning barcode', e)
+    }
+  }
+
   render() {
     const {classes} = this.props
 
@@ -30,7 +41,7 @@ class BarcodeTest extends Component {
             >
               <CardContent>
                 <ImageCapture
-                    onSave={imageData => console.log('image!', imageData)}
+                    onSave={this.handleScanBarcode}
                 />
               </CardContent>
             </Card>

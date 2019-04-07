@@ -7,7 +7,7 @@ const Scanner = {
    * @param {string} imageData
    * @returns {Promise<any>}
    */
-  async Validate({imageData}) {
+  async Scan({imageData}) {
     let response = await jsonRpcRequest({
       method: 'BarcodeScanner.Scan',
       request: {
