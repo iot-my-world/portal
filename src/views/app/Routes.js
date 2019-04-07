@@ -9,6 +9,7 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
+import CameraIcon from '@material-ui/icons/Camera'
 // Home Views
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
@@ -25,6 +26,8 @@ import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
+
+import BarcodeTestContainer from 'views/barcodeTest/BarcodeTestContainer'
 
 // View Permissions
 import {
@@ -165,6 +168,15 @@ const AppRoutes = [
           viewPermission: ViewHistoricalTrackingDashboard,
         },
       ],
+    },
+  ],
+  [
+    { // this is an individual route
+      id: 'barcodeTestMenuLink',
+      text: 'Barcode Test',
+      icon: <CameraIcon/>,
+      path: '/app/barcodeTest',
+      component: BarcodeTestContainer,
     },
   ],
 ]
