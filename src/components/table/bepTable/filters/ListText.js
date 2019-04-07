@@ -68,6 +68,9 @@ class ListText extends Component {
              if (searchValue.length > 0) {
                this.setState({searchValue: searchValue.slice(0, searchValue.length - 1)})
              }
+             break
+
+           default:
          }
        } else {
          this.setState({searchValue: searchValue + e.key})
@@ -87,7 +90,6 @@ class ListText extends Component {
 
   render() {
     const {
-      criterion,
       searchMenuOpen,
       maxFilterHeight,
       searchValue,
