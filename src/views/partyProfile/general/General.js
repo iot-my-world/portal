@@ -217,8 +217,63 @@ class General extends Component {
     const fieldValidations = this.reasonsInvalid.toMap()
     const editingState = activeState === states.editing
 
+    //TODO add party specific rendering of details
     return (
-      <div>{JSON.stringify(party)}</div>
+      <Grid container direction='column' spacing={8} alignItems='center'>
+        <Grid item>
+          <Card className={classes.detailCard}>
+            <CardHeader title={
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
+              </Grid>
+            }/>
+            <CardContent>
+              <Grid container direction='column' spacing={8}
+                    alignItems={'center'}>
+                <Grid item>
+                  <TextField
+                    className={classes.formField}
+                    id='name'
+                    label='Name'
+                    value={party.name}
+                    InputProps={{
+                      disableUnderline: !editingState,
+                      readOnly: !editingState,
+                    }}
+                    onChange={this.handleFieldChange}
+                    helperText={
+                      fieldValidations.name ?
+                        fieldValidations.name.help :
+                        undefined
+                    }
+                    error={!!fieldValidations.name}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    className={classes.formField}
+                    id='emailAddress'
+                    label='EmailAddress'
+                    value={party.adminEmailAddress}
+                    InputProps={{
+                      disableUnderline: true,
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+                {/*<Grid item>*/}
+                  {/*<div>{JSON.stringify(party)}</div>*/}
+                {/*</Grid>*/}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     )
   }
 }
