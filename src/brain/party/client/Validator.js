@@ -9,6 +9,7 @@ const Validator = {
    * @returns {Promise<any>}
    */
   async Validate({client, action}) {
+    console.log('{client, action}',{client, action})
     let response = await jsonRpcRequest({
       method: 'ClientValidator.Validate',
       request: {

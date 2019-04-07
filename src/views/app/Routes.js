@@ -181,7 +181,6 @@ const AppRoutes = [
 ]
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
-  console.log('user, party!!!!', user, party)
   // initial routes added here
   let appRoutes = [
     [

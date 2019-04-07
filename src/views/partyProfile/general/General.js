@@ -90,7 +90,7 @@ class General extends Component {
   handleStartEditing() {
     const {party} = this.state
     this.setState({
-      partyCopy: new party(party),
+      partyCopy: new this.party(party),
       activeState: events.startEditing,
     })
   }
@@ -106,13 +106,13 @@ class General extends Component {
     } = this.props
 
     ShowGlobalLoader()
+    let fieldName = this.props.party.constructor.name.toLowerCase()
+    let validateRequest = {}
+    validateRequest['action'] = 'UpdateAllowedFields'
+    validateRequest[fieldName] = party
 
-    // perform validation
     try {
-      const reasonsInvalid = (await this.PartyValidator.Validate({
-        party,
-        action: 'UpdateAllowedFields',
-      })).reasonsInvalid
+      const reasonsInvalid = (await this.PartyValidator.Validate(validateRequest)).reasonsInvalid
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
         HideGlobalLoader()
@@ -125,11 +125,15 @@ class General extends Component {
       return
     }
 
+    let updateAllowedFieldsRequest = {}
+    updateAllowedFieldsRequest[fieldName] = party
+
     try {
       // perform update
-      const response = await this.PartyAdministrator.UpdateAllowedFields({party})
+      const response = await this.PartyAdministrator.UpdateAllowedFields(updateAllowedFieldsRequest)
       // update party in redux state
-      SetMyParty(response.party)
+      console.log('response',response[fieldName])
+      SetMyParty(response[fieldName])
       this.setState({
         party: response.party,
         activeState: events.saveChanges,
@@ -213,9 +217,11 @@ class General extends Component {
 
   render() {
     const {classes} = this.props
-    const {party, activeState} = this.state
+    const {activeState} = this.state
     const fieldValidations = this.reasonsInvalid.toMap()
     const editingState = activeState === states.editing
+
+    let party = this.state.party || {}
 
     //TODO add party specific rendering of details
     return (
