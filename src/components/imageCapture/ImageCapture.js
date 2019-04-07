@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {Button} from '@material-ui/core'
+import {
+  Button, withStyles,
+} from '@material-ui/core'
 
 // https://bryanbierce.com/react-webcam/
 
-const styles = {
+const styles = theme => ({
   wrapper: {
     display: 'grid',
     justifyItems: 'center',
@@ -16,7 +18,7 @@ const styles = {
     width: 400,
     height: 300,
   },
-}
+})
 
 const states = {
   RequestingCameraAccess: 0,
@@ -182,7 +184,6 @@ class ImageCapture extends Component {
   renderStreaming = () => {
     const {
       StreamBoxStyle,
-      ButtonStyle,
     } = this.props
     return (
         <div style={{
@@ -195,7 +196,7 @@ class ImageCapture extends Component {
           <video id='video' style={StreamBoxStyle}/>
           <div>
             <Button
-                style={ButtonStyle}
+                variant={'contained'}
                 onClick={() => this.setState(
                     {activeState: events.ImgCaptureReq})}
             >
@@ -209,7 +210,6 @@ class ImageCapture extends Component {
   renderCapturedImage = () => {
     const {
       StillBoxStyle,
-      ButtonStyle,
       onSave,
     } = this.props
     const {
@@ -237,7 +237,7 @@ class ImageCapture extends Component {
           }}>
             <div style={{paddingRight: '2px'}}>
               <Button
-                  style={ButtonStyle}
+                  variant={'contained'}
                   onClick={() => onSave(imageData)}
               >
                 Save Photo
@@ -245,7 +245,7 @@ class ImageCapture extends Component {
             </div>
             <div style={{paddingLeft: '2px'}}>
               <Button
-                  style={ButtonStyle}
+                  variant={'contained'}
                   onClick={() => this.setState({activeState: events.TryAgain})}
               >
                 Try Again
@@ -261,7 +261,6 @@ ImageCapture.propTypes = {
   ImageResolution: PropTypes.object,
   StreamBoxStyle: PropTypes.object,
   StillBoxStyle: PropTypes.object,
-  ButtonStyle: PropTypes.object,
   onSave: PropTypes.func.isRequired,
 }
 
@@ -280,15 +279,9 @@ ImageCapture.defaultProps = {
     height: 240,
     padding: '10px',
   },
-  ButtonStyle: {
-    background: '#ACBEBE',
-    fontFamily: 'Roboto',
-    fontSize: '16px',
-    fontWeight: '300',
-    letterSpacing: '1px',
-    boxShadow: '0px 5px 5px  rgba(0, 0, 0.5, 0)',
-  },
   onSave: () => console.error('No OnSaveFunctionPassed'),
 }
+
+ImageCapture = withStyles(styles)(ImageCapture)
 
 export default ImageCapture
