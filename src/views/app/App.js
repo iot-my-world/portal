@@ -219,11 +219,13 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState, snapShot) {
     const {
       user: prevUser,
+      party: prevParty,
       claims: prevClaims,
       appDoneLoading: prevAppDoneLoading,
     } = prevProps
     const {
       user,
+      party,
       claims,
       appDoneLoading,
     } = this.props
@@ -245,6 +247,11 @@ class App extends Component {
     }
 
     if (user.name !== prevUser.name) {
+      this.rebuildRoutes()
+      return
+    }
+
+    if (party.name !== prevParty.name) {
       this.rebuildRoutes()
       return
     }

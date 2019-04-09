@@ -132,10 +132,9 @@ class General extends Component {
       // perform update
       const response = await this.PartyAdministrator.UpdateAllowedFields(updateAllowedFieldsRequest)
       // update party in redux state
-      console.log('response',response[fieldName])
       SetMyParty(response[fieldName])
       this.setState({
-        party: response.party,
+        party: response[fieldName],
         activeState: events.saveChanges,
       })
     } catch (e) {

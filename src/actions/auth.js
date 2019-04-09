@@ -41,7 +41,6 @@ export function Login() {
  * @constructor
  */
 export function SetMyParty(party) {
-  console.log('party123',party)
   return {type: setMyParty, data: party}
 }
 
