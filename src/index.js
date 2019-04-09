@@ -19,6 +19,9 @@ try {
   if (window.location.hostname.includes('www')) {
     hostName = window.location.hostname.split('.')[1]
     host = window.location.hostname
+  } else if (window.location.hostname !== 'localhost') {
+    hostName = window.location.hostname
+    host = window.location.hostname
   }
 } catch (e) {
   console.error('error determining hostname', e)
