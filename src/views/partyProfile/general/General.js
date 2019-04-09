@@ -64,6 +64,8 @@ class General extends Component {
           return CompanyPartyAdministrator
         case SystemParty:
           return () => {console.log('system does not have and administrator')}
+        default:
+          return () => {console.log('no validator for this party type')}
       }
     })()
     this.PartyValidator = (() => {
@@ -74,6 +76,8 @@ class General extends Component {
           return CompanyPartyValidator
         case SystemParty:
           return () => {console.log('system does not have and validator')}
+        default:
+          return () => {console.log('no validator for this party type')}
       }
     })()
     this.party = props.party.constructor
