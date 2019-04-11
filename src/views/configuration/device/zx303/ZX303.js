@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import {
   Card,
   CardContent,
-  CardHeader, Fab,
-  Grid, Tooltip,
+  CardHeader, Fab, FormControl, FormHelperText,
+  Grid, InputLabel, MenuItem, Select, TextField, Tooltip,
   Typography,
   withStyles,
 } from '@material-ui/core'
@@ -19,6 +19,7 @@ import {
   MdEmail as SendEmailIcon, MdSave as SaveIcon,
 } from 'react-icons/md'
 import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
+import {allPartyTypes} from 'brain/party/types'
 
 const styles = theme => ({
   root: {
@@ -125,6 +126,10 @@ class ZX303 extends Component {
 
   }
 
+  handleFieldChange = e => {
+
+  }
+
   renderDetails = () => {
     const {activeState} = this.state
     const {classes} = this.props
@@ -156,6 +161,73 @@ class ZX303 extends Component {
                     <AddIcon className={classes.buttonIcon}/>
                   </Tooltip>
                 </Fab>
+              </Grid>
+            </Grid>
+        )
+
+      case states.viewingExisting:
+      case states.editingNew:
+      case states.editingExisting:
+        const {device} = this.state
+        return (
+            <Grid container direction='column' spacing={8}
+                  alignItems={'center'}>
+              <Grid item>
+                <FormControl
+                    className={classes.formField}
+                    error={!!fieldValidations.ownerPartyType}
+                    aria-describedby='ownerPartyType'
+                >
+                  <InputLabel htmlFor='ownerPartyType'>
+                    Owner Party Type
+                  </InputLabel>
+                  <Select
+                      id='ownerPartyType'
+                      name='ownerPartyType'
+                      value={device.ownerPartyType}
+                      onChange={this.handleFieldChange}
+                      style={{width: 150}}
+                  >
+                    <MenuItem value=''>
+                      <em>None</em>
+                    </MenuItem>
+                    {allPartyTypes.map((partyType, idx) => {
+                      return (
+                          <MenuItem key={idx} value={partyType}>
+                            {partyType}
+                          </MenuItem>
+                      )
+                    })}
+                  </Select>
+                  {!!fieldValidations.ownerPartyType && (
+                      <FormHelperText id='ownerPartyType'>
+                        {
+                          fieldValidations.ownerPartyType ?
+                              fieldValidations.ownerPartyType.help :
+                              undefined
+                        }
+                      </FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <TextField
+                    className={classes.formField}
+                    id='ownerId'
+                    label='Owned By'
+                    value={device.ownerId}
+                    onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    }}
+                    helperText={
+                      fieldValidations.ownerId
+                          ? fieldValidations.ownerId.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.ownerId}
+                />
               </Grid>
             </Grid>
         )
