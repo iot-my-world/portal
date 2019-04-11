@@ -13,7 +13,11 @@ import {TextCriterionType} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
-import {MdAdd as AddIcon} from 'react-icons/md'
+import {
+  MdAdd as AddIcon, MdClear as CancelIcon,
+  MdEdit as EditIcon,
+  MdEmail as SendEmailIcon, MdSave as SaveIcon,
+} from 'react-icons/md'
 import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
 
 const styles = theme => ({
@@ -77,6 +81,7 @@ class ZX303 extends Component {
     totalNoRecords: 0,
     activeState: events.init,
     device: new ZX303Device(),
+    deviceCopy: new ZX303Device(),
   }
 
   reasonsInvalid = new ReasonsInvalid()
@@ -89,6 +94,35 @@ class ZX303 extends Component {
       activeState: events.startCreateNew,
       device: new ZX303Device(),
     })
+  }
+
+  handleCancelCreateNew = () => {
+    this.reasonsInvalid.clearAll()
+    this.setState({activeState: events.cancelCreateNew})
+  }
+
+  handleStartEditExisting = () => {
+    const {device} = this.state
+    this.setState({
+      deviceCopy: new ZX303Device(device),
+      activeState: events.startEditExisting,
+    })
+  }
+
+  handleCancelEditExisting = () => {
+    const {deviceCopy} = this.state
+    this.setState({
+      device: new ZX303Device(deviceCopy),
+      activeState: events.cancelEditExisting,
+    })
+  }
+
+  handleSaveNew = () => {
+
+  }
+
+  handleSaveChanges = () => {
+
   }
 
   renderDetails = () => {
@@ -131,7 +165,89 @@ class ZX303 extends Component {
   }
 
   renderControlIcons = () => {
+    const {activeState} = this.state
+    const {classes} = this.props
 
+    switch (activeState) {
+      case states.viewingExisting:
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleStartEditExisting}
+              >
+                <Tooltip title='Edit'>
+                  <EditIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  id={'companyConfigurationNewDeviceButton'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCreateNew}
+              >
+                <Tooltip title='Add New Device'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+
+      case states.editingNew:
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveNew}
+              >
+                <Tooltip title='Save New Device'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCancelCreateNew}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+
+      case states.editingExisting:
+        return (
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleSaveChanges}
+              >
+                <Tooltip title='Save Changes'>
+                  <SaveIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCancelEditExisting}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+
+      case states.nop:
+      default:
+    }
   }
 
   handleCriteriaQueryChange = () => {
