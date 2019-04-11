@@ -22,8 +22,8 @@ const styles = theme => ({
 })
 
 const tabs = {
-  TK102: 0,
-  ZX303: 1,
+  ZX303: 0,
+  TK102: 1,
 }
 
 class Device extends Component {
@@ -32,7 +32,7 @@ class Device extends Component {
     this.handleTabChange = this.handleTabChange.bind(this)
     this.renderTabContent = this.renderTabContent.bind(this)
     this.state = {
-      activeTab: tabs.TK102,
+      activeTab: tabs.ZX303,
     }
   }
 
@@ -66,12 +66,12 @@ class Device extends Component {
                     scrollButtons="on"
                 >
                   <Tab
-                      value={tabs.TK102}
-                      label={'TK102'}
-                  />
-                  <Tab
                       value={tabs.ZX303}
                       label={'ZX303'}
+                  />
+                  <Tab
+                      value={tabs.TK102}
+                      label={'TK102'}
                   />
                 </Tabs>
               </AppBar>
