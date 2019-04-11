@@ -3,14 +3,18 @@ import PropTypes from 'prop-types'
 import {
   Card,
   CardContent,
-  CardHeader,
-  Grid,
+  CardHeader, Fab,
+  Grid, Tooltip,
   Typography,
   withStyles,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
-import LoginClaims from 'brain/security/claims/login/Login'
+import Query from 'brain/search/Query'
+import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
+import DeviceIcon from '@material-ui/icons/DevicesOther'
+import {MdAdd as AddIcon} from 'react-icons/md'
+import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
 
 const styles = theme => ({
   root: {
@@ -31,7 +35,7 @@ const styles = theme => ({
     gridTemplateRows: '1fr',
     alignItems: 'center',
   },
-  companyIcon: {
+  icon: {
     fontSize: 100,
     color: theme.palette.primary.main,
   },
@@ -72,10 +76,58 @@ class ZX303 extends Component {
     records: [],
     totalNoRecords: 0,
     activeState: events.init,
+    device: new ZX303Device(),
+  }
+
+  reasonsInvalid = new ReasonsInvalid()
+  collectCriteria = []
+  collectQuery = new Query()
+
+  handleCreateNew = () => {
+    this.setState({
+      selectedRowIdx: -1,
+      activeState: events.startCreateNew,
+      device: new ZX303Device(),
+    })
   }
 
   renderDetails = () => {
+    const {activeState} = this.state
+    const {classes} = this.props
 
+    const fieldValidations = this.reasonsInvalid.toMap()
+    const stateIsViewing = activeState === states.viewingExisting
+
+    switch (activeState) {
+      case states.nop:
+        return (
+            <Grid
+                container
+                direction={'column'}
+                spacing={8}
+                alignItems={'center'}
+            >
+              <Grid item>
+                <DeviceIcon className={classes.icon}/>
+              </Grid>
+              <Grid item>
+                <Fab
+                    id={'zx303DeviceConfigurationNewButton'}
+                    color={'primary'}
+                    className={classes.button}
+                    size={'small'}
+                    onClick={this.handleCreateNew}
+                >
+                  <Tooltip title='Add New Device'>
+                    <AddIcon className={classes.buttonIcon}/>
+                  </Tooltip>
+                </Fab>
+              </Grid>
+            </Grid>
+        )
+
+    }
+    
   }
 
   renderControlIcons = () => {

@@ -18,10 +18,10 @@ import {
 import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {BEPTable} from 'components/table/index'
 import {
-  TK102 as TK102Entity,
+  ZX303 as TK102Entity,
   RecordHandler as TK102RecordHandler,
   Administrator as TK102Administrator
-} from 'brain/tracker/device/tk102/index'
+} from 'brain/tracker/device/zx303/index'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {ClientRecordHandler} from 'brain/party/client'
 import {SystemRecordHandler} from 'brain/party/system'
