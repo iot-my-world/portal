@@ -14,7 +14,10 @@ const styles = theme => ({
     margin: 0,
   },
   rootCard: {},
-  contentWrapper: {},
+  cardContent: {
+    display: 'grid',
+    overflow: 'auto',
+  },
 })
 
 const tabs = {
@@ -66,7 +69,12 @@ class Device extends Component {
                   />
                 </Tabs>
               </AppBar>
-              <CardContent>
+              <CardContent
+                  classes={{root: classes.cardContent}}
+                  style={{
+                    height: maxViewDimensions.height - 95,
+                  }}
+              >
                 {this.renderTabContent()}
               </CardContent>
             </Card>

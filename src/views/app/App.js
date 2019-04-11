@@ -380,7 +380,7 @@ class App extends Component {
       // about to open
       SetMaxViewDimensions({
         ...maxViewDimensions,
-        width: this.viewContentWrapperRef.parentNode.clientWidth - 190,
+        width: this.viewContentWrapperRef.parentNode.clientWidth - 180,
       })
     }
     this.setState({desktopDrawerOpen: !this.state.desktopDrawerOpen})
@@ -431,12 +431,12 @@ class App extends Component {
       if (element.parentNode.clientWidth < theme.breakpoints.values.md) {
         SetMaxViewDimensions({
           width: element.parentNode.clientWidth - 40,
-          height: element.parentNode.clientHeight - 64,
+          height: element.parentNode.clientHeight - 100,
         })
       } else {
         SetMaxViewDimensions({
           width: element.parentNode.clientWidth - drawerWidth - 40,
-          height: element.parentNode.clientHeight - 64,
+          height: element.parentNode.clientHeight - 100,
         })
       }
     } catch (e) {
