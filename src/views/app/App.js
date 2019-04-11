@@ -430,12 +430,12 @@ class App extends Component {
     try {
       if (element.parentNode.clientWidth < theme.breakpoints.values.md) {
         SetMaxViewDimensions({
-          width: element.parentNode.clientWidth - 33,
+          width: element.parentNode.clientWidth - 40,
           height: element.parentNode.clientHeight - 64,
         })
       } else {
         SetMaxViewDimensions({
-          width: element.parentNode.clientWidth - drawerWidth - 33,
+          width: element.parentNode.clientWidth - drawerWidth - 40,
           height: element.parentNode.clientHeight - 64,
         })
       }

@@ -92,11 +92,25 @@ const profileRouteBuilder = user => {
   }
 }
 
-const partyProfileRouteBuilder = party => {
+const partyProfileRouteBuilder = (party, partyType) => {
+  let partyProfileIcon = <PersonIcon/>
+  
+  switch (partyType) {
+    case CompanyPartyType:
+      partyProfileIcon = <DomainIcon/>
+      break
+
+    case ClientPartyType:
+      partyProfileIcon = <PeopleIcon/>
+      break
+
+    default:
+  }
+
   return { // this is an individual route
     id: 'sidebarProfileLink',
     text: party.name,
-    icon: <PersonIcon/>,
+    icon: partyProfileIcon,
     path: '/app/partyProfile',
     component: PartyProfileContainer,
   }
@@ -199,7 +213,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
       // build the profile root
       profileRouteBuilder(user),
       // build the party profile route
-      partyProfileRouteBuilder(party),
+      partyProfileRouteBuilder(party, partyType),
       // build the home root
       homeRouteBuilder(partyType),
       { // this is an individual route

@@ -12,6 +12,7 @@ let GeneralContainer = props => {
 const mapStateToProps = (state) => {
   return {
     party: state.auth.party,
+    viewPermissions: state.permission.view,
   }
 }
 

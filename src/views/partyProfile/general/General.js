@@ -21,6 +21,7 @@ import {
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import ClientPartyValidator from 'brain/party/client/Validator'
 import CompanyPartyValidator from 'brain/party/company/Validator'
+import {PartyProfileEditing} from 'brain/security/permission/view/permission'
 
 const styles = theme => ({
   detailCard: {},
@@ -110,13 +111,13 @@ class General extends Component {
     } = this.props
 
     ShowGlobalLoader()
-    let fieldName = this.props.party.constructor.name.toLowerCase()
-    let validateRequest = {}
-    validateRequest['action'] = 'UpdateAllowedFields'
-    validateRequest[fieldName] = party
+    const fieldName = this.props.party.constructor.name.toLowerCase()
 
     try {
-      const reasonsInvalid = (await this.PartyValidator.Validate(validateRequest)).reasonsInvalid
+      const reasonsInvalid = (await this.PartyValidator.Validate({
+        action: 'UpdateAllowedFields',
+        [fieldName]: party,
+      })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
         HideGlobalLoader()
@@ -129,12 +130,11 @@ class General extends Component {
       return
     }
 
-    let updateAllowedFieldsRequest = {}
-    updateAllowedFieldsRequest[fieldName] = party
-
     try {
       // perform update
-      const response = await this.PartyAdministrator.UpdateAllowedFields(updateAllowedFieldsRequest)
+      const response = await this.PartyAdministrator.UpdateAllowedFields({
+        [fieldName]: party,
+      })
       // update party in redux state
       SetMyParty(response[fieldName])
       this.setState({
@@ -219,7 +219,7 @@ class General extends Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, viewPermissions} = this.props
     const {activeState} = this.state
     const fieldValidations = this.reasonsInvalid.toMap()
     const editingState = activeState === states.editing
@@ -237,7 +237,8 @@ class General extends Component {
                     justify='flex-end'
               >
                 <Grid item>
-                  {this.renderControlIcons()}
+                  {viewPermissions.includes(PartyProfileEditing) &&
+                  this.renderControlIcons()}
                 </Grid>
               </Grid>
             }/>
@@ -314,6 +315,10 @@ General.propTypes = {
    * SetMyparty action creator
    */
   SetMyParty: PropTypes.func.isRequired,
+  /**
+   * Logged in users view permission
+   */
+  viewPermissions: PropTypes.array.isRequired,
 }
 General.defaultProps = {}
 

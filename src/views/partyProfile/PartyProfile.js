@@ -10,9 +10,15 @@ import {
 import PersonIcon from '@material-ui/icons/Person'
 import GeneralContainer from './general/GeneralContainer'
 
-const styles = theme => ({
-  rootCard: {},
-})
+const styles = theme => {
+  return ({
+    root: {
+      width: 'calc(100% - 16px)',
+      margin: 0,
+    },
+    rootCard: {},
+  })
+}
 
 const tabs = {
   general: 0,
@@ -48,7 +54,13 @@ class Profile extends Component {
     const {activeTab} = this.state
 
     return (
-      <Grid container direction='column' spacing={8} alignItems='center'>
+      <Grid
+          className={classes.root}
+          container
+          direction='column'
+          spacing={8}
+          alignItems='center'
+      >
         <Grid item>
           <Card
             className={classes.rootCard}
