@@ -219,11 +219,13 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState, snapShot) {
     const {
       user: prevUser,
+      party: prevParty,
       claims: prevClaims,
       appDoneLoading: prevAppDoneLoading,
     } = prevProps
     const {
       user,
+      party,
       claims,
       appDoneLoading,
     } = this.props
@@ -248,12 +250,17 @@ class App extends Component {
       this.rebuildRoutes()
       return
     }
+
+    if (party.name !== prevParty.name) {
+      this.rebuildRoutes()
+      return
+    }
   }
 
   rebuildRoutes() {
-    const {claims, viewPermissions, user} = this.props
+    const {claims, viewPermissions, user, party} = this.props
     try {
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -307,9 +314,11 @@ class App extends Component {
       return
     }
 
+    let party
     try {
       const response = await PartyAdministrator.GetMyParty()
       SetMyParty(response.party)
+      party = response.party
     } catch (e) {
       console.error('error getting my party', e)
       NotificationFailure('error logging in')
@@ -331,7 +340,7 @@ class App extends Component {
 
     try {
       // build app routes
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -716,6 +725,7 @@ App.propTypes = {
    * Logged in user from redux
    */
   user: PropTypes.instanceOf(User).isRequired,
+  party: PropTypes.object.isRequired,
   /**
    * View permissions from redux
    */

@@ -27,6 +27,7 @@ const mapStateToProps = (state) => {
     appDoneLoading: state.app.doneLoading,
     maxViewDimensions: state.app.maxViewDimensions,
     user: state.auth.user,
+    party: state.auth.party,
     viewPermissions: state.permission.view,
   }
 }
