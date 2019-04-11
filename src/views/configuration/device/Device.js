@@ -7,6 +7,7 @@ import {
   TK102,
 } from 'brain/tracker/device/types'
 import TK102Container from './tk102/TK102Container'
+import ZX303Container from './zx303/ZX303Container'
 
 const styles = theme => ({
   root: {
@@ -22,6 +23,7 @@ const styles = theme => ({
 
 const tabs = {
   TK102: 0,
+  ZX303: 1,
 }
 
 class Device extends Component {
@@ -67,6 +69,10 @@ class Device extends Component {
                       value={tabs.TK102}
                       label={'TK102'}
                   />
+                  <Tab
+                      value={tabs.ZX303}
+                      label={'ZX303'}
+                  />
                 </Tabs>
               </AppBar>
               <CardContent
@@ -88,6 +94,8 @@ class Device extends Component {
     switch (activeTab) {
       case tabs.TK102:
         return <TK102Container/>
+      case tabs.ZX303:
+        return <ZX303Container/>
       default:
         return <div>Invalid Tab Value</div>
     }
