@@ -20,7 +20,7 @@ import ProfileContainer from 'views/profile/ProfileContainer'
 import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
-import Device from 'views/configuration/device/Device'
+import DeviceContainer from 'views/configuration/device/DeviceContainer'
 // Dashboards
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
@@ -160,7 +160,7 @@ const AppRoutes = [
           text: 'Device',
           icon: <DeviceIcon/>,
           path: '/app/configuration/device',
-          component: Device,
+          component: DeviceContainer,
           viewPermission: DeviceConfiguration,
         },
       ],

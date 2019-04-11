@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
-  withStyles, Paper, Tabs, Tab,
+  withStyles, Tabs, Tab, Grid, Card, AppBar, CardContent,
 } from '@material-ui/core'
 import {
   TK102,
@@ -10,13 +10,10 @@ import TK102Container from './tk102/TK102Container'
 
 const styles = theme => ({
   root: {
-    display: 'grid',
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr',
+    width: 'calc(100% - 16px)',
+    margin: 0,
   },
-  tabBarWrapper: {
-    marginBottom: 8,
-  },
+  rootCard: {},
   contentWrapper: {},
 })
 
@@ -39,31 +36,42 @@ class Device extends Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, maxViewDimensions} = this.props
     const {activeTab} = this.state
+
     return (
-        <div
+        <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems='center'
             className={classes.root}
-            id={'deviceConfigurationRoot'}
         >
-          <div className={classes.tabBarWrapper}>
-            <Paper>
-              <Tabs
-                  id={'deviceConfigurationTabBar'}
-                  value={activeTab}
-                  onChange={this.handleTabChange}
-                  indicatorColor='primary'
-                  textColor='primary'
-                  centered
-              >
-                <Tab id={'tk102Tab'} label={TK102} value={tabs.TK102}/>
-              </Tabs>
-            </Paper>
-          </div>
-          <div className={classes.contentWrapper}>
-            {this.renderTabContent()}
-          </div>
-        </div>
+          <Grid item>
+            <Card
+                className={classes.rootCard}
+                style={{width: maxViewDimensions.width}}
+            >
+              <AppBar position="static">
+                <Tabs
+                    id={'deviceConfigurationTabBar'}
+                    value={activeTab}
+                    onChange={this.handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="on"
+                >
+                  <Tab
+                      value={tabs.TK102}
+                      label={'TK102'}
+                  />
+                </Tabs>
+              </AppBar>
+              <CardContent>
+                {this.renderTabContent()}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
     )
   }
 
@@ -80,7 +88,12 @@ class Device extends Component {
 
 Device = withStyles(styles)(Device)
 
-Device.propTypes = {}
+Device.propTypes = {
+  /**
+   * maxViewDimensions from redux state
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
+}
 Device.defaultProps = {}
 
 export default Device
