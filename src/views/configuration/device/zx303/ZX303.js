@@ -16,7 +16,7 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
-  MdEmail as SendEmailIcon, MdSave as SaveIcon,
+  MdSave as SaveIcon,
 } from 'react-icons/md'
 import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
 import {allPartyTypes} from 'brain/party/types'
@@ -34,7 +34,9 @@ const styles = theme => ({
   progress: {
     margin: 2,
   },
-  detailCard: {},
+  detailCard: {
+    maxWidth: 400,
+  },
   detailCardTitle: {
     display: 'grid',
     gridTemplateColumns: 'auto 1fr',
@@ -172,8 +174,8 @@ class ZX303 extends Component {
       case states.editingExisting:
         const {device} = this.state
         return (
-            <Grid container spacing={8} alignItems={'center'}>
-              <Grid item xm xs={12}>
+            <Grid container spacing={8}>
+              <Grid item xs>
                 <FormControl
                     className={classes.formField}
                     error={!!fieldValidations.ownerPartyType}
@@ -211,7 +213,7 @@ class ZX303 extends Component {
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xm xs={12}>
+              <Grid item xs>
                 <TextField
                     className={classes.formField}
                     id='ownerId'
@@ -228,6 +230,120 @@ class ZX303 extends Component {
                           : undefined
                     }
                     error={!!fieldValidations.ownerId}
+                />
+              </Grid>
+              <Grid item xs>
+                <FormControl
+                    className={classes.formField}
+                    error={!!fieldValidations.assignedPartyType}
+                    aria-describedby='assignedPartyType'
+                >
+                  <InputLabel htmlFor='assignedPartyType'>
+                    Assigned Party Type
+                  </InputLabel>
+                  <Select
+                      id='assignedPartyType'
+                      name='assignedPartyType'
+                      value={device.assignedPartyType}
+                      onChange={this.handleFieldChange}
+                      style={{width: 150}}
+                  >
+                    <MenuItem value=''>
+                      <em>None</em>
+                    </MenuItem>
+                    {allPartyTypes.map((partyType, idx) => {
+                      return (
+                          <MenuItem key={idx} value={partyType}>
+                            {partyType}
+                          </MenuItem>
+                      )
+                    })}
+                  </Select>
+                  {!!fieldValidations.assignedPartyType && (
+                      <FormHelperText id='assignedPartyType'>
+                        {
+                          fieldValidations.assignedPartyType ?
+                              fieldValidations.assignedPartyType.help :
+                              undefined
+                        }
+                      </FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid item xs>
+                <TextField
+                    className={classes.formField}
+                    id='assignedId'
+                    label='Assigned To'
+                    value={device.assignedId.id}
+                    onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    }}
+                    helperText={
+                      fieldValidations.assignedId
+                          ? fieldValidations.assignedId.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.assignedId}
+                />
+              </Grid>
+              <Grid item xs>
+                <TextField
+                    className={classes.formField}
+                    id='simCountryCode'
+                    label='Sim Country Code'
+                    value={device.simCountryCode}
+                    onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    }}
+                    helperText={
+                      fieldValidations.simCountryCode
+                          ? fieldValidations.simCountryCode.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.simCountryCode}
+                />
+              </Grid>
+              <Grid item xs>
+                <TextField
+                    className={classes.formField}
+                    id='simNumber'
+                    label='Sim Number'
+                    value={device.simNumber}
+                    onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    }}
+                    helperText={
+                      fieldValidations.simNumber
+                          ? fieldValidations.simNumber.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.simNumber}
+                />
+              </Grid>
+              <Grid item xs>
+                <TextField
+                    className={classes.formField}
+                    id='imei'
+                    label='IMEI'
+                    value={device.imei}
+                    onChange={this.handleFieldChange}
+                    InputProps={{
+                      disableUnderline: stateIsViewing,
+                      readOnly: stateIsViewing,
+                    }}
+                    helperText={
+                      fieldValidations.imei
+                          ? fieldValidations.imei.help
+                          : undefined
+                    }
+                    error={!!fieldValidations.imei}
                 />
               </Grid>
             </Grid>
