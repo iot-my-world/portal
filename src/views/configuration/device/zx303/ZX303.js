@@ -131,7 +131,11 @@ class ZX303 extends Component {
   }
 
   handleFieldChange = e => {
-
+    let {device} = this.state
+    const fieldName = e.target.name ? e.target.name : e.target.id
+    device[fieldName] = e.target.value
+    this.reasonsInvalid.clearField(fieldName)
+    this.setState({device})
   }
 
   renderDetails = () => {
