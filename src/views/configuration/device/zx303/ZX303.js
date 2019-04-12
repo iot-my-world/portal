@@ -23,8 +23,9 @@ import {allPartyTypes} from 'brain/party/types'
 
 const styles = theme => ({
   root: {
-    width: 'calc(100% - 16px)',
-    margin: 0,
+    display: 'grid',
+    gridTemplateRows: '1fr auto',
+    justifyItems: 'center',
   },
   formField: {
     height: '60px',
@@ -60,7 +61,8 @@ const states = {
 }
 
 const events = {
-  init: states.nop,
+  // init: states.nop,
+  init: states.editingNew,
 
   selectExisting: states.viewingExisting,
 
@@ -170,9 +172,8 @@ class ZX303 extends Component {
       case states.editingExisting:
         const {device} = this.state
         return (
-            <Grid container direction='column' spacing={8}
-                  alignItems={'center'}>
-              <Grid item>
+            <Grid container spacing={8} alignItems={'center'}>
+              <Grid item xm xs={12}>
                 <FormControl
                     className={classes.formField}
                     error={!!fieldValidations.ownerPartyType}
@@ -210,12 +211,12 @@ class ZX303 extends Component {
                   )}
                 </FormControl>
               </Grid>
-              <Grid item>
+              <Grid item xm xs={12}>
                 <TextField
                     className={classes.formField}
                     id='ownerId'
                     label='Owned By'
-                    value={device.ownerId}
+                    value={device.ownerId.id}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
@@ -401,14 +402,11 @@ class ZX303 extends Component {
     }
 
     return (
-        <Grid
+        <div
             id={'companyConfigurationRoot'}
             className={classes.root}
-            container direction='column'
-            spacing={8}
-            alignItems='center'
         >
-          <Grid item>
+          <div>
             <Grid container>
               <Grid item>
                 <Card
@@ -422,9 +420,9 @@ class ZX303 extends Component {
                 </Card>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid item>
-            <Card style={{maxWidth: maxViewDimensions.width - 30}}>
+          </div>
+          <div>
+            <Card style={{width: maxViewDimensions.width - 30}}>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
@@ -530,8 +528,8 @@ class ZX303 extends Component {
                 />
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
     )
   }
 }
