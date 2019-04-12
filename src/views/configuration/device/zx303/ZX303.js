@@ -408,7 +408,7 @@ class ZX303 extends Component {
             spacing={8}
             alignItems='center'
         >
-          <Grid item xl={12}>
+          <Grid item>
             <Grid container>
               <Grid item>
                 <Card
@@ -423,8 +423,8 @@ class ZX303 extends Component {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xl={12}>
-            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+          <Grid item>
+            <Card style={{maxWidth: maxViewDimensions.width - 30}}>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
@@ -434,9 +434,69 @@ class ZX303 extends Component {
                     onCriteriaQueryChange={this.handleCriteriaQueryChange}
                     columns={[
                       {
+                        Header: 'IMEI',
+                        accessor: 'imei',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
                         Header: 'Owner Party Type',
                         accessor: 'ownerPartyType',
                         width: 136,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          }
+                        }
+                      },
+                      {
+                        Header: 'Owned By',
+                        accessor: 'ownerId',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Assigned Party Type',
+                        accessor: 'assignedPartyType',
+                        width: 160,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Assigned To',
+                        accessor: 'assignedId',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Sim Country Code',
+                        accessor: 'simCountryCode',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Sim Number',
+                        accessor: 'simNumber',
+                        width: 150,
                         config: {
                           filter: {
                             type: TextCriterionType,
