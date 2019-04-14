@@ -170,6 +170,17 @@ class ZX303 extends Component {
       return
     }
 
+    // perform creation
+    try {
+      await DeviceAdministrator.Create({device})
+    } catch (e) {
+      console.error('Error Creating Device', e)
+      NotificationFailure('Error Creating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    NotificationSuccess('Successfully Created Device')
     HideGlobalLoader()
   }
 

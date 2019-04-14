@@ -152,4 +152,15 @@ export default class ZX303 extends BaseDevice {
       throw new Error(`cannot create identifier for zx303 if id is blank`)
     }
   }
+
+  toJSON() {
+    return {
+      type: this.type,
+      value: {
+        ...this.toPOJO(),
+        ownerId: this.ownerId.toJSON(),
+        assignedId: this.assignedId.toJSON(),
+      },
+    }
+  }
 }
