@@ -1,9 +1,11 @@
 import ZX303 from './ZX303'
-import RecordHandler from './RecordHandler'
-import Administrator from './Administrator'
+import ZX303RecordHandler from './RecordHandler'
+import ZX303DeviceAdministrator from './Administrator'
+import ZX303DeviceValidator from './Validator'
 
 export {
   ZX303,
-  RecordHandler,
-  Administrator,
+  ZX303RecordHandler,
+  ZX303DeviceAdministrator,
+  ZX303DeviceValidator,
 }

@@ -30,8 +30,9 @@ import TextCriterion from 'brain/search/criterion/Text'
 import IdIdentifier from 'brain/search/identifier/Id'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'
 import ClientRecordHandler from 'brain/party/client/RecordHandler'
-import {DeviceAdministrator} from 'brain/tracker/device/administrator'
-import {DeviceValidator} from 'brain/tracker/device/validator'
+import {
+  ZX303DeviceAdministrator, ZX303DeviceValidator,
+} from 'brain/tracker/device/zx303'
 
 const styles = theme => ({
   root: {
@@ -104,7 +105,7 @@ class ZX303 extends Component {
     records: [],
     totalNoRecords: 0,
     activeState: events.init,
-    device: new ZX303Device(),
+    zx303: new ZX303Device(),
     deviceCopy: new ZX303Device(),
   }
 
@@ -116,7 +117,7 @@ class ZX303 extends Component {
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
-      device: new ZX303Device(),
+      zx303: new ZX303Device(),
     })
   }
 
@@ -126,9 +127,9 @@ class ZX303 extends Component {
   }
 
   handleStartEditExisting = () => {
-    const {device} = this.state
+    const {zx303} = this.state
     this.setState({
-      deviceCopy: new ZX303Device(device),
+      deviceCopy: new ZX303Device(zx303),
       activeState: events.startEditExisting,
     })
   }
@@ -136,13 +137,13 @@ class ZX303 extends Component {
   handleCancelEditExisting = () => {
     const {deviceCopy} = this.state
     this.setState({
-      device: new ZX303Device(deviceCopy),
+      zx303: new ZX303Device(deviceCopy),
       activeState: events.cancelEditExisting,
     })
   }
 
   handleSaveNew = async () => {
-    const {device} = this.state
+    const {zx303} = this.state
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -154,8 +155,8 @@ class ZX303 extends Component {
 
     // perform validation
     try {
-      const reasonsInvalid = (await DeviceValidator.Validate({
-        device,
+      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
+        zx303,
         action: 'Create',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -172,7 +173,7 @@ class ZX303 extends Component {
 
     // perform creation
     try {
-      await DeviceAdministrator.Create({device})
+      await ZX303DeviceAdministrator.Create({zx303})
     } catch (e) {
       console.error('Error Creating Device', e)
       NotificationFailure('Error Creating Device')
@@ -248,13 +249,13 @@ class ZX303 extends Component {
   }
 
   handleFieldChange = e => {
-    let {device} = this.state
+    let {zx303} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
-    device[fieldName] = e.target.value
+    zx303[fieldName] = e.target.value
 
     switch (fieldName) {
       case 'ownerPartyType':
-        device.ownerId = new IdIdentifier()
+        zx303.ownerId = new IdIdentifier()
         break
 
       case 'ownerId':
@@ -262,7 +263,7 @@ class ZX303 extends Component {
         break
 
       case 'assignedPartyType':
-        device.assignedId = new IdIdentifier()
+        zx303.assignedId = new IdIdentifier()
         break
 
       case 'assignedId':
@@ -273,7 +274,7 @@ class ZX303 extends Component {
     }
 
     this.reasonsInvalid.clearField(fieldName)
-    this.setState({device})
+    this.setState({zx303})
   }
 
   renderDetails = () => {
@@ -314,7 +315,7 @@ class ZX303 extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {device} = this.state
+        const {zx303} = this.state
         return (
             <Grid container spacing={8}>
               <Grid item xs>
@@ -329,7 +330,7 @@ class ZX303 extends Component {
                   <Select
                       id='ownerPartyType'
                       name='ownerPartyType'
-                      value={device.ownerPartyType}
+                      value={zx303.ownerPartyType}
                       onChange={this.handleFieldChange}
                       style={{width: 150}}
                   >
@@ -359,9 +360,9 @@ class ZX303 extends Component {
                 <AsyncSelect
                     id='ownerId'
                     label={'Owner'}
-                    value={{value: device.ownerId, label: device.ownerId.id}}
+                    value={{value: zx303.ownerId, label: zx303.ownerId.id}}
                     onChange={this.handleFieldChange}
-                    loadOptions={this.loadPartyOptions(device.ownerPartyType)}
+                    loadOptions={this.loadPartyOptions(zx303.ownerPartyType)}
                     menuPosition={'fixed'}
                     readOnly={stateIsViewing}
                     helperText={
@@ -384,7 +385,7 @@ class ZX303 extends Component {
                   <Select
                       id='assignedPartyType'
                       name='assignedPartyType'
-                      value={device.assignedPartyType}
+                      value={zx303.assignedPartyType}
                       onChange={this.handleFieldChange}
                       style={{width: 150}}
                   >
@@ -415,12 +416,12 @@ class ZX303 extends Component {
                     id='assignedId'
                     label='Assigned To'
                     value={{
-                      value: device.assignedId,
-                      label: device.assignedId.id,
+                      value: zx303.assignedId,
+                      label: zx303.assignedId.id,
                     }}
                     onChange={this.handleFieldChange}
                     loadOptions={this.loadPartyOptions(
-                        device.assignedPartyType)}
+                        zx303.assignedPartyType)}
                     menuPosition={'fixed'}
                     readOnly={stateIsViewing}
                     helperText={
@@ -436,7 +437,7 @@ class ZX303 extends Component {
                     className={classes.formField}
                     id='simCountryCode'
                     label='Sim Country Code'
-                    value={device.simCountryCode}
+                    value={zx303.simCountryCode}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
@@ -455,7 +456,7 @@ class ZX303 extends Component {
                     className={classes.formField}
                     id='simNumber'
                     label='Sim Number'
-                    value={device.simNumber}
+                    value={zx303.simNumber}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
@@ -474,7 +475,7 @@ class ZX303 extends Component {
                     className={classes.formField}
                     id='imei'
                     label='IMEI'
-                    value={device.imei}
+                    value={zx303.imei}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,

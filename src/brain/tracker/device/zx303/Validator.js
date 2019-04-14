@@ -1,10 +1,10 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 
 const Validator = {
-  async Validate({device}) {
+  async Validate({zx303}) {
     return await jsonRpcRequest({
-      method: 'DeviceValidator.Validate',
-      request: {device},
+      method: 'ZX303DeviceValidator.Validate',
+      request: {zx303},
       verbose: true,
     })
   },
