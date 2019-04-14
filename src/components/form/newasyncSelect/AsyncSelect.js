@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactAsyncSelect from 'react-select/lib/Async'
-import {withStyles, TextField} from '@material-ui/core'
+import {withStyles, TextField, FormHelperText} from '@material-ui/core'
 
 const styles = theme => ({
   formField: {
@@ -9,7 +9,11 @@ const styles = theme => ({
   },
   label: {
     fontFamily: theme.typography.fontFamily,
-    fontSize: 10,
+    fontSize: 13,
+    marginBottom: '12px',
+  },
+  helperText: {
+    marginTop: '-2px',
   },
 })
 
@@ -102,8 +106,8 @@ class AsyncSelect extends Component {
               style={{
                 height: error ? '45px' : '31px',
                 display: 'grid',
-                gridGap: '16px',
-                gridTemplateRows: 'auto auto',
+                // gridGap: '16px',
+                gridTemplateRows: 'auto auto auto',
                 gridTemplateColumns: 'auto',
                 // marginLeft: '40px',
                 // marginRight: '40px',
@@ -123,6 +127,15 @@ class AsyncSelect extends Component {
                   }]}
                 {...rest}
             />
+            <div className={classes.helperText}>
+              {helperText &&
+              <FormHelperText
+                  error={error}
+                  id='helperText'
+              >
+                {helperText}
+              </FormHelperText>}
+            </div>
           </div>
       )
     }
