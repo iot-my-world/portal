@@ -1,6 +1,5 @@
 import BaseDevice from 'brain/tracker/device/Base'
 import {isObject} from 'utilities/type/index'
-import DeviceRecordHandler from 'brain/tracker/device/tk102/RecordHandler'
 import {IdIdentifier} from 'brain/search/identifier/index'
 import {ZX303DeviceType} from 'brain/tracker/device/types'
 
@@ -137,14 +136,6 @@ export default class ZX303 extends BaseDevice {
     this._assignedId = newVal
   }
 
-  create() {
-    return DeviceRecordHandler.Create(this)
-  }
-
-  validate(method = '') {
-    return DeviceRecordHandler.Validate(this, method)
-  }
-
   get identifier() {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
@@ -153,14 +144,4 @@ export default class ZX303 extends BaseDevice {
     }
   }
 
-  toJSON() {
-    return {
-      type: this.type,
-      value: {
-        ...this.toPOJO(),
-        ownerId: this.ownerId.toJSON(),
-        assignedId: this.assignedId.toJSON(),
-      },
-    }
-  }
 }

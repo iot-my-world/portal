@@ -6,11 +6,4 @@ export default class BaseDevice extends Base {
   get type() {
     return this.constructor.Type
   }
-
-  toJSON() {
-    return {
-      type: this.type,
-      value: this.toPOJO(),
-    }
-  }
 }
