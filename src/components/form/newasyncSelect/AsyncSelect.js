@@ -14,16 +14,35 @@ const styles = theme => ({
 })
 
 const asyncSelectStyles = theme => ({
-  control: styles => ({
+  valueContainer: styles => ({
     ...styles,
-    width: '150px',
-    fontFamily: theme.typography.fontFamily,
-    border: `0px solid #ffffff`,
-    boxShadow: 0,
+    border: 'none',
+    // padding: '0 4px',
+  }),
+  dropdownIndicator: styles => ({
+    ...styles,
+    // padding: '6px',
   }),
   option: styles => ({
     ...styles,
     fontFamily: theme.typography.fontFamily,
+  }),
+  control: styles => ({
+    ...styles,
+    width: '150px',
+    fontFamily: theme.typography.fontFamily,
+    border: 'none',
+    borderBottom: `1px solid ${theme.palette.grey[600]}`,
+    boxShadow: 0,
+    minHeight: '1px',
+    padding: '0',
+    borderRadius: '0',
+    backgroundColor: 'none',
+  }),
+  input: styles => ({
+    ...styles,
+    padding: '0',
+    margin: '0',
   }),
   noOptionsMessage: styles => ({
     ...styles,
@@ -81,7 +100,7 @@ class AsyncSelect extends Component {
               style={{
                 height: error ? '45px' : '31px',
                 display: 'grid',
-                gridGap: '20px',
+                gridGap: '16px',
                 gridTemplateRows: 'auto auto',
                 gridTemplateColumns: 'auto',
                 // marginLeft: '40px',
@@ -95,6 +114,11 @@ class AsyncSelect extends Component {
                 styles={this.asyncSelectStyles}
                 onChange={this.onChange}
                 value={value}
+                defaultOptions={[
+                  {
+                    value: '',
+                    label: 'Start typing to search..',
+                  }]}
                 {...rest}
             />
           </div>
