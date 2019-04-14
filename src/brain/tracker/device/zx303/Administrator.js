@@ -1,10 +1,10 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 
 const Administrator = {
-  async Create({zx303}) {
+  async Create({device}) {
     return await jsonRpcRequest({
       method: 'ZX303DeviceAdministrator.Create',
-      request: {zx303},
+      request: {device},
     })
   },
 }
