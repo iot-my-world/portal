@@ -236,9 +236,9 @@ class ZX303 extends Component {
   }
 
   renderDetails = () => {
-    const {activeState} = this.state
+    const {activeState, device} = this.state
     const {classes} = this.props
-
+    console.log('device:', device.ownerId)
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === states.viewingExisting
 

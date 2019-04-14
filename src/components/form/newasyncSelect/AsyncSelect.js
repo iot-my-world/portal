@@ -57,13 +57,15 @@ class AsyncSelect extends Component {
     this.asyncSelectStyles = asyncSelectStyles(props.theme)
   }
 
-  onChange(selectionInfo, actionInfo) {
+  onChange(selectionInfo) {
     const {
       onChange,
+      id,
     } = this.props
+
     onChange({
       target: {
-        id: actionInfo.name,
+        id,
         value: selectionInfo.value,
       },
       selectionInfo,
