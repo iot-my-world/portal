@@ -13,13 +13,23 @@ import {TextCriterionType} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
+import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
 import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
-import {allPartyTypes} from 'brain/party/types'
+import {
+  allPartyTypes, ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
+import SystemRecordHandler from 'brain/party/system/RecordHandler'
+import TextCriterion from 'brain/search/criterion/Text'
+import IdIdentifier from 'brain/search/identifier/Id'
+import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import ClientRecordHandler from 'brain/party/client/RecordHandler'
 
 const styles = theme => ({
   root: {
@@ -137,10 +147,90 @@ class ZX303 extends Component {
 
   }
 
+  loadPartyOptions = partyType => async (inputValue, callback) => {
+    let collectResponse
+    let callbackResults = []
+    switch (partyType) {
+      case SystemPartyType:
+        collectResponse = await SystemRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(system => ({
+          label: system.name,
+          value: new IdIdentifier(system.id),
+          entity: system,
+        }))
+        break
+
+      case CompanyPartyType:
+        collectResponse = await CompanyRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(company => ({
+          label: company.name,
+          value: new IdIdentifier(company.id),
+          entity: company,
+        }))
+        break
+
+      case ClientPartyType:
+        collectResponse = await ClientRecordHandler.Collect(
+            [
+              new TextCriterion({
+                field: 'name',
+                text: inputValue,
+              }),
+            ],
+        )
+        callbackResults = collectResponse.records.map(client => ({
+          label: client.name,
+          value: new IdIdentifier(client.id),
+          entity: client,
+        }))
+        break
+
+      default:
+        callbackResults = []
+    }
+    callbackResults = [{label: '-', value: ''}, ...callbackResults]
+    callback(callbackResults)
+  }
+
   handleFieldChange = e => {
     let {device} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
     device[fieldName] = e.target.value
+
+    switch (fieldName) {
+      case 'ownerPartyType':
+        device.ownerId = new IdIdentifier()
+        break
+
+      case 'ownerId':
+        // update entity map
+        break
+
+      case 'assignedPartyType':
+        device.assignedId = new IdIdentifier()
+        break
+
+      case 'assignedId':
+        // update entity map
+        break
+
+      default:
+    }
+
     this.reasonsInvalid.clearField(fieldName)
     this.setState({device})
   }
@@ -225,16 +315,14 @@ class ZX303 extends Component {
                 </FormControl>
               </Grid>
               <Grid item xs>
-                <TextField
-                    className={classes.formField}
+                <AsyncSelect
                     id='ownerId'
-                    label='Owned By'
-                    value={device.ownerId.id}
+                    label={'Owner'}
+                    value={{value: device.ownerId, label: device.ownerId.id}}
                     onChange={this.handleFieldChange}
-                    InputProps={{
-                      disableUnderline: stateIsViewing,
-                      readOnly: stateIsViewing,
-                    }}
+                    loadOptions={this.loadPartyOptions(device.ownerPartyType)}
+                    menuPosition={'fixed'}
+                    readOnly={stateIsViewing}
                     helperText={
                       fieldValidations.ownerId
                           ? fieldValidations.ownerId.help
