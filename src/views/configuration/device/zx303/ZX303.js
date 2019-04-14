@@ -236,9 +236,9 @@ class ZX303 extends Component {
   }
 
   renderDetails = () => {
-    const {activeState, device} = this.state
+    const {activeState} = this.state
     const {classes} = this.props
-    console.log('device:', device.ownerId)
+
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === states.viewingExisting
 
@@ -370,16 +370,18 @@ class ZX303 extends Component {
                 </FormControl>
               </Grid>
               <Grid item xs>
-                <TextField
-                    className={classes.formField}
+                <AsyncSelect
                     id='assignedId'
                     label='Assigned To'
-                    value={device.assignedId.id}
-                    onChange={this.handleFieldChange}
-                    InputProps={{
-                      disableUnderline: stateIsViewing,
-                      readOnly: stateIsViewing,
+                    value={{
+                      value: device.assignedId,
+                      label: device.assignedId.id,
                     }}
+                    onChange={this.handleFieldChange}
+                    loadOptions={this.loadPartyOptions(
+                        device.assignedPartyType)}
+                    menuPosition={'fixed'}
+                    readOnly={stateIsViewing}
                     helperText={
                       fieldValidations.assignedId
                           ? fieldValidations.assignedId.help

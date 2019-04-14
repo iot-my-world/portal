@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactAsyncSelect from 'react-select/lib/Async'
-import {withStyles, TextField, Typography} from '@material-ui/core'
+import {withStyles, TextField} from '@material-ui/core'
 
 const styles = theme => ({
   formField: {
