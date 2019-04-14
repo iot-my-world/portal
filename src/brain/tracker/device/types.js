@@ -1,3 +1,3 @@
-export const TK102 = 'TK102'
-export const ZX303 = 'ZX303'
+export const TK102DeviceType = 'TK102'
+export const ZX303DeviceType = 'ZX303'
 
