@@ -3,9 +3,6 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Tabs, Tab, Grid, Card, AppBar, CardContent,
 } from '@material-ui/core'
-import {
-  TK102,
-} from 'brain/tracker/device/types'
 import TK102Container from './tk102/TK102Container'
 import ZX303Container from './zx303/ZX303Container'
 
@@ -55,7 +52,7 @@ class Device extends Component {
           <Grid item>
             <Card
                 className={classes.rootCard}
-                style={{width: maxViewDimensions.width}}
+                // style={{width: maxViewDimensions.width}}
             >
               <AppBar position="static">
                 <Tabs

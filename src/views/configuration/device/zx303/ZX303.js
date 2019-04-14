@@ -25,7 +25,14 @@ const styles = theme => ({
   root: {
     display: 'grid',
     gridTemplateRows: '1fr auto',
-    justifyItems: 'center',
+    gridTemplateColumns: '1fr',
+    gridRowGap: '8px',
+  },
+  detailCardWrapper: {
+    justifySelf: 'center',
+  },
+  tableWrapper: {
+    overflow: 'auto',
   },
   formField: {
     height: '60px',
@@ -352,9 +359,10 @@ class ZX303 extends Component {
               </Grid>
             </Grid>
         )
-
+      default:
+        return null
     }
-    
+
   }
 
   renderControlIcons = () => {
@@ -458,7 +466,6 @@ class ZX303 extends Component {
     const {
       theme,
       classes,
-      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
@@ -526,7 +533,7 @@ class ZX303 extends Component {
             id={'companyConfigurationRoot'}
             className={classes.root}
         >
-          <div>
+          <div className={classes.detailCardWrapper}>
             <Grid container>
               <Grid item>
                 <Card
@@ -541,113 +548,109 @@ class ZX303 extends Component {
               </Grid>
             </Grid>
           </div>
-          <div>
-            <Card style={{width: maxViewDimensions.width - 30}}>
-              <CardContent>
-                <BEPTable
-                    loading={recordCollectionInProgress}
-                    totalNoRecords={totalNoRecords}
-                    noDataText={'No Devices Found'}
-                    data={records}
-                    onCriteriaQueryChange={this.handleCriteriaQueryChange}
-                    columns={[
-                      {
-                        Header: 'IMEI',
-                        accessor: 'imei',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+          <div className={classes.tableWrapper}>
+            <BEPTable
+                loading={recordCollectionInProgress}
+                totalNoRecords={totalNoRecords}
+                noDataText={'No Devices Found'}
+                data={records}
+                onCriteriaQueryChange={this.handleCriteriaQueryChange}
+                columns={[
+                  {
+                    Header: 'IMEI',
+                    accessor: 'imei',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Owner Party Type',
-                        accessor: 'ownerPartyType',
-                        width: 136,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          }
-                        }
+                    },
+                  },
+                  {
+                    Header: 'Owner Party Type',
+                    accessor: 'ownerPartyType',
+                    width: 136,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Owned By',
-                        accessor: 'ownerId',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+                    },
+                  },
+                  {
+                    Header: 'Owned By',
+                    accessor: 'ownerId',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Assigned Party Type',
-                        accessor: 'assignedPartyType',
-                        width: 160,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+                    },
+                  },
+                  {
+                    Header: 'Assigned Party Type',
+                    accessor: 'assignedPartyType',
+                    width: 160,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Assigned To',
-                        accessor: 'assignedId',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+                    },
+                  },
+                  {
+                    Header: 'Assigned To',
+                    accessor: 'assignedId',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Sim Country Code',
-                        accessor: 'simCountryCode',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+                    },
+                  },
+                  {
+                    Header: 'Sim Country Code',
+                    accessor: 'simCountryCode',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                      {
-                        Header: 'Sim Number',
-                        accessor: 'simNumber',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
+                    },
+                  },
+                  {
+                    Header: 'Sim Number',
+                    accessor: 'simNumber',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
                       },
-                    ]}
-                    getTdProps={(state, rowInfo) => {
-                      const rowIndex = rowInfo ? rowInfo.index : undefined
-                      return {
-                        onClick: (e, handleOriginal) => {
-                          if (rowInfo) {
-                            this.handleSelect(rowInfo.original, rowInfo.index)
-                          }
-                          if (handleOriginal) {
-                            handleOriginal()
-                          }
-                        },
-                        style: {
-                          background:
-                              rowIndex === selectedRowIdx
-                                  ? theme.palette.secondary.light
-                                  : 'white',
-                          color:
-                              rowIndex === selectedRowIdx
-                                  ? theme.palette.secondary.contrastText
-                                  : theme.palette.primary.main,
-                        },
+                    },
+                  },
+                ]}
+                getTdProps={(state, rowInfo) => {
+                  const rowIndex = rowInfo ? rowInfo.index : undefined
+                  return {
+                    onClick: (e, handleOriginal) => {
+                      if (rowInfo) {
+                        this.handleSelect(rowInfo.original, rowInfo.index)
                       }
-                    }}
-                />
-              </CardContent>
-            </Card>
+                      if (handleOriginal) {
+                        handleOriginal()
+                      }
+                    },
+                    style: {
+                      background:
+                          rowIndex === selectedRowIdx
+                              ? theme.palette.secondary.light
+                              : 'white',
+                      color:
+                          rowIndex === selectedRowIdx
+                              ? theme.palette.secondary.contrastText
+                              : theme.palette.primary.main,
+                    },
+                  }
+                }}
+            />
           </div>
         </div>
     )
@@ -673,10 +676,6 @@ ZX303.propTypes = {
    * Hide Global App Loader Action Creator
    */
   HideGlobalLoader: PropTypes.func.isRequired,
-  /**
-   * maxViewDimensions from redux state
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 ZX303.defaultProps = {}
 

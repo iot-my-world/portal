@@ -511,141 +511,139 @@ class TK102 extends Component {
           <Grid container>
             <Grid item>
               <Card className={classes.detailCard}>
-                <CardContent>{this.renderTK102Details()}</CardContent>
+                <CardContent>
+                  {this.renderTK102Details()}
+                </CardContent>
                 {this.renderControls()}
               </Card>
             </Grid>
           </Grid>
         </div>
         <div className={classes.tableWrapper}>
-          <Card>
-            <CardContent>
-              <BEPTable
-                  loading={recordCollectionInProgress}
-                  totalNoRecords={totalNoRecords}
-                  noDataText={'No TK102 Devices Found'}
-                  data={records}
-                  onCriteriaQueryChange={this.handleCriteriaQueryChange}
-                  columns={[
-                  {
-                    Header: 'Owner Party Type',
-                    accessor: 'ownerPartyType',
-                    width: 136,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
+          <BEPTable
+              loading={recordCollectionInProgress}
+              totalNoRecords={totalNoRecords}
+              noDataText={'No TK102 Devices Found'}
+              data={records}
+              onCriteriaQueryChange={this.handleCriteriaQueryChange}
+              columns={[
+                {
+                  Header: 'Owner Party Type',
+                  accessor: 'ownerPartyType',
+                  width: 136,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
                   },
-                  {
-                    Header: 'Owned By',
-                    accessor: 'ownerId',
-                    width: 150,
-                    Cell: rowCellInfo => {
-                      try {
-                        return this.getPartyName(
+                },
+                {
+                  Header: 'Owned By',
+                  accessor: 'ownerId',
+                  width: 150,
+                  Cell: rowCellInfo => {
+                    try {
+                      return this.getPartyName(
                           rowCellInfo.original.ownerPartyType,
                           rowCellInfo.value
-                        )
-                      } catch (e) {
-                        console.error('error getting owner info', e)
-                        return '-'
-                      }
+                      )
+                    } catch (e) {
+                      console.error('error getting owner info', e)
+                      return '-'
+                    }
+                  },
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
                   },
-                  {
-                    Header: 'Assigned Party Type',
-                    accessor: 'assignedPartyType',
-                    width: 160,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
+                },
+                {
+                  Header: 'Assigned Party Type',
+                  accessor: 'assignedPartyType',
+                  width: 160,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
                   },
-                  {
-                    Header: 'Assigned To',
-                    accessor: 'assignedId',
-                    width: 150,
-                    Cell: rowCellInfo => {
-                      try {
-                        return this.getPartyName(
+                },
+                {
+                  Header: 'Assigned To',
+                  accessor: 'assignedId',
+                  width: 150,
+                  Cell: rowCellInfo => {
+                    try {
+                      return this.getPartyName(
                           rowCellInfo.original.assignedPartyType,
                           rowCellInfo.value
-                        )
-                      } catch (e) {
-                        console.error('error getting assigned info', e)
-                        return '-'
-                      }
+                      )
+                    } catch (e) {
+                      console.error('error getting assigned info', e)
+                      return '-'
+                    }
+                  },
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
                   },
-                  {
-                    Header: 'Sim Country Code',
-                    accessor: 'simCountryCode',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Sim Number',
-                    accessor: 'simNumber',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Manufacturer Id',
-                    accessor: 'manufacturerId',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  }
-                ]}
-                  getTdProps={(state, rowInfo) => {
-                    const rowIndex = rowInfo ? rowInfo.index : undefined
-                  return {
-                    onClick: (e, handleOriginal) => {
-                      if (rowInfo) {
-                        this.handleSelect(rowInfo.original, rowInfo.index)
-                      }
-                      if (handleOriginal) {
-                        handleOriginal()
-                      }
+                },
+                {
+                  Header: 'Sim Country Code',
+                  accessor: 'simCountryCode',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    style: {
-                      background:
+                  },
+                },
+                {
+                  Header: 'Sim Number',
+                  accessor: 'simNumber',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
+                  },
+                },
+                {
+                  Header: 'Manufacturer Id',
+                  accessor: 'manufacturerId',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
+                  },
+                },
+              ]}
+              getTdProps={(state, rowInfo) => {
+                const rowIndex = rowInfo ? rowInfo.index : undefined
+                return {
+                  onClick: (e, handleOriginal) => {
+                    if (rowInfo) {
+                      this.handleSelect(rowInfo.original, rowInfo.index)
+                    }
+                    if (handleOriginal) {
+                      handleOriginal()
+                    }
+                  },
+                  style: {
+                    background:
                         rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.light
+                            ? theme.palette.secondary.light
                             : 'white',
-                      color:
+                    color:
                         rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.contrastText
-                          : theme.palette.primary.main
-                    }
+                            ? theme.palette.secondary.contrastText
+                            : theme.palette.primary.main
                   }
-                }}
-              />
-            </CardContent>
-          </Card>
+                }
+              }}
+          />
         </div>
         <FullPageLoader open={isLoading} />
       </div>

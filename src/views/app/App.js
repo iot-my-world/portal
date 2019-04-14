@@ -96,6 +96,7 @@ const styles = theme => ({
     display: 'grid',
     gridTemplateColumns: '1fr',
     gridTemplateRows: '1fr',
+    justifyItems: 'center',
     overflow: 'scroll',
     paddingTop: theme.spacing.unit * 2,
   },
@@ -260,7 +261,8 @@ class App extends Component {
   rebuildRoutes() {
     const {claims, viewPermissions, user, party} = this.props
     try {
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user,
+          party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -340,7 +342,8 @@ class App extends Component {
 
     try {
       // build app routes
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user,
+          party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -430,7 +433,7 @@ class App extends Component {
     try {
       if (element.parentNode.clientWidth < theme.breakpoints.values.md) {
         SetMaxViewDimensions({
-          width: element.parentNode.clientWidth - 40,
+          width: element.parentNode.clientWidth - 50,
           height: element.parentNode.clientHeight - 100,
         })
       } else {
