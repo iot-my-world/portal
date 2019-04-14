@@ -30,6 +30,8 @@ import TextCriterion from 'brain/search/criterion/Text'
 import IdIdentifier from 'brain/search/identifier/Id'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'
 import ClientRecordHandler from 'brain/party/client/RecordHandler'
+import {DeviceAdministrator} from 'brain/tracker/device/administrator'
+import {DeviceValidator} from 'brain/tracker/device/validator'
 
 const styles = theme => ({
   root: {
@@ -139,8 +141,36 @@ class ZX303 extends Component {
     })
   }
 
-  handleSaveNew = () => {
+  handleSaveNew = async () => {
+    const {device} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
 
+    ShowGlobalLoader()
+
+    // perform validation
+    try {
+      const reasonsInvalid = (await DeviceValidator.Validate({
+        device,
+        action: 'Create',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Device', e)
+      NotificationFailure('Error Validating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    HideGlobalLoader()
   }
 
   handleSaveChanges = () => {
