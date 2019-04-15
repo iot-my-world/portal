@@ -1,9 +1,9 @@
 import Base from 'brain/Base'
-import {Or as OrCriterion} from 'brain/search/criterion/types'
+import {OrCriterionType} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
 export default class Or extends Base {
-  static type = OrCriterion
+  static type = OrCriterionType
 
   /**
    * @type {Or}
@@ -55,12 +55,6 @@ export default class Or extends Base {
 
   get blank() {
     return this._value.criteria.length === 0
-  }
-
-  toPOJO(){
-    let retObj = super.toPOJO()
-    retObj.value.criteria = this._value.criteria.map(crit => crit.toPOJO())
-    return retObj
   }
 
 }

@@ -37,4 +37,9 @@ export default class Base {
     })
     return retObj
   }
+
+  toJSON() {
+    return this.toPOJO()
+  }
+
 }

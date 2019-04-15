@@ -12,12 +12,8 @@ const RecordHandler = {
       jsonRpcRequest({
         method: 'CompanyRecordHandler.Collect',
         request: {
-          criteria: criteria
-              ? criteria.map(criterion => criterion.toPOJO())
-              : undefined,
-          query: query
-              ? query.toPOJO()
-              : undefined,
+          criteria,
+          query,
         },
       }).then(result => {
         result.records = result.records.map(company => new Company(company))

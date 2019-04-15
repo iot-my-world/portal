@@ -13,7 +13,7 @@ const Administrator = {
       jsonRpcRequest({
         method: "TK102DeviceAdministrator.ChangeOwnershipAndAssignment",
         request: {
-          tk102: tk102.toPOJO()
+          tk102,
         }
       })
         .then(result => {

@@ -23,6 +23,12 @@ lineCounts = {
         "dirsToIgnore": ["node_modules"],
         "fileExts": [".js"],
     },
+    "nerve": {
+        "dirToSearch": "/Users/bernardbussy/go/src/gitlab.com/iotTracker/nerve",
+        "csvToSaveTo": "/Users/bernardbussy/projects/gitlab/iotTracker/portal/codeTrack/LineCount/csv/nerve.csv",
+        "dirsToIgnore": [],
+        "fileExts": [".go"],
+    },
 }
 
 if __name__ == "__main__":

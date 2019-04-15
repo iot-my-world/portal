@@ -6,7 +6,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'ClientAdministrator.Create',
       request: {
-        client: client.toPOJO(),
+        client,
       },
     })
     response.client = new Client(response.client)
@@ -17,7 +17,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'ClientAdministrator.UpdateAllowedFields',
       request: {
-        client: client.toPOJO(),
+        client,
       },
     })
     response.client = new Client(response.client)

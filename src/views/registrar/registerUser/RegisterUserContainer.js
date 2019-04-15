@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import RegisterUser from './RegisterUser'
 import {NotificationFailure, NotificationSuccess} from 'actions/notification'
 import {Logout} from 'actions/auth'
+import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 
 let RegisterUserContainer = props => {
   return <RegisterUser {...props} />
@@ -19,6 +20,8 @@ RegisterUserContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
+      ShowGlobalLoader,
+      HideGlobalLoader,
       Logout,
     },
 )(RegisterUserContainer)

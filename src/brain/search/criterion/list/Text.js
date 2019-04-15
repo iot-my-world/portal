@@ -1,24 +1,21 @@
-import Base from 'brain/Base'
-import {ListText as ListTextCriterion} from 'brain/search/criterion/types'
+import BaseCriterion from 'brain/search/criterion/Base'
+import {ListTextCriterionType} from 'brain/search/criterion/types'
 import {isObject} from 'utilities/type/index'
 
-export default class ListText extends Base {
-  static type = ListTextCriterion
+export default class ListText extends BaseCriterion {
+  static Type = ListTextCriterionType
 
   /**
-   * @type {ListText}
+   * @type {string}
    * @private
    */
-  _type = ListText.type
-
+  _field = ''
+  
   /**
-   * @type {{field: string, list: []string}}
+   * @type {string[]}
    * @private
    */
-  _value = {
-    field: '',
-    list: [],
-  }
+  _list = []
 
   constructor(listText) {
     super()
@@ -30,40 +27,32 @@ export default class ListText extends Base {
               isObject(listText)
           )
       ) {
-        this._value.list = listText.list
-        this._value.field = listText.field
+        this._list = listText.list
+        this._field = listText.field
       }
     } catch (e) {
       throw new Error(`error constructing listText criterion object: ${e}`)
     }
   }
 
-  get type() {
-    return this._type
-  }
-
-  get value() {
-    return this._value
-  }
-
   get field() {
-    return this._value.field
+    return this._field
   }
 
   set field(newVal) {
-    this._value.field = newVal
+    this._field = newVal
   }
 
   get list() {
-    return this._value.list
+    return this._list
   }
 
   set list(newVal) {
-    this._value.list = newVal
+    this._list = newVal
   }
 
   get blank() {
-    return this._value.list.length === 0
+    return this._list.length === 0
   }
 
 }

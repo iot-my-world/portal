@@ -3,12 +3,11 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Typography,
   Card, CardContent, Grid,
-  TextField, Button, Dialog,
+  TextField, Button,
   FormControl, CardHeader,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
-import {ScaleLoader as Spinner} from 'react-spinners'
 import {parseToken} from 'utilities/token'
 import {
   User as UserEntity,
@@ -17,8 +16,8 @@ import {
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import {
-  RegisterCompanyAdminUser, RegisterCompanyUser,
-  RegisterClientAdminUser, RegisterClientUser,
+  RegisterCompanyAdminUserClaimsType, RegisterCompanyUserClaimsType,
+  RegisterClientAdminUserClaimsType, RegisterClientUserClaimsType,
 } from 'brain/security/claims/types'
 import {PartyRegistrar} from 'brain/party/registrar'
 
@@ -71,14 +70,6 @@ const style = theme => {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
     },
-    progressSpinnerDialog: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none',
-      overflow: 'hidden',
-    },
-    progressSpinnerDialogBackdrop: {
-      // backgroundColor: 'transparent',
-    },
     errorIcon: {
       fontSize: 100,
       color: theme.palette.error.main,
@@ -105,7 +96,6 @@ const events = {
 class RegisterUser extends Component {
 
   state = {
-    isLoading: false,
     activeState: events.init,
     user: new UserEntity(),
     confirmPassword: '',
@@ -162,6 +152,8 @@ class RegisterUser extends Component {
     const {
       NotificationSuccess,
       NotificationFailure,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     } = this.props
 
     // confirm that password is entered correctly
@@ -178,33 +170,34 @@ class RegisterUser extends Component {
       sessionStorage.setItem('jwt', jwt)
     }
 
+    ShowGlobalLoader()
+
     // validate the new user for create
     let reasonsInvalid
     try {
-      this.setState({isLoading: true})
       switch (this.registrationClaims.type) {
-        case RegisterCompanyAdminUser:
+        case RegisterCompanyAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterCompanyAdminUser',
           })).reasonsInvalid
           break
 
-        case RegisterCompanyUser:
+        case RegisterCompanyUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterCompanyUser',
           })).reasonsInvalid
           break
 
-        case RegisterClientAdminUser:
+        case RegisterClientAdminUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterClientAdminUser',
           })).reasonsInvalid
           break
 
-        case RegisterClientUser:
+        case RegisterClientUserClaimsType:
           reasonsInvalid = (await UserValidator.Validate({
             user,
             action: 'RegisterClientUser',
@@ -218,29 +211,30 @@ class RegisterUser extends Component {
     } catch (error) {
       console.error('Error Validating User', error)
       NotificationFailure('Error Validating User')
-      this.setState({isLoading: false})
+      HideGlobalLoader()
+      return
     }
 
     // if no reasons invalid then register
     try {
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
-        this.setState({isLoading: false})
+        HideGlobalLoader()
       } else {
         switch (this.registrationClaims.type) {
-          case RegisterCompanyAdminUser:
+          case RegisterCompanyAdminUserClaimsType:
             await PartyRegistrar.RegisterCompanyAdminUser({user})
             break
 
-          case RegisterCompanyUser:
+          case RegisterCompanyUserClaimsType:
             await PartyRegistrar.RegisterCompanyUser({user})
             break
 
-          case RegisterClientAdminUser:
+          case RegisterClientAdminUserClaimsType:
             await PartyRegistrar.RegisterClientAdminUser({user})
             break
 
-          case RegisterClientUser:
+          case RegisterClientUserClaimsType:
             await PartyRegistrar.RegisterClientUser({user})
             break
 
@@ -249,13 +243,13 @@ class RegisterUser extends Component {
                 'invalid claims type: ' + this.registrationClaims.type)
         }
         NotificationSuccess('Successfully Registered User')
-        this.setState({isLoading: false})
+        HideGlobalLoader()
         this.handleBackToSite()
       }
     } catch (error) {
       console.error('Error Registering User', error)
       NotificationFailure('Error Registering User')
-      this.setState({isLoading: false})
+      HideGlobalLoader()
     }
   }
 
@@ -353,7 +347,6 @@ class RegisterUser extends Component {
       activeState,
       user,
       confirmPassword,
-      isLoading,
     } = this.state
 
     switch (activeState) {
@@ -521,14 +514,6 @@ class RegisterUser extends Component {
           </div>
         </div>
       </div>
-      <Dialog
-          open={isLoading}
-          BackdropProps={{classes: {root: classes.progressSpinnerDialogBackdrop}}}
-          PaperProps={{classes: {root: classes.progressSpinnerDialog}}}
-          className={classes.progressSpinnerDialog}
-      >
-        <Spinner isLoading/>
-      </Dialog>
     </div>
   }
 
@@ -619,6 +604,14 @@ StyledLogin.propTypes = {
    * Failure Action Creator
    */
   NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Show Global App Loader Action Creator
+   */
+  ShowGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Hide Global App Loader Action Creator
+   */
+  HideGlobalLoader: PropTypes.func.isRequired,
   /**
    * redux state flag indicating if the app
    * is logged in

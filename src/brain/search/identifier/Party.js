@@ -4,25 +4,19 @@ import IdIdentifier from './Id'
 import BaseIdentifier from './Base'
 
 export default class Party extends BaseIdentifier {
-  static identifierType = PartyIdentifierType
+  static Type = PartyIdentifierType
 
   /**
    * @type {string}
    * @private
    */
-  _type = Party.identifierType
+  _partyType = ''
 
   /**
-   * @type {{
-   * partyType: string,
-   * partyIdIdentifier: IdIdentifier
-   * }}
+   * @type {Id}
    * @private
    */
-  _value = {
-    partyType: '',
-    partyIdIdentifier: new IdIdentifier(),
-  }
+  _partyIdIdentifier = new IdIdentifier()
 
   /**
    * construct a new party identifier
@@ -35,21 +29,21 @@ export default class Party extends BaseIdentifier {
           (party instanceof Party) ||
           (isObject(party))
       ) {
-        this._value.partyType = party.partyType
-        this._value.partyIdIdentifier =
-            new IdIdentifier(party.partyIdIdentifier)
+        this._partyType = party.partyType
+        this._partyIdIdentifier = new IdIdentifier(party.partyIdIdentifier)
       } else {
         throw new TypeError(
-            'invalid arg passed to Party identifier constructor')
+            'invalid arg passed to Party identifier constructor',
+        )
       }
     }
   }
 
   get partyType() {
-    return this._value.partyType
+    return this._partyType
   }
 
   get partyIdIdentifier() {
-    return this._value.partyIdIdentifier
+    return this._partyIdIdentifier
   }
 }

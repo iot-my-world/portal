@@ -17,12 +17,13 @@ import {
   CompanyAdministrator,
 } from 'brain/party/company'
 import {ReasonsInvalid} from 'brain/validate/index'
-import {Text} from 'brain/search/criterion/types'
+import {TextCriterionType} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import {LoginClaims} from 'brain/security/claims'
 import {CompanyPartyType} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
+import PartyIdentifier from 'brain/search/identifier/Party'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
@@ -270,11 +271,11 @@ class Company extends Component {
 
       // find the admin user registration status of these companies
       this.companyRegistration = (await PartyRegistrar.AreAdminsRegistered({
-        partyDetails: collectResponse.records.map(company => {
-          return {
-            partyId: new IdIdentifier(company.id).value,
+        partyIdentifiers: collectResponse.records.map(company => {
+          return new PartyIdentifier({
+            partyIdIdentifier: new IdIdentifier(company.id),
             partyType: CompanyPartyType,
-          }
+          })
         }),
       })).result
     } catch (e) {
@@ -437,7 +438,7 @@ class Company extends Component {
                         accessor: 'name',
                         config: {
                           filter: {
-                            type: Text,
+                            type: TextCriterionType,
                           },
                         },
                       },
@@ -446,7 +447,7 @@ class Company extends Component {
                         accessor: 'adminEmailAddress',
                         config: {
                           filter: {
-                            type: Text,
+                            type: TextCriterionType,
                           },
                         },
                       },

@@ -219,11 +219,13 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState, snapShot) {
     const {
       user: prevUser,
+      party: prevParty,
       claims: prevClaims,
       appDoneLoading: prevAppDoneLoading,
     } = prevProps
     const {
       user,
+      party,
       claims,
       appDoneLoading,
     } = this.props
@@ -248,12 +250,17 @@ class App extends Component {
       this.rebuildRoutes()
       return
     }
+
+    if (party.name !== prevParty.name) {
+      this.rebuildRoutes()
+      return
+    }
   }
 
   rebuildRoutes() {
-    const {claims, viewPermissions, user} = this.props
+    const {claims, viewPermissions, user, party} = this.props
     try {
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -280,6 +287,8 @@ class App extends Component {
       AppDoneLoading,
       SetMyParty,
       SetMyUser,
+      Logout,
+      NotificationFailure,
     } = this.props
 
     // catch in case setup starts before claims are set
@@ -292,21 +301,28 @@ class App extends Component {
     let viewPermissions = []
     try {
       // TODO: remove redundant passing of user id
-      const response = await PermissionHandler.GetAllUsersViewPermissions(
-          claims.userId)
+      const response = await PermissionHandler.GetAllUsersViewPermissions({
+        userIdentifier: claims.userId,
+      })
       // update view permissions in state
       SetViewPermissions(response.permission)
       viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
+    let party
     try {
       const response = await PartyAdministrator.GetMyParty()
       SetMyParty(response.party)
+      party = response.party
     } catch (e) {
       console.error('error getting my party', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
@@ -317,12 +333,14 @@ class App extends Component {
       user = response.user
     } catch (e) {
       console.error('error getting my user', e)
+      NotificationFailure('error logging in')
+      Logout()
       return
     }
 
     try {
       // build app routes
-      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user)
+      this.appRoutes = appRouteBuilder(claims.partyType, viewPermissions, user, party)
       this.appContentRoutes = buildContentRoutes(this.appRoutes)
       this.appHeaderRoutes = buildAppHeaderRoutes(this.appRoutes)
       let menuState = {}
@@ -339,6 +357,9 @@ class App extends Component {
       this.setState({menuState})
     } catch (e) {
       console.error('error building app routes', e)
+      NotificationFailure('error logging in')
+      Logout()
+      return
     }
 
     // all data for the app is done loading, indicate
@@ -409,12 +430,12 @@ class App extends Component {
     try {
       if (element.parentNode.clientWidth < theme.breakpoints.values.md) {
         SetMaxViewDimensions({
-          width: element.parentNode.clientWidth - 33,
+          width: element.parentNode.clientWidth - 40,
           height: element.parentNode.clientHeight - 64,
         })
       } else {
         SetMaxViewDimensions({
-          width: element.parentNode.clientWidth - drawerWidth - 33,
+          width: element.parentNode.clientWidth - drawerWidth - 40,
           height: element.parentNode.clientHeight - 64,
         })
       }
@@ -704,10 +725,15 @@ App.propTypes = {
    * Logged in user from redux
    */
   user: PropTypes.instanceOf(User).isRequired,
+  party: PropTypes.object.isRequired,
   /**
    * View permissions from redux
    */
   viewPermissions: PropTypes.array.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles, {withTheme: true})(App)

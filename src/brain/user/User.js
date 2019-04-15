@@ -73,7 +73,7 @@ export default class User extends Base {
   _partyType = ''
 
   /**
-   * @type {IdIdentifier}
+   * @type {Id}
    * @private
    */
   _partyId = new IdIdentifier()
@@ -225,11 +225,8 @@ export default class User extends Base {
           `cannot create identifier for user if id, username and email address are all blank`)
     }
   }
-
-  toPOJO(){
+  toJSON() {
     let retObj = super.toPOJO()
-    retObj.parentId = this.parentId.value
-    retObj.partyId = this.partyId.value
     retObj.password = stringToBytes(this._password)
     return retObj
   }

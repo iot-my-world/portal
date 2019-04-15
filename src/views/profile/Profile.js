@@ -13,6 +13,10 @@ import GeneralContainer from './general/GeneralContainer'
 import SecurityContainer from './security/SecurityContainer'
 
 const styles = theme => ({
+  root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
   rootCard: {},
 })
 
@@ -53,7 +57,13 @@ class Profile extends Component {
     const {activeTab} = this.state
 
     return (
-        <Grid container direction='column' spacing={8} alignItems='center'>
+        <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems='center'
+            className={classes.root}
+        >
           <Grid item>
             <Card
                 className={classes.rootCard}

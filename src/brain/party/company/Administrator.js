@@ -6,7 +6,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'CompanyAdministrator.Create',
       request: {
-        company: company.toPOJO(),
+        company,
       },
     })
     response.company = new Company(response.company)
@@ -17,7 +17,7 @@ const Administrator = {
     let response = await jsonRpcRequest({
       method: 'CompanyAdministrator.UpdateAllowedFields',
       request: {
-        company: company.toPOJO(),
+        company,
       },
     })
     response.company = new Company(response.company)

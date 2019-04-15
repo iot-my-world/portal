@@ -8,7 +8,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteCompanyAdminUser',
       request: {
-        companyIdentifier: companyIdentifier.toPOJO(),
+        companyIdentifier,
       },
     })
   },
@@ -20,7 +20,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterCompanyAdminUser',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
   },
@@ -32,7 +32,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterCompanyUser',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
   },
@@ -44,7 +44,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.InviteClientAdminUser',
       request: {
-        clientIdentifier: clientIdentifier.toPOJO(),
+        clientIdentifier: clientIdentifier,
       },
     })
   },
@@ -56,7 +56,7 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterClientAdminUser',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
   },
@@ -68,31 +68,30 @@ const Registrar = {
     return jsonRpcRequest({
       method: 'PartyRegistrar.RegisterClientUser',
       request: {
-        user: user.toPOJO(),
+        user,
       },
     })
   },
 
   /**
-   * @param {{partyDetails: []}} request
+   * @param {{partyIdentifiers: [Party]}} request
    */
-  AreAdminsRegistered({partyDetails}) {
+  AreAdminsRegistered({partyIdentifiers}) {
     return jsonRpcRequest({
       method: 'PartyRegistrar.AreAdminsRegistered',
       request: {
-        partyDetails,
+        partyIdentifiers,
       },
     })
   },
 
   async InviteUser({userIdentifier}) {
-    let response = await jsonRpcRequest({
+    return await jsonRpcRequest({
       method: 'PartyRegistrar.InviteUser',
       request: {
-        userIdentifier: userIdentifier.toPOJO(),
+        userIdentifier,
       },
     })
-    return response
   },
 }
 

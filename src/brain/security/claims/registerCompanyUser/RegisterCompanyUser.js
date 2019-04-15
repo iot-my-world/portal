@@ -2,7 +2,7 @@ import moment from 'moment'
 import {IdIdentifier} from 'brain/search/identifier/index'
 import ClaimsBase from 'brain/security/claims/Base'
 import {isObject} from 'utilities/type/index'
-import {RegisterCompanyUser as RegisterCompanyUserClaimsType} from 'brain/security/claims/types'
+import {RegisterCompanyUserClaimsType} from 'brain/security/claims/types'
 import {User} from 'brain/user/index'
 
 class RegisterCompanyUser extends ClaimsBase {

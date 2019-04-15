@@ -13,6 +13,9 @@ import {
   AppDoneLoading,
   SetMaxViewDimensions,
 } from 'actions/app'
+import {
+  NotificationFailure,
+} from 'actions/notification'
 
 let AppContainer = props => {
   return <App {...props}/>
@@ -24,6 +27,7 @@ const mapStateToProps = (state) => {
     appDoneLoading: state.app.doneLoading,
     maxViewDimensions: state.app.maxViewDimensions,
     user: state.auth.user,
+    party: state.auth.party,
     viewPermissions: state.permission.view,
   }
 }
@@ -37,6 +41,7 @@ AppContainer = connect(
       SetMyParty,
       SetMyUser,
       SetMaxViewDimensions,
+      NotificationFailure,
     }
 )(AppContainer)
 

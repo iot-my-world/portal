@@ -9,6 +9,7 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
+import CameraIcon from '@material-ui/icons/Camera'
 // Home Views
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
@@ -26,6 +27,8 @@ import LiveTrackingDashboardContainer
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
 
+import BarcodeTestContainer from 'views/barcodeTest/BarcodeTestContainer'
+
 // View Permissions
 import {
   Configuration, PartyCompanyConfiguration, PartyClientConfiguration,
@@ -38,6 +41,7 @@ import {
   CompanyPartyType,
   ClientPartyType,
 } from 'brain/party/types'
+import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 
 const HomeRoute = {
   id: 'sidebarHomeLink',
@@ -85,6 +89,30 @@ const profileRouteBuilder = user => {
     icon: <PersonIcon/>,
     path: '/app/profile',
     component: ProfileContainer,
+  }
+}
+
+const partyProfileRouteBuilder = (party, partyType) => {
+  let partyProfileIcon = <PersonIcon/>
+  
+  switch (partyType) {
+    case CompanyPartyType:
+      partyProfileIcon = <DomainIcon/>
+      break
+
+    case ClientPartyType:
+      partyProfileIcon = <PeopleIcon/>
+      break
+
+    default:
+  }
+
+  return { // this is an individual route
+    id: 'sidebarProfileLink',
+    text: party.name,
+    icon: partyProfileIcon,
+    path: '/app/partyProfile',
+    component: PartyProfileContainer,
   }
 }
 
@@ -167,14 +195,25 @@ const AppRoutes = [
       ],
     },
   ],
+  [
+    { // this is an individual route
+      id: 'barcodeTestMenuLink',
+      text: 'Barcode Test',
+      icon: <CameraIcon/>,
+      path: '/app/barcodeTest',
+      component: BarcodeTestContainer,
+    },
+  ],
 ]
 
-const appRouteBuilder = (partyType, viewPermissions, user) => {
+const appRouteBuilder = (partyType, viewPermissions, user, party) => {
   // initial routes added here
   let appRoutes = [
     [
       // build the profile root
       profileRouteBuilder(user),
+      // build the party profile route
+      partyProfileRouteBuilder(party, partyType),
       // build the home root
       homeRouteBuilder(partyType),
       { // this is an individual route

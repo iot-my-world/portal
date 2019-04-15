@@ -3,21 +3,13 @@ import {isObject, isString} from 'utilities/type'
 import BaseIdentifier from './Base'
 
 export default class AdminEmailAddress extends BaseIdentifier {
-  static identifierType = AdminEmailAddressIdentifierType
+  static Type = AdminEmailAddressIdentifierType
 
   /**
    * @type {string}
    * @private
    */
-  _type = AdminEmailAddress.identifierType
-
-  /**
-   * @type {{adminEmailAddress: string}}
-   * @private
-   */
-  _value = {
-    adminEmailAddress: '',
-  }
+  _adminEmailAddress = ''
 
   /**
    * construct a new email address identifier
@@ -30,9 +22,9 @@ export default class AdminEmailAddress extends BaseIdentifier {
           (adminEmailAddress instanceof AdminEmailAddress) ||
           (isObject(adminEmailAddress))
       ) {
-        this._value.adminEmailAddress = adminEmailAddress.adminEmailAddress
+        this._adminEmailAddress = adminEmailAddress.adminEmailAddress
       } else if (isString(adminEmailAddress)) {
-        this._value.adminEmailAddress = adminEmailAddress
+        this._adminEmailAddress = adminEmailAddress
       } else {
         throw new TypeError('invalid arg passed to AdminEmailAddress identifier constructor')
       }
@@ -40,6 +32,6 @@ export default class AdminEmailAddress extends BaseIdentifier {
   }
 
   get adminEmailAddress() {
-    return this._value.adminEmailAddress
+    return this._adminEmailAddress
   }
 }
