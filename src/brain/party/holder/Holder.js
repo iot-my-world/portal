@@ -3,7 +3,6 @@ import {
   CompanyPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-import IdIdentifier from 'brain/search/identifier/Id'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import Query from 'brain/search/Query'
 import SystemRecordHandler from 'brain/party/system/RecordHandler'
@@ -89,7 +88,7 @@ export default class Holder {
   }
 
   retrieveEntity(partyIdentifier, partyType) {
-    if (partyType) {
+    if (partyType !== undefined) {
       return retrieveFromList(
           partyIdentifier,
           this._entityMap[partyType] ? this._entityMap[partyType] : [],

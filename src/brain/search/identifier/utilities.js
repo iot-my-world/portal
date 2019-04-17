@@ -8,8 +8,9 @@
  */
 export function objectIdentifiedBy(objectToCheck, identifier){
   try {
-    for(let field in identifier.value){
-      if (identifier.value[field] !== objectToCheck[field]){
+    const identifierValue = identifier.toPOJO()
+    for (let field in identifierValue) {
+      if (identifierValue[field] !== objectToCheck[field]) {
         return false
       }
     }
@@ -17,7 +18,6 @@ export function objectIdentifiedBy(objectToCheck, identifier){
     console.error('error trying to check if object is identified by given identifier', e)
     return false
   }
-
   return true
 }
 

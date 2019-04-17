@@ -16,6 +16,12 @@ export default class ZX303 extends BaseDevice {
    * @type {string}
    * @private
    */
+  _type = ZX303DeviceType
+
+  /**
+   * @type {string}
+   * @private
+   */
   _imei = ''
 
   /**

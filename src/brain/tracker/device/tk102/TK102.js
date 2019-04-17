@@ -2,6 +2,7 @@ import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import DeviceRecordHandler from 'brain/tracker/device/zx303/RecordHandler'
 import {IdIdentifier} from 'brain/search/identifier/index'
+import {TK102DeviceType} from 'brain/tracker/device/types'
 
 export default class TK102 extends Base {
   /**
@@ -9,6 +10,12 @@ export default class TK102 extends Base {
    * @private
    */
   _id = ''
+
+  /**
+   * @type {string}
+   * @private
+   */
+  _type = TK102DeviceType
 
   /**
    * @type {string}

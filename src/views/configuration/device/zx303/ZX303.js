@@ -196,7 +196,7 @@ class ZX303 extends Component {
     // perform validation
     try {
       const reasonsInvalid = (await ZX303DeviceValidator.Validate({
-        zx303DeviceEntity,
+        zx303: zx303DeviceEntity,
         action: 'Create',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -213,7 +213,9 @@ class ZX303 extends Component {
 
     // perform creation
     try {
-      await ZX303DeviceAdministrator.Create({zx303DeviceEntity})
+      await ZX303DeviceAdministrator.Create({
+        zx303: zx303DeviceEntity,
+      })
     } catch (e) {
       console.error('Error Creating Device', e)
       NotificationFailure('Error Creating Device')
@@ -777,16 +779,18 @@ class ZX303 extends Component {
                       },
                     },
                   },
-                  // {
-                  //   Header: 'Owned By',
-                  //   accessor: 'ownerId',
-                  //   width: 150,
-                  //   config: {
-                  //     filter: {
-                  //       type: TextCriterionType,
-                  //     },
-                  //   },
-                  // },
+                  {
+                    Header: 'Owned By',
+                    accessor: 'ownerId',
+                    Cell: rowInfo => {
+                      return this.partyHolder.retrieveEntityProp(
+                          'name',
+                          rowInfo.value,
+                      )
+                    },
+                    width: 150,
+                    filterable: false,
+                  },
                   {
                     Header: 'Assigned Party Type',
                     accessor: 'assignedPartyType',
@@ -797,16 +801,18 @@ class ZX303 extends Component {
                       },
                     },
                   },
-                  // {
-                  //   Header: 'Assigned To',
-                  //   accessor: 'assignedId',
-                  //   width: 150,
-                  //   config: {
-                  //     filter: {
-                  //       type: TextCriterionType,
-                  //     },
-                  //   },
-                  // },
+                  {
+                    Header: 'Assigned To',
+                    accessor: 'assignedId',
+                    Cell: rowInfo => {
+                      return this.partyHolder.retrieveEntityProp(
+                          'name',
+                          rowInfo.value,
+                      )
+                    },
+                    width: 150,
+                    filterable: false,
+                  },
                   {
                     Header: 'Sim Country Code',
                     accessor: 'simCountryCode',
