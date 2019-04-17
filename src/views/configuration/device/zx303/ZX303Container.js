@@ -9,7 +9,10 @@ let FunctionalContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    party: state.auth.party,
+    claims: state.auth.claims,
+  }
 }
 
 FunctionalContainer = connect(

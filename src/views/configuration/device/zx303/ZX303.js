@@ -34,6 +34,7 @@ import {
   ZX303DeviceAdministrator, ZX303DeviceValidator, ZX303DeviceRecordHandler,
 } from 'brain/tracker/device/zx303'
 import {PartyHolder} from 'brain/party/holder'
+import LoginClaims from 'brain/security/claims/login/Login'
 
 const styles = theme => ({
   root: {
@@ -121,7 +122,11 @@ class ZX303 extends Component {
   }
 
   collect = async () => {
-    const {NotificationFailure} = this.props
+    const {
+      NotificationFailure,
+      party,
+      claims,
+    } = this.props
     this.setState({recordCollectionInProgress: true})
     // perform device collection
     let collectResponse
@@ -149,6 +154,10 @@ class ZX303 extends Component {
           collectResponse.records,
           'assignedPartyType',
           'assignedId',
+      )
+      this.partyHolder.update(
+          party,
+          claims.partyType,
       )
     } catch (e) {
       console.error('Error Loading Associated Parties', e)
@@ -954,6 +963,14 @@ ZX303.propTypes = {
    * Hide Global App Loader Action Creator
    */
   HideGlobalLoader: PropTypes.func.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(LoginClaims),
+  /**
+   * Party from redux state
+   */
+  party: PropTypes.object.isRequired,
 }
 ZX303.defaultProps = {}
 
