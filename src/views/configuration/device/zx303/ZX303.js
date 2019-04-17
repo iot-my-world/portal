@@ -228,7 +228,6 @@ class ZX303 extends Component {
   }
 
   handleSaveChanges = () => {
-
   }
 
   loadPartyOptions = partyType => async (inputValue, callback) => {
