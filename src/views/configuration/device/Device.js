@@ -1,27 +1,26 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
-  withStyles, Paper, Tabs, Tab,
+  withStyles, Tabs, Tab, Grid, Card, AppBar, CardContent,
 } from '@material-ui/core'
-import {
-  TK102,
-} from 'brain/tracker/device/types'
 import TK102Container from './tk102/TK102Container'
+import ZX303Container from './zx303/ZX303Container'
 
 const styles = theme => ({
   root: {
+    width: 'calc(100% - 16px)',
+    margin: 0,
+  },
+  rootCard: {},
+  cardContent: {
     display: 'grid',
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr',
+    overflow: 'auto',
   },
-  tabBarWrapper: {
-    marginBottom: 8,
-  },
-  contentWrapper: {},
 })
 
 const tabs = {
-  TK102: 0,
+  ZX303: 0,
+  TK102: 1,
 }
 
 class Device extends Component {
@@ -30,7 +29,7 @@ class Device extends Component {
     this.handleTabChange = this.handleTabChange.bind(this)
     this.renderTabContent = this.renderTabContent.bind(this)
     this.state = {
-      activeTab: tabs.TK102,
+      activeTab: tabs.ZX303,
     }
   }
 
@@ -39,31 +38,51 @@ class Device extends Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {classes, maxViewDimensions} = this.props
     const {activeTab} = this.state
+
     return (
-        <div
+        <Grid
+            container
+            direction='column'
+            spacing={8}
+            alignItems='center'
             className={classes.root}
-            id={'deviceConfigurationRoot'}
         >
-          <div className={classes.tabBarWrapper}>
-            <Paper>
-              <Tabs
-                  id={'deviceConfigurationTabBar'}
-                  value={activeTab}
-                  onChange={this.handleTabChange}
-                  indicatorColor='primary'
-                  textColor='primary'
-                  centered
+          <Grid item>
+            <Card
+                className={classes.rootCard}
+                // style={{width: maxViewDimensions.width}}
+            >
+              <AppBar position="static">
+                <Tabs
+                    id={'deviceConfigurationTabBar'}
+                    value={activeTab}
+                    onChange={this.handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="on"
+                >
+                  <Tab
+                      value={tabs.ZX303}
+                      label={'ZX303'}
+                  />
+                  <Tab
+                      value={tabs.TK102}
+                      label={'TK102'}
+                  />
+                </Tabs>
+              </AppBar>
+              <CardContent
+                  classes={{root: classes.cardContent}}
+                  style={{
+                    height: maxViewDimensions.height - 95,
+                  }}
               >
-                <Tab id={'tk102Tab'} label={TK102} value={tabs.TK102}/>
-              </Tabs>
-            </Paper>
-          </div>
-          <div className={classes.contentWrapper}>
-            {this.renderTabContent()}
-          </div>
-        </div>
+                {this.renderTabContent()}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
     )
   }
 
@@ -72,6 +91,8 @@ class Device extends Component {
     switch (activeTab) {
       case tabs.TK102:
         return <TK102Container/>
+      case tabs.ZX303:
+        return <ZX303Container/>
       default:
         return <div>Invalid Tab Value</div>
     }
@@ -80,7 +101,12 @@ class Device extends Component {
 
 Device = withStyles(styles)(Device)
 
-Device.propTypes = {}
+Device.propTypes = {
+  /**
+   * maxViewDimensions from redux state
+   */
+  maxViewDimensions: PropTypes.object.isRequired,
+}
 Device.defaultProps = {}
 
 export default Device

@@ -140,7 +140,12 @@ class User extends Component {
 
   collectCriteria = []
 
-  collectQuery = new Query()
+  collectQuery = new Query({
+    sortBy: [],
+    order: [],
+    limit: 15,
+    offset: 0,
+  })
 
   entityMap = {
     Company: [],
@@ -149,10 +154,6 @@ class User extends Component {
   }
 
   columns = []
-
-  componentDidMount() {
-    this.collect()
-  }
 
   handleCreateNew() {
     const {claims} = this.props
@@ -167,6 +168,10 @@ class User extends Component {
       activeState: events.startCreateNew,
       user: newUserEntity,
     })
+  }
+
+  componentDidMount() {
+    this.collect()
   }
 
   handleFieldChange(event) {
@@ -840,7 +845,7 @@ class User extends Component {
                     noDataText={'No Users Found'}
                     data={records}
                     onCriteriaQueryChange={this.handleCriteriaQueryChange}
-
+                    initialQuery={this.collectQuery}
                     columns={this.columns}
 
                     getTdProps={(state, rowInfo) => {

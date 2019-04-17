@@ -11,6 +11,6 @@ export default class BaseIdentifier extends Base {
     return {
       type: this.type,
       value: this.toPOJO(),
-    };
+    }
   }
 }

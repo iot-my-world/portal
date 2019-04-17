@@ -12,9 +12,10 @@ const methodsWithoutAuthorization = [
  * @param {string} [url]
  * @param {string} method
  * @param {object} request
+ * @param {boolean} verbose
  * @returns {Promise<any>}
  */
-export default function jsonRpcRequest({url, method, request}) {
+export default function jsonRpcRequest({url, method, request, verbose}) {
   const id = uuid()
   let header = new Headers({
     'Access-Control-Allow-Origin': '*',
@@ -36,7 +37,14 @@ export default function jsonRpcRequest({url, method, request}) {
     params: [request],
     id: id,
   }
-  console.debug(`API Request: ${body.method} -->`, body.params[0])
+  console.debug(`API Request: ${body.method} -->\n`, body.params[0])
+  if (verbose) {
+    try {
+      console.debug('\n', JSON.parse(JSON.stringify(body.params[0])))
+    } catch (e) {
+      console.error('error parsing stringified body.params[0]')
+    }
+  }
 
   return new Promise((resolve, reject) => {
     fetch(

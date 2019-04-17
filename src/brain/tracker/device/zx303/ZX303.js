@@ -1,10 +1,11 @@
-import Base from 'brain/Base'
+import BaseDevice from 'brain/tracker/device/Base'
 import {isObject} from 'utilities/type/index'
-import DeviceRecordHandler from 'brain/tracker/device/zx303/RecordHandler'
 import {IdIdentifier} from 'brain/search/identifier/index'
-import {TK102DeviceType} from 'brain/tracker/device/types'
+import {ZX303DeviceType} from 'brain/tracker/device/types'
 
-export default class TK102 extends Base {
+export default class ZX303 extends BaseDevice {
+  static Type = ZX303DeviceType
+
   /**
    * @type {string}
    * @private
@@ -15,13 +16,13 @@ export default class TK102 extends Base {
    * @type {string}
    * @private
    */
-  _type = TK102DeviceType
+  _type = ZX303DeviceType
 
   /**
    * @type {string}
    * @private
    */
-  _manufacturerId = ''
+  _imei = ''
 
   /**
    * @type {string}
@@ -60,23 +61,23 @@ export default class TK102 extends Base {
   _assignedId = new IdIdentifier()
 
   /**
-   * construct a new TK102 Object
-   * @param {TK102|Object} [tk102]
+   * construct a new ZX303 Object
+   * @param {ZX303|Object} [zx303]
    */
-  constructor(tk102) {
+  constructor(zx303) {
     super()
-    if (tk102 !== undefined && (tk102 instanceof TK102 || isObject(tk102))) {
+    if (zx303 !== undefined && (zx303 instanceof ZX303 || isObject(zx303))) {
       try {
-        this._id = tk102.id
-        this._manufacturerId = tk102.manufacturerId
-        this._simCountryCode = tk102.simCountryCode
-        this._simNumber = tk102.simNumber
-        this._ownerPartyType = tk102.ownerPartyType
-        this._ownerId = new IdIdentifier(tk102.ownerId)
-        this._assignedPartyType = tk102.assignedPartyType
-        this._assignedId = new IdIdentifier(tk102.assignedId)
+        this._id = zx303.id
+        this._imei = zx303.imei
+        this._simCountryCode = zx303.simCountryCode
+        this._simNumber = zx303.simNumber
+        this._ownerPartyType = zx303.ownerPartyType
+        this._ownerId = new IdIdentifier(zx303.ownerId)
+        this._assignedPartyType = zx303.assignedPartyType
+        this._assignedId = new IdIdentifier(zx303.assignedId)
       } catch (e) {
-        throw new Error(`error constructing tk102 object: ${e}`)
+        throw new Error(`error constructing zx303 object: ${e}`)
       }
     }
   }
@@ -85,12 +86,12 @@ export default class TK102 extends Base {
     return this._id
   }
 
-  get manufacturerId() {
-    return this._manufacturerId
+  get imei() {
+    return this._imei
   }
 
-  set manufacturerId(newVal) {
-    this._manufacturerId = newVal
+  set imei(newVal) {
+    this._imei = newVal
   }
 
   get simCountryCode() {
@@ -141,19 +142,12 @@ export default class TK102 extends Base {
     this._assignedId = newVal
   }
 
-  create() {
-    return DeviceRecordHandler.Create(this)
-  }
-
-  validate(method = '') {
-    return DeviceRecordHandler.Validate(this, method)
-  }
-
   get identifier() {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
     } else {
-      throw new Error(`cannot create identifier for tk102 if id is blank`)
+      throw new Error(`cannot create identifier for zx303 if id is blank`)
     }
   }
+
 }

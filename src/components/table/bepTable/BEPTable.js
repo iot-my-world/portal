@@ -101,11 +101,19 @@ class BEPTable extends Component {
       activeState: events.init,
       errors: {},
       page: 0,
-      query: new Query(props.query),
+      query: new Query(props.initialQuery),
       showFilters: true,
+    }
+
+    if (!this.pageSizeOptions.includes(this.state.query.limit)) {
+      this.pageSizeOptions.push(this.state.query.limit)
+      this.pageSizeOptions.sort((a, b) => {
+        return a - b
+      })
     }
   }
 
+  pageSizeOptions = [5, 10, 20, 25, 50, 100]
   criteria = {}
   columns = []
 
@@ -332,6 +340,7 @@ class BEPTable extends Component {
               onSortedChange={this.handleQuerySortChange}
               onPageSizeChange={this.handleQueryLimitChange}
               onPageChange={this.handleQueryOffsetChange}
+              pageSizeOptions={this.pageSizeOptions}
           />
         </div>
       case Object.values(processingStates).includes(activeState):
