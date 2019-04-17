@@ -7,13 +7,12 @@ import {
   CardContent,
   CardActions,
   Typography,
-  Button,
   TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText, Tooltip, Fab, CardHeader,
 } from '@material-ui/core'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {BEPTable} from 'components/table/index'
@@ -31,7 +30,6 @@ import {
   ClientPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-import {FullPageLoader} from 'components/loader/index'
 import {ReasonsInvalid} from 'brain/validate/index'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {ListTextCriterion} from 'brain/search/criterion/list'
@@ -41,18 +39,16 @@ import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
+import {
+  MdAdd as AddIcon, MdClear as CancelIcon,
+  MdEdit as EditIcon,
+  MdSave as SaveIcon,
+} from 'react-icons/md'
 
 const styles = theme => ({
   root: {
-    display: 'grid',
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr',
-  },
-  detailCardWrapper: {
-    justifySelf: 'center',
-  },
-  tableWrapper: {
-    overflow: 'auto',
+    width: 'calc(100% - 16px)',
+    margin: 0,
   },
   formField: {
     height: '60px',
@@ -62,10 +58,22 @@ const styles = theme => ({
     margin: 2
   },
   detailCard: {},
+  detailCardTitle: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+  },
   tk102Icon: {
     fontSize: 100,
     color: theme.palette.primary.main
-  }
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    fontSize: '20px',
+  },
 })
 
 const states = {
@@ -104,7 +112,7 @@ function recordHandlerSelect(partyType) {
 class TK102 extends Component {
   constructor(props) {
     super(props)
-    this.renderControls = this.renderControls.bind(this)
+    this.renderControlIcons = this.renderControlIcons.bind(this)
     this.renderTK102Details = this.renderTK102Details.bind(this)
     this.handleFieldChange = this.handleFieldChange.bind(this)
     this.handleSaveNew = this.handleSaveNew.bind(this)
@@ -126,7 +134,6 @@ class TK102 extends Component {
 
   state = {
     recordCollectionInProgress: false,
-    isLoading: false,
     activeState: events.init,
     original: new TK102Entity(),
     selected: new TK102Entity(),
@@ -230,20 +237,16 @@ class TK102 extends Component {
     const {selected} = this.state
     const {NotificationSuccess, NotificationFailure} = this.props
 
-    this.setState({isLoading: true})
-
     // perform validation
     try {
       const reasonsInvalid = await selected.validate('Create')
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
-        this.setState({isLoading: false})
         return
       }
     } catch (e) {
       console.error('Error Validating TK102', e)
       NotificationFailure('Error Validating TK102')
-      this.setState({isLoading: false})
       return
     }
 
@@ -253,11 +256,9 @@ class TK102 extends Component {
       NotificationSuccess('Successfully Created TK102')
       this.setState({activeState: events.createNewSuccess})
       await this.collect()
-      this.setState({isLoading: false})
     } catch (e) {
       console.error('Error Creating TK102', e)
       NotificationFailure('Error Creating TK102')
-      this.setState({isLoading: false})
     }
   }
 
@@ -270,20 +271,16 @@ class TK102 extends Component {
     const {original, selected} = this.state
     const {NotificationSuccess, NotificationFailure} = this.props
 
-    this.setState({isLoading: true})
-
     // perform validation
     try {
       const reasonsInvalid = await selected.validate('Update')
       if (reasonsInvalid.count > 0) {
         this.reasonsInvalid = reasonsInvalid
-        this.setState({isLoading: false})
         return
       }
     } catch (e) {
       console.error('Error Validating TK102', e)
       NotificationFailure('Error Validating TK102')
-      this.setState({isLoading: false})
       return
     }
 
@@ -300,14 +297,12 @@ class TK102 extends Component {
       } catch (e) {
         console.error('Error Changing Ownership and Assignment', e)
         NotificationFailure('Error Changing Ownership and Assignment')
-        this.setState({isLoading: false})
         return
       }
     }
 
     this.setState({
       activeState: events.finishEditExisting,
-      isLoading: false
     })
     NotificationSuccess('Successfully Updated TK102')
   }
@@ -495,195 +490,267 @@ class TK102 extends Component {
 
   render() {
     const {
-      isLoading,
       recordCollectionInProgress,
       selectedRowIdx,
       records,
-      totalNoRecords
+      totalNoRecords,
+      activeState,
     } = this.state
-    const {theme, classes} = this.props
+    const {
+      theme,
+      classes,
+      maxViewDimensions
+    } = this.props
+
+    let cardTitle = (
+      <Typography variant={'h6'}>
+        Select A TK102 to View or Edit
+      </Typography>
+    )
+    switch (activeState) {
+      case states.editingNew:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              New User
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      case states.editingExisting:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              Editing
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      case states.viewingExisting:
+        cardTitle = (
+          <div className={classes.detailCardTitle}>
+            <Typography variant={'h6'}>
+              Details
+            </Typography>
+            <Grid container
+                  direction='row'
+                  justify='flex-end'
+            >
+              <Grid item>
+                {this.renderControlIcons()}
+              </Grid>
+            </Grid>
+          </div>
+        )
+        break
+      default:
+    }
 
     return (
-        <div
-            id={'tk102ConfigurationRoot'}
-            className={classes.root} style={{gridRowGap: 8}}>
-        <div className={classes.detailCardWrapper}>
+      <Grid
+        id={'userConfigurationRoot'}
+        className={classes.root}
+        container direction='column'
+        spacing={8}
+        alignItems='center'
+      >
+        <Grid item xl={12}>
           <Grid container>
             <Grid item>
-              <Card className={classes.detailCard}>
+              <Card
+                id={'userConfigurationDetailCard'}
+                className={classes.detailCard}
+              >
+                <CardHeader title={cardTitle}/>
                 <CardContent>
                   {this.renderTK102Details()}
                 </CardContent>
-                {this.renderControls()}
               </Card>
             </Grid>
           </Grid>
-        </div>
-        <div className={classes.tableWrapper}>
-          <BEPTable
-              loading={recordCollectionInProgress}
-              totalNoRecords={totalNoRecords}
-              noDataText={'No TK102 Devices Found'}
-              data={records}
-              onCriteriaQueryChange={this.handleCriteriaQueryChange}
-              columns={[
-                {
-                  Header: 'Owner Party Type',
-                  accessor: 'ownerPartyType',
-                  width: 136,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
+        </Grid>
+        <Grid item xl={12}>
+          <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+            <CardContent>
+              <BEPTable
+                  loading={recordCollectionInProgress}
+                  totalNoRecords={totalNoRecords}
+                  noDataText={'No TK102 Devices Found'}
+                  data={records}
+                  onCriteriaQueryChange={this.handleCriteriaQueryChange}
+                  columns={[
+                  {
+                    Header: 'Owner Party Type',
+                    accessor: 'ownerPartyType',
+                    width: 136,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
+                    }
                   },
-                },
-                {
-                  Header: 'Owned By',
-                  accessor: 'ownerId',
-                  width: 150,
-                  Cell: rowCellInfo => {
-                    try {
-                      return this.getPartyName(
+                  {
+                    Header: 'Owned By',
+                    accessor: 'ownerId',
+                    width: 150,
+                    Cell: rowCellInfo => {
+                      try {
+                        return this.getPartyName(
                           rowCellInfo.original.ownerPartyType,
                           rowCellInfo.value
-                      )
-                    } catch (e) {
-                      console.error('error getting owner info', e)
-                      return '-'
+                        )
+                      } catch (e) {
+                        console.error('error getting owner info', e)
+                        return '-'
+                      }
+                    },
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
                     }
                   },
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
+                  {
+                    Header: 'Assigned Party Type',
+                    accessor: 'assignedPartyType',
+                    width: 160,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
+                    }
                   },
-                },
-                {
-                  Header: 'Assigned Party Type',
-                  accessor: 'assignedPartyType',
-                  width: 160,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-                {
-                  Header: 'Assigned To',
-                  accessor: 'assignedId',
-                  width: 150,
-                  Cell: rowCellInfo => {
-                    try {
-                      return this.getPartyName(
+                  {
+                    Header: 'Assigned To',
+                    accessor: 'assignedId',
+                    width: 150,
+                    Cell: rowCellInfo => {
+                      try {
+                        return this.getPartyName(
                           rowCellInfo.original.assignedPartyType,
                           rowCellInfo.value
-                      )
-                    } catch (e) {
-                      console.error('error getting assigned info', e)
-                      return '-'
+                        )
+                      } catch (e) {
+                        console.error('error getting assigned info', e)
+                        return '-'
+                      }
+                    },
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
                     }
                   },
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-                {
-                  Header: 'Sim Country Code',
-                  accessor: 'simCountryCode',
-                  width: 150,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-                {
-                  Header: 'Sim Number',
-                  accessor: 'simNumber',
-                  width: 150,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-                {
-                  Header: 'Manufacturer Id',
-                  accessor: 'manufacturerId',
-                  width: 150,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-              ]}
-              getTdProps={(state, rowInfo) => {
-                const rowIndex = rowInfo ? rowInfo.index : undefined
-                return {
-                  onClick: (e, handleOriginal) => {
-                    if (rowInfo) {
-                      this.handleSelect(rowInfo.original, rowInfo.index)
-                    }
-                    if (handleOriginal) {
-                      handleOriginal()
+                  {
+                    Header: 'Sim Country Code',
+                    accessor: 'simCountryCode',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
                     }
                   },
-                  style: {
-                    background:
-                        rowIndex === selectedRowIdx
-                            ? theme.palette.secondary.light
-                            : 'white',
-                    color:
-                        rowIndex === selectedRowIdx
-                            ? theme.palette.secondary.contrastText
-                            : theme.palette.primary.main
+                  {
+                    Header: 'Sim Number',
+                    accessor: 'simNumber',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
+                    }
+                  },
+                  {
+                    Header: 'Manufacturer Id',
+                    accessor: 'manufacturerId',
+                    width: 150,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      }
+                    }
                   }
-                }
-              }}
-          />
-        </div>
-        <FullPageLoader open={isLoading} />
-      </div>
+                ]}
+                  getTdProps={(state, rowInfo) => {
+                    const rowIndex = rowInfo ? rowInfo.index : undefined
+                  return {
+                    onClick: (e, handleOriginal) => {
+                      if (rowInfo) {
+                        this.handleSelect(rowInfo.original, rowInfo.index)
+                      }
+                      if (handleOriginal) {
+                        handleOriginal()
+                      }
+                    },
+                    style: {
+                      background:
+                        rowIndex === selectedRowIdx
+                          ? theme.palette.secondary.light
+                            : 'white',
+                      color:
+                        rowIndex === selectedRowIdx
+                          ? theme.palette.secondary.contrastText
+                          : theme.palette.primary.main
+                    }
+                  }
+                }}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     )
   }
   renderTK102Details() {
-    const {isLoading, activeState} = this.state
+    const {activeState} = this.state
     const {classes} = this.props
-
     const fieldValidations = this.reasonsInvalid.toMap()
     const helperText = field =>
         fieldValidations[field] ? fieldValidations[field].help : undefined
-    const disableFields = activeState === states.viewingExisting || isLoading
+    const disableFields = activeState === states.viewingExisting
 
     switch (activeState) {
       case states.nop:
         return (
-            <Grid container direction='column' spacing={8}
+            <Grid container
+                  direction='column'
+                  spacing={8}
                   alignItems={'center'}>
-            <Grid item>
-              <Typography variant={'body1'} align={'center'} color={'primary'}>
-                Select A TK102 to View or Edit
-              </Typography>
-            </Grid>
             <Grid item>
               <DeviceIcon className={classes.tk102Icon} />
             </Grid>
             <Grid item>
-              <Button
-                  size='small'
-                  color='primary'
-                  variant='contained'
-                  onClick={this.handleCreateNew}
+              <Fab
+                id={'userConfigurationNewUserButton'}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleCreateNew}
               >
-                Create New
-              </Button>
+                <Tooltip title='Add New Device'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
             </Grid>
           </Grid>
         )
-
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
@@ -894,73 +961,84 @@ class TK102 extends Component {
     }
   }
 
-  renderControls() {
+  renderControlIcons() {
     const {activeState} = this.state
+    const {classes} = this.props
 
     switch (activeState) {
       case states.viewingExisting:
         return (
-          <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleStartEditExisting}
+          <React.Fragment>
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleStartEditExisting}
             >
-              Edit
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCreateNew}
+              <Tooltip title='Edit'>
+                <EditIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              id={'deviceConfigurationNewUserButton'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCreateNew}
             >
-              Create New
-            </Button>
-          </CardActions>
+              <Tooltip title='Add New Device'>
+                <AddIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+          </React.Fragment>
         )
 
       case states.editingNew:
         return (
           <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleSaveNew}
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleSaveNew}
             >
-              Save New
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCancelCreateNew}
+              <Tooltip title='Save New Device'>
+                <SaveIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCancelCreateNew}
             >
-              Cancel
-            </Button>
+              <Tooltip title='Cancel'>
+                <CancelIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
           </CardActions>
         )
 
       case states.editingExisting:
         return (
           <CardActions>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleSaveChanges}
+            <Fab
+              color={'primary'}
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleSaveChanges}
             >
-              Save Changes
-            </Button>
-            <Button
-                size='small'
-                color='primary'
-                variant='contained'
-                onClick={this.handleCancelEditExisting}
+              <Tooltip title='Save Changes'>
+                <SaveIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
+            <Fab
+              className={classes.button}
+              size={'small'}
+              onClick={this.handleCancelEditExisting}
             >
-              Cancel
-            </Button>
+              <Tooltip title='Cancel'>
+                <CancelIcon className={classes.buttonIcon}/>
+              </Tooltip>
+            </Fab>
           </CardActions>
         )
 
