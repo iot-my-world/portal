@@ -499,83 +499,83 @@ class TK102 extends Component {
     const {
       theme,
       classes,
-      maxViewDimensions
+      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
-      <Typography variant={'h6'}>
-        Select A TK102 to View or Edit
-      </Typography>
+        <Typography variant={'h6'}>
+          Select A TK102 to View or Edit
+        </Typography>
     )
     switch (activeState) {
       case states.editingNew:
         cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              New User
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                New User
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </div>
         )
         break
       case states.editingExisting:
         cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              Editing
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Editing
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </div>
         )
         break
       case states.viewingExisting:
         cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              Details
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
+            <div className={classes.detailCardTitle}>
+              <Typography variant={'h6'}>
+                Details
+              </Typography>
+              <Grid container
+                    direction='row'
+                    justify='flex-end'
+              >
+                <Grid item>
+                  {this.renderControlIcons()}
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
+            </div>
         )
         break
       default:
     }
 
     return (
-      <Grid
-        id={'userConfigurationRoot'}
-        className={classes.root}
-        container direction='column'
-        spacing={8}
-        alignItems='center'
-      >
-        <Grid item xl={12}>
+        <Grid
+            id={'userConfigurationRoot'}
+            className={classes.root}
+            container direction='column'
+            spacing={8}
+            alignItems='center'
+        >
+          <Grid item xl={12}>
           <Grid container>
             <Grid item>
               <Card
-                id={'userConfigurationDetailCard'}
-                className={classes.detailCard}
+                  id={'userConfigurationDetailCard'}
+                  className={classes.detailCard}
               >
                 <CardHeader title={cardTitle}/>
                 <CardContent>
@@ -584,138 +584,138 @@ class TK102 extends Component {
               </Card>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xl={12}>
-          <Card style={{maxWidth: maxViewDimensions.width - 10}}>
-            <CardContent>
-              <BEPTable
-                  loading={recordCollectionInProgress}
-                  totalNoRecords={totalNoRecords}
-                  noDataText={'No TK102 Devices Found'}
-                  data={records}
-                  onCriteriaQueryChange={this.handleCriteriaQueryChange}
-                  columns={[
-                  {
-                    Header: 'Owner Party Type',
-                    accessor: 'ownerPartyType',
-                    width: 136,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Owned By',
-                    accessor: 'ownerId',
-                    width: 150,
-                    Cell: rowCellInfo => {
-                      try {
-                        return this.getPartyName(
+          </Grid>
+          <Grid item xl={12}>
+            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+              <CardContent>
+                <BEPTable
+                    loading={recordCollectionInProgress}
+                    totalNoRecords={totalNoRecords}
+                    noDataText={'No TK102 Devices Found'}
+                    data={records}
+                    onCriteriaQueryChange={this.handleCriteriaQueryChange}
+                    columns={[
+                      {
+                        Header: 'Owner Party Type',
+                        accessor: 'ownerPartyType',
+                        width: 136,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Owned By',
+                        accessor: 'ownerId',
+                        width: 150,
+                        Cell: rowCellInfo => {
+                          try {
+                            return this.getPartyName(
                           rowCellInfo.original.ownerPartyType,
                           rowCellInfo.value
-                        )
-                      } catch (e) {
-                        console.error('error getting owner info', e)
-                        return '-'
-                      }
-                    },
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Assigned Party Type',
-                    accessor: 'assignedPartyType',
-                    width: 160,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Assigned To',
-                    accessor: 'assignedId',
-                    width: 150,
-                    Cell: rowCellInfo => {
-                      try {
-                        return this.getPartyName(
+                            )
+                          } catch (e) {
+                            console.error('error getting owner info', e)
+                            return '-'
+                          }
+                        },
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Assigned Party Type',
+                        accessor: 'assignedPartyType',
+                        width: 160,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Assigned To',
+                        accessor: 'assignedId',
+                        width: 150,
+                        Cell: rowCellInfo => {
+                          try {
+                            return this.getPartyName(
                           rowCellInfo.original.assignedPartyType,
                           rowCellInfo.value
-                        )
-                      } catch (e) {
-                        console.error('error getting assigned info', e)
-                        return '-'
-                      }
-                    },
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Sim Country Code',
-                    accessor: 'simCountryCode',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Sim Number',
-                    accessor: 'simNumber',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  },
-                  {
-                    Header: 'Manufacturer Id',
-                    accessor: 'manufacturerId',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      }
-                    }
-                  }
-                ]}
-                  getTdProps={(state, rowInfo) => {
-                    const rowIndex = rowInfo ? rowInfo.index : undefined
-                  return {
-                    onClick: (e, handleOriginal) => {
-                      if (rowInfo) {
-                        this.handleSelect(rowInfo.original, rowInfo.index)
-                      }
-                      if (handleOriginal) {
-                        handleOriginal()
-                      }
-                    },
-                    style: {
-                      background:
+                            )
+                          } catch (e) {
+                            console.error('error getting assigned info', e)
+                            return '-'
+                          }
+                        },
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Sim Country Code',
+                        accessor: 'simCountryCode',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Sim Number',
+                        accessor: 'simNumber',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                      {
+                        Header: 'Manufacturer Id',
+                        accessor: 'manufacturerId',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                    ]}
+                    getTdProps={(state, rowInfo) => {
+                      const rowIndex = rowInfo ? rowInfo.index : undefined
+                      return {
+                        onClick: (e, handleOriginal) => {
+                          if (rowInfo) {
+                            this.handleSelect(rowInfo.original, rowInfo.index)
+                          }
+                          if (handleOriginal) {
+                            handleOriginal()
+                          }
+                        },
+                        style: {
+                          background:
                         rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.light
+                            ? theme.palette.secondary.light
                             : 'white',
-                      color:
+                          color:
                         rowIndex === selectedRowIdx
-                          ? theme.palette.secondary.contrastText
-                          : theme.palette.primary.main
-                    }
-                  }
-                }}
-              />
-            </CardContent>
-          </Card>
+                            ? theme.palette.secondary.contrastText
+                            : theme.palette.primary.main
+                        }
+                      }
+                    }}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
     )
   }
   renderTK102Details() {
@@ -738,11 +738,11 @@ class TK102 extends Component {
             </Grid>
             <Grid item>
               <Fab
-                id={'userConfigurationNewUserButton'}
-                color={'primary'}
-                className={classes.button}
-                size={'small'}
-                onClick={this.handleCreateNew}
+                  id={'userConfigurationNewUserButton'}
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCreateNew}
               >
                 <Tooltip title='Add New Device'>
                   <AddIcon className={classes.buttonIcon}/>
@@ -968,47 +968,47 @@ class TK102 extends Component {
     switch (activeState) {
       case states.viewingExisting:
         return (
-          <React.Fragment>
-            <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleStartEditExisting}
+            <React.Fragment>
+              <Fab
+                  color={'primary'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleStartEditExisting}
             >
-              <Tooltip title='Edit'>
-                <EditIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-            <Fab
-              id={'deviceConfigurationNewUserButton'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCreateNew}
+                <Tooltip title='Edit'>
+                  <EditIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+              <Fab
+                  id={'deviceConfigurationNewUserButton'}
+                  className={classes.button}
+                  size={'small'}
+                  onClick={this.handleCreateNew}
             >
-              <Tooltip title='Add New Device'>
-                <AddIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-          </React.Fragment>
+                <Tooltip title='Add New Device'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
         )
 
       case states.editingNew:
         return (
           <CardActions>
             <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleSaveNew}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleSaveNew}
             >
               <Tooltip title='Save New Device'>
                 <SaveIcon className={classes.buttonIcon}/>
               </Tooltip>
             </Fab>
             <Fab
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCancelCreateNew}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleCancelCreateNew}
             >
               <Tooltip title='Cancel'>
                 <CancelIcon className={classes.buttonIcon}/>
@@ -1021,19 +1021,19 @@ class TK102 extends Component {
         return (
           <CardActions>
             <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleSaveChanges}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleSaveChanges}
             >
               <Tooltip title='Save Changes'>
                 <SaveIcon className={classes.buttonIcon}/>
               </Tooltip>
             </Fab>
             <Fab
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCancelEditExisting}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleCancelEditExisting}
             >
               <Tooltip title='Cancel'>
                 <CancelIcon className={classes.buttonIcon}/>

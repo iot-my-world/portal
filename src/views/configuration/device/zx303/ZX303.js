@@ -84,8 +84,7 @@ const states = {
 }
 
 const events = {
-  // init: states.nop,
-  init: states.editingNew,
+  init: states.nop,
 
   selectExisting: states.viewingExisting,
 
@@ -146,6 +145,11 @@ class ZX303 extends Component {
           'ownerPartyType',
           'ownerId',
       )
+      await this.partyHolder.load(
+          collectResponse.records,
+          'assignedPartyType',
+          'assignedId',
+      )
     } catch (e) {
       console.error('Error Loading Associated Parties', e)
       NotificationFailure('Error Loading Associated Parties')
@@ -154,6 +158,7 @@ class ZX303 extends Component {
   }
 
   handleCreateNew = () => {
+    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
@@ -167,6 +172,7 @@ class ZX303 extends Component {
   }
 
   handleStartEditExisting = () => {
+    this.reasonsInvalid.clearAll()
     const {zx303DeviceEntity} = this.state
     this.setState({
       zx303DeviceEntityCopy: new ZX303Device(zx303DeviceEntity),
@@ -176,6 +182,7 @@ class ZX303 extends Component {
 
   handleCancelEditExisting = () => {
     const {zx303DeviceEntityCopy} = this.state
+    this.reasonsInvalid.clearAll()
     this.setState({
       zx303DeviceEntity: new ZX303Device(zx303DeviceEntityCopy),
       activeState: events.cancelEditExisting,
@@ -195,6 +202,7 @@ class ZX303 extends Component {
 
     // perform validation
     try {
+      this.reasonsInvalid.clearAll()
       const reasonsInvalid = (await ZX303DeviceValidator.Validate({
         zx303: zx303DeviceEntity,
         action: 'Create',
@@ -216,18 +224,74 @@ class ZX303 extends Component {
       await ZX303DeviceAdministrator.Create({
         zx303: zx303DeviceEntity,
       })
+      NotificationSuccess('Successfully Created Device')
+      this.setState({activeState: events.createNewSuccess})
+      await this.collect()
     } catch (e) {
       console.error('Error Creating Device', e)
       NotificationFailure('Error Creating Device')
       HideGlobalLoader()
       return
     }
-
-    NotificationSuccess('Successfully Created Device')
     HideGlobalLoader()
   }
 
-  handleSaveChanges = () => {
+  handleSaveChanges = async () => {
+    const {zx303DeviceEntity} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    ShowGlobalLoader()
+
+    // perform validation
+    try {
+      this.reasonsInvalid.clearAll()
+      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
+        zx303: zx303DeviceEntity,
+        action: 'Update',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Device', e)
+      NotificationFailure('Error Validating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    // perform update
+    try {
+      let {records} = this.state
+      let response = await ZX303DeviceAdministrator.UpdateAllowedFields({
+        zx303: zx303DeviceEntity,
+      })
+      const zx303DeviceIdx = records.find(d => d.id === response.zx303.id)
+      if (zx303DeviceIdx < 0) {
+        console.error('unable to fund updated device in records')
+      } else {
+        records[zx303DeviceIdx] = response.zx303
+      }
+      this.setState({
+        records,
+        zx303DeviceEntity: response.zx303,
+        activeState: events.finishEditExisting,
+      })
+    } catch (e) {
+      console.error('Error Updating Device', e)
+      NotificationFailure('Error Updating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    NotificationSuccess('Successfully Updated Device')
+    HideGlobalLoader()
   }
 
   loadPartyOptions = partyType => async (inputValue, callback) => {
@@ -642,6 +706,7 @@ class ZX303 extends Component {
     this.collectCriteria = criteria
     this.collectQuery = query
     this.collectTimeout = setTimeout(this.collect, 300)
+    this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.init,
       zx303DeviceEntity: new ZX303Device(),
@@ -650,6 +715,7 @@ class ZX303 extends Component {
   }
 
   handleSelect = (rowObj, rowIdx) => {
+    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: rowIdx,
       zx303DeviceEntity: new ZX303Device(rowObj),
