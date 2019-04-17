@@ -10,7 +10,8 @@ let TK102Container = props => {
 const mapStateToProps = state => {
   return {
     claims: state.auth.claims,
-    party: state.auth.party
+    party: state.auth.party,
+    maxViewDimensions: state.app.maxViewDimensions
   };
 };
 
@@ -18,7 +19,7 @@ TK102Container = connect(
   mapStateToProps,
   {
     NotificationSuccess,
-    NotificationFailure
+    NotificationFailure,
   }
 )(TK102Container);
 
