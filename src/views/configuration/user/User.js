@@ -155,10 +155,6 @@ class User extends Component {
 
   columns = []
 
-  componentDidMount() {
-    this.collect()
-  }
-
   handleCreateNew() {
     const {claims} = this.props
     let newUserEntity = new UserEntity()
@@ -172,6 +168,10 @@ class User extends Component {
       activeState: events.startCreateNew,
       user: newUserEntity,
     })
+  }
+
+  componentDidMount() {
+    this.collect()
   }
 
   handleFieldChange(event) {

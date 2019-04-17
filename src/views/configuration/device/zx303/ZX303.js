@@ -33,8 +33,7 @@ import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
   ZX303DeviceAdministrator, ZX303DeviceValidator, ZX303DeviceRecordHandler,
 } from 'brain/tracker/device/zx303'
-import PartyRegistrar from 'brain/party/registrar/Registrar'
-import PartyIdentifier from 'brain/search/identifier/Party'
+import {PartyHolder} from 'brain/party/holder'
 
 const styles = theme => ({
   root: {
@@ -111,18 +110,24 @@ class ZX303 extends Component {
     zx303DeviceEntityCopy: new ZX303Device(),
   }
 
+  partyHolder = new PartyHolder()
   collectTimeout = () => {
   }
   reasonsInvalid = new ReasonsInvalid()
   collectCriteria = []
   collectQuery = new Query()
 
+  componentDidMount() {
+    this.collect()
+  }
+
   collect = async () => {
     const {NotificationFailure} = this.props
     this.setState({recordCollectionInProgress: true})
     // perform device collection
+    let collectResponse
     try {
-      const collectResponse = await ZX303DeviceRecordHandler.Collect(
+      collectResponse = await ZX303DeviceRecordHandler.Collect(
           this.collectCriteria,
           this.collectQuery,
       )
@@ -130,19 +135,20 @@ class ZX303 extends Component {
         records: collectResponse.records,
         totalNoRecords: collectResponse.total,
       })
-
-      // find the admin user registration status of these companies
-      this.companyRegistration = (await PartyRegistrar.AreAdminsRegistered({
-        partyIdentifiers: collectResponse.records.map(company => {
-          return new PartyIdentifier({
-            partyIdIdentifier: new IdIdentifier(company.id),
-            partyType: CompanyPartyType,
-          })
-        }),
-      })).result
     } catch (e) {
-      console.error(`error collecting records: ${e}`)
-      NotificationFailure('Failed To Fetch Companies')
+      console.error('Error Fetching ZX303 devices', e)
+      NotificationFailure('Error Fetching ZX303 devices', e)
+    }
+
+    try {
+      await this.partyHolder.load(
+          collectResponse.records,
+          'ownerPartyType',
+          'ownerId',
+      )
+    } catch (e) {
+      console.error('Error Loading Associated Parties', e)
+      NotificationFailure('Error Loading Associated Parties')
     }
     this.setState({recordCollectionInProgress: false})
   }
@@ -753,16 +759,16 @@ class ZX303 extends Component {
                       },
                     },
                   },
-                  {
-                    Header: 'Owned By',
-                    accessor: 'ownerId',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      },
-                    },
-                  },
+                  // {
+                  //   Header: 'Owned By',
+                  //   accessor: 'ownerId',
+                  //   width: 150,
+                  //   config: {
+                  //     filter: {
+                  //       type: TextCriterionType,
+                  //     },
+                  //   },
+                  // },
                   {
                     Header: 'Assigned Party Type',
                     accessor: 'assignedPartyType',
@@ -773,16 +779,16 @@ class ZX303 extends Component {
                       },
                     },
                   },
-                  {
-                    Header: 'Assigned To',
-                    accessor: 'assignedId',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      },
-                    },
-                  },
+                  // {
+                  //   Header: 'Assigned To',
+                  //   accessor: 'assignedId',
+                  //   width: 150,
+                  //   config: {
+                  //     filter: {
+                  //       type: TextCriterionType,
+                  //     },
+                  //   },
+                  // },
                   {
                     Header: 'Sim Country Code',
                     accessor: 'simCountryCode',
