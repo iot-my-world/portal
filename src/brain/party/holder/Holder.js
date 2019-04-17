@@ -119,4 +119,41 @@ export default class Holder {
     }
     return '-'
   }
+
+  update(newPartyEntity, partyType, partyIdAccessor) {
+    if (partyIdAccessor === undefined) {
+      partyIdAccessor = 'identifier'
+    }
+    switch (partyType) {
+      case SystemPartyType:
+        if (this.retrieveEntity(
+            newPartyEntity[partyIdAccessor],
+            this._entityMap.System,
+        ) === undefined) {
+          this._entityMap.System.push(newPartyEntity)
+        }
+        break
+
+      case CompanyPartyType:
+        if (this.retrieveEntity(
+            newPartyEntity[partyIdAccessor],
+            this._entityMap.Company,
+        ) === undefined) {
+          this._entityMap.Company.push(newPartyEntity)
+        }
+        break
+
+      case ClientPartyType:
+        if (this.retrieveEntity(
+            newPartyEntity[partyIdAccessor],
+            this._entityMap.Client,
+        ) === undefined) {
+          this._entityMap.Client.push(newPartyEntity)
+        }
+        break
+
+      default:
+        console.error('invalid party type')
+    }
+  }
 }

@@ -364,7 +364,10 @@ class ZX303 extends Component {
         break
 
       case 'ownerId':
-        // update entity map
+        this.partyHolder.update(
+            e.selectionInfo.entity,
+            zx303DeviceEntity.ownerPartyType,
+        )
         break
 
       case 'assignedPartyType':
@@ -372,7 +375,10 @@ class ZX303 extends Component {
         break
 
       case 'assignedId':
-        // update entity map
+        this.partyHolder.update(
+            e.selectionInfo.entity,
+            zx303DeviceEntity.assignedPartyType,
+        )
         break
 
       default:
