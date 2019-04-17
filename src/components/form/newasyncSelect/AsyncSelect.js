@@ -88,6 +88,11 @@ class AsyncSelect extends Component {
       ...rest
     } = this.props
     if (readOnly) {
+      const {
+        loadOptions,
+        menuPosition,
+        ...evenMoreRest
+      } = rest
       return <TextField
           label={label}
           className={classes.formField}
@@ -98,7 +103,7 @@ class AsyncSelect extends Component {
           }}
           helperText={helperText}
           error={error}
-          {...rest}
+          {...evenMoreRest}
       />
     } else {
       return (

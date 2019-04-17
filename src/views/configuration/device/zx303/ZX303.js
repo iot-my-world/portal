@@ -638,6 +638,14 @@ class ZX303 extends Component {
     })
   }
 
+  handleSelect = (rowObj, rowIdx) => {
+    this.setState({
+      selectedRowIdx: rowIdx,
+      zx303DeviceEntity: new ZX303Device(rowObj),
+      activeState: events.selectExisting,
+    })
+  }
+
   render() {
     const {
       recordCollectionInProgress,
