@@ -373,6 +373,8 @@ class ZX303 extends Component {
                       value={zx303DeviceEntity.ownerPartyType}
                       onChange={this.handleFieldChange}
                       style={{width: 150}}
+                      disableUnderline={stateIsViewing}
+                      inputProps={{readOnly: stateIsViewing}}
                   >
                     <MenuItem value=''>
                       <em>None</em>
@@ -402,7 +404,10 @@ class ZX303 extends Component {
                     label={'Owner'}
                     value={{
                       value: zx303DeviceEntity.ownerId,
-                      label: zx303DeviceEntity.ownerId.id,
+                      label: this.partyHolder.retrieveEntityProp(
+                          'name',
+                          zx303DeviceEntity.ownerId,
+                      ),
                     }}
                     onChange={this.handleFieldChange}
                     loadOptions={this.loadPartyOptions(
@@ -432,6 +437,8 @@ class ZX303 extends Component {
                       value={zx303DeviceEntity.assignedPartyType}
                       onChange={this.handleFieldChange}
                       style={{width: 150}}
+                      disableUnderline={stateIsViewing}
+                      inputProps={{readOnly: stateIsViewing}}
                   >
                     <MenuItem value=''>
                       <em>None</em>
@@ -461,7 +468,10 @@ class ZX303 extends Component {
                     label='Assigned To'
                     value={{
                       value: zx303DeviceEntity.assignedId,
-                      label: zx303DeviceEntity.assignedId.id,
+                      label: this.partyHolder.retrieveEntityProp(
+                          'name',
+                          zx303DeviceEntity.assignedId,
+                      ),
                     }}
                     onChange={this.handleFieldChange}
                     loadOptions={this.loadPartyOptions(

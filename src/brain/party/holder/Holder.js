@@ -88,28 +88,36 @@ export default class Holder {
     }
   }
 
-  // retrieveEntity(partyIdentifier, partyType) {
-  //   if (partyType) {
-  //     return retrieveFromList(
-  //         partyId,
-  //         this._entityMap[partyType] ? this._entityMap[partyType] : []
-  //     )
-  //   }
-  //
-  //   let party = retrieveFromList(partyId, this._entityMap.Company)
-  //   if (party) {
-  //     return party
-  //   }
-  //
-  //   party = retrieveFromList(partyId, this._entityMap.Client)
-  //   if (party) {
-  //     return party
-  //   }
-  //
-  //   party = retrieveFromList(partyId, this._entityMap.System)
-  //   if (party) {
-  //     return party
-  //   }
-  //
-  // }
+  retrieveEntity(partyIdentifier, partyType) {
+    if (partyType) {
+      return retrieveFromList(
+          partyIdentifier,
+          this._entityMap[partyType] ? this._entityMap[partyType] : [],
+      )
+    }
+
+    let party = retrieveFromList(partyIdentifier, this._entityMap.Company)
+    if (party) {
+      return party
+    }
+
+    party = retrieveFromList(partyIdentifier, this._entityMap.Client)
+    if (party) {
+      return party
+    }
+
+    party = retrieveFromList(partyIdentifier, this._entityMap.System)
+    if (party) {
+      return party
+    }
+
+  }
+
+  retrieveEntityProp(propName, partyIdentifier, partyType) {
+    const party = this.retrieveEntity(partyIdentifier, partyType)
+    if (party !== undefined) {
+      return party[propName]
+    }
+    return '-'
+  }
 }
