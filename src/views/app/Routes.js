@@ -21,6 +21,7 @@ import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import DeviceContainer from 'views/configuration/device/DeviceContainer'
+import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
 // Dashboards
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
@@ -35,6 +36,7 @@ import {
   PartyUserConfiguration, DeviceConfiguration, Dashboards,
   LiveTrackingDashboard as ViewLiveTrackingDashboard,
   HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
+  APIUserConfiguration as ViewAPIUserConfiguration,
 } from 'brain/security/permission/view/permission'
 import {
   SystemPartyType,
@@ -154,6 +156,14 @@ const AppRoutes = [
           path: '/app/configuration/user',
           component: UserContainer,
           viewPermission: PartyUserConfiguration,
+        },
+        {
+          id: 'sidebarAPIUserConfigurationLink',
+          text: 'API User',
+          icon: <PersonIcon/>,
+          path: '/app/configuration/apiUser',
+          component: APIUserContainer,
+          viewPermission: ViewAPIUserConfiguration,
         },
         {
           id: 'sidebarDeviceConfigurationLink',
