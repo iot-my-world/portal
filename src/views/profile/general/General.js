@@ -7,14 +7,14 @@ import {
   CardContent,
   CardHeader, TextField, Fab, Tooltip,
 } from '@material-ui/core'
-import {User, UserAdministrator} from 'brain/user'
+import {User, UserAdministrator} from 'brain/user/human/index'
 import {
   MdClear as CancelIcon,
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
-import UserValidator from 'brain/user/Validator'
+import UserValidator from 'brain/user/human/Validator'
 
 const styles = theme => ({
   detailCard: {},

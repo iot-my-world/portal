@@ -6,7 +6,7 @@ import {
 import {
   LoginClaims,
 } from 'brain/security/claims/index'
-import {User} from 'brain/user'
+import {User} from 'brain/user/human/index'
 
 const initState = () => ({
   claims: new LoginClaims(),

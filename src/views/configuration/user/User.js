@@ -22,7 +22,7 @@ import {
   UserRecordHandler,
   UserValidator,
   UserAdministrator,
-} from 'brain/user'
+} from 'brain/user/human'
 import {CompanyRecordHandler} from 'brain/party/company'
 import {SystemRecordHandler} from 'brain/party/system'
 import {ClientRecordHandler} from 'brain/party/client'

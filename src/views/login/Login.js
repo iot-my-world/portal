@@ -17,7 +17,7 @@ import {MethodFailed, ContactFailed} from 'brain/apiError'
 import {LoginClaimsType} from 'brain/security/claims/types'
 import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
-import {UserAdministrator} from 'brain/user'
+import {UserAdministrator} from 'brain/user/human/index'
 
 const style = theme => {
   return {

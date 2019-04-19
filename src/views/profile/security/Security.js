@@ -11,7 +11,7 @@ import {
 import {
   FaKey as KeyIcon,
 } from 'react-icons/fa'
-import {UserAdministrator} from 'brain/user'
+import {UserAdministrator} from 'brain/user/human/index'
 import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 import CancelIcon from '@material-ui/icons/Clear'

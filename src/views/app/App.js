@@ -17,8 +17,8 @@ import {HomeRoute, appRouteBuilder} from './Routes'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
 import {LoginClaims} from 'brain/security/claims'
 import {PartyAdministrator} from 'brain/party/administrator'
-import {UserAdministrator} from 'brain/user'
-import User from 'brain/user/User'
+import {UserAdministrator} from 'brain/user/human/index'
+import User from 'brain/user/human/User'
 
 const drawerWidth = 230
 
