@@ -1,11 +1,11 @@
-import User from './User'
-import UserRecordHandler from './RecordHandler'
-import UserValidator from './Validator'
-import UserAdministrator from './Administrator'
+import APIUser from './User'
+import APIUserRecordHandler from './RecordHandler'
+import APIUserValidator from './Validator'
+import APIUserAdministrator from './Administrator'
 
 export {
-  User,
-  UserRecordHandler,
-  UserAdministrator,
-  UserValidator,
+  APIUser,
+  APIUserRecordHandler,
+  APIUserValidator,
+  APIUserAdministrator,
 }

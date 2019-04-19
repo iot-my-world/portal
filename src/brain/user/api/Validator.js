@@ -10,7 +10,7 @@ const Validator = {
    */
   async Validate({user, action}) {
     let response = await jsonRpcRequest({
-      method: 'UserValidator.Validate',
+      method: 'APIUserValidator.Validate',
       request: {
         user,
         action,
