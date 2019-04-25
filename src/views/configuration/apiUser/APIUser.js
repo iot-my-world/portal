@@ -519,7 +519,7 @@ class APIUser extends Component {
                     className={classes.formField}
                     id='description'
                     label='Description'
-                    value={apiUserEntity.simCountryCode}
+                    value={apiUserEntity.description}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
@@ -824,7 +824,13 @@ class APIUser extends Component {
                   },
                   {
                     Header: 'Party',
-                    accessor: 'partyId.id',
+                    accessor: 'partyId',
+                    Cell: rowInfo => {
+                      return this.partyHolder.retrieveEntityProp(
+                          'name',
+                          rowInfo.value,
+                      )
+                    },
                     width: 160,
                     config: {
                       filter: {

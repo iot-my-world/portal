@@ -2,24 +2,25 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import User from 'brain/user/api/User'
 
 const Administrator = {
-  async Create({user}) {
+  async Create({apiUser}) {
     let response = await jsonRpcRequest({
       method: 'APIUserAdministrator.Create',
       request: {
-        user,
+        apiUser,
       },
     })
-    response.user = new User(response.user)
+    response.apiUser = new User(response.apiUser)
     return response
   },
-  async UpdateAllowedFields({user}) {
+
+  async UpdateAllowedFields({apiUser}) {
     let response = await jsonRpcRequest({
       method: 'APIUserAdministrator.UpdateAllowedFields',
       request: {
-        user,
+        apiUser,
       },
     })
-    response.user = new User(response.user)
+    response.apiUser = new User(response.apiUser)
     return response
   },
 }
