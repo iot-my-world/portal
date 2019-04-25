@@ -887,7 +887,7 @@ class APIUser extends Component {
             <BEPTable
                 loading={recordCollectionInProgress}
                 totalNoRecords={totalNoRecords}
-                noDataText={'No Devices Found'}
+                noDataText={'No Users Found'}
                 data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
                 columns={[
