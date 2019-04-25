@@ -12,6 +12,7 @@ const mapStateToProps = (state) => {
   return {
     party: state.auth.party,
     claims: state.auth.claims,
+    user: state.auth.user,
   }
 }
 

@@ -6,7 +6,7 @@ import {
   CardHeader, Fab, FormControl, FormHelperText,
   Grid, InputLabel, MenuItem, Select, TextField, Tooltip,
   Typography, Dialog, DialogTitle, DialogContent,
-  withStyles, DialogActions, DialogContentText,
+  withStyles, DialogActions,
   Button,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
@@ -41,6 +41,8 @@ import {
 } from 'brain/user/api'
 import {PartyHolder} from 'brain/party/holder'
 import LoginClaims from 'brain/security/claims/login/Login'
+import MultiSelect from 'components/multiSelect/index'
+import User from 'brain/user/human/User'
 
 const styles = theme => ({
   root: {
@@ -81,6 +83,19 @@ const styles = theme => ({
   buttonIcon: {
     fontSize: '20px',
   },
+  roleSelectHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+  },
+  roleSelectSecondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
+  roleSelectWrapper: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+  },
 })
 
 const states = {
@@ -120,6 +135,15 @@ class APIUser extends Component {
     apiUserEntityCopy: new APIUserEntity(),
     newAPIUserDialogOpen: false,
     newAPIUserCreateResponse: undefined,
+    availableRoles: [],
+  }
+
+  constructor(props) {
+    super(props)
+    this.state.availableRoles = props.user.roles.map(role => ({
+      name: role,
+      value: role,
+    }))
   }
 
   partyHolder = new PartyHolder()
@@ -131,6 +155,24 @@ class APIUser extends Component {
 
   componentDidMount() {
     this.collect()
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      user,
+    } = this.props
+    const {
+      user: prevUser,
+    } = prevProps
+
+    if (user.roles.length !== prevUser.roles.length) {
+      this.setState({
+        availableRoles: user.roles.map(role => ({
+          name: role,
+          value: role,
+        })),
+      })
+    }
   }
 
   collect = async () => {
@@ -441,7 +483,7 @@ class APIUser extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {apiUserEntity} = this.state
+        const {apiUserEntity, availableRoles} = this.state
         return (
             <Grid container spacing={8}>
               <Grid item xs>
@@ -566,6 +608,35 @@ class APIUser extends Component {
                     error={!!fieldValidations.username}
                 />
               </Grid>}
+              <Grid item xl={12}>
+                <div className={classes.roleSelectWrapper}>
+                  <div>
+                    <Typography className={classes.roleSelectHeading}>
+                      Role Selection
+                    </Typography>
+                    <Typography className={classes.roleSelectSecondaryHeading}>
+                      Select Roles To Assign to API User
+                    </Typography>
+                  </div>
+                  <MultiSelect
+                      displayAccessor='name'
+                      uniqueIdAccessor='value'
+                      selected={apiUserEntity.roles.map(role => ({
+                        name: role,
+                        value: role,
+                      }))}
+                      available={availableRoles}
+                      onChange={(selectedRoles, availableRoles) => {
+                        apiUserEntity.roles = selectedRoles.map(
+                            role => role.name)
+                        this.setState({
+                          apiUserEntity,
+                          availableRoles,
+                        })
+                      }}
+                  />
+                </div>
+              </Grid>
             </Grid>
         )
       default:
@@ -937,6 +1008,10 @@ APIUser.propTypes = {
    * Party from redux state
    */
   party: PropTypes.object.isRequired,
+  /**
+   * User from redux state
+   */
+  user: PropTypes.instanceOf(User).isRequired,
 }
 APIUser.defaultProps = {}
 
