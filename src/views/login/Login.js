@@ -14,7 +14,7 @@ import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
 import {MethodFailed, ContactFailed} from 'brain/apiError'
-import {LoginClaimsType} from 'brain/security/claims/types'
+import {HumanUserLoginClaimsType} from 'brain/security/claims/types'
 import {ReasonsInvalid, ReasonInvalid} from 'brain/validate'
 import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
 import {UserAdministrator} from 'brain/user/human/index'
@@ -210,7 +210,7 @@ class Login extends Component {
 
       if (
           claims.notExpired &&
-          (claims.type === LoginClaimsType)
+          (claims.type === HumanUserLoginClaimsType)
       ) {
         // and set the token in local storage
         sessionStorage.setItem('jwt', loginResult.jwt)

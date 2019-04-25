@@ -1,4 +1,4 @@
-import LoginClaims from './login/Login'
+import HumanUserLoginClaims from './login/user/human/Login'
 import RegisterCompanyAdminUserClaims
   from './registerCompanyAdminUser/RegisterCompanyAdminUser'
 import RegisterCompanyUserClaims
@@ -9,7 +9,7 @@ import RegisterClientUserClaims from './registerClientUser/RegisterClientUser'
 import ResetPasswordClaims from './resetPassword/ResetPassword'
 
 export {
-  LoginClaims,
+  HumanUserLoginClaims,
   RegisterCompanyAdminUserClaims,
   RegisterCompanyUserClaims,
   RegisterClientAdminUserClaims,

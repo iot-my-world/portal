@@ -1,5 +1,5 @@
 import {
-  LoginClaims,
+  HumanUserLoginClaims,
   RegisterCompanyAdminUserClaims,
   RegisterCompanyUserClaims,
   RegisterClientAdminUserClaims,
@@ -20,8 +20,8 @@ export function parseToken(jwt) {
     const payloadString = atob(payloadData)
     const tokenPOJO = JSON.parse(payloadString)
     switch (tokenPOJO.type) {
-      case LoginClaims.type:
-        return new LoginClaims(tokenPOJO.value)
+      case HumanUserLoginClaims.type:
+        return new HumanUserLoginClaims(tokenPOJO.value)
 
       case RegisterCompanyAdminUserClaims.type:
         return new RegisterCompanyAdminUserClaims(tokenPOJO.value)

@@ -34,7 +34,7 @@ import {
   ZX303DeviceAdministrator, ZX303DeviceValidator, ZX303DeviceRecordHandler,
 } from 'brain/tracker/device/zx303'
 import {PartyHolder} from 'brain/party/holder'
-import LoginClaims from 'brain/security/claims/login/Login'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 
 const styles = theme => ({
   root: {
@@ -966,7 +966,7 @@ ZX303.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * Party from redux state
    */

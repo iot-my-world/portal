@@ -40,7 +40,7 @@ import {
   APIUserRecordHandler,
 } from 'brain/user/api'
 import {PartyHolder} from 'brain/party/holder'
-import LoginClaims from 'brain/security/claims/login/Login'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import MultiSelect from 'components/multiSelect/index'
 import User from 'brain/user/human/User'
 
@@ -1003,7 +1003,7 @@ APIUser.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * Party from redux state
    */

@@ -31,7 +31,7 @@ import {TextCriterionType} from 'brain/search/criterion/types'
 import {TextCriterion} from 'brain/search/criterion'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import {LoginClaims} from 'brain/security/claims'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import {
   allPartyTypes,
   CompanyPartyType,
@@ -1267,7 +1267,7 @@ User.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * Party from redux state
    */

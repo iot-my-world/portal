@@ -34,7 +34,7 @@ import {ReasonsInvalid} from 'brain/validate/index'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {ListTextCriterion} from 'brain/search/criterion/list'
 import {Query} from 'brain/search/index'
-import {LoginClaims} from 'brain/security/claims'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import SearchDialogTextField
   from 'components/searchDialogTextField/SearchDialogTextfield'
 import {IdIdentifier} from 'brain/search/identifier'
@@ -1062,7 +1062,7 @@ TK102.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * Party from redux state
    */
