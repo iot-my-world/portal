@@ -35,7 +35,7 @@ import {
   // SystemPartyType,
   allPartyTypes, ClientPartyType, CompanyPartyType, SystemPartyType,
 } from 'brain/party/types'
-import Login from 'brain/security/claims/login/Login'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import {retrieveFromList} from 'brain/search/identifier/utilities'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {
@@ -868,9 +868,9 @@ Historical.propTypes = {
    */
   HideGlobalLoader: PropTypes.func.isRequired,
   /**
-   * Login claims from redux state
+   * HumanUserLoginClaims claims from redux state
    */
-  claims: PropTypes.instanceOf(Login),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * my party entity
    */
