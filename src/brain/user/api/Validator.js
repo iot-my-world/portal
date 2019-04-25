@@ -4,15 +4,15 @@ import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 const Validator = {
 
   /**
-   * @param {User} user
+   * @param {APIUser} apiUser
    * @param {string} action
    * @returns {Promise<any>}
    */
-  async Validate({user, action}) {
+  async Validate({apiUser, action}) {
     let response = await jsonRpcRequest({
       method: 'APIUserValidator.Validate',
       request: {
-        user,
+        apiUser,
         action,
       },
     })

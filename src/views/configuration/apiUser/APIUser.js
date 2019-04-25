@@ -484,7 +484,7 @@ class APIUser extends Component {
                     }}
                     onChange={this.handleFieldChange}
                     loadOptions={this.loadPartyOptions(
-                        apiUserEntity.partyId)}
+                        apiUserEntity.partyType)}
                     menuPosition={'fixed'}
                     readOnly={stateIsViewing}
                     helperText={
@@ -533,6 +533,7 @@ class APIUser extends Component {
                     error={!!fieldValidations.description}
                 />
               </Grid>
+              {(activeState === states.viewingExisting) &&
               <Grid item xs>
                 <TextField
                     className={classes.formField}
@@ -551,7 +552,7 @@ class APIUser extends Component {
                     }
                     error={!!fieldValidations.username}
                 />
-              </Grid>
+              </Grid>}
             </Grid>
         )
       default:
