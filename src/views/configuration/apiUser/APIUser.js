@@ -9,7 +9,10 @@ import {
   withStyles,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import {TextCriterionType} from 'brain/search/criterion/types'
+import {
+  ExactTextCriterionType,
+  TextCriterionType,
+} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
@@ -99,6 +102,10 @@ const events = {
   finishEditExisting: states.viewingExisting,
   cancelEditExisting: states.viewingExisting,
 }
+
+const partyTypeOptions = allPartyTypes.map(partyType =>
+    ({value: partyType, display: partyType}),
+)
 
 class APIUser extends Component {
 
@@ -675,7 +682,7 @@ class APIUser extends Component {
 
     let cardTitle = (
         <Typography variant={'h6'}>
-          Select A APIUser To View Or Edit
+          Select An APIUser To View Or Edit
         </Typography>
     )
     switch (activeState) {
@@ -762,8 +769,8 @@ class APIUser extends Component {
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
                 columns={[
                   {
-                    Header: 'IMEI',
-                    accessor: 'imei',
+                    Header: 'Name',
+                    accessor: 'name',
                     width: 150,
                     config: {
                       filter: {
@@ -772,8 +779,8 @@ class APIUser extends Component {
                     },
                   },
                   {
-                    Header: 'Owner Party Type',
-                    accessor: 'ownerPartyType',
+                    Header: 'Description',
+                    accessor: 'description',
                     width: 136,
                     config: {
                       filter: {
@@ -782,53 +789,42 @@ class APIUser extends Component {
                     },
                   },
                   {
-                    Header: 'Owned By',
-                    accessor: 'ownerId',
-                    Cell: rowInfo => {
-                      return this.partyHolder.retrieveEntityProp(
-                          'name',
-                          rowInfo.value,
-                      )
+                    Header: 'Username',
+                    accessor: 'username',
+                    width: 136,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      },
                     },
-                    width: 150,
-                    filterable: false,
                   },
                   {
-                    Header: 'Assigned Party Type',
-                    accessor: 'assignedPartyType',
+                    Header: 'Password',
+                    accessor: 'password',
+                    width: 136,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      },
+                    },
+                  },
+                  {
+                    Header: 'Party Type',
+                    accessor: 'partyType',
                     width: 160,
                     config: {
                       filter: {
-                        type: TextCriterionType,
+                        type: ExactTextCriterionType,
+                        options: partyTypeOptions,
+                        valueAccessor: 'value',
+                        displayAccessor: 'display',
                       },
                     },
                   },
                   {
-                    Header: 'Assigned To',
-                    accessor: 'assignedId',
-                    Cell: rowInfo => {
-                      return this.partyHolder.retrieveEntityProp(
-                          'name',
-                          rowInfo.value,
-                      )
-                    },
-                    width: 150,
-                    filterable: false,
-                  },
-                  {
-                    Header: 'Sim Country Code',
-                    accessor: 'simCountryCode',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      },
-                    },
-                  },
-                  {
-                    Header: 'Sim Number',
-                    accessor: 'simNumber',
-                    width: 150,
+                    Header: 'Party',
+                    accessor: 'partyId.id',
+                    width: 160,
                     config: {
                       filter: {
                         type: TextCriterionType,
