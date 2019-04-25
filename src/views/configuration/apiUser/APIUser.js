@@ -5,8 +5,9 @@ import {
   CardContent,
   CardHeader, Fab, FormControl, FormHelperText,
   Grid, InputLabel, MenuItem, Select, TextField, Tooltip,
-  Typography,
-  withStyles,
+  Typography, Dialog, DialogTitle, DialogContent,
+  withStyles, DialogActions, DialogContentText,
+  Button,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {
@@ -117,6 +118,8 @@ class APIUser extends Component {
     activeState: events.init,
     apiUserEntity: new APIUserEntity(),
     apiUserEntityCopy: new APIUserEntity(),
+    newAPIUserDialogOpen: false,
+    newAPIUserCreateResponse: undefined,
   }
 
   partyHolder = new PartyHolder()
@@ -234,11 +237,15 @@ class APIUser extends Component {
 
     // perform creation
     try {
-      await APIUserAdministrator.Create({
+      const newAPIUserCreateResponse = await APIUserAdministrator.Create({
         apiUser: apiUserEntity,
       })
       NotificationSuccess('Successfully Created API User')
-      this.setState({activeState: events.createNewSuccess})
+      this.setState({
+        activeState: events.createNewSuccess,
+        newAPIUserDialogOpen: true,
+        newAPIUserCreateResponse,
+      })
       await this.collect()
     } catch (e) {
       console.error('Error Creating API User', e)
@@ -377,6 +384,12 @@ class APIUser extends Component {
         break
 
       case 'partyId':
+        if (
+            (!e.selectionInfo.value) ||
+            (e.selectionInfo.value === '')
+        ) {
+          return
+        }
         this.partyHolder.update(
             e.selectionInfo.entity,
             apiUserEntity.partyType,
@@ -668,6 +681,43 @@ class APIUser extends Component {
     })
   }
 
+  renderNewAPIUserDialog = () => {
+    const {newAPIUserDialogOpen, newAPIUserCreateResponse} = this.state
+    if (!newAPIUserDialogOpen) {
+      return null
+    }
+    return (
+        <Dialog open={newAPIUserDialogOpen}>
+          <DialogTitle>
+            Copy API User Password
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              After this dialog is closed it will not be possible to get this
+              password again.
+            </Typography>
+            <Typography>
+              <b>{'Username: '}</b>{newAPIUserCreateResponse.apiUser.username}
+            </Typography>
+            <Typography>
+              <b>{'Password: '}</b>{newAPIUserCreateResponse.password}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+                onClick={() => this.setState({
+                  newAPIUserDialogOpen: false,
+                  newAPIUserCreateResponse: undefined,
+                })}
+                color="primary"
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+    )
+  }
+
   render() {
     const {
       recordCollectionInProgress,
@@ -746,6 +796,7 @@ class APIUser extends Component {
             id={'companyConfigurationRoot'}
             className={classes.root}
         >
+          {this.renderNewAPIUserDialog()}
           <div className={classes.detailCardWrapper}>
             <Grid container>
               <Grid item>
@@ -792,16 +843,6 @@ class APIUser extends Component {
                   {
                     Header: 'Username',
                     accessor: 'username',
-                    width: 136,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      },
-                    },
-                  },
-                  {
-                    Header: 'Password',
-                    accessor: 'password',
                     width: 136,
                     config: {
                       filter: {
