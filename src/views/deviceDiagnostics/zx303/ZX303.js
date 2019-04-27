@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {
   withStyles, Tabs, Tab, Grid, Card, AppBar, CardContent,
 } from '@material-ui/core'
+import TasksContainer from './tasks/TasksContainer'
 
 const styles = theme => ({
   root: {
@@ -21,11 +22,8 @@ const tabs = {
 }
 
 class ZX303 extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      activeTab: tabs.ZX303,
-    }
+  state = {
+    activeTab: tabs.tasks,
   }
 
   handleTabChange = (event, value) => {
@@ -80,7 +78,7 @@ class ZX303 extends Component {
     const {activeTab} = this.state
     switch (activeTab) {
       case tabs.tasks:
-        return <div>tasks</div>
+        return <TasksContainer/>
       default:
         return <div>Invalid Tab Value</div>
     }
