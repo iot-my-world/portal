@@ -8,3 +8,6 @@ export const Dashboards = 'Dashboards'
 export const LiveTrackingDashboard = 'LiveTrackingDashboard'
 export const HistoricalTrackingDashboard = 'HistoricalTrackingDashboard'
 export const APIUserConfiguration = 'APIUserConfiguration'
+
+export const ViewDeviceDiagnostics = 'DeviceDiagnostics'
+export const ViewZX303DeviceDiagnostics = 'ZX303DeviceDiagnostics'

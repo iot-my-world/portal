@@ -92,6 +92,9 @@ const styles = theme => ({
   nested: {
     paddingLeft: theme.spacing.unit * 4,
   },
+  listItemText: {
+    paddingLeft: 0,
+  },
   contentWrapper: {
     display: 'grid',
     gridTemplateColumns: '1fr',
@@ -623,7 +626,10 @@ class App extends Component {
                     <ListItemIcon>
                       {routeGroupOrRoute.icon}
                     </ListItemIcon>
-                    <ListItemText inset primary={routeGroupOrRoute.text}/>
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={routeGroupOrRoute.text}
+                    />
                     {menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`] ?
                         <ExpandLess/> :
                         <ExpandMore/>}
@@ -631,7 +637,7 @@ class App extends Component {
                   <Collapse
                       in={menuState[`${routeSectionIdx}`][`${routeGroupOrRouteIdx}`]}
                       timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
+                    <List component="div">
                       {routeGroupOrRoute.routes.map((route, routeIdx) => {
                         return <ListItem
                             id={route.id}
@@ -644,7 +650,10 @@ class App extends Component {
                           <ListItemIcon>
                             {route.icon}
                           </ListItemIcon>
-                          <ListItemText inset primary={route.text}/>
+                          <ListItemText
+                              className={classes.listItemText}
+                              primary={route.text}
+                          />
                         </ListItem>
                       })}
                     </List>
@@ -662,7 +671,10 @@ class App extends Component {
                   <ListItemIcon>
                     {routeGroupOrRoute.icon}
                   </ListItemIcon>
-                  <ListItemText primary={routeGroupOrRoute.text}/>
+                  <ListItemText
+                      className={classes.listItemText}
+                      primary={routeGroupOrRoute.text}
+                  />
                 </ListItem>
               }
             })}
