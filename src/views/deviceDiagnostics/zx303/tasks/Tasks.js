@@ -34,6 +34,8 @@ const styles = theme => ({
   tableCard: {
     overflow: 'auto',
   },
+  taskTableRoot: {},
+  taskTableCard: {},
 })
 
 const pageStates = {
@@ -170,7 +172,7 @@ class Tasks extends Component {
     this.setState({deviceRecordCollectionInProgress: false})
   }
 
-  handleCriteriaQueryChange = (criteria, query) => {
+  handleDeviceCriteriaQueryChange = (criteria, query) => {
     this.deviceCollectCriteria = criteria
     this.deviceCollectQuery = query
     this.deviceCollectTimeout = setTimeout(this.deviceCollect, 300)
@@ -181,11 +183,34 @@ class Tasks extends Component {
     })
   }
 
-  handleSelect = (rowObj, rowIdx) => {
+  handleDeviceSelect = (rowObj, rowIdx) => {
     this.setState({
       deviceSelectedRowIdx: rowIdx,
       activePageState: pageEvents.selectDevice,
       zx303DeviceEntity: new ZX303Device(rowObj),
+
+      activeTaskState: taskEvents.init,
+      taskSelectedRowIdx: -1,
+      selectedTask: new Task(),
+    })
+  }
+
+  handleTaskCriteriaQueryChange = (criteria, query) => {
+    this.taskCollectCriteria = criteria
+    this.taskCollectQuery = query
+    this.taskCollectTimeout = setTimeout(this.taskCollect, 300)
+    this.setState({
+      activeTaskState: taskEvents.init,
+      taskSelectedRowIdx: -1,
+      selectedTask: new Task(),
+    })
+  }
+
+  handleTaskSelect = (rowObj, rowIdx) => {
+    this.setState({
+      taskSelectedRowIdx: rowIdx,
+      activeTaskState: taskEvents.selectTask,
+      selectedTask: new Task(rowObj),
     })
   }
 
@@ -199,6 +224,9 @@ class Tasks extends Component {
       deviceSelectedRowIdx,
       deviceRecords,
       deviceTotalNoRecords,
+      taskRecordCollectionInProgress,
+      taskTotalNoRecords,
+      taskRecords,
     } = this.state
 
     return (
@@ -220,7 +248,7 @@ class Tasks extends Component {
                     totalNoRecords={deviceTotalNoRecords}
                     noDataText={'No Devices Found'}
                     data={deviceRecords}
-                    onCriteriaQueryChange={this.handleCriteriaQueryChange}
+                    onCriteriaQueryChange={this.handleDeviceCriteriaQueryChange}
                     columns={[
                       {
                         Header: 'IMEI',
@@ -302,7 +330,64 @@ class Tasks extends Component {
                       return {
                         onClick: (e, handleOriginal) => {
                           if (rowInfo) {
-                            this.handleSelect(rowInfo.original, rowInfo.index)
+                            this.handleDeviceSelect(rowInfo.original,
+                                rowInfo.index)
+                          }
+                          if (handleOriginal) {
+                            handleOriginal()
+                          }
+                        },
+                        style: {
+                          cursor: 'pointer',
+                          background:
+                              rowIndex === deviceSelectedRowIdx
+                                  ? theme.palette.secondary.light
+                                  : 'white',
+                          color:
+                              rowIndex === deviceSelectedRowIdx
+                                  ? theme.palette.secondary.contrastText
+                                  : theme.palette.primary.main,
+                        },
+                      }
+                    }}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div className={classes.taskTableRoot}>
+            <Card
+                className={classes.taskTableCard}
+            >
+              <CardHeader
+                  title={'Select Task To View Details'}
+                  classes={{root: classes.cardHeaderRoot}}
+              />
+              <CardContent>
+                <BEPTable
+                    loading={taskRecordCollectionInProgress}
+                    totalNoRecords={taskTotalNoRecords}
+                    noDataText={'No Tasks Found'}
+                    data={taskRecords}
+                    onCriteriaQueryChange={this.handleTaskCriteriaQueryChange}
+                    columns={[
+                      {
+                        Header: 'Type',
+                        accessor: 'type',
+                        width: 150,
+                        config: {
+                          filter: {
+                            type: TextCriterionType,
+                          },
+                        },
+                      },
+                    ]}
+                    getTdProps={(state, rowInfo) => {
+                      const rowIndex = rowInfo ? rowInfo.index : undefined
+                      return {
+                        onClick: (e, handleOriginal) => {
+                          if (rowInfo) {
+                            this.handleTaskSelect(rowInfo.original,
+                                rowInfo.index)
                           }
                           if (handleOriginal) {
                             handleOriginal()
