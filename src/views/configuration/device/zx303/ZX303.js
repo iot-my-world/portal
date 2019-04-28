@@ -142,6 +142,7 @@ class ZX303 extends Component {
     } catch (e) {
       console.error('Error Fetching ZX303 devices', e)
       NotificationFailure('Error Fetching ZX303 devices', e)
+      return
     }
 
     try {
@@ -813,14 +814,14 @@ class ZX303 extends Component {
 
     return (
         <div
-            id={'companyConfigurationRoot'}
+            id={'zx303ConfigurationRoot'}
             className={classes.root}
         >
           <div className={classes.detailCardWrapper}>
             <Grid container>
               <Grid item>
                 <Card
-                    id={'companyConfigurationDetailCard'}
+                    id={'zx303ConfigurationDetailCard'}
                     className={classes.detailCard}
                 >
                   <CardHeader title={cardTitle}/>
