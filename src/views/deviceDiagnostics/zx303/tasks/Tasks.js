@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Grid,
   withStyles,
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
@@ -65,22 +64,22 @@ class Tasks extends Component {
     activeTaskState: taskEvents.init,
     recordCollectionInProgress: false,
     selectedRowIdx: -1,
-    records: [],
-    totalNoRecords: 0,
+    deviceRecords: [],
+    deviceTotalNoRecords: 0,
     selectedZX303Device: new ZX303Device(),
   }
 
-  collectCriteria = []
-  collectQuery = new Query()
-  collectTimeout = () => {
+  deviceCollectCriteria = []
+  deviceCollectQuery = new Query()
+  deviceCollectTimeout = () => {
   }
   partyHolder = new PartyHolder()
 
   componentDidMount() {
-    this.collect()
+    this.deviceCollect()
   }
 
-  collect = async () => {
+  deviceCollect = async () => {
     const {
       NotificationFailure,
       party,
@@ -93,12 +92,12 @@ class Tasks extends Component {
     let collectResponse
     try {
       collectResponse = await ZX303DeviceRecordHandler.Collect(
-          this.collectCriteria,
-          this.collectQuery,
+          this.deviceCollectCriteria,
+          this.deviceCollectQuery,
       )
       this.setState({
-        records: collectResponse.records,
-        totalNoRecords: collectResponse.total,
+        deviceRecords: collectResponse.records,
+        deviceTotalNoRecords: collectResponse.total,
       })
     } catch (e) {
       console.error('Error Fetching ZX303 devices', e)
@@ -132,9 +131,9 @@ class Tasks extends Component {
   }
 
   handleCriteriaQueryChange = (criteria, query) => {
-    this.collectCriteria = criteria
-    this.collectQuery = query
-    this.collectTimeout = setTimeout(this.collect, 300)
+    this.deviceCollectCriteria = criteria
+    this.deviceCollectQuery = query
+    this.deviceCollectTimeout = setTimeout(this.deviceCollect, 300)
     this.setState({
       activePageState: pageEvents.init,
       selectedRowIdx: -1,
@@ -158,8 +157,8 @@ class Tasks extends Component {
     const {
       recordCollectionInProgress,
       selectedRowIdx,
-      records,
-      totalNoRecords,
+      deviceRecords,
+      deviceTotalNoRecords,
     } = this.state
 
     return (
@@ -178,9 +177,9 @@ class Tasks extends Component {
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
-                    totalNoRecords={totalNoRecords}
+                    totalNoRecords={deviceTotalNoRecords}
                     noDataText={'No Devices Found'}
-                    data={records}
+                    data={deviceRecords}
                     onCriteriaQueryChange={this.handleCriteriaQueryChange}
                     columns={[
                       {
