@@ -42,7 +42,7 @@ import {
   TextCriterionType, ExactTextCriterionType, ListTextCriterionType,
 } from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
-import {RecordHandler as TK102RecordHandler} from 'brain/tracker/device/tk102/index'
+import {RecordHandler as TK102RecordHandler} from 'brain/tracker/tk102/index'
 import SystemRecordHandler from 'brain/party/system/RecordHandler'
 import ListTextCriterion from 'brain/search/criterion/list/Text'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'

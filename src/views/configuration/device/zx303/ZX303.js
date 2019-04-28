@@ -19,7 +19,7 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
-import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303'
+import {ZX303 as ZX303Device} from 'brain/tracker/zx303'
 import {
   allPartyTypes, ClientPartyType,
   CompanyPartyType,
@@ -32,7 +32,7 @@ import CompanyRecordHandler from 'brain/party/company/RecordHandler'
 import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
   ZX303DeviceAdministrator, ZX303DeviceValidator, ZX303DeviceRecordHandler,
-} from 'brain/tracker/device/zx303'
+} from 'brain/tracker/zx303'
 import {PartyHolder} from 'brain/party/holder'
 import {HumanUserLoginClaims} from 'brain/security/claims'
 

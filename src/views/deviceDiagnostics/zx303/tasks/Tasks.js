@@ -9,9 +9,9 @@ import {
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import {ZX303 as ZX303Device} from 'brain/tracker/device/zx303/index'
+import {ZX303 as ZX303Device} from 'brain/tracker/zx303/index'
 import Query from 'brain/search/Query'
-import ZX303DeviceRecordHandler from 'brain/tracker/device/zx303/RecordHandler'
+import ZX303DeviceRecordHandler from 'brain/tracker/zx303/RecordHandler'
 import PartyHolder from 'brain/party/holder/Holder'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 
@@ -32,8 +32,32 @@ const styles = theme => ({
   },
 })
 
+const pageStates = {
+  nop: 0,
+  deviceSelected: 1,
+}
+
+const pageEvents = {
+  init: pageStates.nop,
+  selectDevice: pageStates.deviceSelected,
+}
+
+const taskStates = {
+  nop: 0,
+  viewingTask: 1,
+  creatingNewTask: 2,
+}
+
+const taskEvents = {
+  init: taskStates.nop,
+  selectTask: taskStates.viewingTask,
+  startCreateNewTask: taskStates.creatingNewTask,
+}
+
 class Tasks extends Component {
   state = {
+    activePageState: pageEvents.init,
+    activeTaskState: taskEvents.init,
     recordCollectionInProgress: false,
     selectedRowIdx: -1,
     records: [],
@@ -57,7 +81,9 @@ class Tasks extends Component {
       party,
       claims,
     } = this.props
-    this.setState({recordCollectionInProgress: true})
+    this.setState({
+      recordCollectionInProgress: true,
+    })
 
     let collectResponse
     try {
@@ -105,8 +131,17 @@ class Tasks extends Component {
     this.collectQuery = query
     this.collectTimeout = setTimeout(this.collect, 300)
     this.setState({
+      activePageState: pageEvents.init,
       selectedRowIdx: -1,
       selectedZX303Device: new ZX303Device(),
+    })
+  }
+
+  handleSelect = (rowObj, rowIdx) => {
+    this.setState({
+      selectedRowIdx: rowIdx,
+      activePageState: pageEvents.selectDevice,
+      zx303DeviceEntity: new ZX303Device(rowObj),
     })
   }
 
@@ -230,6 +265,7 @@ class Tasks extends Component {
                           }
                         },
                         style: {
+                          cursor: 'pointer',
                           background:
                               rowIndex === selectedRowIdx
                                   ? theme.palette.secondary.light

@@ -1,7 +1,7 @@
 import BaseDevice from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import {IdIdentifier} from 'brain/search/identifier/index'
-import {ZX303DeviceType} from 'brain/tracker/device/types'
+import {ZX303DeviceType} from 'brain/tracker/types'
 
 export default class ZX303 extends BaseDevice {
   static Type = ZX303DeviceType
