@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   withStyles,
+  Typography,
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import BEPTable from 'components/table/bepTable/BEPTable'
@@ -27,6 +28,10 @@ const styles = theme => ({
     gridRowGap: '8px',
   },
   cardHeaderRoot: {
+    paddingBottom: 0,
+    paddingTop: 0,
+  },
+  cardContentRoot: {
     paddingBottom: 0,
     paddingTop: 0,
   },
@@ -239,10 +244,16 @@ class Tasks extends Component {
                 className={classes.tableCard}
             >
               <CardHeader
-                  title={'Select Device To Manage Tasks'}
+                  title={
+                    <Typography variant={'h6'}>
+                      Select Device To Manage Tasks
+                    </Typography>
+                  }
                   classes={{root: classes.cardHeaderRoot}}
               />
-              <CardContent>
+              <CardContent
+                  classes={{root: classes.cardContentRoot}}
+              >
                 <BEPTable
                     loading={deviceRecordCollectionInProgress}
                     totalNoRecords={deviceTotalNoRecords}
@@ -359,10 +370,16 @@ class Tasks extends Component {
                 className={classes.taskTableCard}
             >
               <CardHeader
-                  title={'Select Task To View Details'}
+                  title={
+                    <Typography variant={'h6'}>
+                      Select Task To View Details
+                    </Typography>
+                  }
                   classes={{root: classes.cardHeaderRoot}}
               />
-              <CardContent>
+              <CardContent
+                  classes={{root: classes.cardContentRoot}}
+              >
                 <BEPTable
                     loading={taskRecordCollectionInProgress}
                     totalNoRecords={taskTotalNoRecords}
