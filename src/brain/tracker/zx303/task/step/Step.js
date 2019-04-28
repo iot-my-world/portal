@@ -1,6 +1,5 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
-import {IdIdentifier} from 'brain/search/identifier/index'
 
 export const StepStatusPending = 'Pending'
 export const StepStatusExecuting = 'Executing'

@@ -23,6 +23,12 @@ export default class Task extends Base {
   _id = ''
 
   /**
+   * @type {Id}
+   * @private
+   */
+  _deviceId = new IdIdentifier()
+
+  /**
    * @type {string}
    * @private
    */
@@ -52,6 +58,7 @@ export default class Task extends Base {
         this._type = task.type
         this.status = task.status
         this._steps = task.steps.map(s => new Step(s))
+        this.deviceId = task.deviceId
       } catch (e) {
         throw new Error(`error constructing task object ${e}`)
       }
@@ -60,6 +67,14 @@ export default class Task extends Base {
 
   get id() {
     return this._id
+  }
+
+  get deviceId() {
+    return this._deviceId
+  }
+
+  set deviceId(newVal) {
+    this._deviceId = new IdIdentifier(newVal)
   }
 
   set type(newVal) {

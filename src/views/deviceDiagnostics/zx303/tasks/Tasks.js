@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
+import {ExactTextCriterion} from 'brain/search/criterion/exact'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {ZX303 as ZX303Device} from 'brain/tracker/zx303/index'
 import Query from 'brain/search/Query'
@@ -189,6 +190,12 @@ class Tasks extends Component {
   }
 
   handleDeviceSelect = (rowObj, rowIdx) => {
+    this.taskCollectCriteria = [
+      new ExactTextCriterion({
+        field: 'deviceId.id',
+        text: rowObj.id,
+      }),
+    ]
     this.setState({
       deviceSelectedRowIdx: rowIdx,
       activePageState: pageEvents.selectDevice,
@@ -198,6 +205,7 @@ class Tasks extends Component {
       taskSelectedRowIdx: -1,
       selectedTask: new Task(),
     })
+    this.taskCollect()
   }
 
   handleTaskCriteriaQueryChange = (criteria, query) => {
