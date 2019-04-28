@@ -61,12 +61,21 @@ const taskEvents = {
 class Tasks extends Component {
   state = {
     activePageState: pageEvents.init,
-    activeTaskState: taskEvents.init,
-    recordCollectionInProgress: false,
-    selectedRowIdx: -1,
+
+    // devices
+    deviceRecordCollectionInProgress: false,
+    deviceSelectedRowIdx: -1,
     deviceRecords: [],
     deviceTotalNoRecords: 0,
     selectedZX303Device: new ZX303Device(),
+
+    // tasks
+    activeTaskState: taskEvents.init,
+    taskRecordCollectionInProgress: false,
+    taskSelectedRowIdx: -1,
+    taskRecords: [],
+    taskTotalNoRecords: 0,
+    selectedTask: new Task(),
   }
 
   deviceCollectCriteria = []
@@ -75,8 +84,39 @@ class Tasks extends Component {
   }
   partyHolder = new PartyHolder()
 
+  taskCollectCriteria = []
+  taskCollectQuery = new Query()
+  taskCollectTimeout = () => {
+  }
+
   componentDidMount() {
     this.deviceCollect()
+  }
+
+  taskCollect = async () => {
+    const {
+      NotificationFailure,
+    } = this.props
+
+    this.setState({
+      taskRecordCollectionInProgress: true,
+    })
+
+    let collectResponse
+    try {
+      collectResponse = await TaskRecordHandler.Collect(
+          this.taskCollectCriteria,
+          this.taskCollectQuery,
+      )
+      this.setState({
+        taskRecords: collectResponse.records,
+        taskTotalNoRecords: collectResponse.total,
+      })
+    } catch (e) {
+      console.error('Error Fetching Device Tasks', e)
+      NotificationFailure('Error Fetching Device Tasks', e)
+    }
+    this.setState({taskRecordCollectionInProgress: false})
   }
 
   deviceCollect = async () => {
@@ -86,7 +126,7 @@ class Tasks extends Component {
       claims,
     } = this.props
     this.setState({
-      recordCollectionInProgress: true,
+      deviceRecordCollectionInProgress: true,
     })
 
     let collectResponse
@@ -102,7 +142,7 @@ class Tasks extends Component {
     } catch (e) {
       console.error('Error Fetching ZX303 devices', e)
       NotificationFailure('Error Fetching ZX303 devices', e)
-      this.setState({recordCollectionInProgress: false})
+      this.setState({deviceRecordCollectionInProgress: false})
       return
     }
 
@@ -124,10 +164,10 @@ class Tasks extends Component {
     } catch (e) {
       console.error('Error Loading Associated Parties', e)
       NotificationFailure('Error Loading Associated Parties')
-      this.setState({recordCollectionInProgress: false})
+      this.setState({deviceRecordCollectionInProgress: false})
       return
     }
-    this.setState({recordCollectionInProgress: false})
+    this.setState({deviceRecordCollectionInProgress: false})
   }
 
   handleCriteriaQueryChange = (criteria, query) => {
@@ -136,14 +176,14 @@ class Tasks extends Component {
     this.deviceCollectTimeout = setTimeout(this.deviceCollect, 300)
     this.setState({
       activePageState: pageEvents.init,
-      selectedRowIdx: -1,
+      deviceSelectedRowIdx: -1,
       selectedZX303Device: new ZX303Device(),
     })
   }
 
   handleSelect = (rowObj, rowIdx) => {
     this.setState({
-      selectedRowIdx: rowIdx,
+      deviceSelectedRowIdx: rowIdx,
       activePageState: pageEvents.selectDevice,
       zx303DeviceEntity: new ZX303Device(rowObj),
     })
@@ -155,8 +195,8 @@ class Tasks extends Component {
       theme,
     } = this.props
     const {
-      recordCollectionInProgress,
-      selectedRowIdx,
+      deviceRecordCollectionInProgress,
+      deviceSelectedRowIdx,
       deviceRecords,
       deviceTotalNoRecords,
     } = this.state
@@ -176,7 +216,7 @@ class Tasks extends Component {
               />
               <CardContent>
                 <BEPTable
-                    loading={recordCollectionInProgress}
+                    loading={deviceRecordCollectionInProgress}
                     totalNoRecords={deviceTotalNoRecords}
                     noDataText={'No Devices Found'}
                     data={deviceRecords}
@@ -271,11 +311,11 @@ class Tasks extends Component {
                         style: {
                           cursor: 'pointer',
                           background:
-                              rowIndex === selectedRowIdx
+                              rowIndex === deviceSelectedRowIdx
                                   ? theme.palette.secondary.light
                                   : 'white',
                           color:
-                              rowIndex === selectedRowIdx
+                              rowIndex === deviceSelectedRowIdx
                                   ? theme.palette.secondary.contrastText
                                   : theme.palette.primary.main,
                         },
