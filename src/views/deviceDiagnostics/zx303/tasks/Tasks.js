@@ -14,6 +14,11 @@ import Query from 'brain/search/Query'
 import ZX303DeviceRecordHandler from 'brain/tracker/zx303/RecordHandler'
 import PartyHolder from 'brain/party/holder/Holder'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
+import Task, {
+  TaskRecordHandler,
+  TaskValidator,
+  TaskAdministrator,
+} from 'brain/tracker/zx303/task'
 
 const styles = theme => ({
   root: {
