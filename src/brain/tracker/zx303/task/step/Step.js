@@ -19,12 +19,6 @@ export default class Step extends Base {
    * @type {string}
    * @private
    */
-  _id = ''
-
-  /**
-   * @type {string}
-   * @private
-   */
   _type = ''
 
   /**
@@ -41,10 +35,26 @@ export default class Step extends Base {
     super()
     if (step !== undefined && (step instanceof Step || isObject(step))) {
       try {
-
+        this._type = step.type
+        this.status = step.status
       } catch (e) {
         throw new Error(`error constructing step object ${e}`)
       }
     }
+  }
+
+  set type(newVal) {
+    this._type = newVal
+  }
+
+  get type() {
+    return this._type
+  }
+
+  set status(newVal) {
+    if (!AllStepStatuses.includes(newVal)) {
+      throw new TypeError(`invalid status value: ${newVal}`)
+    }
+    this._status = newVal
   }
 }

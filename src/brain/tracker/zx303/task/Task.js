@@ -29,6 +29,12 @@ export default class Task extends Base {
   _type = ''
 
   /**
+   * @type {string}
+   * @private
+   */
+  _status = TaskStatusPending
+
+  /**
    * @type {Step[]}
    * @private
    */
@@ -42,10 +48,41 @@ export default class Task extends Base {
     super()
     if (task !== undefined && (task instanceof Task || isObject(task))) {
       try {
-
+        this._id = task.id
+        this._type = task.type
+        this.status = task.status
+        this._steps = task.steps.map(s => new Step(s))
       } catch (e) {
         throw new Error(`error constructing task object ${e}`)
       }
     }
   }
+
+  get id() {
+    return this._id
+  }
+
+  set type(newVal) {
+    this._type = newVal
+  }
+
+  get type() {
+    return this._type
+  }
+
+  set status(newVal) {
+    if (!AllTaskStatuses.includes(newVal)) {
+      throw new TypeError(`invalid task status value: ${newVal}`)
+    }
+    this._status = newVal
+  }
+
+  set steps(newVal) {
+    this._steps = newVal
+  }
+
+  get steps() {
+    return this._steps
+  }
+
 }
