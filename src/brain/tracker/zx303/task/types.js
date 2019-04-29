@@ -1,0 +1,1 @@
+export const ResetDeviceZX303TaskType = 'ResetDevice'

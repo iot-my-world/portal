@@ -3,6 +3,7 @@ import TaskRecordHandler from './RecordHandler'
 import TaskValidator from './Validator'
 import TaskAdministrator from './Administrator'
 import {AllTaskStatuses} from './Task'
+import TaskGenerator from './generator'
 
 export default Task
 
@@ -11,4 +12,5 @@ export {
   TaskRecordHandler,
   TaskValidator,
   TaskAdministrator,
+  TaskGenerator,
 }
