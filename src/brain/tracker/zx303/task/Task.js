@@ -92,6 +92,10 @@ export default class Task extends Base {
     this._status = newVal
   }
 
+  get status() {
+    return this._status
+  }
+
   set steps(newVal) {
     this._steps = newVal
   }
