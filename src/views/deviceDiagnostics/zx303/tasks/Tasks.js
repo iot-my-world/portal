@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   withStyles,
+  Button,
   Typography, Grid, Collapse, Fab, Tooltip,
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
@@ -20,12 +21,13 @@ import Task, {
 } from 'brain/tracker/zx303/task'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
+  MdRefresh as ResetIcon,
 } from 'react-icons/md'
 
 const styles = theme => ({
   root: {
     display: 'grid',
-    gridTemplateRows: '1fr auto',
+    gridTemplateRows: 'auto 1fr',
     gridTemplateColumns: '1fr',
     gridRowGap: '8px',
   },
@@ -55,6 +57,9 @@ const styles = theme => ({
   buttonIcon: {
     fontSize: '20px',
   },
+  taskButtonIcon: {
+    marginLeft: theme.spacing.unit,
+  },
 })
 
 const pageStates = {
@@ -77,6 +82,7 @@ const taskEvents = {
   init: taskStates.nop,
   selectTask: taskStates.viewingTasks,
   startCreateNewTask: taskStates.creatingNewTask,
+  cancelCreateNewTask: taskStates.viewingTasks,
 }
 
 class Tasks extends Component {
@@ -240,6 +246,13 @@ class Tasks extends Component {
     })
   }
 
+  startCreateNewTask = () => {
+    this.setState({activeTaskState: taskEvents.startCreateNewTask})
+  }
+  cancelCreateNewTask = () => {
+    this.setState({activeTaskState: taskEvents.cancelCreateNewTask})
+  }
+
   renderTaskControls = () => {
     const {activeTaskState} = this.state
     const {classes} = this.props
@@ -250,7 +263,7 @@ class Tasks extends Component {
               <Fab
                   className={classes.button}
                   size={'small'}
-                  // onClick={this.handleCreateNew}
+                  onClick={this.startCreateNewTask}
               >
                 <Tooltip title='New Task'>
                   <AddIcon className={classes.buttonIcon}/>
@@ -265,7 +278,7 @@ class Tasks extends Component {
               <Fab
                   className={classes.button}
                   size={'small'}
-                  // onClick={this.handleCancelCreateNew}
+                  onClick={this.cancelCreateNewTask}
               >
                 <Tooltip title='Cancel'>
                   <CancelIcon className={classes.buttonIcon}/>
@@ -331,6 +344,24 @@ class Tasks extends Component {
               }
             }}
         />
+    )
+  }
+
+  renderNewTasks = () => {
+    const {classes} = this.props
+    return (
+        <Grid container>
+          <Grid item>
+            <Button
+                variant="contained"
+                color="default"
+                className={classes.button}
+            >
+              Reset
+              <ResetIcon className={classes.taskButtonIcon}/>
+            </Button>
+          </Grid>
+        </Grid>
     )
   }
 
@@ -483,9 +514,7 @@ class Tasks extends Component {
               (activeTaskState === taskStates.viewingTasks) ||
               (activeTaskState === taskStates.creatingNewTask)
             }>
-              <Card
-                  className={classes.taskTableCard}
-              >
+              <Card className={classes.taskTableCard}>
                 <CardHeader
                     title={
                       <div className={classes.detailCardTitle}>
@@ -509,6 +538,9 @@ class Tasks extends Component {
                 >
                   <Collapse in={activeTaskState === taskStates.viewingTasks}>
                     {this.renderTaskTable()}
+                  </Collapse>
+                  <Collapse in={activeTaskState === taskStates.creatingNewTask}>
+                    {this.renderNewTasks()}
                   </Collapse>
                 </CardContent>
               </Card>
