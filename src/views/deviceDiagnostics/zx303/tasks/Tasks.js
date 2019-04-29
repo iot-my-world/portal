@@ -283,7 +283,7 @@ class Tasks extends Component {
       await TaskAdministrator.Sumbit({zx303Task})
       NotificationSuccess('New Task Submitted')
     } catch (e) {
-      NotificationFailure('Error submitting new task')
+      NotificationFailure('Error Submitting Task')
       console.error('error submitting new task', e)
     }
     HideGlobalLoader()
