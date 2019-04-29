@@ -5,7 +5,7 @@ import {
   CardContent,
   CardHeader,
   withStyles,
-  Typography,
+  Typography, Grid, Collapse, Fab, Tooltip,
 } from '@material-ui/core'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {ExactTextCriterion} from 'brain/search/criterion/exact'
@@ -17,9 +17,10 @@ import PartyHolder from 'brain/party/holder/Holder'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Task, {
   TaskRecordHandler,
-  TaskValidator,
-  TaskAdministrator,
 } from 'brain/tracker/zx303/task'
+import {
+  MdAdd as AddIcon, MdClear as CancelIcon,
+} from 'react-icons/md'
 
 const styles = theme => ({
   root: {
@@ -42,6 +43,18 @@ const styles = theme => ({
   },
   taskTableRoot: {},
   taskTableCard: {},
+  detailCardTitle: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  buttonIcon: {
+    fontSize: '20px',
+  },
 })
 
 const pageStates = {
@@ -56,13 +69,13 @@ const pageEvents = {
 
 const taskStates = {
   nop: 0,
-  viewingTask: 1,
+  viewingTasks: 1,
   creatingNewTask: 2,
 }
 
 const taskEvents = {
   init: taskStates.nop,
-  selectTask: taskStates.viewingTask,
+  selectTask: taskStates.viewingTasks,
   startCreateNewTask: taskStates.creatingNewTask,
 }
 
@@ -201,7 +214,7 @@ class Tasks extends Component {
       activePageState: pageEvents.selectDevice,
       zx303DeviceEntity: new ZX303Device(rowObj),
 
-      activeTaskState: taskEvents.init,
+      activeTaskState: taskEvents.selectTask,
       taskSelectedRowIdx: -1,
       selectedTask: new Task(),
     })
@@ -227,6 +240,100 @@ class Tasks extends Component {
     })
   }
 
+  renderTaskControls = () => {
+    const {activeTaskState} = this.state
+    const {classes} = this.props
+    switch (activeTaskState) {
+      case taskStates.viewingTasks:
+        return (
+            <React.Fragment>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  // onClick={this.handleCreateNew}
+              >
+                <Tooltip title='New Task'>
+                  <AddIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+
+      case taskStates.creatingNewTask:
+        return (
+            <React.Fragment>
+              <Fab
+                  className={classes.button}
+                  size={'small'}
+                  // onClick={this.handleCancelCreateNew}
+              >
+                <Tooltip title='Cancel'>
+                  <CancelIcon className={classes.buttonIcon}/>
+                </Tooltip>
+              </Fab>
+            </React.Fragment>
+        )
+      default:
+        return null
+    }
+  }
+
+  renderTaskTable = () => {
+    const {
+      taskRecordCollectionInProgress,
+      taskTotalNoRecords,
+      taskRecords,
+      taskSelectedRowIdx,
+    } = this.state
+    const {theme} = this.props
+    return (
+        <BEPTable
+            loading={taskRecordCollectionInProgress}
+            totalNoRecords={taskTotalNoRecords}
+            noDataText={'No Tasks Found'}
+            data={taskRecords}
+            onCriteriaQueryChange={this.handleTaskCriteriaQueryChange}
+            columns={[
+              {
+                Header: 'Type',
+                accessor: 'type',
+                width: 150,
+                config: {
+                  filter: {
+                    type: TextCriterionType,
+                  },
+                },
+              },
+            ]}
+            getTdProps={(state, rowInfo) => {
+              const rowIndex = rowInfo ? rowInfo.index : undefined
+              return {
+                onClick: (e, handleOriginal) => {
+                  if (rowInfo) {
+                    this.handleTaskSelect(rowInfo.original,
+                        rowInfo.index)
+                  }
+                  if (handleOriginal) {
+                    handleOriginal()
+                  }
+                },
+                style: {
+                  cursor: 'pointer',
+                  background:
+                      rowIndex === taskSelectedRowIdx
+                          ? theme.palette.secondary.light
+                          : 'white',
+                  color:
+                      rowIndex === taskSelectedRowIdx
+                          ? theme.palette.secondary.contrastText
+                          : theme.palette.primary.main,
+                },
+              }
+            }}
+        />
+    )
+  }
+
   render() {
     const {
       classes,
@@ -237,9 +344,7 @@ class Tasks extends Component {
       deviceSelectedRowIdx,
       deviceRecords,
       deviceTotalNoRecords,
-      taskRecordCollectionInProgress,
-      taskTotalNoRecords,
-      taskRecords,
+      activeTaskState,
     } = this.state
 
     return (
@@ -374,66 +479,40 @@ class Tasks extends Component {
             </Card>
           </div>
           <div className={classes.taskTableRoot}>
-            <Card
-                className={classes.taskTableCard}
-            >
-              <CardHeader
-                  title={
-                    <Typography variant={'h6'}>
-                      Select Task To View Details
-                    </Typography>
-                  }
-                  classes={{root: classes.cardHeaderRoot}}
-              />
-              <CardContent
-                  classes={{root: classes.cardContentRoot}}
+            <Collapse in={
+              (activeTaskState === taskStates.viewingTasks) ||
+              (activeTaskState === taskStates.creatingNewTask)
+            }>
+              <Card
+                  className={classes.taskTableCard}
               >
-                <BEPTable
-                    loading={taskRecordCollectionInProgress}
-                    totalNoRecords={taskTotalNoRecords}
-                    noDataText={'No Tasks Found'}
-                    data={taskRecords}
-                    onCriteriaQueryChange={this.handleTaskCriteriaQueryChange}
-                    columns={[
-                      {
-                        Header: 'Type',
-                        accessor: 'type',
-                        width: 150,
-                        config: {
-                          filter: {
-                            type: TextCriterionType,
-                          },
-                        },
-                      },
-                    ]}
-                    getTdProps={(state, rowInfo) => {
-                      const rowIndex = rowInfo ? rowInfo.index : undefined
-                      return {
-                        onClick: (e, handleOriginal) => {
-                          if (rowInfo) {
-                            this.handleTaskSelect(rowInfo.original,
-                                rowInfo.index)
-                          }
-                          if (handleOriginal) {
-                            handleOriginal()
-                          }
-                        },
-                        style: {
-                          cursor: 'pointer',
-                          background:
-                              rowIndex === deviceSelectedRowIdx
-                                  ? theme.palette.secondary.light
-                                  : 'white',
-                          color:
-                              rowIndex === deviceSelectedRowIdx
-                                  ? theme.palette.secondary.contrastText
-                                  : theme.palette.primary.main,
-                        },
-                      }
-                    }}
+                <CardHeader
+                    title={
+                      <div className={classes.detailCardTitle}>
+                        <Typography variant={'h6'}>
+                          Select Task To View Details
+                        </Typography>
+                        <Grid container
+                              direction='row'
+                              justify='flex-end'
+                        >
+                          <Grid item>
+                            {this.renderTaskControls()}
+                          </Grid>
+                        </Grid>
+                      </div>
+                    }
+                    classes={{root: classes.cardHeaderRoot}}
                 />
-              </CardContent>
-            </Card>
+                <CardContent
+                    classes={{root: classes.cardContentRoot}}
+                >
+                  <Collapse in={activeTaskState === taskStates.viewingTasks}>
+                    {this.renderTaskTable()}
+                  </Collapse>
+                </CardContent>
+              </Card>
+            </Collapse>
           </div>
         </div>
     )
