@@ -18,11 +18,13 @@ import PartyHolder from 'brain/party/holder/Holder'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Task, {
   TaskRecordHandler,
+  TaskGenerator,
 } from 'brain/tracker/zx303/task'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdRefresh as ResetIcon,
 } from 'react-icons/md'
+import {ResetDeviceZX303TaskType} from 'brain/tracker/zx303/task/types'
 
 const styles = theme => ({
   root: {
@@ -253,6 +255,10 @@ class Tasks extends Component {
     this.setState({activeTaskState: taskEvents.cancelCreateNewTask})
   }
 
+  handleCreateNewTask = newTask => {
+    console.log('create', newTask)
+  }
+
   renderTaskControls = () => {
     const {activeTaskState} = this.state
     const {classes} = this.props
@@ -348,6 +354,7 @@ class Tasks extends Component {
   }
 
   renderNewTasks = () => {
+    const {selectedZX303Device} = this.state
     const {classes} = this.props
     return (
         <Grid container>
@@ -356,6 +363,10 @@ class Tasks extends Component {
                 variant="contained"
                 color="default"
                 className={classes.button}
+                onClick={() => this.handleCreateNewTask(TaskGenerator(
+                    ResetDeviceZX303TaskType,
+                    selectedZX303Device,
+                ))}
             >
               Reset
               <ResetIcon className={classes.taskButtonIcon}/>

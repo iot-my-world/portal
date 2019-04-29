@@ -5,6 +5,7 @@ import {
 import {IdIdentifier} from 'brain/search/identifier'
 import {StepGenerator} from './step'
 import {SendResetCommand} from 'brain/tracker/zx303/task/step/types'
+import {TaskStatusPending} from 'brain/tracker/zx303/task/Task'
 
 /**
  * Generates task with given taskType
@@ -19,7 +20,7 @@ export default function generator(taskType, device) {
         // id: '', // set on creation
         deviceId: new IdIdentifier(device.id),
         type: ResetDeviceZX303TaskType,
-        // status: TaskStatusPending, // leave default
+        status: TaskStatusPending,
         steps: [
           StepGenerator(SendResetCommand),
         ],

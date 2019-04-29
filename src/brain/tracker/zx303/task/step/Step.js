@@ -56,4 +56,8 @@ export default class Step extends Base {
     }
     this._status = newVal
   }
+
+  get status() {
+    return this._status
+  }
 }

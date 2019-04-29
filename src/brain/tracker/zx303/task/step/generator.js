@@ -2,6 +2,9 @@ import Step from 'brain/tracker/zx303/task/step'
 import {
   SendResetCommand,
 } from 'brain/tracker/zx303/task/step/types'
+import {
+  StepStatusPending,
+} from 'brain/tracker/zx303/task/step/Step'
 
 /**
  * Generates step with given stepType
@@ -13,7 +16,7 @@ export default function generator(stepType) {
     case SendResetCommand:
       return new Step({
         type: SendResetCommand,
-        // status: StepStatusPending, // leave default
+        status: StepStatusPending,
       })
     default:
       throw new TypeError(`invalid step type: ${stepType}`)
