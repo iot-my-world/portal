@@ -15,6 +15,7 @@ export default function generator(stepType) {
   switch (stepType) {
     case SendResetCommand:
       return new Step({
+        id: '',
         type: SendResetCommand,
         status: StepStatusPending,
       })

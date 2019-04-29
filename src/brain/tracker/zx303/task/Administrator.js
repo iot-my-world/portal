@@ -2,19 +2,12 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import Task from './Task'
 
 const Administrator = {
-  async Create({task}) {
-    return await jsonRpcRequest({
-      method: 'TaskDeviceAdministrator.Create',
-      request: {task},
+  async Sumbit({zx303Task}) {
+    const response = await jsonRpcRequest({
+      method: 'TaskDeviceAdministrator.Submit',
+      request: {zx303Task},
     })
-  },
-
-  async UpdateAllowedFields({task}) {
-    let response = await jsonRpcRequest({
-      method: 'ZX303TaskAdministrator.UpdateAllowedFields',
-      request: {task},
-    })
-    response.task = new Task(response.task)
+    response.zx303Task = new Task(zx303Task)
     return response
   },
 }

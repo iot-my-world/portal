@@ -19,6 +19,8 @@ import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Task, {
   TaskRecordHandler,
   TaskGenerator,
+  TaskAdministrator,
+  TaskValidator,
 } from 'brain/tracker/zx303/task'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
@@ -220,7 +222,7 @@ class Tasks extends Component {
     this.setState({
       deviceSelectedRowIdx: rowIdx,
       activePageState: pageEvents.selectDevice,
-      zx303DeviceEntity: new ZX303Device(rowObj),
+      selectedZX303Device: new ZX303Device(rowObj),
 
       activeTaskState: taskEvents.selectTask,
       taskSelectedRowIdx: -1,
@@ -251,12 +253,40 @@ class Tasks extends Component {
   startCreateNewTask = () => {
     this.setState({activeTaskState: taskEvents.startCreateNewTask})
   }
+
   cancelCreateNewTask = () => {
     this.setState({activeTaskState: taskEvents.cancelCreateNewTask})
   }
 
-  handleCreateNewTask = newTask => {
-    console.log('create', newTask)
+  handleCreateNewTask = async zx303Task => {
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+    ShowGlobalLoader()
+    try {
+      if ((await TaskValidator.Validate({
+        zx303Task,
+        action: 'Create',
+      })).reasonsInvalid.count > 0) {
+        NotificationFailure('New Task Not Valid')
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('error validating new task', e)
+    }
+
+    try {
+      await TaskAdministrator.Sumbit({zx303Task})
+      NotificationSuccess('New Task Submitted')
+    } catch (e) {
+      NotificationFailure('Error submitting new task')
+      console.error('error submitting new task', e)
+    }
+    HideGlobalLoader()
   }
 
   renderTaskControls = () => {

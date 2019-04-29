@@ -17,7 +17,7 @@ export default function generator(taskType, device) {
   switch (taskType) {
     case ResetDeviceZX303TaskType:
       return new Task({
-        // id: '', // set on creation
+        id: '',
         deviceId: new IdIdentifier(device.id),
         type: ResetDeviceZX303TaskType,
         status: TaskStatusPending,
