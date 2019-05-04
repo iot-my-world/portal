@@ -1,6 +1,5 @@
 import {jsonRpcRequest} from 'utilities/network/index'
 import User from './User'
-import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const RecordHandler = {
   /**
@@ -17,27 +16,6 @@ const RecordHandler = {
         },
       }).then(result => {
         resolve(new User(result.user))
-      }).catch(error => reject(error))
-    })
-  },
-
-  /**
-   * Validate a user
-   * @param {User} user
-   * @param {string} method
-   * @constructor
-   */
-  Validate(user, method) {
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: 'UserRecordHandler.Validate',
-        request: {
-          user,
-          method,
-
-        },
-      }).then(result => {
-        resolve(new ReasonsInvalid(result.reasonsInvalid))
       }).catch(error => reject(error))
     })
   },

@@ -21,6 +21,7 @@ import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import DeviceContainer from 'views/configuration/device/DeviceContainer'
+import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
 // Dashboards
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
@@ -29,12 +30,18 @@ import HistoricalTrackingDashboardContainer
 
 import BarcodeTestContainer from 'views/barcodeTest/BarcodeTestContainer'
 
+// Diagnostics
+import ZX303DeviceDiagnosticsContainer
+  from 'views/deviceDiagnostics/zx303/ZX303Container'
+
 // View Permissions
 import {
   Configuration, PartyCompanyConfiguration, PartyClientConfiguration,
   PartyUserConfiguration, DeviceConfiguration, Dashboards,
   LiveTrackingDashboard as ViewLiveTrackingDashboard,
   HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
+  APIUserConfiguration as ViewAPIUserConfiguration,
+  ViewDeviceDiagnostics, ViewZX303DeviceDiagnostics,
 } from 'brain/security/permission/view/permission'
 import {
   SystemPartyType,
@@ -123,6 +130,36 @@ const AppRoutes = [
   [
     // each array contains route 'objects' or route 'objectGroup'
     // the difference is that objectGroups contain group: true
+    { // this is a route group
+      group: true,
+      viewPermission: Dashboards,
+      id: 'sidebarDashboardsMenuOpen',
+      text: 'Dashboards',
+      icon: <DashboardIcon/>,
+      routes: [
+        {
+          id: 'sidebarLiveTrackingDashboardLink',
+          text: 'Live Tracking',
+          icon: <GPSFixedIcon/>,
+          path: '/app/dashboard/liveTracking',
+          component: LiveTrackingDashboardContainer,
+          viewPermission: ViewLiveTrackingDashboard,
+        },
+        {
+          id: 'sidebarHistoricalTrackingDashboardLink',
+          text: 'Historical Tracking',
+          icon: <TimelineIcon/>,
+          path: '/app/dashboard/historicalTracking',
+          component: HistoricalTrackingDashboardContainer,
+          viewPermission: ViewHistoricalTrackingDashboard,
+        },
+      ],
+    },
+  ],
+
+  // -------- divider here --------
+
+  [
 
     { // this is a route group
       group: true,
@@ -156,6 +193,14 @@ const AppRoutes = [
           viewPermission: PartyUserConfiguration,
         },
         {
+          id: 'sidebarAPIUserConfigurationLink',
+          text: 'API User',
+          icon: <PersonIcon/>,
+          path: '/app/configuration/apiUser',
+          component: APIUserContainer,
+          viewPermission: ViewAPIUserConfiguration,
+        },
+        {
           id: 'sidebarDeviceConfigurationLink',
           text: 'Device',
           icon: <DeviceIcon/>,
@@ -168,33 +213,29 @@ const AppRoutes = [
   ],
 
   // -------- divider here --------
+
   [
     { // this is a route group
       group: true,
-      viewPermission: Dashboards,
+      viewPermission: ViewDeviceDiagnostics,
       id: 'sidebarDashboardsMenuOpen',
-      text: 'Dashboards',
-      icon: <DashboardIcon/>,
+      text: 'Device Diagnostics',
+      icon: <ConfigurationIcon/>,
       routes: [
         {
-          id: 'sidebarLiveTrackingDashboardLink',
-          text: 'Live Tracking',
-          icon: <GPSFixedIcon/>,
-          path: '/app/dashboard/liveTracking',
-          component: LiveTrackingDashboardContainer,
-          viewPermission: ViewLiveTrackingDashboard,
-        },
-        {
-          id: 'sidebarHistoricalTrackingDashboardLink',
-          text: 'Historical Tracking',
-          icon: <TimelineIcon/>,
-          path: '/app/dashboard/historicalTracking',
-          component: HistoricalTrackingDashboardContainer,
-          viewPermission: ViewHistoricalTrackingDashboard,
+          id: 'sidebarDeviceDiagnosticsZX303Link',
+          text: 'ZX303',
+          icon: <DeviceIcon/>,
+          path: '/app/deviceDiagnostics/zx303',
+          component: ZX303DeviceDiagnosticsContainer,
+          viewPermission: ViewZX303DeviceDiagnostics,
         },
       ],
     },
   ],
+
+  // -------- divider here --------
+
   [
     { // this is an individual route
       id: 'barcodeTestMenuLink',

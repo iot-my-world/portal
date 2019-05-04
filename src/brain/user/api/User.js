@@ -2,10 +2,8 @@ import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import {
   UsernameIdentifier,
-  EmailAddressIdentifier,
   IdIdentifier,
 } from 'brain/search/identifier/index'
-import UserRecordHandler from './RecordHandler'
 import {stringToBytes} from 'utilities/type/type'
 
 export default class User extends Base {
@@ -28,19 +26,13 @@ export default class User extends Base {
    * @type {string}
    * @private
    */
-  _surname = ''
+  _description = ''
 
   /**
    * @type {string}
    * @private
    */
   _username = ''
-
-  /**
-   * @type {string}
-   * @private
-   */
-  _emailAddress = ''
 
   /**
    * @type {string}
@@ -58,18 +50,6 @@ export default class User extends Base {
    * @type {string}
    * @private
    */
-  _parentPartyType = ''
-
-  /**
-   * @type {Id}
-   * @private
-   */
-  _parentId = new IdIdentifier()
-
-  /**
-   * @type {string}
-   * @private
-   */
   _partyType = ''
 
   /**
@@ -77,12 +57,6 @@ export default class User extends Base {
    * @private
    */
   _partyId = new IdIdentifier()
-
-  /**
-   * @type {boolean}
-   * @private
-   */
-  _registered = false
 
   /**
    * construct a new User Object
@@ -100,16 +74,12 @@ export default class User extends Base {
       try {
         this._id = user.id
         this._name = user.name
-        this._surname = user.surname
+        this._description = user.description
         this._username = user.username
-        this._emailAddress = user.emailAddress
         this._password = user.password
         this._roles = user.roles
-        this._parentPartyType = user.parentPartyType
-        this._parentId = new IdIdentifier(user.parentId)
         this._partyType = user.partyType
         this._partyId = new IdIdentifier(user.partyId)
-        this._registered = user.registered
       } catch (e) {
         throw new Error(`error constructing user object: ${e}`)
       }
@@ -128,12 +98,12 @@ export default class User extends Base {
     this._name = newVal
   }
 
-  get surname() {
-    return this._surname
+  get description() {
+    return this._description
   }
 
-  set surname(newVal) {
-    this._surname = newVal
+  set description(newVal) {
+    this._description = newVal
   }
 
   get username() {
@@ -144,36 +114,12 @@ export default class User extends Base {
     this._username = newVal
   }
 
-  get emailAddress() {
-    return this._emailAddress
-  }
-
-  set emailAddress(newVal) {
-    this._emailAddress = newVal
-  }
-
   get password() {
     return this._password
   }
 
   set password(newVal) {
     this._password = newVal
-  }
-
-  get parentPartyType() {
-    return this._parentPartyType
-  }
-
-  set parentPartyType(newVal) {
-    this._parentPartyType = newVal
-  }
-
-  get parentId() {
-    return this._parentId
-  }
-
-  set parentId(newVal) {
-    this._parentId = newVal
   }
 
   get partyType(){
@@ -192,11 +138,6 @@ export default class User extends Base {
     this._partyId = newVal
   }
 
-  get registered(){
-    return this._registered
-  }
-  // should never be able to set registered
-
   get roles() {
     return this._roles
   }
@@ -205,26 +146,17 @@ export default class User extends Base {
     this._roles = newVal
   }
 
-  create() {
-    return UserRecordHandler.Create(this)
-  }
-
-  validate(method = '') {
-    return UserRecordHandler.Validate(this, method)
-  }
-
   get identifier() {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
-    } else if (this._emailAddress !== '') {
-      return new EmailAddressIdentifier(this._emailAddress)
     } else if (this._username !== '') {
       return new UsernameIdentifier(this._username)
     } else {
       throw new Error(
-          `cannot create identifier for user if id, username and email address are all blank`)
+          `cannot create identifier for user if id, username are both blank`)
     }
   }
+
   toJSON() {
     let retObj = super.toPOJO()
     retObj.password = stringToBytes(this._password)

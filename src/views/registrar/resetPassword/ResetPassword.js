@@ -9,7 +9,7 @@ import {
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logo from 'assets/images/logo.png'
 import {parseToken} from 'utilities/token'
-import {UserAdministrator} from 'brain/user'
+import {UserAdministrator} from 'brain/user/human/index'
 import {ReasonsInvalid} from 'brain/validate'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
 import ReasonInvalid from 'brain/validate/reasonInvalid/ReasonInvalid'

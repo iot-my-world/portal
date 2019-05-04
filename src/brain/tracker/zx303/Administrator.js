@@ -1,5 +1,5 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
-import ZX303 from 'brain/tracker/device/zx303/ZX303'
+import ZX303 from 'brain/tracker/zx303/ZX303'
 
 const Administrator = {
   async Create({zx303}) {

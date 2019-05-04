@@ -5,11 +5,15 @@ import {
   CardContent,
   CardHeader, Fab, FormControl, FormHelperText,
   Grid, InputLabel, MenuItem, Select, TextField, Tooltip,
-  Typography,
-  withStyles,
+  Typography, Dialog, DialogTitle, DialogContent,
+  withStyles, DialogActions,
+  Button,
 } from '@material-ui/core'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import {TextCriterionType} from 'brain/search/criterion/types'
+import {
+  ExactTextCriterionType,
+  TextCriterionType,
+} from 'brain/search/criterion/types'
 import Query from 'brain/search/Query'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
@@ -19,7 +23,6 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
-import {ZX303 as ZX303Device} from 'brain/tracker/zx303'
 import {
   allPartyTypes, ClientPartyType,
   CompanyPartyType,
@@ -31,10 +34,15 @@ import IdIdentifier from 'brain/search/identifier/Id'
 import CompanyRecordHandler from 'brain/party/company/RecordHandler'
 import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
-  ZX303DeviceAdministrator, ZX303DeviceValidator, ZX303DeviceRecordHandler,
-} from 'brain/tracker/zx303'
+  APIUser as APIUserEntity,
+  APIUserAdministrator,
+  APIUserValidator,
+  APIUserRecordHandler,
+} from 'brain/user/api'
 import {PartyHolder} from 'brain/party/holder'
 import {HumanUserLoginClaims} from 'brain/security/claims'
+import MultiSelect from 'components/multiSelect/index'
+import User from 'brain/user/human/User'
 
 const styles = theme => ({
   root: {
@@ -75,6 +83,19 @@ const styles = theme => ({
   buttonIcon: {
     fontSize: '20px',
   },
+  roleSelectHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+  },
+  roleSelectSecondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
+  roleSelectWrapper: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+  },
 })
 
 const states = {
@@ -98,7 +119,11 @@ const events = {
   cancelEditExisting: states.viewingExisting,
 }
 
-class ZX303 extends Component {
+const partyTypeOptions = allPartyTypes.map(partyType =>
+    ({value: partyType, display: partyType}),
+)
+
+class APIUser extends Component {
 
   state = {
     recordCollectionInProgress: false,
@@ -106,8 +131,19 @@ class ZX303 extends Component {
     records: [],
     totalNoRecords: 0,
     activeState: events.init,
-    zx303DeviceEntity: new ZX303Device(),
-    zx303DeviceEntityCopy: new ZX303Device(),
+    apiUserEntity: new APIUserEntity(),
+    apiUserEntityCopy: new APIUserEntity(),
+    newAPIUserDialogOpen: false,
+    newAPIUserCreateResponse: undefined,
+    availableRoles: [],
+  }
+
+  constructor(props) {
+    super(props)
+    this.state.availableRoles = props.user.roles.map(role => ({
+      name: role,
+      value: role,
+    }))
   }
 
   partyHolder = new PartyHolder()
@@ -121,6 +157,24 @@ class ZX303 extends Component {
     this.collect()
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      user,
+    } = this.props
+    const {
+      user: prevUser,
+    } = prevProps
+
+    if (user.roles.length !== prevUser.roles.length) {
+      this.setState({
+        availableRoles: user.roles.map(role => ({
+          name: role,
+          value: role,
+        })),
+      })
+    }
+  }
+
   collect = async () => {
     const {
       NotificationFailure,
@@ -128,10 +182,10 @@ class ZX303 extends Component {
       claims,
     } = this.props
     this.setState({recordCollectionInProgress: true})
-    // perform device collection
+    // perform apiUser collection
     let collectResponse
     try {
-      collectResponse = await ZX303DeviceRecordHandler.Collect(
+      collectResponse = await APIUserRecordHandler.Collect(
           this.collectCriteria,
           this.collectQuery,
       )
@@ -140,29 +194,23 @@ class ZX303 extends Component {
         totalNoRecords: collectResponse.total,
       })
     } catch (e) {
-      console.error('Error Fetching ZX303 devices', e)
-      NotificationFailure('Error Fetching ZX303 devices', e)
-      return
+      console.error('Error Fetching API Users', e)
+      NotificationFailure('Error Fetching API Users', e)
     }
 
     try {
       await this.partyHolder.load(
           collectResponse.records,
-          'ownerPartyType',
-          'ownerId',
-      )
-      await this.partyHolder.load(
-          collectResponse.records,
-          'assignedPartyType',
-          'assignedId',
+          'partyType',
+          'partyId',
       )
       this.partyHolder.update(
           party,
           claims.partyType,
       )
     } catch (e) {
-      console.error('Error Loading Associated Parties', e)
-      NotificationFailure('Error Loading Associated Parties')
+      console.error('Error Loading Owner Party', e)
+      NotificationFailure('Error Loading Owner Party')
     }
     this.setState({recordCollectionInProgress: false})
   }
@@ -172,7 +220,7 @@ class ZX303 extends Component {
     this.setState({
       selectedRowIdx: -1,
       activeState: events.startCreateNew,
-      zx303DeviceEntity: new ZX303Device(),
+      apiUserEntity: new APIUserEntity(),
     })
   }
 
@@ -183,24 +231,24 @@ class ZX303 extends Component {
 
   handleStartEditExisting = () => {
     this.reasonsInvalid.clearAll()
-    const {zx303DeviceEntity} = this.state
+    const {apiUserEntity} = this.state
     this.setState({
-      zx303DeviceEntityCopy: new ZX303Device(zx303DeviceEntity),
+      apiUserEntityCopy: new APIUserEntity(apiUserEntity),
       activeState: events.startEditExisting,
     })
   }
 
   handleCancelEditExisting = () => {
-    const {zx303DeviceEntityCopy} = this.state
+    const {apiUserEntityCopy} = this.state
     this.reasonsInvalid.clearAll()
     this.setState({
-      zx303DeviceEntity: new ZX303Device(zx303DeviceEntityCopy),
+      apiUserEntity: new APIUserEntity(apiUserEntityCopy),
       activeState: events.cancelEditExisting,
     })
   }
 
   handleSaveNew = async () => {
-    const {zx303DeviceEntity} = this.state
+    const {apiUserEntity} = this.state
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -213,8 +261,8 @@ class ZX303 extends Component {
     // perform validation
     try {
       this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
-        zx303: zx303DeviceEntity,
+      const reasonsInvalid = (await APIUserValidator.Validate({
+        apiUser: apiUserEntity,
         action: 'Create',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -223,23 +271,27 @@ class ZX303 extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
+      console.error('Error Validating API User', e)
+      NotificationFailure('Error Validating API User')
       HideGlobalLoader()
       return
     }
 
     // perform creation
     try {
-      await ZX303DeviceAdministrator.Create({
-        zx303: zx303DeviceEntity,
+      const newAPIUserCreateResponse = await APIUserAdministrator.Create({
+        apiUser: apiUserEntity,
       })
-      NotificationSuccess('Successfully Created Device')
-      this.setState({activeState: events.createNewSuccess})
+      NotificationSuccess('Successfully Created API User')
+      this.setState({
+        activeState: events.createNewSuccess,
+        newAPIUserDialogOpen: true,
+        newAPIUserCreateResponse,
+      })
       await this.collect()
     } catch (e) {
-      console.error('Error Creating Device', e)
-      NotificationFailure('Error Creating Device')
+      console.error('Error Creating API User', e)
+      NotificationFailure('Error Creating API User')
       HideGlobalLoader()
       return
     }
@@ -247,7 +299,7 @@ class ZX303 extends Component {
   }
 
   handleSaveChanges = async () => {
-    const {zx303DeviceEntity} = this.state
+    const {apiUserEntity} = this.state
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -260,8 +312,8 @@ class ZX303 extends Component {
     // perform validation
     try {
       this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
-        zx303: zx303DeviceEntity,
+      const reasonsInvalid = (await APIUserValidator.Validate({
+        apiUser: apiUserEntity,
         action: 'Update',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -270,8 +322,8 @@ class ZX303 extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
+      console.error('Error Validating APIUser', e)
+      NotificationFailure('Error Validating APIUser')
       HideGlobalLoader()
       return
     }
@@ -279,28 +331,28 @@ class ZX303 extends Component {
     // perform update
     try {
       let {records} = this.state
-      let response = await ZX303DeviceAdministrator.UpdateAllowedFields({
-        zx303: zx303DeviceEntity,
+      let response = await APIUserAdministrator.UpdateAllowedFields({
+        apiUser: apiUserEntity,
       })
-      const zx303DeviceIdx = records.find(d => d.id === response.zx303.id)
-      if (zx303DeviceIdx < 0) {
-        console.error('unable to fund updated device in records')
+      const apiUserIdx = records.find(d => d.id === response.apiUser.id)
+      if (apiUserIdx < 0) {
+        console.error('unable to fund updated apiUser in records')
       } else {
-        records[zx303DeviceIdx] = response.zx303
+        records[apiUserIdx] = response.apiUser
       }
       this.setState({
         records,
-        zx303DeviceEntity: response.zx303,
+        apiUserEntity: response.apiUser,
         activeState: events.finishEditExisting,
       })
     } catch (e) {
-      console.error('Error Updating Device', e)
-      NotificationFailure('Error Updating Device')
+      console.error('Error Updating APIUser', e)
+      NotificationFailure('Error Updating APIUser')
       HideGlobalLoader()
       return
     }
 
-    NotificationSuccess('Successfully Updated Device')
+    NotificationSuccess('Successfully Updated APIUser')
     HideGlobalLoader()
   }
 
@@ -364,30 +416,25 @@ class ZX303 extends Component {
   }
 
   handleFieldChange = e => {
-    let {zx303DeviceEntity} = this.state
+    let {apiUserEntity} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
-    zx303DeviceEntity[fieldName] = e.target.value
+    apiUserEntity[fieldName] = e.target.value
 
     switch (fieldName) {
-      case 'ownerPartyType':
-        zx303DeviceEntity.ownerId = new IdIdentifier()
+      case 'partyType':
+        apiUserEntity.partyId = new IdIdentifier()
         break
 
-      case 'ownerId':
+      case 'partyId':
+        if (
+            (!e.selectionInfo.value) ||
+            (e.selectionInfo.value === '')
+        ) {
+          return
+        }
         this.partyHolder.update(
             e.selectionInfo.entity,
-            zx303DeviceEntity.ownerPartyType,
-        )
-        break
-
-      case 'assignedPartyType':
-        zx303DeviceEntity.assignedId = new IdIdentifier()
-        break
-
-      case 'assignedId':
-        this.partyHolder.update(
-            e.selectionInfo.entity,
-            zx303DeviceEntity.assignedPartyType,
+            apiUserEntity.partyType,
         )
         break
 
@@ -395,7 +442,7 @@ class ZX303 extends Component {
     }
 
     this.reasonsInvalid.clearField(fieldName)
-    this.setState({zx303DeviceEntity})
+    this.setState({apiUserEntity})
   }
 
   renderDetails = () => {
@@ -419,13 +466,13 @@ class ZX303 extends Component {
               </Grid>
               <Grid item>
                 <Fab
-                    id={'zx303DeviceConfigurationNewButton'}
+                    id={'apiUserDeviceConfigurationNewButton'}
                     color={'primary'}
                     className={classes.button}
                     size={'small'}
                     onClick={this.handleCreateNew}
                 >
-                  <Tooltip title='Add New Device'>
+                  <Tooltip title='Add New APIUser'>
                     <AddIcon className={classes.buttonIcon}/>
                   </Tooltip>
                 </Fab>
@@ -436,22 +483,22 @@ class ZX303 extends Component {
       case states.viewingExisting:
       case states.editingNew:
       case states.editingExisting:
-        const {zx303DeviceEntity} = this.state
+        const {apiUserEntity, availableRoles} = this.state
         return (
             <Grid container spacing={8}>
               <Grid item xs>
                 <FormControl
                     className={classes.formField}
-                    error={!!fieldValidations.ownerPartyType}
-                    aria-describedby='ownerPartyType'
+                    error={!!fieldValidations.partyType}
+                    aria-describedby='partyType'
                 >
-                  <InputLabel htmlFor='ownerPartyType'>
-                    Owner Party Type
+                  <InputLabel htmlFor='partyType'>
+                    Party Type
                   </InputLabel>
                   <Select
-                      id='ownerPartyType'
-                      name='ownerPartyType'
-                      value={zx303DeviceEntity.ownerPartyType}
+                      id='partyType'
+                      name='partyType'
+                      value={apiUserEntity.partyType}
                       onChange={this.handleFieldChange}
                       style={{width: 150}}
                       disableUnderline={stateIsViewing}
@@ -468,11 +515,11 @@ class ZX303 extends Component {
                       )
                     })}
                   </Select>
-                  {!!fieldValidations.ownerPartyType && (
-                      <FormHelperText id='ownerPartyType'>
+                  {!!fieldValidations.partyType && (
+                      <FormHelperText id='partyType'>
                         {
-                          fieldValidations.ownerPartyType ?
-                              fieldValidations.ownerPartyType.help :
+                          fieldValidations.partyType ?
+                              fieldValidations.partyType.help :
                               undefined
                         }
                       </FormHelperText>
@@ -481,148 +528,114 @@ class ZX303 extends Component {
               </Grid>
               <Grid item xs>
                 <AsyncSelect
-                    id='ownerId'
-                    label={'Owner'}
+                    id='partyId'
+                    label={'Party'}
                     value={{
-                      value: zx303DeviceEntity.ownerId,
+                      value: apiUserEntity.partyId,
                       label: this.partyHolder.retrieveEntityProp(
                           'name',
-                          zx303DeviceEntity.ownerId,
+                          apiUserEntity.partyId,
                       ),
                     }}
                     onChange={this.handleFieldChange}
                     loadOptions={this.loadPartyOptions(
-                        zx303DeviceEntity.ownerPartyType)}
+                        apiUserEntity.partyType)}
                     menuPosition={'fixed'}
                     readOnly={stateIsViewing}
                     helperText={
-                      fieldValidations.ownerId
-                          ? fieldValidations.ownerId.help
+                      fieldValidations.partyId
+                          ? fieldValidations.partyId.help
                           : undefined
                     }
-                    error={!!fieldValidations.ownerId}
-                />
-              </Grid>
-              <Grid item xs>
-                <FormControl
-                    className={classes.formField}
-                    error={!!fieldValidations.assignedPartyType}
-                    aria-describedby='assignedPartyType'
-                >
-                  <InputLabel htmlFor='assignedPartyType'>
-                    Assigned Party Type
-                  </InputLabel>
-                  <Select
-                      id='assignedPartyType'
-                      name='assignedPartyType'
-                      value={zx303DeviceEntity.assignedPartyType}
-                      onChange={this.handleFieldChange}
-                      style={{width: 150}}
-                      disableUnderline={stateIsViewing}
-                      inputProps={{readOnly: stateIsViewing}}
-                  >
-                    <MenuItem value=''>
-                      <em>None</em>
-                    </MenuItem>
-                    {allPartyTypes.map((partyType, idx) => {
-                      return (
-                          <MenuItem key={idx} value={partyType}>
-                            {partyType}
-                          </MenuItem>
-                      )
-                    })}
-                  </Select>
-                  {!!fieldValidations.assignedPartyType && (
-                      <FormHelperText id='assignedPartyType'>
-                        {
-                          fieldValidations.assignedPartyType ?
-                              fieldValidations.assignedPartyType.help :
-                              undefined
-                        }
-                      </FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs>
-                <AsyncSelect
-                    id='assignedId'
-                    label='Assigned To'
-                    value={{
-                      value: zx303DeviceEntity.assignedId,
-                      label: this.partyHolder.retrieveEntityProp(
-                          'name',
-                          zx303DeviceEntity.assignedId,
-                      ),
-                    }}
-                    onChange={this.handleFieldChange}
-                    loadOptions={this.loadPartyOptions(
-                        zx303DeviceEntity.assignedPartyType)}
-                    menuPosition={'fixed'}
-                    readOnly={stateIsViewing}
-                    helperText={
-                      fieldValidations.assignedId
-                          ? fieldValidations.assignedId.help
-                          : undefined
-                    }
-                    error={!!fieldValidations.assignedId}
+                    error={!!fieldValidations.partyId}
                 />
               </Grid>
               <Grid item xs>
                 <TextField
                     className={classes.formField}
-                    id='simCountryCode'
-                    label='Sim Country Code'
-                    value={zx303DeviceEntity.simCountryCode}
+                    id='name'
+                    label='Name'
+                    value={apiUserEntity.name}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
                       readOnly: stateIsViewing,
                     }}
                     helperText={
-                      fieldValidations.simCountryCode
-                          ? fieldValidations.simCountryCode.help
+                      fieldValidations.name
+                          ? fieldValidations.name.help
                           : undefined
                     }
-                    error={!!fieldValidations.simCountryCode}
+                    error={!!fieldValidations.name}
                 />
               </Grid>
               <Grid item xs>
                 <TextField
                     className={classes.formField}
-                    id='simNumber'
-                    label='Sim Number'
-                    value={zx303DeviceEntity.simNumber}
+                    id='description'
+                    label='Description'
+                    value={apiUserEntity.description}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
                       readOnly: stateIsViewing,
                     }}
                     helperText={
-                      fieldValidations.simNumber
-                          ? fieldValidations.simNumber.help
+                      fieldValidations.description
+                          ? fieldValidations.description.help
                           : undefined
                     }
-                    error={!!fieldValidations.simNumber}
+                    error={!!fieldValidations.description}
                 />
               </Grid>
+              {(activeState === states.viewingExisting) &&
               <Grid item xs>
                 <TextField
                     className={classes.formField}
-                    id='imei'
-                    label='IMEI'
-                    value={zx303DeviceEntity.imei}
+                    id='username'
+                    label='Username'
+                    value={apiUserEntity.username}
                     onChange={this.handleFieldChange}
                     InputProps={{
                       disableUnderline: stateIsViewing,
                       readOnly: stateIsViewing,
                     }}
                     helperText={
-                      fieldValidations.imei
-                          ? fieldValidations.imei.help
+                      fieldValidations.username
+                          ? fieldValidations.username.help
                           : undefined
                     }
-                    error={!!fieldValidations.imei}
+                    error={!!fieldValidations.username}
                 />
+              </Grid>}
+              <Grid item xl={12}>
+                <div className={classes.roleSelectWrapper}>
+                  <div>
+                    <Typography className={classes.roleSelectHeading}>
+                      Role Selection
+                    </Typography>
+                    <Typography className={classes.roleSelectSecondaryHeading}>
+                      Select Roles To Assign to API User
+                    </Typography>
+                  </div>
+                  <MultiSelect
+                      displayAccessor='name'
+                      uniqueIdAccessor='value'
+                      selected={apiUserEntity.roles.map(role => ({
+                        name: role,
+                        value: role,
+                      }))}
+                      available={availableRoles}
+                      onChange={(selectedRoles, availableRoles) => {
+                        apiUserEntity.roles = selectedRoles.map(
+                            role => role.name)
+                        this.setState({
+                          apiUserEntity,
+                          availableRoles,
+                        })
+                      }}
+                  />
+                </div>
               </Grid>
             </Grid>
         )
@@ -656,7 +669,7 @@ class ZX303 extends Component {
                   size={'small'}
                   onClick={this.handleCreateNew}
               >
-                <Tooltip title='Add New Device'>
+                <Tooltip title='Add New APIUser'>
                   <AddIcon className={classes.buttonIcon}/>
                 </Tooltip>
               </Fab>
@@ -672,7 +685,7 @@ class ZX303 extends Component {
                   size={'small'}
                   onClick={this.handleSaveNew}
               >
-                <Tooltip title='Save New Device'>
+                <Tooltip title='Save New APIUser'>
                   <SaveIcon className={classes.buttonIcon}/>
                 </Tooltip>
               </Fab>
@@ -725,7 +738,7 @@ class ZX303 extends Component {
     this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.init,
-      zx303DeviceEntity: new ZX303Device(),
+      apiUserEntity: new APIUserEntity(),
       selectedRowIdx: -1,
     })
   }
@@ -734,9 +747,46 @@ class ZX303 extends Component {
     this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: rowIdx,
-      zx303DeviceEntity: new ZX303Device(rowObj),
+      apiUserEntity: new APIUserEntity(rowObj),
       activeState: events.selectExisting,
     })
+  }
+
+  renderNewAPIUserDialog = () => {
+    const {newAPIUserDialogOpen, newAPIUserCreateResponse} = this.state
+    if (!newAPIUserDialogOpen) {
+      return null
+    }
+    return (
+        <Dialog open={newAPIUserDialogOpen}>
+          <DialogTitle>
+            Copy API User Password
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              After this dialog is closed it will not be possible to get this
+              password again.
+            </Typography>
+            <Typography>
+              <b>{'Username: '}</b>{newAPIUserCreateResponse.apiUser.username}
+            </Typography>
+            <Typography>
+              <b>{'Password: '}</b>{newAPIUserCreateResponse.password}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+                onClick={() => this.setState({
+                  newAPIUserDialogOpen: false,
+                  newAPIUserCreateResponse: undefined,
+                })}
+                color="primary"
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+    )
   }
 
   render() {
@@ -754,7 +804,7 @@ class ZX303 extends Component {
 
     let cardTitle = (
         <Typography variant={'h6'}>
-          Select A Device To View Or Edit
+          Select An APIUser To View Or Edit
         </Typography>
     )
     switch (activeState) {
@@ -762,7 +812,7 @@ class ZX303 extends Component {
         cardTitle = (
             <div className={classes.detailCardTitle}>
               <Typography variant={'h6'}>
-                New Device
+                New APIUser
               </Typography>
               <Grid container
                     direction='row'
@@ -814,14 +864,15 @@ class ZX303 extends Component {
 
     return (
         <div
-            id={'zx303ConfigurationRoot'}
+            id={'companyConfigurationRoot'}
             className={classes.root}
         >
+          {this.renderNewAPIUserDialog()}
           <div className={classes.detailCardWrapper}>
             <Grid container>
               <Grid item>
                 <Card
-                    id={'zx303ConfigurationDetailCard'}
+                    id={'companyConfigurationDetailCard'}
                     className={classes.detailCard}
                 >
                   <CardHeader title={cardTitle}/>
@@ -836,13 +887,13 @@ class ZX303 extends Component {
             <BEPTable
                 loading={recordCollectionInProgress}
                 totalNoRecords={totalNoRecords}
-                noDataText={'No Devices Found'}
+                noDataText={'No Users Found'}
                 data={records}
                 onCriteriaQueryChange={this.handleCriteriaQueryChange}
                 columns={[
                   {
-                    Header: 'IMEI',
-                    accessor: 'imei',
+                    Header: 'Name',
+                    accessor: 'name',
                     width: 150,
                     config: {
                       filter: {
@@ -851,8 +902,8 @@ class ZX303 extends Component {
                     },
                   },
                   {
-                    Header: 'Owner Party Type',
-                    accessor: 'ownerPartyType',
+                    Header: 'Description',
+                    accessor: 'description',
                     width: 136,
                     config: {
                       filter: {
@@ -861,53 +912,38 @@ class ZX303 extends Component {
                     },
                   },
                   {
-                    Header: 'Owned By',
-                    accessor: 'ownerId',
-                    Cell: rowInfo => {
-                      return this.partyHolder.retrieveEntityProp(
-                          'name',
-                          rowInfo.value,
-                      )
+                    Header: 'Username',
+                    accessor: 'username',
+                    width: 136,
+                    config: {
+                      filter: {
+                        type: TextCriterionType,
+                      },
                     },
-                    width: 150,
-                    filterable: false,
                   },
                   {
-                    Header: 'Assigned Party Type',
-                    accessor: 'assignedPartyType',
+                    Header: 'Party Type',
+                    accessor: 'partyType',
                     width: 160,
                     config: {
                       filter: {
-                        type: TextCriterionType,
+                        type: ExactTextCriterionType,
+                        options: partyTypeOptions,
+                        valueAccessor: 'value',
+                        displayAccessor: 'display',
                       },
                     },
                   },
                   {
-                    Header: 'Assigned To',
-                    accessor: 'assignedId',
+                    Header: 'Party',
+                    accessor: 'partyId',
                     Cell: rowInfo => {
                       return this.partyHolder.retrieveEntityProp(
                           'name',
                           rowInfo.value,
                       )
                     },
-                    width: 150,
-                    filterable: false,
-                  },
-                  {
-                    Header: 'Sim Country Code',
-                    accessor: 'simCountryCode',
-                    width: 150,
-                    config: {
-                      filter: {
-                        type: TextCriterionType,
-                      },
-                    },
-                  },
-                  {
-                    Header: 'Sim Number',
-                    accessor: 'simNumber',
-                    width: 150,
+                    width: 160,
                     config: {
                       filter: {
                         type: TextCriterionType,
@@ -945,9 +981,9 @@ class ZX303 extends Component {
   }
 }
 
-ZX303 = withStyles(styles, {withTheme: true})(ZX303)
+APIUser = withStyles(styles, {withTheme: true})(APIUser)
 
-ZX303.propTypes = {
+APIUser.propTypes = {
   /**
    * Success Action Creator
    */
@@ -972,7 +1008,11 @@ ZX303.propTypes = {
    * Party from redux state
    */
   party: PropTypes.object.isRequired,
+  /**
+   * User from redux state
+   */
+  user: PropTypes.instanceOf(User).isRequired,
 }
-ZX303.defaultProps = {}
+APIUser.defaultProps = {}
 
-export default ZX303
+export default APIUser

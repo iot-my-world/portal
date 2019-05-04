@@ -8,7 +8,7 @@ import LoginContainer from '../login/LoginContainer'
 import RegisterUserContainer
   from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
-import {LoginClaims} from 'brain/security/claims/index'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import FullPageLoader from 'components/loader/FullPage'
 import {Logout} from 'actions/auth'
 import moment from 'moment'
@@ -20,7 +20,7 @@ const styles = theme => ({})
 function willBeSetToLoggedIn() {
   try {
     const claims = parseToken(sessionStorage.getItem('jwt'))
-    return claims.notExpired && claims.type === LoginClaims.type
+    return claims.notExpired && claims.type === HumanUserLoginClaims.type
   } catch (e) {
     return false
   }
@@ -78,7 +78,7 @@ class Root extends Component {
     const {SetClaims} = this.props
     try {
       const claims = parseToken(sessionStorage.getItem('jwt'))
-      if (claims.notExpired && claims.type === LoginClaims.type) {
+      if (claims.notExpired && claims.type === HumanUserLoginClaims.type) {
         SetClaims(claims)
         return true
       } else {
@@ -153,7 +153,7 @@ class Root extends Component {
 
 Root.propTypes = {
   SetClaims: PropTypes.func.isRequired,
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * redux state flag indicating if the app
    * has loaded

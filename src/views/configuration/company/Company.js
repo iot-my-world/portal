@@ -20,7 +20,7 @@ import {ReasonsInvalid} from 'brain/validate/index'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {Query} from 'brain/search/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import {LoginClaims} from 'brain/security/claims'
+import {HumanUserLoginClaims} from 'brain/security/claims'
 import {CompanyPartyType} from 'brain/party/types'
 import IdIdentifier from 'brain/search/identifier/Id'
 import PartyIdentifier from 'brain/search/identifier/Party'
@@ -702,7 +702,7 @@ Company.propTypes = {
   /**
    * Login claims from redux state
    */
-  claims: PropTypes.instanceOf(LoginClaims),
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * maxViewDimensions from redux state
    */

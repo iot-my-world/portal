@@ -4,12 +4,12 @@ import {
   setMyParty, setMyUser,
 } from 'actions/actionTypes'
 import {
-  LoginClaims,
-} from 'brain/security/claims/index'
-import {User} from 'brain/user'
+  HumanUserLoginClaims,
+} from 'brain/security/claims'
+import {User} from 'brain/user/human'
 
 const initState = () => ({
-  claims: new LoginClaims(),
+  claims: new HumanUserLoginClaims(),
   party: {},
   user: new User(),
   loggedIn: false,
