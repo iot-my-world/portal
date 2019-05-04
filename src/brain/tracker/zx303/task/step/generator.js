@@ -1,6 +1,6 @@
 import Step from 'brain/tracker/zx303/task/step'
 import {
-  SendResetCommand,
+  SendResetCommand, WaitForReconnect,
 } from 'brain/tracker/zx303/task/step/types'
 import {
   StepStatusPending,
@@ -15,8 +15,12 @@ export default function generator(stepType) {
   switch (stepType) {
     case SendResetCommand:
       return new Step({
-        id: '',
         type: SendResetCommand,
+        status: StepStatusPending,
+      })
+    case WaitForReconnect:
+      return new Step({
+        type: WaitForReconnect,
         status: StepStatusPending,
       })
     default:
