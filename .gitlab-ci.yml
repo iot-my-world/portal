@@ -30,8 +30,8 @@ deploy_stage:
     - yarn install
     - yarn build
     - tar cvf portal.tar build
-    - scp ./portal.tar gitlabci@brain.spotnav.net:/home/gitlabci
-    - ssh gitlabci@brain.spotnav.net "sudo /bin/tar -xvf  portal.tar"
-    - ssh gitlabci@brain.spotnav.net "sudo /bin/rm -rf /var/www/*"
-    - ssh gitlabci@brain.spotnav.net "sudo /bin/cp -r build/* /var/www/"
-    - ssh gitlabci@brain.spotnav.net "sudo /bin/rm -rf /home/gitlabci/*"
+    - scp ./portal.tar gitlabci@brain01.spotnav.net:/home/gitlabci
+    - ssh gitlabci@brain01.spotnav.net "sudo /bin/tar -xvf  portal.tar"
+    - ssh gitlabci@brain01.spotnav.net "sudo /bin/rm -rf /var/www/*"
+    - ssh gitlabci@brain01.spotnav.net "sudo /bin/cp -r build/* /var/www/"
+    - ssh gitlabci@brain01.spotnav.net "sudo /bin/rm -rf /home/gitlabci/*"
