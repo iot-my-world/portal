@@ -30,7 +30,7 @@ try {
 switch (hostName) {
   case 'spotnav':
     config.set({
-      brainAPIUrl: `https://${host}/api`,
+      brainAPIUrl: `https://${host}/api-1`,
       // webSocketUrl: `wss://${host}/ws`,
     })
     break
@@ -38,7 +38,7 @@ switch (hostName) {
   case 'localHost':
   default:
     config.set({
-      brainAPIUrl: `http://${host}:9010/api`,
+      brainAPIUrl: `http://${host}:9010/api-1`,
       // webSocketUrl: `ws://${host}:9008/ws`,
     })
 }
