@@ -30,9 +30,9 @@ class Sidebar extends Component {
       <div ref='mainPanel'>
         <Hidden mdUp>
           <Drawer
-            variant='temporary'
-            anchor={'left'}
+            anchor={'right'}
             open={this.props.open}
+            variant='temporary'
             classes={{
               paper: drawerPaper + ' ' + classes[bgColor + 'Background']
             }}

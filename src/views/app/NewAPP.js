@@ -30,7 +30,7 @@ class App extends Component {
   }
 
   handleDrawerToggle = () => {
-
+    this.setState({ mobileOpen: !this.state.mobileOpen })
   }
 
   render(){
