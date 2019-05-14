@@ -419,7 +419,7 @@ class Sidebar extends React.Component {
         <Hidden mdUp>
           <Drawer
             variant="temporary"
-            anchor={rtlActive ? 'left' : 'right'}
+            anchor={'right'}
             open={this.props.open}
             classes={{
               paper: drawerPaper + ' ' + classes["black" + 'Background'],
@@ -433,7 +433,7 @@ class Sidebar extends React.Component {
             <SidebarWrapper
               className={sidebarWrapper}
               user={user}
-              headerLinks={<HeaderLinks rtlActive={rtlActive}/>}
+              headerLinks={<HeaderLinks rtlActive={false}/>}
               links={links}
             />
             {image !== undefined ? (
@@ -448,7 +448,7 @@ class Sidebar extends React.Component {
           <Drawer
             onMouseOver={() => this.setState({miniActive: false})}
             onMouseOut={() => this.setState({miniActive: true})}
-            anchor={rtlActive ? 'right' : 'left'}
+            anchor={'left'}
             variant="permanent"
             open
             classes={{
