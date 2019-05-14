@@ -7,6 +7,7 @@ import {
   Drawer,
 } from '@material-ui/core'
 import sidebarStyle from "assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx"
+import logo from "assets/img/logo-white.svg";
 
 const styles = theme => ({})
 
@@ -26,6 +27,32 @@ class Sidebar extends Component {
         this.props.miniActive && this.state.miniActive,
       })
 
+
+    const logoClasses =
+      classes.logo +
+      " " +
+      classNames({
+        [classes.whiteAfter]: bgColor === "white"
+      })
+    const logoNormal =
+      classes.logoNormal +
+      " " +
+      classNames({
+        [classes.logoNormalSidebarMini]:
+        this.props.miniActive && this.state.miniActive,
+      });
+    const logoMini = classes.logoMini
+    const spotNavBrand = (
+      <div className={logoClasses}>
+        <a href="https://www.creative-tim.com" className={logoMini}>
+          <img src={logo} alt="logo" className={classes.img} />
+        </a>
+        <a href="https://www.creative-tim.com" className={logoNormal}>
+          {"Creative Tim"}
+        </a>
+      </div>
+    )
+
     return (
       <div ref='mainPanel'>
         <Hidden mdUp>
@@ -37,13 +64,13 @@ class Sidebar extends Component {
               paper: drawerPaper + ' ' + classes[bgColor + 'Background']
             }}
             onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true // Better open performance on mobile.
-            }}
+            ModalProps={{keepMounted: true}}
           >
+            {spotNavBrand}
           </Drawer>
         </Hidden>
         <Hidden smDown>
+          {spotNavBrand}
           <Drawer
             onMouseOver={() => this.setState({ miniActive: false })}
             onMouseOut={() => this.setState({ miniActive: true })}
