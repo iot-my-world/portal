@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import appStyle from 'assets/jss/material-dashboard-pro-react/layouts/dashboardStyle.jsx'
 import {withStyles} from '@material-ui/core'
 import Sidebar from 'components/sidebar/Sidebar'
+import Header from 'components/header/Header'
 
 const styles = theme => ({
   wrapper: {
@@ -48,6 +49,16 @@ class App extends Component {
           miniActive={miniActive}
         />
         <div className={mainPanel} ref="mainPanel">
+          <Header
+            // sidebarMinimize={this.sidebarMinimize.bind(this)}
+            miniActive={miniActive}
+            handleDrawerToggle={this.handleDrawerToggle}
+          />
+          <div className={classes.content}>
+            <div className={classes.container}>
+              <div>some big view here</div>
+            </div>
+          </div>
         </div>
       </div>
     )
