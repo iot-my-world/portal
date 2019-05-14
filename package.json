@@ -22,7 +22,6 @@
     "react-table": "6.8.6",
     "react-toastify": "^4.5.2",
     "redux": "^4.0.1",
-    "typeface-roboto": "^0.0.54",
     "uuid": "^3.3.2"
   },
   "scripts": {

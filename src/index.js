@@ -5,7 +5,8 @@ import {createStore} from 'redux'
 import config from 'react-global-configuration'
 import RootContainer from './views/root/RootContainer'
 import reducers from './reducers/index'
-import 'typeface-roboto'
+
+import "assets/scss/material-dashboard-pro-react.css?v=1.2.0"
 
 const store = createStore(
     reducers,
