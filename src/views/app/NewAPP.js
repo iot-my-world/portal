@@ -25,6 +25,10 @@ class App extends Component {
     miniActive: false
   }
 
+  sidebarMinimize = () => {
+    this.setState({ miniActive: !this.state.miniActive })
+  }
+
   handleDrawerToggle = () => {
 
   }
@@ -50,7 +54,7 @@ class App extends Component {
         />
         <div className={mainPanel} ref="mainPanel">
           <Header
-            // sidebarMinimize={this.sidebarMinimize.bind(this)}
+            sidebarMinimize={this.sidebarMinimize}
             miniActive={miniActive}
             handleDrawerToggle={this.handleDrawerToggle}
           />

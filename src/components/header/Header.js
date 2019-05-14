@@ -23,12 +23,12 @@ const Header = props => {
   const appBarClasses = classNames({
     [' ' + classes['primary']]: 'primary',
   })
-  const sidebarMinimize = classes.sidebarMinimize
+
   return (
     <AppBar className={classes.appBar + appBarClasses}>
       <Toolbar className={classes.container}>
         <Hidden smDown>
-          <div className={sidebarMinimize}>
+          <div className={classes.sidebarMinimize}>
             {props.miniActive ? (
               <Button
                 justIcon
@@ -74,6 +74,7 @@ const Header = props => {
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
   handleDrawerToggle: PropTypes.func.isRequired,
+  sidebarMinimize: PropTypes.func.isRequired,
 }
 Header.defaultProps = {}
 
