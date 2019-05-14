@@ -418,8 +418,10 @@ Sidebar.defaultProps = {
 
 Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
-  bgColor: PropTypes.oneOf(['white', 'black', 'blue']),
   routes: PropTypes.arrayOf(PropTypes.object),
+  handleDrawerToggle: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  miniActive: PropTypes.bool.isRequired,
 }
 
 export default withStyles(sidebarStyle)(Sidebar)
