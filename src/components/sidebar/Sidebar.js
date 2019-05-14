@@ -1,42 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from 'perfect-scrollbar'
 import {NavLink} from 'react-router-dom'
 import cx from 'classnames'
-
-// @material-ui/core components
-import withStyles from '@material-ui/core/styles/withStyles'
-import Drawer from '@material-ui/core/Drawer'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import Hidden from '@material-ui/core/Hidden'
-import Collapse from '@material-ui/core/Collapse'
-
-// core components
+import {
+  withStyles, Drawer, List,
+  ListItem, ListItemIcon, ListItemText,
+  Hidden, Collapse,
+} from '@material-ui/core'
 import HeaderLinks from 'components/header/HeaderLinks'
-
 import sidebarStyle
   from 'assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx'
-
 import avatar from 'assets/img/faces/avatar.jpg'
-
 import logo from 'assets/img/logo-white.svg'
-
 import image from 'assets/img/sidebar-2.jpg'
 
-var ps
+let perfectScrollbarInst
 
-// We've created this component so we can have a ref to the wrapper of the links that appears in our sidebar.
-// This was necessary so that we could initialize PerfectScrollbar on the links.
-// There might be something with the Hidden component from material-ui, and we didn't have access to
-// the links, and couldn't initialize the plugin.
 class SidebarWrapper extends React.Component {
   componentDidMount() {
     if (navigator.platform.indexOf('Win') > -1) {
-      ps = new PerfectScrollbar(this.refs.sidebarWrapper, {
+      perfectScrollbarInst = new PerfectScrollbar(this.refs.sidebarWrapper, {
         suppressScrollX: true,
         suppressScrollY: false,
       })
@@ -45,7 +29,7 @@ class SidebarWrapper extends React.Component {
 
   componentWillUnmount() {
     if (navigator.platform.indexOf('Win') > -1) {
-      ps.destroy()
+      perfectScrollbarInst.destroy()
     }
   }
 
@@ -62,23 +46,13 @@ class SidebarWrapper extends React.Component {
 }
 
 class Sidebar extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      openAvatar: false,
-      openComponents: this.activeRoute('/components'),
-      openForms: this.activeRoute('/forms'),
-      openTables: this.activeRoute('/tables'),
-      openMaps: this.activeRoute('/maps'),
-      openPages: this.activeRoute('-page'),
-      miniActive: true,
-    }
-    this.activeRoute.bind(this)
+  state = {
+    openAvatar: false,
+    miniActive: true,
   }
 
-  // verifies if routeName is the one active (in browser input)
-  activeRoute(routeName) {
-    return this.props.location.pathname.indexOf(routeName) > -1 ? true : false
+  activeRoute = routeName => {
+    return this.props.location.pathname.indexOf(routeName) > -1
   }
 
   openCollapse(collapse) {
