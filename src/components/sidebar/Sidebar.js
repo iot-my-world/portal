@@ -105,14 +105,10 @@ class Sidebar extends React.Component {
         [classes.collapseItemTextMini]:
         this.props.miniActive && this.state.miniActive,
       })
-    const userWrapperClass =
-      classes.user
-    const caret = classes.caret
-    const collapseItemMini = classes.collapseItemMini
-    const photo = classes.photo
-    var user = (
-      <div className={userWrapperClass}>
-        <div className={photo}>
+
+    const user = (
+      <div className={classes.user}>
+        <div className={classes.photo}>
           <img src={avatar} className={classes.avatarImg} alt="..."/>
         </div>
         <List className={classes.list}>
@@ -127,7 +123,7 @@ class Sidebar extends React.Component {
                 secondary={
                   <b
                     className={
-                      caret +
+                      classes.caret +
                       ' ' +
                       classes.userCaret +
                       ' ' +
@@ -148,7 +144,7 @@ class Sidebar extends React.Component {
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
                   >
-                    <span className={collapseItemMini}>
+                    <span className={classes.collapseItemMini}>
                       {'MP'}
                     </span>
                     <ListItemText
@@ -163,7 +159,7 @@ class Sidebar extends React.Component {
                     to="#"
                     className={classes.itemLink + ' ' + classes.userCollapseLinks}
                   >
-                    <span className={collapseItemMini}>
+                    <span className={classes.collapseItemMini}>
                       {'EP'}
                     </span>
                     <ListItemText
@@ -180,7 +176,7 @@ class Sidebar extends React.Component {
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
                   >
-                    <span className={collapseItemMini}>
+                    <span className={classes.collapseItemMini}>
                       {'S'}
                     </span>
                     <ListItemText
@@ -196,7 +192,7 @@ class Sidebar extends React.Component {
         </List>
       </div>
     )
-    var links = (
+    const links = (
       <List className={classes.list}>
         {routes.map((prop, key) => {
           if (prop.redirect) {
@@ -223,8 +219,7 @@ class Sidebar extends React.Component {
                 [classes.collapseItemTextMini]:
                 this.props.miniActive && this.state.miniActive,
               })
-            const itemIcon = classes.itemIcon
-            const caret = classes.caret
+
             return (
               <ListItem key={key} className={classes.item}>
                 <NavLink
@@ -232,7 +227,7 @@ class Sidebar extends React.Component {
                   className={navLinkClasses}
                   onClick={() => this.openCollapse(prop.state)}
                 >
-                  <ListItemIcon className={itemIcon}>
+                  <ListItemIcon className={classes.itemIcon}>
                     <prop.icon/>
                   </ListItemIcon>
                   <ListItemText
@@ -240,7 +235,7 @@ class Sidebar extends React.Component {
                     secondary={
                       <b
                         className={
-                          caret +
+                          classes.caret +
                           ' ' +
                           (this.state[prop.state] ? classes.caretActive : '')
                         }
@@ -262,12 +257,11 @@ class Sidebar extends React.Component {
                         cx({
                           [' ' + classes["blue"]]: this.activeRoute(prop.path),
                         })
-                      const collapseItemMini =
-                        classes.collapseItemMini
+
                       return (
                         <ListItem key={key} className={classes.collapseItem}>
                           <NavLink to={prop.path} className={navLinkClasses}>
-                            <span className={collapseItemMini}>
+                            <span className={classes.collapseItemMini}>
                               {prop.mini}
                             </span>
                             <ListItemText
@@ -297,12 +291,10 @@ class Sidebar extends React.Component {
               [classes.itemTextMini]:
               this.props.miniActive && this.state.miniActive,
             })
-          const itemIcon =
-            classes.itemIcon
           return (
             <ListItem key={key} className={classes.item}>
               <NavLink to={prop.path} className={navLinkClasses}>
-                <ListItemIcon className={itemIcon}>
+                <ListItemIcon className={classes.itemIcon}>
                   <prop.icon/>
                 </ListItemIcon>
                 <ListItemText
