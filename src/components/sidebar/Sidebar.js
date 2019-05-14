@@ -90,9 +90,7 @@ class Sidebar extends React.Component {
   render() {
     const {
       classes,
-      color,
       routes,
-      bgColor,
       rtlActive,
     } = this.props
     const itemText =
@@ -115,11 +113,7 @@ class Sidebar extends React.Component {
         [classes.collapseItemTextRTL]: rtlActive,
       })
     const userWrapperClass =
-      classes.user +
-      ' ' +
-      cx({
-        [classes.whiteAfter]: bgColor === 'white',
-      })
+      classes.user
     const caret =
       classes.caret +
       ' ' +
@@ -308,7 +302,7 @@ class Sidebar extends React.Component {
                         classes.collapseItemLink +
                         ' ' +
                         cx({
-                          [' ' + classes[color]]: this.activeRoute(prop.path),
+                          [' ' + classes["blue"]]: this.activeRoute(prop.path),
                         })
                       const collapseItemMini =
                         classes.collapseItemMini +
@@ -340,7 +334,7 @@ class Sidebar extends React.Component {
             classes.itemLink +
             ' ' +
             cx({
-              [' ' + classes[color]]: this.activeRoute(prop.path),
+              [' ' + classes['blue']]: this.activeRoute(prop.path),
             })
           const itemText =
             classes.itemText +
@@ -392,12 +386,7 @@ class Sidebar extends React.Component {
       cx({
         [classes.logoMiniRTL]: rtlActive,
       })
-    const logoClasses =
-      classes.logo +
-      ' ' +
-      cx({
-        [classes.whiteAfter]: bgColor === 'white',
-      })
+    const logoClasses = classes.logo
     var brand = (
       <div className={logoClasses}>
         <a href="https://www.creative-tim.com" className={logoMini}>
@@ -433,7 +422,7 @@ class Sidebar extends React.Component {
             anchor={rtlActive ? 'left' : 'right'}
             open={this.props.open}
             classes={{
-              paper: drawerPaper + ' ' + classes[bgColor + 'Background'],
+              paper: drawerPaper + ' ' + classes["black" + 'Background'],
             }}
             onClose={this.props.handleDrawerToggle}
             ModalProps={{
@@ -463,7 +452,7 @@ class Sidebar extends React.Component {
             variant="permanent"
             open
             classes={{
-              paper: drawerPaper + ' ' + classes[bgColor + 'Background'],
+              paper: drawerPaper + ' ' + classes["black" + 'Background'],
             }}
           >
             {brand}
@@ -486,8 +475,6 @@ class Sidebar extends React.Component {
 }
 
 Sidebar.defaultProps = {
-  bgColor: 'black',
-  color: 'blue',
   rtlActive: false,
 }
 
@@ -495,15 +482,6 @@ Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
   bgColor: PropTypes.oneOf(['white', 'black', 'blue']),
   rtlActive: PropTypes.bool,
-  color: PropTypes.oneOf([
-    'white',
-    'red',
-    'orange',
-    'green',
-    'blue',
-    'purple',
-    'rose',
-  ]),
   routes: PropTypes.arrayOf(PropTypes.object),
 }
 

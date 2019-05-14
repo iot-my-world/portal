@@ -88,8 +88,6 @@ class Dashboard extends React.Component {
           routes={dashboardRoutes}
           handleDrawerToggle={this.handleDrawerToggle}
           open={this.state.mobileOpen}
-          color="blue"
-          bgColor="black"
           miniActive={this.state.miniActive}
           {...rest}
         />
