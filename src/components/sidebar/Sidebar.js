@@ -53,6 +53,12 @@ class SidebarWrapper extends React.Component {
 }
 
 class Sidebar extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.mainPanelRef = React.createRef()
+  }
+
   state = {
     openAvatar: false,
     miniActive: true,
@@ -327,7 +333,7 @@ class Sidebar extends React.Component {
         navigator.platform.indexOf('Win') > -1,
       })
     return (
-      <div ref="mainPanel">
+      <div ref={this.mainPanelRef}>
         <Hidden mdUp>
           <Drawer
             variant="temporary"
