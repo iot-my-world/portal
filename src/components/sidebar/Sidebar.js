@@ -10,8 +10,8 @@ import {
 } from '@material-ui/core'
 import sidebarStyle from './style'
 import avatar from 'assets/img/faces/avatar.jpg'
-import logo from 'assets/img/logo-white.svg'
-import image from 'assets/img/sidebar-2.jpg'
+import logo from 'assets/images/logo.png'
+import image from 'assets/images/sidebar.png'
 
 let perfectScrollbarInst
 
@@ -300,15 +300,13 @@ class Sidebar extends React.Component {
         [classes.logoNormalSidebarMini]:
         this.props.miniActive && this.state.miniActive,
       })
-    const logoMini =
-      classes.logoMini
-    const logoClasses = classes.logo
-    var brand = (
-      <div className={logoClasses}>
-        <a href="https://www.creative-tim.com" className={logoMini}>
+
+    const brand = (
+      <div className={classes.logo}>
+        <a className={classes.logoMini}>
           <img src={logo} alt="logo" className={classes.img}/>
         </a>
-        <a href="https://www.creative-tim.com" className={logoNormal}>
+        <a className={logoNormal}>
           {'SpotNav'}
         </a>
       </div>
