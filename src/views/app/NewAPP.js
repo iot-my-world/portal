@@ -39,17 +39,25 @@ class Dashboard extends React.Component {
     mobileOpen: false,
     miniActive: false,
   }
+
+  constructor(props) {
+    super(props)
+    this.mainPanelRef = React.createRef()
+  }
+
   handleDrawerToggle = () => {
     this.setState({mobileOpen: !this.state.mobileOpen})
   }
 
   componentDidMount() {
     if (navigator.platform.indexOf('Win') > -1) {
-      perfectScrollbarInst = new PerfectScrollbar(this.refs.mainPanel, {
-        suppressScrollX: true,
-        suppressScrollY: false,
-      })
-      document.body.style.overflow = 'hidden'
+      if (this.mainPanelRef && this.mainPanelRef.current) {
+        perfectScrollbarInst = new PerfectScrollbar(this.mainPanelRef.current, {
+          suppressScrollX: true,
+          suppressScrollY: false,
+        })
+        document.body.style.overflow = 'hidden'
+      }
     }
   }
 
@@ -61,7 +69,9 @@ class Dashboard extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.history.location.pathname !== prevProps.location.pathname) {
-      this.refs.mainPanel.scrollTop = 0
+      if (this.mainPanelRef && this.mainPanelRef.current) {
+        this.mainPanelRef.current.scrollTop = 0
+      }
       if (this.state.mobileOpen) {
         this.setState({mobileOpen: false})
       }
@@ -91,7 +101,7 @@ class Dashboard extends React.Component {
           miniActive={this.state.miniActive}
           {...rest}
         />
-        <div className={mainPanel} ref="mainPanel">
+        <div className={mainPanel} ref={this.mainPanelRef}>
           <Header
             sidebarMinimize={this.sidebarMinimize}
             miniActive={this.state.miniActive}
