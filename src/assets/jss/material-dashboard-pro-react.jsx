@@ -118,27 +118,6 @@ const roseBoxShadow = {
     "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)"
 };
 
-// old card headers
-const orangeCardHeader = {
-  background: "linear-gradient(60deg, #ffa726, #fb8c00)",
-  ...warningBoxShadow
-};
-const greenCardHeader = {
-  background: "linear-gradient(60deg, #66bb6a, #43a047)",
-  ...successBoxShadow
-};
-const redCardHeader = {
-  background: "linear-gradient(60deg, #ef5350, #e53935)",
-  ...dangerBoxShadow
-};
-const blueCardHeader = {
-  background: "linear-gradient(60deg, #26c6da, #00acc1)",
-  ...infoBoxShadow
-};
-const purpleCardHeader = {
-  background: "linear-gradient(60deg, #ab47bc, #8e24aa)",
-  ...primaryBoxShadow
-};
 // new card headers
 const warningCardHeader = {
   background: "linear-gradient(60deg, #ffa726, #fb8c00)",
@@ -163,20 +142,6 @@ const primaryCardHeader = {
 const roseCardHeader = {
   background: "linear-gradient(60deg, #ec407a, #d81b60)",
   ...roseBoxShadow
-};
-
-const cardActions = {
-  margin: "0 20px 10px",
-  paddingTop: "10px",
-  borderTop: "1px solid #eeeeee",
-  height: "auto",
-  ...defaultFont
-};
-
-const cardHeader = {
-  margin: "-20px 15px 0",
-  borderRadius: "3px",
-  padding: "15px"
 };
 
 const defaultBoxShadow = {
@@ -244,16 +209,6 @@ const cardTitle = {
   }
 };
 
-const cardSubtitle = {
-  marginTop: "-.375rem"
-};
-
-const cardLink = {
-  "& + $cardLink": {
-    marginLeft: "1.25rem"
-  }
-};
-
 export {
   //variables
   drawerWidth,
@@ -277,12 +232,6 @@ export {
   warningBoxShadow,
   dangerBoxShadow,
   roseBoxShadow,
-  // old card header colors
-  orangeCardHeader,
-  greenCardHeader,
-  redCardHeader,
-  blueCardHeader,
-  purpleCardHeader,
   roseCardHeader,
   // new card header colors
   warningCardHeader,
@@ -290,12 +239,8 @@ export {
   dangerCardHeader,
   infoCardHeader,
   primaryCardHeader,
-  cardActions,
-  cardHeader,
   defaultBoxShadow,
   tooltip,
   title,
   cardTitle,
-  cardSubtitle,
-  cardLink
 };
