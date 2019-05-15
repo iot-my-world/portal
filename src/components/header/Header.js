@@ -10,9 +10,6 @@ import Menu from "@material-ui/icons/Menu"
 import MoreVert from "@material-ui/icons/MoreVert"
 import ViewList from "@material-ui/icons/ViewList"
 
-// core components
-import HeaderLinks from "./HeaderLinks"
-
 import headerStyle from "assets/jss/material-dashboard-pro-react/components/headerStyle.jsx"
 
 function Header({ ...props }) {
@@ -51,18 +48,12 @@ function Header({ ...props }) {
           <div className={sidebarMinimize}>
             {props.miniActive ? (
               <Button
-                justIcon
-                round
-                color="white"
                 onClick={props.sidebarMinimize}
               >
                 <ViewList className={classes.sidebarMiniIcon} />
               </Button>
             ) : (
               <Button
-                justIcon
-                round
-                color="white"
                 onClick={props.sidebarMinimize}
               >
                 <MoreVert className={classes.sidebarMiniIcon} />
@@ -71,20 +62,10 @@ function Header({ ...props }) {
           </div>
         </Hidden>
         <div className={classes.flex}>
-          {/* Here we create navbar brand, based on route name */}
-          <Button href="#" className={classes.title} color="transparent">
-            {makeBrand()}
-          </Button>
+          {makeBrand()}
         </div>
-        <Hidden smDown implementation="css">
-          <HeaderLinks rtlActive={rtlActive} />
-        </Hidden>
         <Hidden mdUp>
           <Button
-            className={classes.appResponsive}
-            color="transparent"
-            justIcon
-            aria-label="open drawer"
             onClick={props.handleDrawerToggle}
           >
             <Menu />

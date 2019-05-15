@@ -2,13 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import PerfectScrollbar from 'perfect-scrollbar'
 import {NavLink} from 'react-router-dom'
-import cx from 'classnames'
+import classNames from 'classnames'
 import {
   withStyles, Drawer, List,
   ListItem, ListItemIcon, ListItemText,
   Hidden, Collapse,
 } from '@material-ui/core'
-import HeaderLinks from 'components/header/HeaderLinks'
 import sidebarStyle
   from 'assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx'
 import avatar from 'assets/img/faces/avatar.jpg'
@@ -41,11 +40,10 @@ class SidebarWrapper extends React.Component {
   }
 
   render() {
-    const {className, user, headerLinks, links} = this.props
+    const {className, user, links} = this.props
     return (
       <div className={className} ref={this.sidebarWrapperRef}>
         {user}
-        {headerLinks}
         {links}
       </div>
     )
@@ -82,13 +80,13 @@ class Sidebar extends React.Component {
     const itemText =
       classes.itemText +
       ' ' +
-      cx({
+      classNames({
         [classes.itemTextMini]: this.props.miniActive && this.state.miniActive,
       })
     const collapseItemText =
       classes.collapseItemText +
       ' ' +
-      cx({
+      classNames({
         [classes.collapseItemTextMini]:
         this.props.miniActive && this.state.miniActive,
       })
@@ -189,20 +187,20 @@ class Sidebar extends React.Component {
             const navLinkClasses =
               classes.itemLink +
               ' ' +
-              cx({
+              classNames({
                 [' ' + classes.collapseActive]: this.activeRoute(prop.path),
               })
             const itemText =
               classes.itemText +
               ' ' +
-              cx({
+              classNames({
                 [classes.itemTextMini]:
                 this.props.miniActive && this.state.miniActive,
               })
             const collapseItemText =
               classes.collapseItemText +
               ' ' +
-              cx({
+              classNames({
                 [classes.collapseItemTextMini]:
                 this.props.miniActive && this.state.miniActive,
               })
@@ -241,7 +239,7 @@ class Sidebar extends React.Component {
                       const navLinkClasses =
                         classes.collapseItemLink +
                         ' ' +
-                        cx({
+                        classNames({
                           [' ' + classes["blue"]]: this.activeRoute(prop.path),
                         })
 
@@ -268,13 +266,13 @@ class Sidebar extends React.Component {
           const navLinkClasses =
             classes.itemLink +
             ' ' +
-            cx({
+            classNames({
               [' ' + classes['blue']]: this.activeRoute(prop.path),
             })
           const itemText =
             classes.itemText +
             ' ' +
-            cx({
+            classNames({
               [classes.itemTextMini]:
               this.props.miniActive && this.state.miniActive,
             })
@@ -299,7 +297,7 @@ class Sidebar extends React.Component {
     const logoNormal =
       classes.logoNormal +
       ' ' +
-      cx({
+      classNames({
         [classes.logoNormalSidebarMini]:
         this.props.miniActive && this.state.miniActive,
       })
@@ -319,14 +317,14 @@ class Sidebar extends React.Component {
     const drawerPaper =
       classes.drawerPaper +
       ' ' +
-      cx({
+      classNames({
         [classes.drawerPaperMini]:
         this.props.miniActive && this.state.miniActive,
       })
     const sidebarWrapper =
       classes.sidebarWrapper +
       ' ' +
-      cx({
+      classNames({
         [classes.drawerPaperMini]:
         this.props.miniActive && this.state.miniActive,
         [classes.sidebarWrapperWithPerfectScrollbar]:
@@ -351,7 +349,6 @@ class Sidebar extends React.Component {
             <SidebarWrapper
               className={sidebarWrapper}
               user={user}
-              headerLinks={<HeaderLinks rtlActive={false}/>}
               links={links}
             />
             {image !== undefined ? (
