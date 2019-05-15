@@ -1,7 +1,3 @@
-// ##############################
-// // // Header styles
-// #############################
-
 import {
   containerFluid,
   defaultFont,
@@ -11,7 +7,7 @@ import {
   successColor,
   warningColor,
   dangerColor
-} from "assets/jss/material-dashboard-pro-react.jsx";
+} from "components/style/style"
 
 const headerStyle = theme => ({
   appBar: {

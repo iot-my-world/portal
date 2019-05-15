@@ -3,7 +3,7 @@ import {
   drawerMiniWidth,
   transition,
   containerFluid
-} from "assets/jss/material-dashboard-pro-react.jsx";
+} from "components/style/style"
 
 const style = theme => ({
   wrapper: {
