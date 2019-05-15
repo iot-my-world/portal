@@ -18,12 +18,19 @@ import image from 'assets/img/sidebar-2.jpg'
 let perfectScrollbarInst
 
 class SidebarWrapper extends React.Component {
+  constructor(props) {
+    super(props)
+    this.sidebarWrapperRef = React.createRef()
+  }
+
   componentDidMount() {
-    if (navigator.platform.indexOf('Win') > -1) {
-      perfectScrollbarInst = new PerfectScrollbar(this.refs.sidebarWrapper, {
-        suppressScrollX: true,
-        suppressScrollY: false,
-      })
+    if (this.sidebarWrapperRef && this.sidebarWrapperRef.current) {
+      if (navigator.platform.indexOf('Win') > -1) {
+        perfectScrollbarInst = new PerfectScrollbar(this.sidebarWrapperRef.current, {
+          suppressScrollX: true,
+          suppressScrollY: false,
+        })
+      }
     }
   }
 
@@ -36,7 +43,7 @@ class SidebarWrapper extends React.Component {
   render() {
     const {className, user, headerLinks, links} = this.props
     return (
-      <div className={className} ref="sidebarWrapper">
+      <div className={className} ref={this.sidebarWrapperRef}>
         {user}
         {headerLinks}
         {links}
