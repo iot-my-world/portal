@@ -1,7 +1,3 @@
-// ##############################
-// // // App styles
-// #############################
-
 import {
   drawerWidth,
   drawerMiniWidth,
