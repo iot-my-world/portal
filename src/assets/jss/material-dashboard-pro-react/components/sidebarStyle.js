@@ -1,7 +1,3 @@
-// ##############################
-// // // Sidebar styles
-// #############################
-
 import {
   drawerWidth,
   drawerMiniWidth,
@@ -18,16 +14,6 @@ import {
 } from "assets/jss/material-dashboard-pro-react.jsx";
 
 const sidebarStyle = theme => ({
-  drawerPaperRTL: {
-    [theme.breakpoints.up("md")]: {
-      left: "auto !important",
-      right: "0 !important"
-    },
-    [theme.breakpoints.down("sm")]: {
-      left: "0  !important",
-      right: "auto !important"
-    }
-  },
   drawerPaper: {
     border: "none",
     position: "fixed",
@@ -80,20 +66,6 @@ const sidebarStyle = theme => ({
     "&:after": {
       background: "#000",
       opacity: ".8"
-    }
-  },
-  blueBackground: {
-    color: "#FFFFFF",
-    "&:after": {
-      background: "#00acc1",
-      opacity: ".93"
-    }
-  },
-  whiteBackground: {
-    color: "#3C4858",
-    "&:after": {
-      background: "#FFFFFF",
-      opacity: ".93"
     }
   },
   whiteAfter: {

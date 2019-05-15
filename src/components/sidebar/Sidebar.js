@@ -9,7 +9,7 @@ import {
   Hidden, Collapse,
 } from '@material-ui/core'
 import sidebarStyle
-  from 'assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx'
+  from 'assets/jss/material-dashboard-pro-react/components/sidebarStyle'
 import avatar from 'assets/img/faces/avatar.jpg'
 import logo from 'assets/img/logo-white.svg'
 import image from 'assets/img/sidebar-2.jpg'
@@ -338,7 +338,7 @@ class Sidebar extends React.Component {
             anchor={'right'}
             open={this.props.open}
             classes={{
-              paper: drawerPaper + ' ' + classes["black" + 'Background'],
+              paper: drawerPaper + ' ' + classes.blackBackground,
             }}
             onClose={this.props.handleDrawerToggle}
             ModalProps={{
@@ -367,7 +367,7 @@ class Sidebar extends React.Component {
             variant="permanent"
             open
             classes={{
-              paper: drawerPaper + ' ' + classes["black" + 'Background'],
+              paper: drawerPaper + ' ' + classes.blackBackground,
             }}
           >
             {brand}
