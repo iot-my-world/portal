@@ -65,7 +65,7 @@ const sidebarStyle = theme => ({
     color: "#FFFFFF",
     "&:after": {
       background: "#000",
-      opacity: ".8"
+      opacity: ".6"
     }
   },
   drawerPaperMini: {
