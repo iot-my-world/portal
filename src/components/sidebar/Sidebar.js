@@ -8,8 +8,7 @@ import {
   ListItem, ListItemIcon, ListItemText,
   Hidden, Collapse,
 } from '@material-ui/core'
-import sidebarStyle
-  from 'assets/jss/material-dashboard-pro-react/components/sidebarStyle'
+import sidebarStyle from './style'
 import avatar from 'assets/img/faces/avatar.jpg'
 import logo from 'assets/img/logo-white.svg'
 import image from 'assets/img/sidebar-2.jpg'

@@ -13,8 +13,7 @@ import Sidebar from 'components/sidebar/Sidebar'
 
 import dashboardRoutes from './newRoutes'
 
-import appStyle
-  from 'assets/jss/material-dashboard-pro-react/layouts/dashboardStyle.jsx'
+import style from './style'
 
 const switchRoutes = (
   <Switch>
@@ -122,4 +121,4 @@ Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(appStyle)(Dashboard)
+export default withStyles(style)(Dashboard)

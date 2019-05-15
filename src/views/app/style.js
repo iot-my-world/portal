@@ -5,7 +5,7 @@ import {
   containerFluid
 } from "assets/jss/material-dashboard-pro-react.jsx";
 
-const appStyle = theme => ({
+const style = theme => ({
   wrapper: {
     position: "relative",
     top: "0",
@@ -50,4 +50,4 @@ const appStyle = theme => ({
   }
 });
 
-export default appStyle;
+export default style;

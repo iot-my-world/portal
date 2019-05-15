@@ -5,12 +5,11 @@ import {
   withStyles, Button, AppBar,
   Toolbar, Hidden,
 } from '@material-ui/core'
-// material-ui icons
-import Menu from "@material-ui/icons/Menu"
-import MoreVert from "@material-ui/icons/MoreVert"
-import ViewList from "@material-ui/icons/ViewList"
+import {
+  Menu, MoreVert, ViewList,
+} from "@material-ui/icons"
 
-import headerStyle from "assets/jss/material-dashboard-pro-react/components/headerStyle.jsx"
+import headerStyle from "./style"
 
 function Header({ ...props }) {
   function makeBrand() {
