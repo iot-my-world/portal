@@ -7,9 +7,7 @@ let DeviceContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    maxViewDimensions: state.app.maxViewDimensions,
-  }
+  return {}
 }
 
 DeviceContainer = connect(

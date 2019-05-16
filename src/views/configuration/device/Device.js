@@ -38,7 +38,7 @@ class Device extends Component {
   }
 
   render() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {activeTab} = this.state
 
     return (
@@ -52,7 +52,6 @@ class Device extends Component {
           <Grid item>
             <Card
                 className={classes.rootCard}
-                // style={{width: maxViewDimensions.width}}
             >
               <AppBar position="static">
                 <Tabs
@@ -74,9 +73,6 @@ class Device extends Component {
               </AppBar>
               <CardContent
                   classes={{root: classes.cardContent}}
-                  style={{
-                    height: maxViewDimensions.height - 95,
-                  }}
               >
                 {this.renderTabContent()}
               </CardContent>

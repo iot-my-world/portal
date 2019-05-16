@@ -750,7 +750,6 @@ class User extends Component {
     const {
       theme,
       classes,
-      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
@@ -837,7 +836,7 @@ class User extends Component {
             </Grid>
           </Grid>
           <Grid item xl={12}>
-            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+            <Card>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
@@ -1272,10 +1271,6 @@ User.propTypes = {
    * Party from redux state
    */
   party: PropTypes.object.isRequired,
-  /**
-   * maxViewDimensions from redux state
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 
 User.defaultProps = {}
