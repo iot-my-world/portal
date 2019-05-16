@@ -14,6 +14,7 @@ import dashboardRoutes from './newRoutes'
 
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
+import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 
 const switchRoutes = (
   <Switch>
@@ -45,11 +46,29 @@ class App extends React.Component {
     this.mainPanelRef = React.createRef()
   }
 
+  setup = async () => {
+    const {
+      claims,
+    } = this.props
+
+    console.log('setup 1')
+
+    // catch in case setup starts before claims are set
+    // when the claims are set later on componentDidUpdate will catch
+    // and start setup again
+    if (!claims.notExpired) {
+      return
+    }
+
+    console.log('setup 2')
+  }
+
   handleDrawerToggle = () => {
     this.setState({mobileOpen: !this.state.mobileOpen})
   }
 
   componentDidMount() {
+    // set perfect scrollbar if we are on windows
     if (navigator.platform.indexOf('Win') > -1) {
       if (this.mainPanelRef && this.mainPanelRef.current) {
         perfectScrollbarInst = new PerfectScrollbar(this.mainPanelRef.current, {
@@ -59,6 +78,8 @@ class App extends React.Component {
         document.body.style.overflow = 'hidden'
       }
     }
+    // call setup to load app
+    this.setup()
   }
 
   componentWillUnmount() {
@@ -68,7 +89,17 @@ class App extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.history.location.pathname !== prevProps.location.pathname) {
+    const {
+      history,
+      location,
+      claims: prevClaims,
+    } = prevProps
+    const {
+      claims,
+    } = this.props
+
+    // scroll the main page panel to the top if the path changes
+    if (history.location.pathname !== location.pathname) {
       if (this.mainPanelRef && this.mainPanelRef.current) {
         this.mainPanelRef.current.scrollTop = 0
       }
@@ -76,6 +107,17 @@ class App extends React.Component {
         this.setState({mobileOpen: false})
       }
     }
+
+    // restart setup in case setup was called before claims
+    // were set
+    if (
+      (prevClaims.notExpired !== claims.notExpired) &&
+      claims.notExpired
+    ) {
+      this.setup()
+      return
+    }
+
   }
 
   sidebarMinimize = () => {
@@ -128,6 +170,10 @@ class App extends React.Component {
 
 App.propTypes = {
   classes: PropTypes.object.isRequired,
+  /**
+   * Login claims from redux state
+   */
+  claims: PropTypes.instanceOf(HumanUserLoginClaims),
 }
 
 export default withStyles(style)(App)
