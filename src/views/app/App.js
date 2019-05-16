@@ -10,7 +10,7 @@ import {
 import Header from 'components/header/Header'
 import Sidebar from 'components/sidebar/Sidebar'
 
-import appRoutes from './newRoutes'
+import appRoutes from './routes'
 
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
