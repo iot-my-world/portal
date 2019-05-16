@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import App from './NewAPP'
+import App from './App'
 import {
   Logout,
   SetMyParty,
