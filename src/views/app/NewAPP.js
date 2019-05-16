@@ -10,7 +10,7 @@ import {
 import Header from 'components/header/Header'
 import Sidebar from 'components/sidebar/Sidebar'
 
-import dashboardRoutes from './newRoutes'
+import appRoutes from './newRoutes'
 
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
@@ -22,7 +22,7 @@ import UserAdministrator from 'brain/user/human/Administrator'
 
 const switchRoutes = (
   <Switch>
-    {dashboardRoutes.map((prop, key) => {
+    {appRoutes.map((prop, key) => {
       if (prop.redirect)
         return <Redirect from={prop.path} to={prop.pathTo} key={key}/>
       if (prop.collapse)
@@ -192,7 +192,7 @@ class App extends React.Component {
     return (
       <div className={classes.wrapper}>
         <Sidebar
-          routes={dashboardRoutes}
+          routes={appRoutes}
           handleDrawerToggle={this.handleDrawerToggle}
           open={mobileOpen}
           miniActive={miniActive}
@@ -212,7 +212,7 @@ class App extends React.Component {
           <Header
             sidebarMinimize={this.sidebarMinimize}
             miniActive={miniActive}
-            routes={dashboardRoutes}
+            routes={appRoutes}
             handleDrawerToggle={this.handleDrawerToggle}
             {...rest}
           />

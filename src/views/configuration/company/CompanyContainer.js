@@ -10,18 +10,17 @@ import {
   HideGlobalLoader,
 } from 'actions/app'
 
-let FunctionalContainer = props => {
+let CompanyContainer = props => {
   return <Company {...props}/>
 }
 
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
-    maxViewDimensions: state.app.maxViewDimensions,
   }
 }
 
-FunctionalContainer = connect(
+CompanyContainer = connect(
     mapStateToProps,
     {
       NotificationSuccess,
@@ -29,6 +28,6 @@ FunctionalContainer = connect(
       ShowGlobalLoader,
       HideGlobalLoader,
     },
-)(FunctionalContainer)
+)(CompanyContainer)
 
-export default FunctionalContainer
+export default CompanyContainer

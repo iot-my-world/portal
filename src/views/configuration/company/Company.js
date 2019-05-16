@@ -337,7 +337,6 @@ class Company extends Component {
     const {
       theme,
       classes,
-      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
@@ -424,7 +423,7 @@ class Company extends Component {
             </Grid>
           </Grid>
           <Grid item xl={12}>
-            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+            <Card>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
@@ -703,10 +702,6 @@ Company.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(HumanUserLoginClaims),
-  /**
-   * maxViewDimensions from redux state
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 
 Company.defaultProps = {}

@@ -22,7 +22,7 @@ const defaultTheme = {
     background: { main: '#cbcbcb'},
   },
   typography: {
-    fontFamily: `'Roboto'`,
+    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
     useNextVariants: true,
   },
 }
