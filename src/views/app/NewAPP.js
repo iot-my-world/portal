@@ -15,6 +15,7 @@ import dashboardRoutes from './newRoutes'
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
+import PermissionHandler from 'brain/security/permission/handler/Handler'
 
 const switchRoutes = (
   <Switch>
@@ -49,9 +50,10 @@ class App extends React.Component {
   setup = async () => {
     const {
       claims,
+      SetViewPermissions,
+      NotificationFailure,
+      Logout,
     } = this.props
-
-    console.log('setup 1')
 
     // catch in case setup starts before claims are set
     // when the claims are set later on componentDidUpdate will catch
@@ -60,7 +62,22 @@ class App extends React.Component {
       return
     }
 
-    console.log('setup 2')
+    // load app view permissions
+    let viewPermissions = []
+    try {
+      // TODO: remove redundant passing of user id
+      const response = await PermissionHandler.GetAllUsersViewPermissions({
+        userIdentifier: claims.userId,
+      })
+      // update view permissions in state
+      SetViewPermissions(response.permission)
+      viewPermissions = response.permission
+    } catch (e) {
+      console.error('error getting view permissions', e)
+      NotificationFailure('error logging in')
+      Logout()
+      return
+    }
   }
 
   handleDrawerToggle = () => {
@@ -174,6 +191,18 @@ App.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(HumanUserLoginClaims),
+  /**
+   * SetViewPermissions action creator
+   */
+  SetViewPermissions: PropTypes.func.isRequired,
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
+  /**
+   * Logout action creator
+   */
+  Logout: PropTypes.func.isRequired,
 }
 
 export default withStyles(style)(App)

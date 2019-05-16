@@ -4,6 +4,7 @@ import {
 } from 'actions/actionTypes'
 
 const initState = () => ({
+  viewPermissionsSet: false,
   view: [],
 })
 
@@ -13,6 +14,7 @@ export default function permission(state = initState(), action) {
       return {
         ...state,
         view: action.data,
+        viewPermissionsSet: true,
       }
 
     case logout:

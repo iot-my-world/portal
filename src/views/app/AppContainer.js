@@ -10,10 +10,6 @@ import {
   SetViewPermissions,
 } from 'actions/permission'
 import {
-  AppDoneLoading,
-  SetMaxViewDimensions,
-} from 'actions/app'
-import {
   NotificationFailure,
 } from 'actions/notification'
 
@@ -24,8 +20,6 @@ let AppContainer = props => {
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
-    appDoneLoading: state.app.doneLoading,
-    maxViewDimensions: state.app.maxViewDimensions,
     user: state.auth.user,
     party: state.auth.party,
     viewPermissions: state.permission.view,
@@ -37,10 +31,8 @@ AppContainer = connect(
     {
       Logout,
       SetViewPermissions,
-      AppDoneLoading,
       SetMyParty,
       SetMyUser,
-      SetMaxViewDimensions,
       NotificationFailure,
     }
 )(AppContainer)
