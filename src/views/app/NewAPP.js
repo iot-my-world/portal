@@ -16,6 +16,7 @@ import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
+import User from 'brain/user/human/User'
 
 const switchRoutes = (
   <Switch>
@@ -110,9 +111,11 @@ class App extends React.Component {
       history,
       location,
       claims: prevClaims,
+      appDoneLoading: prevAppDoneLoading,
     } = prevProps
     const {
       claims,
+      appDoneLoading,
     } = this.props
 
     // scroll the main page panel to the top if the path changes
@@ -135,6 +138,12 @@ class App extends React.Component {
       return
     }
 
+    if (
+      (prevAppDoneLoading !== appDoneLoading)
+      && appDoneLoading
+    ) {
+      this.setState({appLoading: false})
+    }
   }
 
   sidebarMinimize = () => {
@@ -187,22 +196,53 @@ class App extends React.Component {
 
 App.propTypes = {
   classes: PropTypes.object.isRequired,
+
+  /**
+   * Flag which goes true when all desired set
+   * flags from redux are true
+   */
+  appDoneLoading: PropTypes.bool.isRequired,
+
   /**
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(HumanUserLoginClaims),
+
+  /**
+   * Failure Action Creator
+   */
+  NotificationFailure: PropTypes.func.isRequired,
+
+  /**
+   * Logout action creator
+   */
+  Logout: PropTypes.func.isRequired,
+
   /**
    * SetViewPermissions action creator
    */
   SetViewPermissions: PropTypes.func.isRequired,
   /**
-   * Failure Action Creator
+   * View permissions from redux
    */
-  NotificationFailure: PropTypes.func.isRequired,
+  viewPermissions: PropTypes.array.isRequired,
+
   /**
-   * Logout action creator
+   * SetMyUser action creator
    */
-  Logout: PropTypes.func.isRequired,
+  SetMyUser: PropTypes.func.isRequired,
+  /**
+   * Logged in user from redux
+   */
+  user: PropTypes.instanceOf(User).isRequired,
+  /**
+   * SetMyParty action creator
+   */
+  SetMyParty: PropTypes.func.isRequired,
+  /**
+   * party of logged in user from redux
+   */
+  party: PropTypes.object.isRequired,
 }
 
 export default withStyles(style)(App)

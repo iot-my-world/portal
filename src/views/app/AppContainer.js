@@ -14,26 +14,39 @@ import {
 } from 'actions/notification'
 
 let AppContainer = props => {
-  return <App {...props}/>
+  const {
+    viewPermissionsSet,
+  } = props
+
+  return <App
+    {...props}
+    appDoneLoading={
+      viewPermissionsSet
+    }
+  />
 }
 
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
+
+    viewPermissions: state.permission.view,
+    viewPermissionsSet: state.permission.viewPermissionsSet,
+
     user: state.auth.user,
     party: state.auth.party,
-    viewPermissions: state.permission.view,
   }
 }
 
 AppContainer = connect(
     mapStateToProps,
     {
-      Logout,
       SetViewPermissions,
+      NotificationFailure,
+      Logout,
+
       SetMyParty,
       SetMyUser,
-      NotificationFailure,
     }
 )(AppContainer)
 
