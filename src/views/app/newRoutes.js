@@ -1,9 +1,3 @@
-import React from 'react'
-
-// @material-ui/icons
-import Apps from '@material-ui/icons/Apps'
-import WidgetsIcon from '@material-ui/icons/Widgets'
-
 import LockIcon from '@material-ui/icons/Lock'
 import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
@@ -14,17 +8,24 @@ import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
-import CameraIcon from '@material-ui/icons/Camera'
 import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import {
-  APIUserConfiguration as ViewAPIUserConfiguration, DeviceConfiguration,
+  APIUserConfiguration as ViewAPIUserConfiguration,
+  DeviceConfiguration,
+  HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
+  LiveTrackingDashboard as ViewLiveTrackingDashboard,
   PartyClientConfiguration,
-  PartyCompanyConfiguration, PartyUserConfiguration,
+  PartyCompanyConfiguration,
+  PartyUserConfiguration,
 } from 'brain/security/permission/view/permission'
 import UserContainer from 'views/configuration/user/UserContainer'
 import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
 import DeviceContainer from 'views/configuration/device/DeviceContainer'
+import LiveTrackingDashboardContainer
+  from 'views/dashboard/tracking/live/LiveContainer'
+import HistoricalTrackingDashboardContainer
+  from 'views/dashboard/tracking/historical/HistoricalContainer'
 
 const dashRoutes = [
   // {
@@ -33,6 +34,29 @@ const dashRoutes = [
   //   icon: ConfigurationIcon,
   //   component: () => <div></div>,
   // },
+  {
+    collapse: true,
+    path: '/app/dashboard',
+    name: 'Dashboard',
+    state: 'openDashboard',
+    icon: DashboardIcon,
+    views: [
+      {
+        path: '/app/dashboard/liveTracking',
+        name: 'Live Tracking',
+        viewPermission: ViewLiveTrackingDashboard,
+        icon: GPSFixedIcon,
+        component: LiveTrackingDashboardContainer,
+      },
+      {
+        path: '/app/dashboard/historicalTracking',
+        name: 'Historical Tracking',
+        viewPermission: ViewHistoricalTrackingDashboard,
+        icon: TimelineIcon,
+        component: HistoricalTrackingDashboardContainer,
+      },
+    ],
+  },
   {
     collapse: true,
     path: '/app/configuration',
@@ -45,6 +69,7 @@ const dashRoutes = [
         name: 'Company',
         viewPermission: PartyCompanyConfiguration,
         mini: 'CO',
+        icon: DomainIcon,
         component: CompanyContainer,
       },
       {
@@ -52,6 +77,7 @@ const dashRoutes = [
         name: 'Client',
         viewPermission: PartyClientConfiguration,
         mini: 'CL',
+        icon: PeopleIcon,
         component: ClientContainer,
       },
       {
@@ -59,6 +85,7 @@ const dashRoutes = [
         name: 'User',
         viewPermission: PartyUserConfiguration,
         mini: 'US',
+        icon: PersonIcon,
         component: UserContainer,
       },
       {
@@ -66,6 +93,7 @@ const dashRoutes = [
         name: 'API User',
         viewPermission: ViewAPIUserConfiguration,
         mini: 'AP',
+        icon: PersonIcon,
         component: APIUserContainer,
       },
       {
@@ -73,6 +101,7 @@ const dashRoutes = [
         name: 'Device',
         viewPermission: DeviceConfiguration,
         mini: 'AP',
+        icon: DeviceIcon,
         component: DeviceContainer,
       },
     ],

@@ -24,10 +24,11 @@ class SidebarWrapper extends React.Component {
   componentDidMount() {
     if (this.sidebarWrapperRef && this.sidebarWrapperRef.current) {
       if (navigator.platform.indexOf('Win') > -1) {
-        perfectScrollbarInst = new PerfectScrollbar(this.sidebarWrapperRef.current, {
-          suppressScrollX: true,
-          suppressScrollY: false,
-        })
+        perfectScrollbarInst = new PerfectScrollbar(
+          this.sidebarWrapperRef.current, {
+            suppressScrollX: true,
+            suppressScrollY: false,
+          })
       }
     }
   }
@@ -141,7 +142,8 @@ class Sidebar extends React.Component {
                 <ListItem className={classes.collapseItem}>
                   <NavLink
                     to="#"
-                    className={classes.itemLink + ' ' + classes.userCollapseLinks}
+                    className={classes.itemLink + ' ' +
+                    classes.userCollapseLinks}
                   >
                     <span className={classes.collapseItemMini}>
                       {'EP'}
@@ -239,15 +241,24 @@ class Sidebar extends React.Component {
                         classes.collapseItemLink +
                         ' ' +
                         classNames({
-                          [' ' + classes["blue"]]: this.activeRoute(prop.path),
+                          [' ' + classes['blue']]: this.activeRoute(prop.path),
                         })
 
                       return (
                         <ListItem key={key} className={classes.collapseItem}>
                           <NavLink to={prop.path} className={navLinkClasses}>
-                            <span className={classes.collapseItemMini}>
-                              {prop.mini}
-                            </span>
+                            {prop.icon
+                              ? (
+                                <ListItemIcon className={classes.itemIcon}>
+                                  <prop.icon/>
+                                </ListItemIcon>
+                              )
+                              : (
+                                <span className={classes.collapseItemMini}>
+                                  {prop.mini}
+                                </span>
+                              )
+                            }
                             <ListItemText
                               primary={prop.name}
                               disableTypography={true}
@@ -386,8 +397,7 @@ class Sidebar extends React.Component {
   }
 }
 
-Sidebar.defaultProps = {
-}
+Sidebar.defaultProps = {}
 
 Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
