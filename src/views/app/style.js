@@ -23,7 +23,7 @@ const style = theme => ({
     [theme.breakpoints.up("md")]: {
       width: `calc(100% - ${drawerWidth}px)`
     },
-    overflow: "auto",
+    overflow: "hidden",
     position: "relative",
     float: "right",
     ...transition,
@@ -34,7 +34,8 @@ const style = theme => ({
   content: {
     marginTop: "70px",
     padding: "30px 15px",
-    minHeight: "calc(100vh - 123px)"
+    minHeight: "calc(100vh - 123px)",
+    overflowY: "scroll",
   },
   container: { ...containerFluid },
   map: {

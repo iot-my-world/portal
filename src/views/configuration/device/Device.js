@@ -386,126 +386,118 @@ class ZX303 extends Component {
     } = this.props
 
     return (
-        <Grid
-            container
-            direction='column'
-            spacing={8}
-            alignItems='center'
-            className={classes.root}
-        >
-          <Grid item>
-            <Card>
-              <CardContent>
-                <BEPTable
-                  loading={recordCollectionInProgress}
-                  totalNoRecords={totalNoRecords}
-                  noDataText={'No Devices Found'}
-                  data={records}
-                  onCriteriaQueryChange={this.handleCriteriaQueryChange}
-                  columns={[
-                    {
-                      Header: 'IMEI',
-                      accessor: 'imei',
-                      width: 150,
-                      config: {
-                        filter: {
-                          type: TextCriterionType,
-                        },
-                      },
+      <div>
+        <Card>
+          <CardContent>
+            <BEPTable
+              loading={recordCollectionInProgress}
+              totalNoRecords={totalNoRecords}
+              noDataText={'No Devices Found'}
+              data={records}
+              onCriteriaQueryChange={this.handleCriteriaQueryChange}
+              columns={[
+                {
+                  Header: 'IMEI',
+                  accessor: 'imei',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    {
-                      Header: 'Owner Party Type',
-                      accessor: 'ownerPartyType',
-                      width: 136,
-                      config: {
-                        filter: {
-                          type: TextCriterionType,
-                        },
-                      },
+                  },
+                },
+                {
+                  Header: 'Owner Party Type',
+                  accessor: 'ownerPartyType',
+                  width: 136,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    {
-                      Header: 'Owned By',
-                      accessor: 'ownerId',
-                      Cell: rowInfo => {
-                        return this.partyHolder.retrieveEntityProp(
-                          'name',
-                          rowInfo.value,
-                        )
-                      },
-                      width: 150,
-                      filterable: false,
+                  },
+                },
+                {
+                  Header: 'Owned By',
+                  accessor: 'ownerId',
+                  Cell: rowInfo => {
+                    return this.partyHolder.retrieveEntityProp(
+                      'name',
+                      rowInfo.value,
+                    )
+                  },
+                  width: 150,
+                  filterable: false,
+                },
+                {
+                  Header: 'Assigned Party Type',
+                  accessor: 'assignedPartyType',
+                  width: 160,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    {
-                      Header: 'Assigned Party Type',
-                      accessor: 'assignedPartyType',
-                      width: 160,
-                      config: {
-                        filter: {
-                          type: TextCriterionType,
-                        },
-                      },
+                  },
+                },
+                {
+                  Header: 'Assigned To',
+                  accessor: 'assignedId',
+                  Cell: rowInfo => {
+                    return this.partyHolder.retrieveEntityProp(
+                      'name',
+                      rowInfo.value,
+                    )
+                  },
+                  width: 150,
+                  filterable: false,
+                },
+                {
+                  Header: 'Sim Country Code',
+                  accessor: 'simCountryCode',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    {
-                      Header: 'Assigned To',
-                      accessor: 'assignedId',
-                      Cell: rowInfo => {
-                        return this.partyHolder.retrieveEntityProp(
-                          'name',
-                          rowInfo.value,
-                        )
-                      },
-                      width: 150,
-                      filterable: false,
+                  },
+                },
+                {
+                  Header: 'Sim Number',
+                  accessor: 'simNumber',
+                  width: 150,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
                     },
-                    {
-                      Header: 'Sim Country Code',
-                      accessor: 'simCountryCode',
-                      width: 150,
-                      config: {
-                        filter: {
-                          type: TextCriterionType,
-                        },
-                      },
-                    },
-                    {
-                      Header: 'Sim Number',
-                      accessor: 'simNumber',
-                      width: 150,
-                      config: {
-                        filter: {
-                          type: TextCriterionType,
-                        },
-                      },
-                    },
-                  ]}
-                  getTdProps={(state, rowInfo) => {
-                    const rowIndex = rowInfo ? rowInfo.index : undefined
-                    return {
-                      onClick: (e, handleOriginal) => {
-                        if (rowInfo) {
-                          this.handleSelect(rowInfo.original, rowInfo.index)
-                        }
-                        if (handleOriginal) {
-                          handleOriginal()
-                        }
-                      },
-                      style: {
-                        background:
-                          rowIndex === selectedRowIdx
-                            ? theme.palette.secondary.light
-                            : 'white',
-                        color:
-                          rowIndex === selectedRowIdx
-                            ? theme.palette.secondary.contrastText
-                            : theme.palette.primary.main,
-                      },
+                  },
+                },
+              ]}
+              getTdProps={(state, rowInfo) => {
+                const rowIndex = rowInfo ? rowInfo.index : undefined
+                return {
+                  onClick: (e, handleOriginal) => {
+                    if (rowInfo) {
+                      this.handleSelect(rowInfo.original, rowInfo.index)
                     }
-                  }}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                    if (handleOriginal) {
+                      handleOriginal()
+                    }
+                  },
+                  style: {
+                    background:
+                      rowIndex === selectedRowIdx
+                        ? theme.palette.secondary.light
+                        : 'white',
+                    color:
+                      rowIndex === selectedRowIdx
+                        ? theme.palette.secondary.contrastText
+                        : theme.palette.primary.main,
+                  },
+                }
+              }}
+            />
+          </CardContent>
+        </Card>
+      </div>
     )
   }
 }
