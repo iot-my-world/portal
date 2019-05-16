@@ -572,7 +572,7 @@ class Live extends Component {
   }
 
   render() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {viewport, mapHeight, showControls} = this.state
 
     return (
@@ -588,11 +588,7 @@ class Live extends Component {
                 alignItems: 'center',
               }}
           >
-            <Card
-                style={{
-                  maxWidth: maxViewDimensions.width - 20,
-                }}
-            >
+            <Card>
               <Grid container direction={'column'} alignItems={'center'}>
                 <Grid item>
                   {this.renderFilterShowHideIcon()}
@@ -608,7 +604,7 @@ class Live extends Component {
           <div className={classes.map} ref={this.getMapHeight}>
             <MapGL
                 {...viewport}
-                width={maxViewDimensions.width - 20}
+                width={200}
                 height={mapHeight}
                 mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
@@ -642,10 +638,6 @@ Live.propTypes = {
    * my party entity
    */
   party: PropTypes.object.isRequired,
-  /**
-   * max view dimensions from redux {width: x, height: x}
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 Live.defaultProps = {}
 

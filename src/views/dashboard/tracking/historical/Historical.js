@@ -499,7 +499,7 @@ class Historical extends Component {
   }
 
   renderControls() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {
       expanded,
       showAvailableDevicesTable,
@@ -530,11 +530,7 @@ class Historical extends Component {
                   alignItems="center"
               >
                 <Grid item>
-                  <Card
-                      style={{
-                        width: maxViewDimensions.width - 60,
-                      }}
-                  >
+                  <Card>
                     <CardHeader
                         avatar={
                           <Avatar aria-label='available'
@@ -669,11 +665,7 @@ class Historical extends Component {
                   </Card>
                 </Grid>
                 <Grid item>
-                  <Card
-                      style={{
-                        width: maxViewDimensions.width - 60,
-                      }}
-                  >
+                  <Card>
                     <CardHeader
                         avatar={
                           <Avatar aria-label='available'
@@ -805,7 +797,7 @@ class Historical extends Component {
   }
 
   render() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {viewport, mapHeight, showControls} = this.state
 
     return (
@@ -821,11 +813,7 @@ class Historical extends Component {
                 alignItems: 'center',
               }}
           >
-            <Card
-                style={{
-                  width: maxViewDimensions.width - 20,
-                }}
-            >
+            <Card>
               <Grid container direction={'column'} alignItems={'center'}>
                 <Grid item>
                   {this.renderFilterShowHideIcon()}
@@ -841,7 +829,6 @@ class Historical extends Component {
           <div className={classes.map} ref={this.getMapHeight}>
             <MapGL
                 {...viewport}
-                width={maxViewDimensions.width - 20}
                 height={mapHeight}
                 mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
@@ -875,10 +862,6 @@ Historical.propTypes = {
    * my party entity
    */
   party: PropTypes.object.isRequired,
-  /**
-   * max view dimensions from redux {width: x, height: x}
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
   /**
    * Failure Action Creator
    */
