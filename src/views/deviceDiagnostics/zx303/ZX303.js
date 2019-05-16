@@ -31,7 +31,7 @@ class ZX303 extends Component {
   }
 
   render() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {activeTab} = this.state
 
     return (
@@ -62,9 +62,6 @@ class ZX303 extends Component {
               </AppBar>
               <CardContent
                   classes={{root: classes.cardContent}}
-                  style={{
-                    height: maxViewDimensions.height - 95,
-                  }}
               >
                 {this.renderTabContent()}
               </CardContent>
@@ -88,10 +85,6 @@ class ZX303 extends Component {
 ZX303 = withStyles(styles)(ZX303)
 
 ZX303.propTypes = {
-  /**
-   * maxViewDimensions from redux state
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 ZX303.defaultProps = {}
 

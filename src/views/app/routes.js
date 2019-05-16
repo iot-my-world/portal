@@ -17,7 +17,7 @@ import {
   LiveTrackingDashboard as ViewLiveTrackingDashboard,
   PartyClientConfiguration,
   PartyCompanyConfiguration,
-  PartyUserConfiguration,
+  PartyUserConfiguration, ViewZX303DeviceDiagnostics,
 } from 'brain/security/permission/view/permission'
 import UserContainer from 'views/configuration/user/UserContainer'
 import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
@@ -26,6 +26,8 @@ import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
+import ZX303DeviceDiagnosticsContainer
+  from 'views/deviceDiagnostics/zx303/ZX303Container'
 
 const dashRoutes = [
   // {
@@ -103,6 +105,22 @@ const dashRoutes = [
         mini: 'AP',
         icon: DeviceIcon,
         component: DeviceContainer,
+      },
+    ],
+  },
+  {
+    collapse: true,
+    path: '/app/deviceDiagnostics',
+    name: 'Device Diagnostics',
+    state: 'openDeviceDiagnostics',
+    icon: ConfigurationIcon,
+    views: [
+      {
+        path: '/app/deviceDiagnostics/zx303',
+        name: 'ZX303',
+        viewPermission: ViewZX303DeviceDiagnostics,
+        icon: DeviceIcon,
+        component: ZX303DeviceDiagnosticsContainer,
       },
     ],
   },
