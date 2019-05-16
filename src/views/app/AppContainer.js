@@ -16,12 +16,16 @@ import {
 let AppContainer = props => {
   const {
     viewPermissionsSet,
+    partySet,
+    userSet,
   } = props
 
   return <App
     {...props}
     appDoneLoading={
-      viewPermissionsSet
+      viewPermissionsSet &&
+      partySet &&
+      userSet
     }
   />
 }
@@ -34,7 +38,10 @@ const mapStateToProps = (state) => {
     viewPermissionsSet: state.permission.viewPermissionsSet,
 
     user: state.auth.user,
+    userSet: state.auth.userSet,
+
     party: state.auth.party,
+    partySet: state.auth.partySet,
   }
 }
 

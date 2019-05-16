@@ -17,6 +17,8 @@ import LoadingScreen from 'views/app/LoadingScreen'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import PermissionHandler from 'brain/security/permission/handler/Handler'
 import User from 'brain/user/human/User'
+import PartyAdministrator from 'brain/party/administrator/Administrator'
+import UserAdministrator from 'brain/user/human/Administrator'
 
 const switchRoutes = (
   <Switch>
@@ -54,6 +56,8 @@ class App extends React.Component {
       SetViewPermissions,
       NotificationFailure,
       Logout,
+      SetMyParty,
+      SetMyUser,
     } = this.props
 
     // catch in case setup starts before claims are set
@@ -63,7 +67,7 @@ class App extends React.Component {
       return
     }
 
-    // load app view permissions
+    // load view permissions
     let viewPermissions = []
     try {
       // TODO: remove redundant passing of user id
@@ -75,6 +79,32 @@ class App extends React.Component {
       viewPermissions = response.permission
     } catch (e) {
       console.error('error getting view permissions', e)
+      NotificationFailure('error logging in')
+      Logout()
+      return
+    }
+
+    // load party
+    let party
+    try {
+      const response = await PartyAdministrator.GetMyParty()
+      SetMyParty(response.party)
+      party = response.party
+    } catch (e) {
+      console.error('error getting my party', e)
+      NotificationFailure('error logging in')
+      Logout()
+      return
+    }
+
+    // load user
+    let user
+    try {
+      const response = await UserAdministrator.GetMyUser()
+      SetMyUser(response.user)
+      user = response.user
+    } catch (e) {
+      console.error('error getting my user', e)
       NotificationFailure('error logging in')
       Logout()
       return
@@ -142,6 +172,7 @@ class App extends React.Component {
       (prevAppDoneLoading !== appDoneLoading)
       && appDoneLoading
     ) {
+      console.log('app done loading')
       this.setState({appLoading: false})
     }
   }
