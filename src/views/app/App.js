@@ -20,22 +20,6 @@ import User from 'brain/user/human/User'
 import PartyAdministrator from 'brain/party/administrator/Administrator'
 import UserAdministrator from 'brain/user/human/Administrator'
 
-const switchRoutes = (
-  <Switch>
-    {appRoutes.map((prop, key) => {
-      if (prop.redirect)
-        return <Redirect from={prop.path} to={prop.pathTo} key={key}/>
-      if (prop.collapse)
-        return prop.views.map((prop, key) => {
-          return (
-            <Route path={prop.path} component={prop.component} key={key}/>
-          )
-        })
-      return <Route path={prop.path} component={prop.component} key={key}/>
-    })}
-  </Switch>
-)
-
 let perfectScrollbarInst
 
 class App extends React.Component {
@@ -235,7 +219,19 @@ class App extends React.Component {
           />
           <div className={classes.content}>
             <div className={classes.container}>
-              {switchRoutes}
+              <Switch>
+                {this.appRoutes.sidebarLinkRoutes.map((prop, key) => {
+                  if (prop.redirect)
+                    return <Redirect from={prop.path} to={prop.pathTo} key={key}/>
+                  if (prop.collapse)
+                    return prop.views.map((prop, key) => {
+                      return (
+                        <Route path={prop.path} component={prop.component} key={key}/>
+                      )
+                    })
+                  return <Route path={prop.path} component={prop.component} key={key}/>
+                })}
+              </Switch>
             </div>
           </div>
         </div>

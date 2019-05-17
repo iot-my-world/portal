@@ -153,7 +153,12 @@ const dashRoutes = [
 export default dashRoutes
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
-
+  return {
+    userProfileRoute: {},
+    partyProfileRoute: {},
+    partyHomeViewRoute: {},
+    sidebarLinkRoutes: dashRoutes,
+  }
 }
 
 export {
