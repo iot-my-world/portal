@@ -8,7 +8,6 @@ let ProfileContainer = props => {
 
 const mapStateToProps = (state) => {
   return {
-    maxViewDimensions: state.app.maxViewDimensions,
   }
 }
 

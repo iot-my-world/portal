@@ -135,7 +135,7 @@ class Sidebar extends React.Component {
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
                   >
-                    <ListItemIcon className={classes.itemIcon}>
+                    <ListItemIcon className={classes.collapseItemIcon}>
                       <appRoutes.userProfileRoute.icon/>
                     </ListItemIcon>
                     <ListItemText
@@ -152,7 +152,7 @@ class Sidebar extends React.Component {
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
                   >
-                    <ListItemIcon className={classes.itemIcon}>
+                    <ListItemIcon className={classes.collapseItemIcon}>
                       <appRoutes.partyProfileRoute.icon/>
                     </ListItemIcon>
                     <ListItemText
@@ -170,7 +170,7 @@ class Sidebar extends React.Component {
                     }
                     onClick={Logout}
                   >
-                    <ListItemIcon className={classes.itemIcon}>
+                    <ListItemIcon className={classes.collapseItemIcon}>
                       <LockIcon/>
                     </ListItemIcon>
                     <ListItemText
@@ -258,8 +258,7 @@ class Sidebar extends React.Component {
                           >
                             {prop.icon
                               ? (
-                                <ListItemIcon
-                                  className={classes.collapseItemIcon}>
+                                <ListItemIcon className={classes.collapseItemIcon}>
                                   <prop.icon/>
                                 </ListItemIcon>
                               )

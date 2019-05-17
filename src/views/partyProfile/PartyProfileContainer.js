@@ -7,9 +7,7 @@ let PartyProfileContainer = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    maxViewDimensions: state.app.maxViewDimensions,
-  }
+  return {}
 }
 
 PartyProfileContainer = connect(

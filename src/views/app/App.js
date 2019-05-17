@@ -228,6 +228,14 @@ class App extends React.Component {
                   path={this.appRoutes.partyHomeViewRoute.path}
                   component={this.appRoutes.partyHomeViewRoute.component}
                 />
+                <Route
+                  path={this.appRoutes.userProfileRoute.path}
+                  component={this.appRoutes.userProfileRoute.component}
+                />
+                <Route
+                  path={this.appRoutes.partyProfileRoute.path}
+                  component={this.appRoutes.partyProfileRoute.component}
+                />
                 {this.appRoutes.sidebarLinkRoutes.map((prop, key) => {
                   if (prop.redirect)
                     return <Redirect from={prop.path} to={prop.pathTo} key={key}/>

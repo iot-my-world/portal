@@ -499,7 +499,6 @@ class TK102 extends Component {
     const {
       theme,
       classes,
-      maxViewDimensions,
     } = this.props
 
     let cardTitle = (
@@ -586,7 +585,7 @@ class TK102 extends Component {
           </Grid>
           </Grid>
           <Grid item xl={12}>
-            <Card style={{maxWidth: maxViewDimensions.width - 10}}>
+            <Card>
               <CardContent>
                 <BEPTable
                     loading={recordCollectionInProgress}
