@@ -228,7 +228,7 @@ const sidebarStyle = theme => ({
     position: "relative",
     display: "block",
     textDecoration: "none",
-    margin: "10px 0 0 0",
+    margin: "10px 0 0 8px",
     padding: "0"
   },
   collapseActive: {
@@ -241,7 +241,8 @@ const sidebarStyle = theme => ({
     margin: "0 15px",
     borderRadius: "3px",
     position: "relative",
-    display: "block",
+    display: "flex",
+    alignItems: 'center',
     padding: "10px",
     backgroundColor: "transparent",
     ...defaultFont,
@@ -257,19 +258,11 @@ const sidebarStyle = theme => ({
   },
   collapseItemIcon: {
     color: "inherit",
-    // ...defaultFont,
-    // textTransform: "uppercase",
     width: "30px",
     height: "24px",
     float: "left",
     position: "relative",
     marginRight: "15px",
-    textAlign: "center",
-    verticalAlign: "middle",
-    // letterSpacing: "1px",
-    // display: "inherit",
-    // transition: "transform 300ms ease 0s, opacity 300ms ease 0s",
-    // fontSize: "14px"
   },
   collapseItemMini: {
     color: "inherit",
@@ -293,7 +286,6 @@ const sidebarStyle = theme => ({
     transform: "translateX(0px)",
     opacity: "1",
     whiteSpace: "nowrap",
-    display: "block",
     transition: "transform 300ms ease 0s, opacity 300ms ease 0s",
     fontSize: "14px"
   },

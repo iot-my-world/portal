@@ -198,13 +198,13 @@ class Sidebar extends React.Component {
                 [classes.itemTextMini]:
                 this.props.miniActive && this.state.miniActive,
               })
-            const collapseItemText =
-              classes.collapseItemText +
-              ' ' +
-              classNames({
-                [classes.collapseItemTextMini]:
-                this.props.miniActive && this.state.miniActive,
-              })
+            const collapseItemText = classNames(
+                classes.collapseItemText,
+                {
+                  [classes.collapseItemTextMini]:
+                  this.props.miniActive && this.state.miniActive,
+                },
+              )
 
             return (
               <ListItem key={key} className={classes.item}>
@@ -245,14 +245,13 @@ class Sidebar extends React.Component {
                             to={prop.path}
                             className={classNames(
                               classes.collapseItemLink,
-                              {
-                                [classes['blue']]: this.activeRoute(prop.path),
-                              }
+                              {[classes.blue]: this.activeRoute(prop.path)},
                             )}
                           >
                             {prop.icon
                               ? (
-                                <ListItemIcon className={classes.collapseItemIcon}>
+                                <ListItemIcon
+                                  className={classes.collapseItemIcon}>
                                   <prop.icon/>
                                 </ListItemIcon>
                               )
@@ -280,7 +279,7 @@ class Sidebar extends React.Component {
             classes.itemLink +
             ' ' +
             classNames({
-              [' ' + classes['blue']]: this.activeRoute(prop.path),
+              [' ' + classes.blue]: this.activeRoute(prop.path),
             })
           const itemText =
             classes.itemText +
