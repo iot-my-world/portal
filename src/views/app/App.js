@@ -220,7 +220,7 @@ class App extends React.Component {
           <div className={classes.content}>
             <div className={classes.container}>
               <Switch>
-                <Route path={this.appRoutes.partyHomeViewRoute.path} component={this.appRoutes.partyHomeViewRoute.component}/>
+                <Route exact path={this.appRoutes.partyHomeViewRoute.path} component={this.appRoutes.partyHomeViewRoute.component}/>
                 {this.appRoutes.sidebarLinkRoutes.map((prop, key) => {
                   if (prop.redirect)
                     return <Redirect from={prop.path} to={prop.pathTo} key={key}/>
