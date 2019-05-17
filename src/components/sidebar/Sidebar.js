@@ -9,7 +9,7 @@ import {
   Hidden, Collapse,
 } from '@material-ui/core'
 import sidebarStyle from './style'
-import avatar from 'assets/img/faces/avatar.jpg'
+import avatar from 'assets/images/user.png'
 import logo from 'assets/images/logo.png'
 import image from 'assets/images/sidebar.png'
 import User from 'brain/user/human/User'

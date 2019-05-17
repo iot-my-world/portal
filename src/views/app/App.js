@@ -159,8 +159,7 @@ class App extends React.Component {
       }
     }
 
-    // restart setup in case setup was called before claims
-    // were set
+    // restart setup in case setup was called before claims were set
     if (
       (prevClaims.notExpired !== claims.notExpired) &&
       claims.notExpired
