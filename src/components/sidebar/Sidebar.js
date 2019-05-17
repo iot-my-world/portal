@@ -76,9 +76,10 @@ class Sidebar extends React.Component {
   render() {
     const {
       classes,
-      routes,
+      appRoutes,
       user: loggedInUser,
     } = this.props
+
     const itemText =
       classes.itemText +
       ' ' +
@@ -182,7 +183,7 @@ class Sidebar extends React.Component {
     )
     const links = (
       <List className={classes.list}>
-        {routes.map((prop, key) => {
+        {appRoutes.sidebarLinkRoutes.map((prop, key) => {
           if (prop.redirect) {
             return null
           }
@@ -405,7 +406,7 @@ Sidebar.defaultProps = {}
 
 Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
-  routes: PropTypes.arrayOf(PropTypes.object),
+  appRoutes: PropTypes.object.isRequired,
   handleDrawerToggle: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   miniActive: PropTypes.bool.isRequired,

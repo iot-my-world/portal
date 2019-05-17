@@ -54,7 +54,7 @@ const partyProfileRouteBuilder = (party, partyType) => {
   }
 }
 
-const dashRoutes = [
+const appSideBarLinkRoutes = [
   // {
   //   path: '/app/dashboard',
   //   name: 'Dashboard',
@@ -150,15 +150,58 @@ const dashRoutes = [
     ],
   },
 ]
-export default dashRoutes
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
-  return {
+  let appRoutes = {
     userProfileRoute: {},
     partyProfileRoute: {},
     partyHomeViewRoute: {},
-    sidebarLinkRoutes: dashRoutes,
+    sidebarLinkRoutes: [],
   }
+
+  // build sidebar link routes
+  for (let route of appSideBarLinkRoutes) {
+    if (route.collapse) {
+      let collapsibleRoute = {
+        ...route,
+        views: [],
+      }
+      for (let view of route.views) {
+        if (view.hasOwnProperty('viewPermission')) {
+          // if the view has an assigned view permission
+          if (viewPermissions.includes(view.viewPermission)) {
+            // and this user has the view permission,
+            // then add the view
+            collapsibleRoute.views.push(view)
+          }
+        } else {
+          // otherwise the view does not have an assigned permission
+          // so add it
+          collapsibleRoute.views.push(view)
+        }
+      }
+      // if any views were assigned then add the whole
+      // route with it's views
+      if (collapsibleRoute.views.length > 0) {
+        appRoutes.sidebarLinkRoutes.push(collapsibleRoute)
+      }
+    } else {
+      if (route.hasOwnProperty('viewPermission')) {
+        // if the view has an assigned view permission
+        if (viewPermissions.includes(route.viewPermission)) {
+          // and this user has the view permission,
+          // then add the view
+          appRoutes.sidebarLinkRoutes.push(route)
+        }
+      } else {
+        // otherwise the view does not have an assigned permission
+        // so add it
+        appRoutes.sidebarLinkRoutes.push(route)
+      }
+    }
+  }
+  
+  return appRoutes
 }
 
 export {

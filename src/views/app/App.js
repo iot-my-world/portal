@@ -10,7 +10,7 @@ import {
 import Header from 'components/header/Header'
 import Sidebar from 'components/sidebar/Sidebar'
 
-import appRoutes, {appRouteBuilder} from './routes'
+import {appRouteBuilder} from './routes'
 
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
@@ -192,7 +192,7 @@ class App extends React.Component {
     return (
       <div className={classes.wrapper}>
         <Sidebar
-          routes={appRoutes}
+          appRoutes={this.appRoutes}
           handleDrawerToggle={this.handleDrawerToggle}
           open={mobileOpen}
           miniActive={miniActive}
@@ -213,7 +213,7 @@ class App extends React.Component {
           <Header
             sidebarMinimize={this.sidebarMinimize}
             miniActive={miniActive}
-            routes={appRoutes}
+            routes={this.appRoutes.sidebarLinkRoutes}
             handleDrawerToggle={this.handleDrawerToggle}
             {...rest}
           />
