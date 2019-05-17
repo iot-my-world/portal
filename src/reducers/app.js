@@ -1,28 +1,16 @@
 import {
-  appDoneLoading,
-  setMaxViewDimensions,
   logout,
   showGlobalLoader,
-  hideGlobalLoader,
+  hideGlobalLoader, routeBuildingDone,
 } from 'actions/actionTypes'
 
 const initState = () => ({
-  doneLoading: false,
-  maxViewDimensions: {
-    width: 0,
-    height: 0,
-  },
   showGlobalLoader: false,
+  routeBuildingDone: false,
 })
 
 export default function app(state = initState(), action) {
   switch (action.type) {
-    case appDoneLoading:
-      return {
-        ...state,
-        doneLoading: true,
-      }
-
     case showGlobalLoader:
       return {
         ...state,
@@ -35,10 +23,10 @@ export default function app(state = initState(), action) {
         showGlobalLoader: false,
       }
 
-    case setMaxViewDimensions:
+    case routeBuildingDone:
       return {
         ...state,
-        maxViewDimensions: action.data,
+        routeBuildingDone: true,
       }
 
     case logout:

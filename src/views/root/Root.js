@@ -156,11 +156,6 @@ Root.propTypes = {
   claims: PropTypes.instanceOf(HumanUserLoginClaims),
   /**
    * redux state flag indicating if the app
-   * has loaded
-   */
-  doneLoading: PropTypes.bool.isRequired,
-  /**
-   * redux state flag indicating if the app
    * is loggedOut
    */
   loggedOut: PropTypes.bool.isRequired,

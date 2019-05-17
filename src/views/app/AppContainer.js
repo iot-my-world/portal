@@ -10,38 +10,59 @@ import {
   SetViewPermissions,
 } from 'actions/permission'
 import {
-  AppDoneLoading,
-  SetMaxViewDimensions,
+  RouteBuildingDone,
 } from 'actions/app'
 import {
   NotificationFailure,
 } from 'actions/notification'
 
 let AppContainer = props => {
-  return <App {...props}/>
+  const {
+    viewPermissionsSet,
+    partySet,
+    userSet,
+    appRouteBuildingDone,
+  } = props
+
+  return <App
+    {...props}
+    appDoneLoading={
+      viewPermissionsSet &&
+      partySet &&
+      userSet &&
+      appRouteBuildingDone
+    }
+  />
 }
 
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
-    appDoneLoading: state.app.doneLoading,
-    maxViewDimensions: state.app.maxViewDimensions,
-    user: state.auth.user,
-    party: state.auth.party,
+
     viewPermissions: state.permission.view,
+    viewPermissionsSet: state.permission.viewPermissionsSet,
+
+    user: state.auth.user,
+    userSet: state.auth.userSet,
+
+    party: state.auth.party,
+    partySet: state.auth.partySet,
+
+    appRouteBuildingDone: state.app.routeBuildingDone,
   }
 }
 
 AppContainer = connect(
     mapStateToProps,
     {
-      Logout,
       SetViewPermissions,
-      AppDoneLoading,
+      NotificationFailure,
+      Logout,
+
       SetMyParty,
       SetMyUser,
-      SetMaxViewDimensions,
-      NotificationFailure,
+
+      RouteBuildingDone,
     }
 )(AppContainer)
 

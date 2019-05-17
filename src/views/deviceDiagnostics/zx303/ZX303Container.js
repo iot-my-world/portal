@@ -7,9 +7,7 @@ let ZX303Container = props => {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    maxViewDimensions: state.app.maxViewDimensions,
-  }
+  return {}
 }
 
 ZX303Container = connect(

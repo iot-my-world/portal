@@ -4,7 +4,7 @@ import APIUser from './APIUser'
 import {NotificationFailure, NotificationSuccess} from 'actions/notification'
 import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 
-let FunctionalContainer = props => {
+let APIUserContainer = props => {
   return <APIUser {...props}/>
 }
 
@@ -16,7 +16,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-FunctionalContainer = connect(
+APIUserContainer = connect(
     mapStateToProps,
     {
       NotificationSuccess,
@@ -24,6 +24,6 @@ FunctionalContainer = connect(
       ShowGlobalLoader,
       HideGlobalLoader,
     },
-)(FunctionalContainer)
+)(APIUserContainer)
 
-export default FunctionalContainer
+export default APIUserContainer

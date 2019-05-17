@@ -21,7 +21,7 @@ import {UserAdministrator} from 'brain/user/human/index'
 
 const style = theme => {
   return {
-    fullPageBackground: {
+    loginFullPageBackground: {
       position: 'absolute',
       height: '100%',
       width: '100%',
@@ -552,7 +552,7 @@ class Login extends Component {
         (activeState === states.forgotPasswordDetailsEnter)
 
     return <div
-        className={classes.fullPageBackground}
+        className={classes.loginFullPageBackground}
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
     >
       <div className={classes.root}>

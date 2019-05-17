@@ -7,7 +7,6 @@ import {
   infoCardHeader, primaryCardHeader, roseCardHeader
 } from 'components/timDashboard/timDashboard'
 
-// core components
 const cardHeaderStyle = {
   cardHeader: {
     padding: '0.75rem 1.25rem',

@@ -10,8 +10,13 @@ import {User} from 'brain/user/human'
 
 const initState = () => ({
   claims: new HumanUserLoginClaims(),
+
   party: {},
+  partySet: false,
+
   user: new User(),
+  userSet: false,
+
   loggedIn: false,
   loggedOut: false,
 })
@@ -28,12 +33,14 @@ export default function auth(state = initState(), action) {
       return {
         ...state,
         party: action.data,
+        partySet: true,
       }
 
     case setMyUser:
       return {
         ...state,
         user: action.data,
+        userSet: true,
       }
 
     case login:

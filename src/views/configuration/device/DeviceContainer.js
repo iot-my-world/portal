@@ -1,20 +1,28 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import Device from './Device'
+import ZX303 from './Device'
+import {NotificationFailure, NotificationSuccess} from 'actions/notification'
+import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 
-let DeviceContainer = props => {
-  return <Device {...props}/>
+let FunctionalContainer = props => {
+  return <ZX303 {...props}/>
 }
 
 const mapStateToProps = (state) => {
   return {
-    maxViewDimensions: state.app.maxViewDimensions,
+    party: state.auth.party,
+    claims: state.auth.claims,
   }
 }
 
-DeviceContainer = connect(
-    mapStateToProps,
-    {},
-)(DeviceContainer)
+FunctionalContainer = connect(
+  mapStateToProps,
+  {
+    NotificationSuccess,
+    NotificationFailure,
+    ShowGlobalLoader,
+    HideGlobalLoader,
+  },
+)(FunctionalContainer)
 
-export default DeviceContainer
+export default FunctionalContainer

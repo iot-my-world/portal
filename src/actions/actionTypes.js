@@ -9,11 +9,10 @@ export const notificationSuccess = 4
 export const notificationFailure = 5
 
 // app
-export const appDoneLoading = 6
-export const setMaxViewDimensions = 7
-export const showGlobalLoader = 8
-export const hideGlobalLoader = 9
+export const showGlobalLoader = 6
+export const hideGlobalLoader = 7
+export const routeBuildingDone = 8
 
 // party
-export const setMyParty = 10
-export const setMyUser = 11
+export const setMyParty = 9
+export const setMyUser = 10

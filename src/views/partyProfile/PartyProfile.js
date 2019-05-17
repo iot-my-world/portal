@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 import {
   Grid,
   withStyles,
@@ -50,7 +50,7 @@ class Profile extends Component {
   }
 
   render() {
-    const {classes, maxViewDimensions} = this.props
+    const {classes} = this.props
     const {activeTab} = this.state
 
     return (
@@ -62,10 +62,7 @@ class Profile extends Component {
           alignItems='center'
       >
         <Grid item>
-          <Card
-            className={classes.rootCard}
-            style={{width: maxViewDimensions.width}}
-          >
+          <Card className={classes.rootCard}>
             <AppBar position="static">
               <Tabs
                 value={activeTab}
@@ -93,10 +90,6 @@ class Profile extends Component {
 Profile = withStyles(styles)(Profile)
 
 Profile.propTypes = {
-  /**
-   * maxViewDimensions from redux state
-   */
-  maxViewDimensions: PropTypes.object.isRequired,
 }
 Profile.defaultProps = {}
 
