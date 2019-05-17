@@ -13,7 +13,7 @@ import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
 import UserContainer from 'views/configuration/user/UserContainer'
 import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
-import DeviceContainer from 'views/configuration/device/DeviceContainer'
+import ZX303DeviceContainer from 'views/configuration/device/DeviceContainer'
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
 import HistoricalTrackingDashboardContainer
@@ -108,12 +108,11 @@ const appSideBarLinkRoutes = [
         component: APIUserContainer,
       },
       {
-        path: '/app/configuration/device',
-        name: 'Device',
+        path: '/app/configuration/zx303device',
+        name: 'ZX303 Device',
         viewPermission: DeviceConfiguration,
-        mini: 'AP',
         icon: DeviceIcon,
-        component: DeviceContainer,
+        component: ZX303DeviceContainer,
       },
     ],
   },
