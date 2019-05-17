@@ -182,7 +182,7 @@ class App extends React.Component {
   }
 
   render() {
-    const {classes, ...rest} = this.props
+    const {classes, user, ...rest} = this.props
     const {miniActive, mobileOpen, appLoading} = this.state
 
     if (appLoading) {
@@ -196,6 +196,7 @@ class App extends React.Component {
           handleDrawerToggle={this.handleDrawerToggle}
           open={mobileOpen}
           miniActive={miniActive}
+          user={user}
           {...rest}
         />
         <div

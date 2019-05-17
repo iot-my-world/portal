@@ -12,6 +12,7 @@ import sidebarStyle from './style'
 import avatar from 'assets/img/faces/avatar.jpg'
 import logo from 'assets/images/logo.png'
 import image from 'assets/images/sidebar.png'
+import User from 'brain/user/human/User'
 
 let perfectScrollbarInst
 
@@ -76,6 +77,7 @@ class Sidebar extends React.Component {
     const {
       classes,
       routes,
+      user: loggedInUser,
     } = this.props
     const itemText =
       classes.itemText +
@@ -104,7 +106,7 @@ class Sidebar extends React.Component {
               onClick={() => this.openCollapse('openAvatar')}
             >
               <ListItemText
-                primary={'Tania Andrew'}
+                primary={loggedInUser.name}
                 secondary={
                   <b
                     className={
@@ -124,7 +126,7 @@ class Sidebar extends React.Component {
               <List className={classes.list + ' ' + classes.collapseList}>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="#"
+                    to="/app/profile"
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
@@ -133,7 +135,7 @@ class Sidebar extends React.Component {
                       {'MP'}
                     </span>
                     <ListItemText
-                      primary={'My Profile'}
+                      primary={'Profile'}
                       disableTypography={true}
                       className={collapseItemText}
                     />
@@ -407,6 +409,10 @@ Sidebar.propTypes = {
   handleDrawerToggle: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   miniActive: PropTypes.bool.isRequired,
+  /**
+   * Logged in user from redux
+   */
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default withStyles(sidebarStyle)(Sidebar)
