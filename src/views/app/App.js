@@ -133,7 +133,9 @@ class App extends React.Component {
 
   componentWillUnmount() {
     if (navigator.platform.indexOf('Win') > -1) {
-      perfectScrollbarInst.destroy()
+      try {
+        perfectScrollbarInst.destroy()
+      } catch (e) {}
     }
   }
 
@@ -182,7 +184,7 @@ class App extends React.Component {
   }
 
   render() {
-    const {classes, user, ...rest} = this.props
+    const {classes, user, Logout, ...rest} = this.props
     const {miniActive, mobileOpen, appLoading} = this.state
 
     if (appLoading) {
@@ -192,6 +194,7 @@ class App extends React.Component {
     return (
       <div className={classes.wrapper}>
         <Sidebar
+          Logout={Logout}
           appRoutes={this.appRoutes}
           handleDrawerToggle={this.handleDrawerToggle}
           open={mobileOpen}
@@ -220,7 +223,11 @@ class App extends React.Component {
           <div className={classes.content}>
             <div className={classes.container}>
               <Switch>
-                <Route exact path={this.appRoutes.partyHomeViewRoute.path} component={this.appRoutes.partyHomeViewRoute.component}/>
+                <Route
+                  exact
+                  path={this.appRoutes.partyHomeViewRoute.path}
+                  component={this.appRoutes.partyHomeViewRoute.component}
+                />
                 {this.appRoutes.sidebarLinkRoutes.map((prop, key) => {
                   if (prop.redirect)
                     return <Redirect from={prop.path} to={prop.pathTo} key={key}/>

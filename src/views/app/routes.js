@@ -140,7 +140,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
     userProfileRoute: {
       text: user.name,
       icon: PersonIcon,
-      path: '/app/profile',
+      path: '/app/profile/user',
       component: ProfileContainer,
     },
     partyProfileRoute: {},

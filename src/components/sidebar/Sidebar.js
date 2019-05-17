@@ -13,6 +13,7 @@ import avatar from 'assets/images/user.png'
 import logo from 'assets/images/logo.png'
 import image from 'assets/images/sidebar.png'
 import User from 'brain/user/human/User'
+import LockIcon from '@material-ui/icons/Lock'
 
 let perfectScrollbarInst
 
@@ -79,6 +80,7 @@ class Sidebar extends React.Component {
       appRoutes,
       user: loggedInUser,
       history,
+      Logout,
     } = this.props
 
     const itemText =
@@ -128,14 +130,14 @@ class Sidebar extends React.Component {
               <List className={classes.list + ' ' + classes.collapseList}>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="/app/profile"
+                    to={appRoutes.userProfileRoute.path}
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
                   >
-                    <span className={classes.collapseItemMini}>
-                      {'MP'}
-                    </span>
+                    <ListItemIcon className={classes.itemIcon}>
+                      <appRoutes.userProfileRoute.icon/>
+                    </ListItemIcon>
                     <ListItemText
                       primary={'Profile'}
                       disableTypography={true}
@@ -145,15 +147,16 @@ class Sidebar extends React.Component {
                 </ListItem>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="#"
-                    className={classes.itemLink + ' ' +
-                    classes.userCollapseLinks}
+                    to={appRoutes.partyProfileRoute.path}
+                    className={
+                      classes.itemLink + ' ' + classes.userCollapseLinks
+                    }
                   >
-                    <span className={classes.collapseItemMini}>
-                      {'EP'}
-                    </span>
+                    <ListItemIcon className={classes.itemIcon}>
+                      <appRoutes.partyProfileRoute.icon/>
+                    </ListItemIcon>
                     <ListItemText
-                      primary={'Edit Profile'}
+                      primary={appRoutes.partyProfileRoute.name}
                       disableTypography={true}
                       className={collapseItemText}
                     />
@@ -161,16 +164,17 @@ class Sidebar extends React.Component {
                 </ListItem>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="#"
+                    to={'#'}
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
+                    onClick={Logout}
                   >
-                    <span className={classes.collapseItemMini}>
-                      {'S'}
-                    </span>
+                    <ListItemIcon className={classes.itemIcon}>
+                      <LockIcon/>
+                    </ListItemIcon>
                     <ListItemText
-                      primary={'Settings'}
+                      primary={'Logout'}
                       disableTypography={true}
                       className={collapseItemText}
                     />
@@ -322,7 +326,7 @@ class Sidebar extends React.Component {
     const brand = (
       <div
         className={classes.logo}
-        onClick={() => history.push(appRoutes.partyHomeViewRoute.path)}
+        onClick={() => history.push(appRoutes.partyHomeViewRoute)}
       >
         <img src={logo} alt="logo" className={classes.logoImg}/>
         <div className={logoNormal}>
@@ -417,6 +421,7 @@ Sidebar.propTypes = {
    * Logged in user from redux
    */
   user: PropTypes.instanceOf(User).isRequired,
+  Logout: PropTypes.func.isRequired,
 }
 
 export default withStyles(sidebarStyle)(Sidebar)
