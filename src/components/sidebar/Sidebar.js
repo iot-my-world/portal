@@ -310,21 +310,22 @@ class Sidebar extends React.Component {
     )
 
     const logoNormal =
-      classes.logoNormal +
-      ' ' +
-      classNames({
-        [classes.logoNormalSidebarMini]:
-        this.props.miniActive && this.state.miniActive,
-      })
+      classNames(
+        classes.logoNormal,
+        {
+          [classes.logoNormalSidebarMini]:
+          this.props.miniActive && this.state.miniActive,
+        }
+      )
 
     const brand = (
-      <div className={classes.logo}>
-        <a className={classes.logoMini}>
-          <img src={logo} alt="logo" className={classes.img}/>
-        </a>
-        <a className={logoNormal}>
-          {'SpotNav'}
-        </a>
+      <div
+        className={classes.logo}
+      >
+        <img src={logo} alt="logo" className={classes.logoImg}/>
+        <div className={logoNormal}>
+          SpotNav
+        </div>
       </div>
     )
     const drawerPaper =

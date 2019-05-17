@@ -72,9 +72,12 @@ const sidebarStyle = theme => ({
     width: drawerMiniWidth + "px!important"
   },
   logo: {
+    cursor: "pointer",
     padding: "15px 0px",
     margin: "0",
-    display: "block",
+    display: "flex",
+    alignItems: "center",
+    alignContent: "center",
     position: "relative",
     zIndex: "4",
     "&:after": {
@@ -87,23 +90,9 @@ const sidebarStyle = theme => ({
       backgroundColor: "hsla(0,0%,100%,.3)"
     }
   },
-  logoMini: {
-    transition: "all 300ms linear",
-    opacity: 1,
-    float: "left",
-    textAlign: "center",
-    width: "30px",
-    display: "inline-block",
-    maxHeight: "30px",
-    marginLeft: "22px",
-    marginRight: "18px",
-    marginTop: "7px",
-    color: "inherit"
-  },
   logoNormal: {
     ...defaultFont,
     transition: "all 300ms linear",
-    display: "block",
     opacity: "1",
     transform: "translate3d(0px, 0, 0)",
     textTransform: "uppercase",
@@ -111,7 +100,6 @@ const sidebarStyle = theme => ({
     fontSize: "18px",
     whiteSpace: "nowrap",
     fontWeight: "400",
-    lineHeight: "30px",
     overflow: "hidden",
     "&,&:hover,&:focus": {
       color: "inherit"
@@ -121,10 +109,14 @@ const sidebarStyle = theme => ({
     opacity: "0",
     transform: "translate3d(-25px, 0, 0)"
   },
-  img: {
+  logoImg: {
     width: "35px",
-    verticalAlign: "middle",
-    border: "0"
+    border: "0",
+    transition: "all 300ms linear",
+    opacity: 1,
+    float: "left",
+    marginLeft: "22px",
+    marginRight: "18px",
   },
   background: {
     position: "absolute",
