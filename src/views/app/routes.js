@@ -1,13 +1,25 @@
-import LockIcon from '@material-ui/icons/Lock'
 import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
-import HomeIcon from '@material-ui/icons/Home'
 import ConfigurationIcon from '@material-ui/icons/Settings'
 import DeviceIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
+import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
+import ProfileContainer from 'views/profile/ProfileContainer'
+import SystemHomeContainer from 'views/home/system/SystemContainer'
+import CompanyHomeContainer from 'views/home/company/CompanyContainer'
+import ClientHomeContainer from 'views/home/client/ClientContainer'
+import UserContainer from 'views/configuration/user/UserContainer'
+import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
+import DeviceContainer from 'views/configuration/device/DeviceContainer'
+import LiveTrackingDashboardContainer
+  from 'views/dashboard/tracking/live/LiveContainer'
+import HistoricalTrackingDashboardContainer
+  from 'views/dashboard/tracking/historical/HistoricalContainer'
+import ZX303DeviceDiagnosticsContainer
+  from 'views/deviceDiagnostics/zx303/ZX303Container'
 import CompanyContainer from 'views/configuration/company/CompanyContainer'
 import ClientContainer from 'views/configuration/client/ClientContainer'
 import {
@@ -19,40 +31,12 @@ import {
   PartyCompanyConfiguration,
   PartyUserConfiguration, ViewZX303DeviceDiagnostics,
 } from 'brain/security/permission/view/permission'
-import UserContainer from 'views/configuration/user/UserContainer'
-import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
-import DeviceContainer from 'views/configuration/device/DeviceContainer'
-import LiveTrackingDashboardContainer
-  from 'views/dashboard/tracking/live/LiveContainer'
-import HistoricalTrackingDashboardContainer
-  from 'views/dashboard/tracking/historical/HistoricalContainer'
-import ZX303DeviceDiagnosticsContainer
-  from 'views/deviceDiagnostics/zx303/ZX303Container'
-import {ClientPartyType, CompanyPartyType} from 'brain/party/types'
-import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
+import {
+  ClientPartyType,
+  CompanyPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
 
-const partyProfileRouteBuilder = (party, partyType) => {
-  let partyProfileIcon = PersonIcon
-
-  switch (partyType) {
-    case CompanyPartyType:
-      partyProfileIcon = DomainIcon
-      break
-
-    case ClientPartyType:
-      partyProfileIcon = PeopleIcon
-      break
-
-    default:
-  }
-
-  return {
-    path: '/app/profile/party',
-    name: party.name,
-    icon: partyProfileIcon,
-    component: PartyProfileContainer,
-  }
-}
 
 const appSideBarLinkRoutes = [
   // {
@@ -153,7 +137,12 @@ const appSideBarLinkRoutes = [
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
   let appRoutes = {
-    userProfileRoute: {},
+    userProfileRoute: {
+      text: user.name,
+      icon: PersonIcon,
+      path: '/app/profile',
+      component: ProfileContainer,
+    },
     partyProfileRoute: {},
     partyHomeViewRoute: {},
     sidebarLinkRoutes: [],
@@ -200,7 +189,60 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
       }
     }
   }
-  
+
+  // build party profile route
+  let partyProfileIcon = PersonIcon
+  switch (partyType) {
+    case CompanyPartyType:
+      partyProfileIcon = DomainIcon
+      break
+
+    case ClientPartyType:
+      partyProfileIcon = PeopleIcon
+      break
+
+    default:
+  }
+  appRoutes.partyProfileRoute = {
+    path: '/app/profile/party',
+    name: party.name,
+    icon: partyProfileIcon,
+    component: PartyProfileContainer,
+  }
+
+
+  // build home route
+  switch (partyType) {
+    case SystemPartyType:
+      appRoutes.partyHomeViewRoute = {
+        text: 'Home',
+        path: '/app',
+        component: SystemHomeContainer,
+      }
+      break
+
+    case CompanyPartyType:
+      appRoutes.partyHomeViewRoute = {
+        text: 'Home',
+        path: '/app',
+        component: CompanyHomeContainer,
+      }
+      break
+
+    case ClientPartyType:
+      appRoutes.partyHomeViewRoute = {
+        text: 'Home',
+        path: '/app',
+        component: ClientHomeContainer,
+      }
+      break
+
+    default:
+      throw new TypeError(
+        `invalid party type given to home root builder ${partyType}`
+      )
+  }
+
   return appRoutes
 }
 
