@@ -11,7 +11,8 @@ export const notificationFailure = 5
 // app
 export const showGlobalLoader = 6
 export const hideGlobalLoader = 7
+export const routeBuildingDone = 8
 
 // party
-export const setMyParty = 8
-export const setMyUser = 9
+export const setMyParty = 9
+export const setMyUser = 10

@@ -1,6 +1,7 @@
 import {
   showGlobalLoader,
   hideGlobalLoader,
+  routeBuildingDone,
 } from 'actions/actionTypes'
 
 /**
@@ -17,4 +18,12 @@ export function ShowGlobalLoader() {
  */
 export function HideGlobalLoader() {
   return {type: hideGlobalLoader}
+}
+
+/**
+ * Called to indicate that app routes have been built
+ * @returns {{type: number}}
+ */
+export function RouteBuildingDone() {
+  return {type: routeBuildingDone}
 }

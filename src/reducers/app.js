@@ -1,11 +1,12 @@
 import {
   logout,
   showGlobalLoader,
-  hideGlobalLoader,
+  hideGlobalLoader, routeBuildingDone,
 } from 'actions/actionTypes'
 
 const initState = () => ({
   showGlobalLoader: false,
+  routeBuildingDone: false,
 })
 
 export default function app(state = initState(), action) {
@@ -20,6 +21,12 @@ export default function app(state = initState(), action) {
       return {
         ...state,
         showGlobalLoader: false,
+      }
+
+    case routeBuildingDone:
+      return {
+        ...state,
+        routeBuildingDone: true,
       }
 
     case logout:

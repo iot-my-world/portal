@@ -10,7 +10,7 @@ import {
 import Header from 'components/header/Header'
 import Sidebar from 'components/sidebar/Sidebar'
 
-import appRoutes from './routes'
+import appRoutes, {appRouteBuilder} from './routes'
 
 import style from './style'
 import LoadingScreen from 'views/app/LoadingScreen'
@@ -45,6 +45,13 @@ class App extends React.Component {
     appLoading: true,
   }
 
+  appRoutes = {
+    userProfileRoute: {},
+    partyProfileRoute: {},
+    partyHomeViewRoute: {},
+    sidebarLinkRoutes: [],
+  }
+
   constructor(props) {
     super(props)
     this.mainPanelRef = React.createRef()
@@ -58,6 +65,7 @@ class App extends React.Component {
       Logout,
       SetMyParty,
       SetMyUser,
+      RouteBuildingDone,
     } = this.props
 
     // catch in case setup starts before claims are set
@@ -109,6 +117,14 @@ class App extends React.Component {
       Logout()
       return
     }
+
+    this.appRoutes = appRouteBuilder(
+      claims.partyType,
+      viewPermissions,
+      user,
+      party,
+    )
+    RouteBuildingDone()
   }
 
   handleDrawerToggle = () => {
@@ -277,6 +293,10 @@ App.propTypes = {
    * party of logged in user from redux
    */
   party: PropTypes.object.isRequired,
+  /**
+   * RouteBuildingDone action creator
+   */
+  RouteBuildingDone: PropTypes.func.isRequired,
 }
 
 export default withStyles(style)(App)

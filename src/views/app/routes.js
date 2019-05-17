@@ -28,6 +28,31 @@ import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
 import ZX303DeviceDiagnosticsContainer
   from 'views/deviceDiagnostics/zx303/ZX303Container'
+import {ClientPartyType, CompanyPartyType} from 'brain/party/types'
+import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
+
+const partyProfileRouteBuilder = (party, partyType) => {
+  let partyProfileIcon = PersonIcon
+
+  switch (partyType) {
+    case CompanyPartyType:
+      partyProfileIcon = DomainIcon
+      break
+
+    case ClientPartyType:
+      partyProfileIcon = PeopleIcon
+      break
+
+    default:
+  }
+
+  return {
+    path: '/app/profile/party',
+    name: party.name,
+    icon: partyProfileIcon,
+    component: PartyProfileContainer,
+  }
+}
 
 const dashRoutes = [
   // {
@@ -126,3 +151,11 @@ const dashRoutes = [
   },
 ]
 export default dashRoutes
+
+const appRouteBuilder = (partyType, viewPermissions, user, party) => {
+
+}
+
+export {
+  appRouteBuilder,
+}

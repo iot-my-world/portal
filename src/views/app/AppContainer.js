@@ -10,6 +10,9 @@ import {
   SetViewPermissions,
 } from 'actions/permission'
 import {
+  RouteBuildingDone,
+} from 'actions/app'
+import {
   NotificationFailure,
 } from 'actions/notification'
 
@@ -18,6 +21,7 @@ let AppContainer = props => {
     viewPermissionsSet,
     partySet,
     userSet,
+    appRouteBuildingDone,
   } = props
 
   return <App
@@ -25,7 +29,8 @@ let AppContainer = props => {
     appDoneLoading={
       viewPermissionsSet &&
       partySet &&
-      userSet
+      userSet &&
+      appRouteBuildingDone
     }
   />
 }
@@ -42,6 +47,8 @@ const mapStateToProps = (state) => {
 
     party: state.auth.party,
     partySet: state.auth.partySet,
+
+    appRouteBuildingDone: state.app.routeBuildingDone,
   }
 }
 
@@ -54,6 +61,8 @@ AppContainer = connect(
 
       SetMyParty,
       SetMyUser,
+
+      RouteBuildingDone,
     }
 )(AppContainer)
 
