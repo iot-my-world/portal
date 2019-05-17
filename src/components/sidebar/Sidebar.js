@@ -78,6 +78,7 @@ class Sidebar extends React.Component {
       classes,
       appRoutes,
       user: loggedInUser,
+      history,
     } = this.props
 
     const itemText =
@@ -321,6 +322,7 @@ class Sidebar extends React.Component {
     const brand = (
       <div
         className={classes.logo}
+        onClick={() => history.push(appRoutes.partyHomeViewRoute.path)}
       >
         <img src={logo} alt="logo" className={classes.logoImg}/>
         <div className={logoNormal}>
