@@ -234,22 +234,25 @@ class Sidebar extends React.Component {
                 <Collapse in={this.state[prop.state]} unmountOnExit>
                   <List className={classes.list + ' ' + classes.collapseList}>
                     {prop.views.map((prop, key) => {
+
                       if (prop.redirect) {
                         return null
                       }
-                      const navLinkClasses =
-                        classes.collapseItemLink +
-                        ' ' +
-                        classNames({
-                          [' ' + classes['blue']]: this.activeRoute(prop.path),
-                        })
 
                       return (
                         <ListItem key={key} className={classes.collapseItem}>
-                          <NavLink to={prop.path} className={navLinkClasses}>
+                          <NavLink
+                            to={prop.path}
+                            className={classNames(
+                              classes.collapseItemLink,
+                              {
+                                [classes['blue']]: this.activeRoute(prop.path),
+                              }
+                            )}
+                          >
                             {prop.icon
                               ? (
-                                <ListItemIcon className={classes.itemIcon}>
+                                <ListItemIcon className={classes.collapseItemIcon}>
                                   <prop.icon/>
                                 </ListItemIcon>
                               )

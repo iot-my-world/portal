@@ -168,13 +168,13 @@ const sidebarStyle = theme => ({
     }
   },
   itemLink: {
-    paddingLeft: "10px",
-    paddingRight: "10px",
     transition: "all 300ms linear",
     margin: "10px 15px 0",
     borderRadius: "3px",
     position: "relative",
     display: "block",
+    paddingLeft: "10px",
+    paddingRight: "10px",
     padding: "10px 15px",
     backgroundColor: "transparent",
     ...defaultFont,
@@ -254,6 +254,22 @@ const sidebarStyle = theme => ({
     "&,&:hover,&:focus": {
       color: "inherit"
     }
+  },
+  collapseItemIcon: {
+    color: "inherit",
+    // ...defaultFont,
+    // textTransform: "uppercase",
+    width: "30px",
+    height: "24px",
+    float: "left",
+    position: "relative",
+    marginRight: "15px",
+    textAlign: "center",
+    verticalAlign: "middle",
+    // letterSpacing: "1px",
+    // display: "inherit",
+    // transition: "transform 300ms ease 0s, opacity 300ms ease 0s",
+    // fontSize: "14px"
   },
   collapseItemMini: {
     color: "inherit",
