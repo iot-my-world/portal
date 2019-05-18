@@ -1,70 +1,28 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Fab,
-  Tooltip,
+  withStyles, Card, CardContent, Tooltip,
   IconButton, Icon,
 } from '@material-ui/core'
-import ZX303TrackerDetailDialogContainer from 'components/tracker/zx303/Detail/DetailContainer'
+import ZX303TrackerDetailDialogContainer
+  from 'components/tracker/zx303/Detail/DetailContainer'
+import {activeStates as zx303TrackerDetailDialogActiveStates} from 'components/tracker/zx303/Detail/Detail'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import {ZX303 as ZX303Device} from 'brain/tracker/zx303/index'
 import PartyHolder from 'brain/party/holder/Holder'
-import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import Query from 'brain/search/Query'
 import ZX303DeviceRecordHandler from 'brain/tracker/zx303/RecordHandler'
-import ZX303DeviceValidator from 'brain/tracker/zx303/Validator'
-import ZX303DeviceAdministrator from 'brain/tracker/zx303/Administrator'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {
-  MdAdd as AddIcon, MdClear as CancelIcon,
-  MdEdit as EditIcon,
-  MdSave as SaveIcon,
-} from 'react-icons/md'
-import {
   FaGlasses as ViewDetailsIcon,
+  FaPlus as AddNewIcon,
 } from 'react-icons/fa'
 
 const styles = theme => ({
   root: {},
   tableWrapper: {
     overflow: 'auto',
-  },
-
-  detailCardWrapper: {
-    justifySelf: 'center',
-  },
-  formField: {
-    height: '60px',
-    width: '150px',
-  },
-  progress: {
-    margin: 2,
-  },
-  detailCard: {
-    maxWidth: 400,
-    justifySelf: 'center',
-  },
-  detailCardTitle: {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    gridTemplateRows: '1fr',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 100,
-    color: theme.palette.primary.main,
-  },
-  button: {
-    margin: theme.spacing.unit,
-  },
-  buttonIcon: {
-    fontSize: '20px',
   },
 })
 
@@ -98,17 +56,16 @@ class ZX303 extends Component {
     records: [],
     totalNoRecords: 0,
 
-    detailDialogOpen: true,
-
-    activeState: events.init,
     zx303DeviceEntity: new ZX303Device(),
-    zx303DeviceEntityCopy: new ZX303Device(),
+
+    detailDialogOpen: false,
+    initialDetailDialogActiveState:
+    zx303TrackerDetailDialogActiveStates.viewingExisting,
   }
 
   partyHolder = new PartyHolder()
   collectTimeout = () => {
   }
-  reasonsInvalid = new ReasonsInvalid()
   collectCriteria = []
   collectQuery = new Query()
 
@@ -163,140 +120,12 @@ class ZX303 extends Component {
   }
 
   handleCreateNew = () => {
-    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: -1,
-      activeState: events.startCreateNew,
       zx303DeviceEntity: new ZX303Device(),
+      initialDetailDialogActiveState: zx303TrackerDetailDialogActiveStates.editingNew,
+      detailDialogOpen: true
     })
-  }
-
-  handleCancelCreateNew = () => {
-    this.reasonsInvalid.clearAll()
-    this.setState({activeState: events.cancelCreateNew})
-  }
-
-  handleStartEditExisting = () => {
-    this.reasonsInvalid.clearAll()
-    const {zx303DeviceEntity} = this.state
-    this.setState({
-      zx303DeviceEntityCopy: new ZX303Device(zx303DeviceEntity),
-      activeState: events.startEditExisting,
-    })
-  }
-
-  handleCancelEditExisting = () => {
-    const {zx303DeviceEntityCopy} = this.state
-    this.reasonsInvalid.clearAll()
-    this.setState({
-      zx303DeviceEntity: new ZX303Device(zx303DeviceEntityCopy),
-      activeState: events.cancelEditExisting,
-    })
-  }
-
-  handleSaveNew = async () => {
-    const {zx303DeviceEntity} = this.state
-    const {
-      ShowGlobalLoader,
-      HideGlobalLoader,
-      NotificationSuccess,
-      NotificationFailure,
-    } = this.props
-
-    ShowGlobalLoader()
-
-    // perform validation
-    try {
-      this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
-        zx303: zx303DeviceEntity,
-        action: 'Create',
-      })).reasonsInvalid
-      if (reasonsInvalid.count > 0) {
-        this.reasonsInvalid = reasonsInvalid
-        HideGlobalLoader()
-        return
-      }
-    } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
-      HideGlobalLoader()
-      return
-    }
-
-    // perform creation
-    try {
-      await ZX303DeviceAdministrator.Create({
-        zx303: zx303DeviceEntity,
-      })
-      NotificationSuccess('Successfully Created Device')
-      this.setState({activeState: events.createNewSuccess})
-      await this.collect()
-    } catch (e) {
-      console.error('Error Creating Device', e)
-      NotificationFailure('Error Creating Device')
-      HideGlobalLoader()
-      return
-    }
-    HideGlobalLoader()
-  }
-
-  handleSaveChanges = async () => {
-    const {zx303DeviceEntity} = this.state
-    const {
-      ShowGlobalLoader,
-      HideGlobalLoader,
-      NotificationSuccess,
-      NotificationFailure,
-    } = this.props
-
-    ShowGlobalLoader()
-
-    // perform validation
-    try {
-      this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
-        zx303: zx303DeviceEntity,
-        action: 'Update',
-      })).reasonsInvalid
-      if (reasonsInvalid.count > 0) {
-        this.reasonsInvalid = reasonsInvalid
-        HideGlobalLoader()
-        return
-      }
-    } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
-      HideGlobalLoader()
-      return
-    }
-
-    // perform update
-    try {
-      let {records} = this.state
-      let response = await ZX303DeviceAdministrator.UpdateAllowedFields({
-        zx303: zx303DeviceEntity,
-      })
-      const zx303DeviceIdx = records.find(d => d.id === response.zx303.id)
-      if (zx303DeviceIdx < 0) {
-        console.error('unable to fund updated device in records')
-      } else {
-        records[zx303DeviceIdx] = response.zx303
-      }
-      this.setState({
-        records,
-        zx303DeviceEntity: response.zx303,
-        activeState: events.finishEditExisting,
-      })
-    } catch (e) {
-      console.error('Error Updating Device', e)
-      NotificationFailure('Error Updating Device')
-      HideGlobalLoader()
-      return
-    }
-
-    NotificationSuccess('Successfully Updated Device')
-    HideGlobalLoader()
   }
 
   handleCriteriaQueryChange = (criteria, query) => {
@@ -320,95 +149,24 @@ class ZX303 extends Component {
     })
   }
 
-  renderControlIcons = () => {
-    const {activeState} = this.state
-    const {classes} = this.props
-
-    switch (activeState) {
-      case states.viewingExisting:
-        return (
-          <React.Fragment>
-            <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleStartEditExisting}
-            >
-              <Tooltip title='Edit'>
-                <EditIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-            <Fab
-              id={'companyConfigurationNewDeviceButton'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCreateNew}
-            >
-              <Tooltip title='Add New Device'>
-                <AddIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-          </React.Fragment>
-        )
-
-      case states.editingNew:
-        return (
-          <React.Fragment>
-            <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleSaveNew}
-            >
-              <Tooltip title='Save New Device'>
-                <SaveIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-            <Fab
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCancelCreateNew}
-            >
-              <Tooltip title='Cancel'>
-                <CancelIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-          </React.Fragment>
-        )
-
-      case states.editingExisting:
-        return (
-          <React.Fragment>
-            <Fab
-              color={'primary'}
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleSaveChanges}
-            >
-              <Tooltip title='Save Changes'>
-                <SaveIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-            <Fab
-              className={classes.button}
-              size={'small'}
-              onClick={this.handleCancelEditExisting}
-            >
-              <Tooltip title='Cancel'>
-                <CancelIcon className={classes.buttonIcon}/>
-              </Tooltip>
-            </Fab>
-          </React.Fragment>
-        )
-
-      case states.nop:
-      default:
-    }
-  }
-
   getAdditionalTableIcons = () => {
     const {activeState} = this.state
-    let additionalIcons = []
+    let additionalIcons = [
+      (
+        <IconButton
+          onClick={this.handleCreateNew}
+        >
+          <Tooltip
+            title={'Add New'}
+            placement={'top'}
+          >
+            <Icon>
+              <AddNewIcon/>
+            </Icon>
+          </Tooltip>
+        </IconButton>
+      ),
+    ]
 
     if (activeState === states.itemSelected) {
       additionalIcons.push(
@@ -423,7 +181,7 @@ class ZX303 extends Component {
               <ViewDetailsIcon/>
             </Icon>
           </Tooltip>
-        </IconButton>
+        </IconButton>,
       )
     }
     return additionalIcons
@@ -435,7 +193,7 @@ class ZX303 extends Component {
       selectedRowIdx,
       records,
       totalNoRecords,
-      activeState,
+      initialDetailDialogActiveState,
       detailDialogOpen,
       zx303DeviceEntity,
     } = this.state
@@ -444,70 +202,8 @@ class ZX303 extends Component {
       classes,
     } = this.props
 
-    let cardTitle = (
-      <Typography variant={'h6'}>
-        Select A Device To View Or Edit
-      </Typography>
-    )
-    switch (activeState) {
-      case states.editingNew:
-        cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              New Device
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
-              </Grid>
-            </Grid>
-          </div>
-        )
-        break
-      case states.editingExisting:
-        cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              Editing
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
-              </Grid>
-            </Grid>
-          </div>
-        )
-        break
-      case states.viewingExisting:
-        cardTitle = (
-          <div className={classes.detailCardTitle}>
-            <Typography variant={'h6'}>
-              Details
-            </Typography>
-            <Grid container
-                  direction='row'
-                  justify='flex-end'
-            >
-              <Grid item>
-                {this.renderControlIcons()}
-              </Grid>
-            </Grid>
-          </div>
-        )
-        break
-      default:
-    }
-
     return (
-      <div
-        className={classes.root}
-      >
+      <div className={classes.root}>
         <Card>
           <CardContent>
             <BEPTable
@@ -624,6 +320,7 @@ class ZX303 extends Component {
           open={detailDialogOpen}
           closeDialog={() => this.setState({detailDialogOpen: false})}
           zx303Tracker={zx303DeviceEntity}
+          initialActiveState={initialDetailDialogActiveState}
         />}
       </div>
     )

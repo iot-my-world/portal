@@ -64,6 +64,7 @@ const styles = theme => ({
     gridTemplateRows: '1fr',
     gridTemplateColumns: '1fr',
     overflow: 'hidden',
+    padding: 10,
   },
 })
 

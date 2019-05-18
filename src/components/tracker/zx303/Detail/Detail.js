@@ -8,6 +8,7 @@ import {
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Dialog from 'components/Dialog'
 import {
+  ZX303 as ZX303Device,
   ZX303 as ZX303Tracker,
 } from 'brain/tracker/zx303/index'
 import {
@@ -28,6 +29,8 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
+import ZX303DeviceValidator from 'brain/tracker/zx303/Validator'
+import ZX303DeviceAdministrator from 'brain/tracker/zx303/Administrator'
 
 const styles = theme => ({
   formField: {
@@ -39,22 +42,16 @@ const styles = theme => ({
   },
 })
 
-const states = {
+const activeStates = {
   viewingExisting: 1,
   editingNew: 2,
   editingExisting: 3,
 }
 
 const events = {
-  init: states.viewingExisting,
-
-  startCreateNew: states.editingNew,
-  cancelCreateNew: states.nop,
-  createNewSuccess: states.nop,
-
-  startEditExisting: states.editingExisting,
-  finishEditExisting: states.viewingExisting,
-  cancelEditExisting: states.viewingExisting,
+  init: activeStates.viewingExisting,
+  startEditExisting: activeStates.editingExisting,
+  cancelEditExisting: activeStates.viewingExisting,
 }
 
 const loadPartyOptions = partyType => async (inputValue, callback) => {
@@ -121,7 +118,7 @@ class Detail extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeState: events.init,
+      activeState: props.initialActiveState,
 
       zx303Tracker: new ZX303Tracker(props.zx303Tracker),
       zx303TrackerCopy: new ZX303Tracker(),
@@ -194,15 +191,86 @@ class Detail extends Component {
     this.setState({zx303Tracker})
   }
 
+  handleStartEditExisting = () => {
+    this.reasonsInvalid.clearAll()
+    const {zx303Tracker} = this.state
+    this.setState({
+      zx303TrackerCopy: new ZX303Device(zx303Tracker),
+      activeState: events.startEditExisting,
+    })
+  }
+  handleCancelEditExisting = () => {
+    const {zx303TrackerCopy} = this.state
+    this.reasonsInvalid.clearAll()
+    this.setState({
+      zx303Tracker: new ZX303Device(zx303TrackerCopy),
+      activeState: events.cancelEditExisting,
+    })
+  }
+  handleSaveChanges = async () => {
+    const {zx303Tracker} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    ShowGlobalLoader()
+
+    // perform validation
+    try {
+      this.reasonsInvalid.clearAll()
+      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
+        zx303: zx303Tracker,
+        action: 'Update',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Device', e)
+      NotificationFailure('Error Validating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    // perform update
+    try {
+      let {records} = this.state
+      let response = await ZX303DeviceAdministrator.UpdateAllowedFields({
+        zx303: zx303Tracker,
+      })
+      this.setState({
+        records,
+        zx303Tracker: response.zx303,
+        activeState: events.finishEditExisting,
+      })
+    } catch (e) {
+      console.error('Error Updating Device', e)
+      NotificationFailure('Error Updating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    NotificationSuccess('Successfully Updated Device')
+    HideGlobalLoader()
+  }  
+  
   renderControlIcons = () => {
     const {activeState} = this.state
     const {classes} = this.props
 
     switch (activeState) {
-      case states.viewingExisting:
+      case activeStates.viewingExisting:
         return [
           (
-            <Fab size={'medium'}>
+            <Fab
+              size={'medium'}
+              onClick={this.handleStartEditExisting}
+            >
               <Tooltip title='Edit'>
                 <EditIcon className={classes.buttonIcon}/>
               </Tooltip>
@@ -210,7 +278,7 @@ class Detail extends Component {
           ),
         ]
 
-      case states.editingNew:
+      case activeStates.editingNew:
         return [
           (
             <Fab size={'medium'}>
@@ -221,17 +289,23 @@ class Detail extends Component {
           ),
         ]
 
-      case states.editingExisting:
+      case activeStates.editingExisting:
         return [
           (
-            <Fab size={'medium'}>
+            <Fab
+              size={'medium'}
+              onClick={this.handleSaveChanges}
+            >
               <Tooltip title='Save Changes'>
                 <SaveIcon className={classes.buttonIcon}/>
               </Tooltip>
             </Fab>
           ),
           (
-            <Fab size={'medium'}>
+            <Fab
+              size={'medium'}
+              onClick={this.handleCancelEditExisting}
+            >
               <Tooltip title='Cancel'>
                 <CancelIcon className={classes.buttonIcon}/>
               </Tooltip>
@@ -239,7 +313,7 @@ class Detail extends Component {
           ),
         ]
 
-      case states.nop:
+      case activeStates.nop:
       default:
         return []
     }
@@ -254,7 +328,7 @@ class Detail extends Component {
     const {zx303Tracker, activeState} = this.state
 
     const fieldValidations = this.reasonsInvalid.toMap()
-    const stateIsViewing = activeState === states.viewingExisting
+    const stateIsViewing = activeState === activeStates.viewingExisting
 
     return (
       <Dialog
@@ -494,9 +568,13 @@ Detail.propTypes = {
    * the zx303 tracker being viewed or edited
    */
   zx303Tracker: PropTypes.instanceOf(ZX303Tracker),
+  initialActiveState: PropTypes.oneOf(Object.values(activeStates)),
 }
-Detail.defaultProps = {}
+Detail.defaultProps = {
+  initialActiveState: activeStates.editingNew,
+}
 
 Detail = withStyles(styles)(Detail)
 
 export default Detail
+export {activeStates}
