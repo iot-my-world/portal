@@ -26,7 +26,7 @@ import MapGL, {
 } from 'react-map-gl'
 import 'components/mapbox/Custom.css'
 import {MapPin, MapPinPopup} from './map'
-import {Reading} from 'brain/tracker/reading'
+import ZX303TrackerGPSReading from 'brain/tracker/zx303/reading/gps'
 import {SystemRecordHandler} from 'brain/party/system'
 import {PartyIdentifier} from 'brain/search/identifier'
 import {
@@ -113,21 +113,22 @@ class Live extends Component {
     this.viewClientFilter =
         (props.claims.partyType === SystemPartyType) ||
         (props.claims.partyType === CompanyPartyType)
+  }
 
-    this.entityMap = {
-      Company: [],
-      Client: [],
-      System: [],
-    }
 
-    this.systemIdentifiers = []
-    this.companyIdentifiers = []
-    this.clientIdentifiers = []
+  entityMap = {
+    Company: [],
+    Client: [],
+    System: [],
+  }
 
-    this.readingPinColorMap = {}
+  systemIdentifiers = []
+  companyIdentifiers = []
+  clientIdentifiers = []
 
-    this.loadReportTimeout = () => {
-    }
+  readingPinColorMap = {}
+
+  loadReportTimeout = () => {
   }
 
   state = {
@@ -145,10 +146,10 @@ class Live extends Component {
     readings: [],
 
     mapPopUpOpen: false,
-    selectedReading: new Reading(),
+    selectedReading: new ZX303TrackerGPSReading(),
 
     hideUnassignedDevices: true,
-  }
+  }  
 
   getPartyName = (partyType, partyId) => {
     const list = this.entityMap[partyType]
