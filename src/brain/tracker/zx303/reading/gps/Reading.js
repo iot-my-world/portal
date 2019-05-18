@@ -10,12 +10,6 @@ export default class Reading extends Base {
   _id = ''
 
   /**
-   * @type {string}
-   * @private
-   */
-  _deviceType = ''
-
-  /**
    * @type {Id}
    * @private
    */
@@ -46,16 +40,16 @@ export default class Reading extends Base {
   _assignedId = new IdIdentifier()
 
   /**
-   * @type {string}
+   * @type {number}
    * @private
    */
-  _raw = ''
+  _timeStamp = 0
 
   /**
    * @type {number}
    * @private
    */
-  _timeStamp = 0
+  _noSatellites = 0
 
   /**
    * @type {number}
@@ -70,6 +64,18 @@ export default class Reading extends Base {
   _longitude = 0
 
   /**
+   * @type {number}
+   * @private
+   */
+  _speed = 0
+
+  /**
+   * @type {number}
+   * @private
+   */
+  _heading = 0
+
+  /**
    * construct a new Reading Object
    * @param {Reading|Object} [reading]
    */
@@ -81,18 +87,19 @@ export default class Reading extends Base {
     ) {
       try {
         this._id = reading.id
-        this._deviceType = reading.deviceType
         this._deviceId = new IdIdentifier(reading.deviceId)
         this._ownerPartyType = reading.ownerPartyType
         this._ownerId = new IdIdentifier(reading.ownerId)
         this._assignedPartyType = reading.assignedPartyType
         this._assignedId = new IdIdentifier(reading.assignedId)
-        this._raw = reading.raw
         this._timeStamp = reading.timeStamp
+        this._noSatellites = reading.noSatellites
         this._latitude = reading.latitude
         this._longitude = reading.longitude
+        this._speed = reading.speed
+        this._heading = reading.heading
       } catch (e) {
-        throw new Error(`error constructing reading object: ${e}`)
+        throw new Error(`error constructing zx303 tracker reading object: ${e}`)
       }
     }
   }
@@ -100,14 +107,7 @@ export default class Reading extends Base {
   get id() {
     return this._id
   }
-
-  get deviceType() {
-    return this._deviceType
-  }
-
-  set deviceType(newVal) {
-    this._deviceType = newVal
-  }
+  // cannot set id
 
   get deviceId() {
     return this._deviceId
@@ -149,20 +149,20 @@ export default class Reading extends Base {
     this._assignedId = newVal
   }
 
-  get raw() {
-    return this._raw
-  }
-
-  set raw(newVal) {
-    this._raw = newVal
-  }
-
   get timeStamp() {
     return this._timeStamp
   }
 
   set timeStamp(newVal) {
     this._timeStamp = newVal
+  }
+
+  get noSatellites() {
+    return this._noSatellites
+  }
+
+  set noSatellites(newVal) {
+    this._noSatellites = newVal
   }
 
   get latitude() {
@@ -181,5 +181,20 @@ export default class Reading extends Base {
     this._longitude = newVal
   }
 
+  get speed() {
+    return this._speed
+  }
+
+  set speed(newVal) {
+    this._speed = newVal
+  }
+
+  get heading() {
+    return this._heading
+  }
+
+  set heading(newVal) {
+    this._heading = newVal
+  }
 
 }
