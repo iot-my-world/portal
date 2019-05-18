@@ -11,6 +11,7 @@ import {
   Tooltip,
   FormControl, InputLabel, Select, MenuItem, FormHelperText, TextField,
 } from '@material-ui/core'
+import ZX303TrackerDetailDialogContainer from 'components/tracker/zx303/Detail/DetailContainer'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import {ZX303 as ZX303Device} from 'brain/tracker/zx303/index'
 import PartyHolder from 'brain/party/holder/Holder'
@@ -109,6 +110,9 @@ class ZX303 extends Component {
     selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
+
+    detailDialogOpen: false,
+
     activeState: events.init,
     zx303DeviceEntity: new ZX303Device(),
     zx303DeviceEntityCopy: new ZX303Device(),
