@@ -1,5 +1,5 @@
 import {jsonRpcRequest} from 'utilities/network'
-import {Reading} from 'brain/tracker/reading'
+import ZX303TrackerGPSReading from 'brain/tracker/zx303/reading/gps'
 
 const Report = {
   /**
@@ -15,7 +15,9 @@ const Report = {
         partyIdentifiers,
       },
     })
-    response.readings = response.readings.map(reading => new Reading(reading))
+    response.zx303TrackerGPSReadings = response.zx303TrackerGPSReadings.map(
+      reading => new ZX303TrackerGPSReading(reading)
+    )
     return response
   },
 

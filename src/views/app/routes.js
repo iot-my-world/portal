@@ -5,7 +5,7 @@ import ConfigurationIcon from '@material-ui/icons/Settings'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
-import TimelineIcon from '@material-ui/icons/Timeline'
+// import TimelineIcon from '@material-ui/icons/Timeline'
 import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
@@ -16,8 +16,8 @@ import APIUserContainer from 'views/party/apiUser/APIUserContainer'
 import ZX303TrackerContainer from 'views/tracker/zx303/ZX303Container'
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
-import HistoricalTrackingDashboardContainer
-  from 'views/dashboard/tracking/historical/HistoricalContainer'
+// import HistoricalTrackingDashboardContainer
+//   from 'views/dashboard/tracking/historical/HistoricalContainer'
 import ZX303DeviceDiagnosticsContainer
   from 'views/deviceDiagnostics/zx303/ZX303Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
@@ -28,7 +28,7 @@ import {
   PartyUserViewPermission,
   PartyAPIUserViewPermission,
   LiveTrackingDashboardViewPermission,
-  HistoricalTrackingDashboardViewPermission,
+  // HistoricalTrackingDashboardViewPermission,
   TrackerZX303ViewPermission,
   ZX303DeviceDiagnosticsViewPermission,
 } from 'brain/security/permission/view/permission'
@@ -60,13 +60,13 @@ const appSideBarLinkRoutes = [
         icon: GPSFixedIcon,
         component: LiveTrackingDashboardContainer,
       },
-      {
-        path: '/app/dashboard/historicalTracking',
-        name: 'Historical Tracking',
-        viewPermission: HistoricalTrackingDashboardViewPermission,
-        icon: TimelineIcon,
-        component: HistoricalTrackingDashboardContainer,
-      },
+      // {
+      //   path: '/app/dashboard/historicalTracking',
+      //   name: 'Historical Tracking',
+      //   viewPermission: HistoricalTrackingDashboardViewPermission,
+      //   icon: TimelineIcon,
+      //   component: HistoricalTrackingDashboardContainer,
+      // },
     ],
   },
   {

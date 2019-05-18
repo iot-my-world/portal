@@ -249,7 +249,7 @@ class Live extends Component {
             ...this.clientIdentifiers,
             ...this.systemIdentifiers,
           ],
-        })).readings,
+        })).zx303TrackerGPSReadings,
       })
       let usedColors = Object.values(this.readingPinColorMap)
       this.state.readings.forEach(reading => {

@@ -1,6 +1,7 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import IdIdentifier from 'brain/search/identifier/Id'
+import {ZX303DeviceType} from 'brain/tracker/types'
 
 export default class Reading extends Base {
   /**
@@ -195,6 +196,10 @@ export default class Reading extends Base {
 
   set heading(newVal) {
     this._heading = newVal
+  }
+
+  get deviceType() {
+    return ZX303DeviceType
   }
 
 }
