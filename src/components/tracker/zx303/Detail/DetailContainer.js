@@ -1,20 +1,36 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import Detail from './Detail'
+import {
+  NotificationFailure,
+  NotificationSuccess,
+} from 'actions/notification'
 
-let FunctionalContainer = props => {
+let DetailContainer = props => {
   return <Detail {...props}/>
 }
 
 const mapStateToProps = (state) => {
   return {
+    party: state.auth.party,
+    claims: state.auth.claims,
   }
 }
 
-FunctionalContainer = connect(
+DetailContainer = connect(
     mapStateToProps,
     {
+      NotificationSuccess,
+      NotificationFailure,
     }
-)(FunctionalContainer)
+)(DetailContainer)
 
-export default FunctionalContainer
+DetailContainer.propTypes = {
+  ...Detail.propTypes,
+}
+
+DetailContainer.defaultProps = {
+  ...Detail.defaultProps,
+}
+
+export default DetailContainer

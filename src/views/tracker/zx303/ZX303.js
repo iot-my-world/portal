@@ -9,7 +9,13 @@ import {
   Typography,
   Fab,
   Tooltip,
-  FormControl, InputLabel, Select, MenuItem, FormHelperText, TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  TextField,
+  IconButton, Icon,
 } from '@material-ui/core'
 import ZX303TrackerDetailDialogContainer from 'components/tracker/zx303/Detail/DetailContainer'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
@@ -39,7 +45,11 @@ import {
   MdEdit as EditIcon,
   MdSave as SaveIcon,
 } from 'react-icons/md'
+import {
+  FaGlasses as ViewDetailsIcon,
+} from 'react-icons/fa'
 import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
+import {FiFilter as FilterIcon} from 'react-icons/fi'
 
 const styles = theme => ({
   root: {
@@ -85,13 +95,15 @@ const styles = theme => ({
 
 const states = {
   nop: 0,
-  viewingExisting: 1,
-  editingNew: 2,
-  editingExisting: 3,
+  itemSelected: 1,
+  viewingExisting: 2,
+  editingNew: 3,
+  editingExisting: 4,
 }
 
 const events = {
   init: states.nop,
+  selectRow: states.itemSelected,
 
   selectExisting: states.viewingExisting,
 
@@ -111,7 +123,7 @@ class ZX303 extends Component {
     records: [],
     totalNoRecords: 0,
 
-    detailDialogOpen: false,
+    detailDialogOpen: true,
 
     activeState: events.init,
     zx303DeviceEntity: new ZX303Device(),
@@ -423,7 +435,7 @@ class ZX303 extends Component {
     this.setState({
       selectedRowIdx: rowIdx,
       zx303DeviceEntity: new ZX303Device(rowObj),
-      activeState: events.selectExisting,
+      activeState: events.selectRow,
     })
   }
 
@@ -747,6 +759,29 @@ class ZX303 extends Component {
     }
   }
 
+  getAdditionalTableIcons = () => {
+    const {activeState} = this.state
+    let additionalIcons = []
+
+    if (activeState === states.itemSelected) {
+      additionalIcons.push(
+        <IconButton
+          onClick={() => this.setState({detailDialogOpen: true})}
+        >
+          <Tooltip
+            title={'View Details'}
+            placement={'top'}
+          >
+            <Icon>
+              <ViewDetailsIcon/>
+            </Icon>
+          </Tooltip>
+        </IconButton>
+      )
+    }
+    return additionalIcons
+  }
+
   render() {
     const {
       recordCollectionInProgress,
@@ -754,6 +789,7 @@ class ZX303 extends Component {
       records,
       totalNoRecords,
       activeState,
+      detailDialogOpen,
     } = this.state
     const {
       theme,
@@ -842,6 +878,7 @@ class ZX303 extends Component {
               noDataText={'No Devices Found'}
               data={records}
               onCriteriaQueryChange={this.handleCriteriaQueryChange}
+              additionalControls={this.getAdditionalTableIcons()}
               columns={[
                 {
                   Header: 'IMEI',
@@ -944,6 +981,11 @@ class ZX303 extends Component {
             />
           </CardContent>
         </Card>
+        {detailDialogOpen &&
+        <ZX303TrackerDetailDialogContainer
+          open={detailDialogOpen}
+          closeDialog={() => this.setState({detailDialogOpen: false})}
+        />}
       </div>
     )
   }

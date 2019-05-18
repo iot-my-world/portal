@@ -1,37 +1,43 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {withStyles} from '@material-ui/core'
-import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
+import {
+  withStyles,
+} from '@material-ui/core'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
+import Dialog from 'components/Dialog'
 
-const styles = theme => ({})
+const styles = theme => ({
+})
 
 class Detail extends Component {
-  render(){
+  render() {
     const {
-      width,
+      open,
+      closeDialog,
     } = this.props
 
-    if (isWidthUp('md', width)) {
-      return <div>BIG!</div>
-    } else {
-      return <div>Small!</div>
-    }
+    return (
+      <Dialog
+        open={open}
+        closeDialog={closeDialog}
+        title={'ZX303 Tracker'}
+      >
+        <div>Hello!</div>
+      </Dialog>
+    )
+
   }
 }
 
-Detail = withWidth()(withStyles(styles)(Detail))
-
 Detail.propTypes = {
   classes: PropTypes.object.isRequired,
-  width: PropTypes.number.isRequired,
   /**
    * boolean indicating if the detail dialog should be open
    */
-  show: PropTypes.bool.isRequired,
+  open: PropTypes.bool.isRequired,
   /**
    * function which can be called to close the detail dialog
-    */
+   */
   closeDialog: PropTypes.func.isRequired,
   /**
    * Success Action Creator
@@ -48,8 +54,10 @@ Detail.propTypes = {
   /**
    * Party from redux state
    */
-  party: PropTypes.object.isRequired,  
+  party: PropTypes.object.isRequired,
 }
 Detail.defaultProps = {}
+
+Detail = withStyles(styles)(Detail)
 
 export default Detail
