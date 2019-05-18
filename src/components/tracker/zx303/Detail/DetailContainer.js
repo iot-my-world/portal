@@ -5,6 +5,7 @@ import {
   NotificationFailure,
   NotificationSuccess,
 } from 'actions/notification'
+import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 
 let DetailContainer = props => {
   return <Detail {...props}/>
@@ -22,6 +23,8 @@ DetailContainer = connect(
     {
       NotificationSuccess,
       NotificationFailure,
+      ShowGlobalLoader,
+      HideGlobalLoader,
     }
 )(DetailContainer)
 

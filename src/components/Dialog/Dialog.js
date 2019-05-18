@@ -9,7 +9,6 @@ import {
 } from 'react-icons/md'
 import logo from 'assets/images/logo.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
-import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 
 const styles = theme => ({
   dialogRootOverride: {
@@ -47,8 +46,7 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
-  dialogTitleCloseBtnWrapper: {
-    justifySelf: 'end',
+  dialogTitleControlWrapper: {
     paddingLeft: 4,
   },
   dialogTitleCloseButton: {
@@ -78,88 +76,60 @@ class Dialog extends Component {
       closeDialog,
       children,
       title,
+      additionalTitleControls,
     } = this.props
 
     if (!open) {
       return null
     }
 
-    if (isWidthUp('md', width)) {
-      return (
-        <MUIDialog
-          open={open}
-          PaperProps={{classes: {root: classes.dialogRootOverride}}}
-        >
-          <DialogTitle className={classes.dialogTitleWrapper}>
-            <div className={classes.dialogTitle}>
-              <div className={classes.dialogTitleHeading}>
-                <div className={classes.logoWrapper}>
-                  <img src={logo} alt='logo' className={classes.logo}/>
-                </div>
-                <div className={classes.dialogTitleText}>
-                  {title}
-                </div>
+    return (
+      <MUIDialog
+        open={open}
+        fullScreen={!isWidthUp('md', width)}
+        PaperProps={{classes: {root: classes.dialogRootOverride}}}
+      >
+        <DialogTitle className={classes.dialogTitleWrapper}>
+          <div className={classes.dialogTitle}>
+            <div className={classes.dialogTitleHeading}>
+              <div className={classes.logoWrapper}>
+                <img src={logo} alt='logo' className={classes.logo}/>
               </div>
-              <div className={classes.dialogTitleControlsWrapper}>
-                <div className={classes.dialogTitleCloseBtnWrapper}>
-                  <Fab
-                    color='primary'
-                    aria-label='Close'
-                    className={classes.dialogTitleCloseButton}
-                    onClick={closeDialog}
-                  >
-                    <Tooltip title='Close' placement='top'>
-                      <CloseIcon className={classes.dialogTitleCloseIcon}/>
-                    </Tooltip>
-                  </Fab>
-                </div>
+              <div className={classes.dialogTitleText}>
+                {title}
               </div>
             </div>
-          </DialogTitle>
-          <DialogContent classes={{root: classes.contentRoot}}>
-            {children}
-          </DialogContent>
-        </MUIDialog>
-      )
-    } else {
-      return (
-        <MUIDialog
-          open={open}
-          fullScreen
-          PaperProps={{classes: {root: classes.dialogRootOverride}}}
-        >
-          <DialogTitle className={classes.dialogTitleWrapper}>
-            <div className={classes.dialogTitle}>
-              <div className={classes.dialogTitleHeading}>
-                <div className={classes.logoWrapper}>
-                  <img src={logo} alt='logo' className={classes.logo}/>
-                </div>
-                <div className={classes.dialogTitleText}>
-                  {title}
-                </div>
-              </div>
-              <div className={classes.dialogTitleControlsWrapper}>
-                <div className={classes.dialogTitleCloseBtnWrapper}>
-                  <Fab
-                    color='primary'
-                    aria-label='Close'
-                    className={classes.dialogTitleCloseButton}
-                    onClick={closeDialog}
+            <div className={classes.dialogTitleControlsWrapper}>
+              {additionalTitleControls.map((ctrl, idx) => {
+                return (
+                  <div
+                    className={classes.dialogTitleControlWrapper}
+                    key={idx}
                   >
-                    <Tooltip title='Close' placement='top'>
-                      <CloseIcon className={classes.dialogTitleCloseIcon}/>
-                    </Tooltip>
-                  </Fab>
-                </div>
+                    {ctrl}
+                  </div>
+                )
+              })}
+              <div className={classes.dialogTitleControlWrapper}>
+                <Fab
+                  color='primary'
+                  aria-label='Close'
+                  className={classes.dialogTitleCloseButton}
+                  onClick={closeDialog}
+                >
+                  <Tooltip title='Close' placement='top'>
+                    <CloseIcon className={classes.dialogTitleCloseIcon}/>
+                  </Tooltip>
+                </Fab>
               </div>
             </div>
-          </DialogTitle>
-          <DialogContent classes={{root: classes.contentRoot}}>
-            {children}
-          </DialogContent>
-        </MUIDialog>
-      )
-    }
+          </div>
+        </DialogTitle>
+        <DialogContent classes={{root: classes.contentRoot}}>
+          {children}
+        </DialogContent>
+      </MUIDialog>
+    )
   }
 }
 
@@ -179,13 +149,18 @@ Dialog.propTypes = {
   /**
    * dialog title
    */
-   title: PropTypes.string,
+  title: PropTypes.string,
+  /**
+   * additional title controls
+   */
+  additionalTitleControls: PropTypes.array,
 }
 
 Dialog.defaultProps = {
   open: false,
   children: null,
-  title: ''
+  title: '',
+  additionalTitleControls: [],
 }
 
 Dialog = withWidth()(withStyles(styles)(Dialog))

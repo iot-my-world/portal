@@ -5,16 +5,9 @@ import {
   Grid,
   Card,
   CardContent,
-  CardHeader,
   Typography,
   Fab,
   Tooltip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  TextField,
   IconButton, Icon,
 } from '@material-ui/core'
 import ZX303TrackerDetailDialogContainer from 'components/tracker/zx303/Detail/DetailContainer'
@@ -26,20 +19,8 @@ import Query from 'brain/search/Query'
 import ZX303DeviceRecordHandler from 'brain/tracker/zx303/RecordHandler'
 import ZX303DeviceValidator from 'brain/tracker/zx303/Validator'
 import ZX303DeviceAdministrator from 'brain/tracker/zx303/Administrator'
-import {
-  allPartyTypes,
-  ClientPartyType,
-  CompanyPartyType,
-  SystemPartyType,
-} from 'brain/party/types'
-import SystemRecordHandler from 'brain/party/system/RecordHandler'
-import TextCriterion from 'brain/search/criterion/Text'
-import IdIdentifier from 'brain/search/identifier/Id'
-import CompanyRecordHandler from 'brain/party/company/RecordHandler'
-import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import BEPTable from 'components/table/bepTable/BEPTable'
-import DeviceIcon from '@material-ui/icons/DevicesOther'
 import {
   MdAdd as AddIcon, MdClear as CancelIcon,
   MdEdit as EditIcon,
@@ -48,21 +29,15 @@ import {
 import {
   FaGlasses as ViewDetailsIcon,
 } from 'react-icons/fa'
-import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
-import {FiFilter as FilterIcon} from 'react-icons/fi'
 
 const styles = theme => ({
-  root: {
-    display: 'grid',
-    gridTemplateRows: 'auto auto',
-    gridTemplateColumns: 'auto',
+  root: {},
+  tableWrapper: {
+    overflow: 'auto',
   },
 
   detailCardWrapper: {
     justifySelf: 'center',
-  },
-  tableWrapper: {
-    overflow: 'auto',
   },
   formField: {
     height: '60px',
@@ -324,100 +299,6 @@ class ZX303 extends Component {
     HideGlobalLoader()
   }
 
-  loadPartyOptions = partyType => async (inputValue, callback) => {
-    let collectResponse
-    let callbackResults = []
-    switch (partyType) {
-      case SystemPartyType:
-        collectResponse = await SystemRecordHandler.Collect(
-          [
-            new TextCriterion({
-              field: 'name',
-              text: inputValue,
-            }),
-          ],
-        )
-        callbackResults = collectResponse.records.map(system => ({
-          label: system.name,
-          value: new IdIdentifier(system.id),
-          entity: system,
-        }))
-        break
-
-      case CompanyPartyType:
-        collectResponse = await CompanyRecordHandler.Collect(
-          [
-            new TextCriterion({
-              field: 'name',
-              text: inputValue,
-            }),
-          ],
-        )
-        callbackResults = collectResponse.records.map(company => ({
-          label: company.name,
-          value: new IdIdentifier(company.id),
-          entity: company,
-        }))
-        break
-
-      case ClientPartyType:
-        collectResponse = await ClientRecordHandler.Collect(
-          [
-            new TextCriterion({
-              field: 'name',
-              text: inputValue,
-            }),
-          ],
-        )
-        callbackResults = collectResponse.records.map(client => ({
-          label: client.name,
-          value: new IdIdentifier(client.id),
-          entity: client,
-        }))
-        break
-
-      default:
-        callbackResults = []
-    }
-    callbackResults = [{label: '-', value: ''}, ...callbackResults]
-    callback(callbackResults)
-  }
-
-  handleFieldChange = e => {
-    let {zx303DeviceEntity} = this.state
-    const fieldName = e.target.name ? e.target.name : e.target.id
-    zx303DeviceEntity[fieldName] = e.target.value
-
-    switch (fieldName) {
-      case 'ownerPartyType':
-        zx303DeviceEntity.ownerId = new IdIdentifier()
-        break
-
-      case 'ownerId':
-        this.partyHolder.update(
-          e.selectionInfo.entity,
-          zx303DeviceEntity.ownerPartyType,
-        )
-        break
-
-      case 'assignedPartyType':
-        zx303DeviceEntity.assignedId = new IdIdentifier()
-        break
-
-      case 'assignedId':
-        this.partyHolder.update(
-          e.selectionInfo.entity,
-          zx303DeviceEntity.assignedPartyType,
-        )
-        break
-
-      default:
-    }
-
-    this.reasonsInvalid.clearField(fieldName)
-    this.setState({zx303DeviceEntity})
-  }
-
   handleCriteriaQueryChange = (criteria, query) => {
     this.collectCriteria = criteria
     this.collectQuery = query
@@ -437,240 +318,6 @@ class ZX303 extends Component {
       zx303DeviceEntity: new ZX303Device(rowObj),
       activeState: events.selectRow,
     })
-  }
-
-  renderDetails = () => {
-    const {activeState} = this.state
-    const {classes} = this.props
-
-    const fieldValidations = this.reasonsInvalid.toMap()
-    const stateIsViewing = activeState === states.viewingExisting
-
-    switch (activeState) {
-      case states.nop:
-        return (
-          <Grid
-            container
-            direction={'column'}
-            spacing={8}
-            alignItems={'center'}
-          >
-            <Grid item>
-              <DeviceIcon className={classes.icon}/>
-            </Grid>
-            <Grid item>
-              <Fab
-                id={'zx303DeviceConfigurationNewButton'}
-                color={'primary'}
-                className={classes.button}
-                size={'small'}
-                onClick={this.handleCreateNew}
-              >
-                <Tooltip title='Add New Device'>
-                  <AddIcon className={classes.buttonIcon}/>
-                </Tooltip>
-              </Fab>
-            </Grid>
-          </Grid>
-        )
-
-      case states.viewingExisting:
-      case states.editingNew:
-      case states.editingExisting:
-        const {zx303DeviceEntity} = this.state
-        return (
-          <Grid container spacing={8}>
-            <Grid item xs>
-              <FormControl
-                className={classes.formField}
-                error={!!fieldValidations.ownerPartyType}
-                aria-describedby='ownerPartyType'
-              >
-                <InputLabel htmlFor='ownerPartyType'>
-                  Owner Party Type
-                </InputLabel>
-                <Select
-                  id='ownerPartyType'
-                  name='ownerPartyType'
-                  value={zx303DeviceEntity.ownerPartyType}
-                  onChange={this.handleFieldChange}
-                  style={{width: 150}}
-                  disableUnderline={stateIsViewing}
-                  inputProps={{readOnly: stateIsViewing}}
-                >
-                  <MenuItem value=''>
-                    <em>None</em>
-                  </MenuItem>
-                  {allPartyTypes.map((partyType, idx) => {
-                    return (
-                      <MenuItem key={idx} value={partyType}>
-                        {partyType}
-                      </MenuItem>
-                    )
-                  })}
-                </Select>
-                {!!fieldValidations.ownerPartyType && (
-                  <FormHelperText id='ownerPartyType'>
-                    {
-                      fieldValidations.ownerPartyType ?
-                        fieldValidations.ownerPartyType.help :
-                        undefined
-                    }
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs>
-              <AsyncSelect
-                id='ownerId'
-                label={'Owner'}
-                value={{
-                  value: zx303DeviceEntity.ownerId,
-                  label: this.partyHolder.retrieveEntityProp(
-                    'name',
-                    zx303DeviceEntity.ownerId,
-                  ),
-                }}
-                onChange={this.handleFieldChange}
-                loadOptions={this.loadPartyOptions(
-                  zx303DeviceEntity.ownerPartyType)}
-                menuPosition={'fixed'}
-                readOnly={stateIsViewing}
-                helperText={
-                  fieldValidations.ownerId
-                    ? fieldValidations.ownerId.help
-                    : undefined
-                }
-                error={!!fieldValidations.ownerId}
-              />
-            </Grid>
-            <Grid item xs>
-              <FormControl
-                className={classes.formField}
-                error={!!fieldValidations.assignedPartyType}
-                aria-describedby='assignedPartyType'
-              >
-                <InputLabel htmlFor='assignedPartyType'>
-                  Assigned Party Type
-                </InputLabel>
-                <Select
-                  id='assignedPartyType'
-                  name='assignedPartyType'
-                  value={zx303DeviceEntity.assignedPartyType}
-                  onChange={this.handleFieldChange}
-                  style={{width: 150}}
-                  disableUnderline={stateIsViewing}
-                  inputProps={{readOnly: stateIsViewing}}
-                >
-                  <MenuItem value=''>
-                    <em>None</em>
-                  </MenuItem>
-                  {allPartyTypes.map((partyType, idx) => {
-                    return (
-                      <MenuItem key={idx} value={partyType}>
-                        {partyType}
-                      </MenuItem>
-                    )
-                  })}
-                </Select>
-                {!!fieldValidations.assignedPartyType && (
-                  <FormHelperText id='assignedPartyType'>
-                    {
-                      fieldValidations.assignedPartyType ?
-                        fieldValidations.assignedPartyType.help :
-                        undefined
-                    }
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs>
-              <AsyncSelect
-                id='assignedId'
-                label='Assigned To'
-                value={{
-                  value: zx303DeviceEntity.assignedId,
-                  label: this.partyHolder.retrieveEntityProp(
-                    'name',
-                    zx303DeviceEntity.assignedId,
-                  ),
-                }}
-                onChange={this.handleFieldChange}
-                loadOptions={this.loadPartyOptions(
-                  zx303DeviceEntity.assignedPartyType)}
-                menuPosition={'fixed'}
-                readOnly={stateIsViewing}
-                helperText={
-                  fieldValidations.assignedId
-                    ? fieldValidations.assignedId.help
-                    : undefined
-                }
-                error={!!fieldValidations.assignedId}
-              />
-            </Grid>
-            <Grid item xs>
-              <TextField
-                className={classes.formField}
-                id='simCountryCode'
-                label='Sim Country Code'
-                value={zx303DeviceEntity.simCountryCode}
-                onChange={this.handleFieldChange}
-                InputProps={{
-                  disableUnderline: stateIsViewing,
-                  readOnly: stateIsViewing,
-                }}
-                helperText={
-                  fieldValidations.simCountryCode
-                    ? fieldValidations.simCountryCode.help
-                    : undefined
-                }
-                error={!!fieldValidations.simCountryCode}
-              />
-            </Grid>
-            <Grid item xs>
-              <TextField
-                className={classes.formField}
-                id='simNumber'
-                label='Sim Number'
-                value={zx303DeviceEntity.simNumber}
-                onChange={this.handleFieldChange}
-                InputProps={{
-                  disableUnderline: stateIsViewing,
-                  readOnly: stateIsViewing,
-                }}
-                helperText={
-                  fieldValidations.simNumber
-                    ? fieldValidations.simNumber.help
-                    : undefined
-                }
-                error={!!fieldValidations.simNumber}
-              />
-            </Grid>
-            <Grid item xs>
-              <TextField
-                className={classes.formField}
-                id='imei'
-                label='IMEI'
-                value={zx303DeviceEntity.imei}
-                onChange={this.handleFieldChange}
-                InputProps={{
-                  disableUnderline: stateIsViewing,
-                  readOnly: stateIsViewing,
-                }}
-                helperText={
-                  fieldValidations.imei
-                    ? fieldValidations.imei.help
-                    : undefined
-                }
-                error={!!fieldValidations.imei}
-              />
-            </Grid>
-          </Grid>
-        )
-      default:
-        return null
-    }
-
   }
 
   renderControlIcons = () => {
@@ -790,6 +437,7 @@ class ZX303 extends Component {
       totalNoRecords,
       activeState,
       detailDialogOpen,
+      zx303DeviceEntity,
     } = this.state
     const {
       theme,
@@ -859,17 +507,7 @@ class ZX303 extends Component {
     return (
       <div
         className={classes.root}
-        style={{gridRowGap: 16}}
       >
-        <Card
-          id={'zx303ConfigurationDetailCard'}
-          className={classes.detailCard}
-        >
-          <CardHeader title={cardTitle}/>
-          <CardContent>
-            {this.renderDetails()}
-          </CardContent>
-        </Card>
         <Card>
           <CardContent>
             <BEPTable
@@ -985,6 +623,7 @@ class ZX303 extends Component {
         <ZX303TrackerDetailDialogContainer
           open={detailDialogOpen}
           closeDialog={() => this.setState({detailDialogOpen: false})}
+          zx303Tracker={zx303DeviceEntity}
         />}
       </div>
     )
