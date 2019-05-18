@@ -297,6 +297,7 @@ class BEPTable extends Component {
     const {
       classes,
       totalNoRecords,
+      additionalControls,
       ...rest
     } = this.props
 
@@ -306,6 +307,13 @@ class BEPTable extends Component {
           <div className={classes.controlsWrapper}>
             <div>
               <Grid container>
+                {additionalControls.map((ctrl, idx) => {
+                  return (
+                    <Grid item key={idx}>
+                      {ctrl}
+                    </Grid>
+                  )
+                })}
                 <Grid item>
                   <IconButton
                       onClick={() => this.setState({
@@ -477,10 +485,24 @@ BEPTable.propTypes = {
    * Used to calculate total no of pages
    */
   totalNoRecords: PropTypes.number.isRequired,
+  /**
+   * additional controls is an array of react nodes
+   * should take the form of
+   *   <IconButton>
+   *    <Tooltip>
+   *      <Icon>
+   *        <FilterIcon/>
+   *      </Icon>
+   *    </Tooltip>
+   *   </IconButton>
+   */
+  additionalControls: PropTypes.array,
   ...Table.propTypes,
 }
 
-BEPTable.defaultProps = {}
+BEPTable.defaultProps = {
+  additionalControls: [],
+}
 
 export default BEPTable
 
