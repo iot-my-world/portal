@@ -65,15 +65,26 @@ class AsyncSelect extends Component {
     const {
       onChange,
       id,
+      blankValue,
     } = this.props
 
-    onChange({
-      target: {
-        id,
-        value: selectionInfo.value,
-      },
-      selectionInfo,
-    })
+    if (selectionInfo.value === '') {
+      onChange({
+        target: {
+          id,
+          value: blankValue,
+        },
+        selectionInfo,
+      })
+    } else {
+      onChange({
+        target: {
+          id,
+          value: selectionInfo.value,
+        },
+        selectionInfo,
+      })
+    }
   }
 
   render() {
@@ -85,6 +96,7 @@ class AsyncSelect extends Component {
       helperText,
       error,
       label,
+      blankValue,
       ...rest
     } = this.props
     if (readOnly) {
@@ -145,6 +157,10 @@ class AsyncSelect extends Component {
       )
     }
   }
+}
+
+AsyncSelect.defaultProps = {
+  blankValue: ''
 }
 
 const StyledAsyncSelect = withStyles(styles, {withTheme: true})(AsyncSelect)

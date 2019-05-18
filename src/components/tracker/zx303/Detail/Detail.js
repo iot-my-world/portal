@@ -50,8 +50,12 @@ const activeStates = {
 
 const events = {
   init: activeStates.viewingExisting,
+
+  createNewSuccess: activeStates.viewingExisting,
+
   startEditExisting: activeStates.editingExisting,
   cancelEditExisting: activeStates.viewingExisting,
+  finishEditExisting: activeStates.viewingExisting,
 }
 
 const loadPartyOptions = partyType => async (inputValue, callback) => {
@@ -159,37 +163,98 @@ class Detail extends Component {
   handleFieldChange = e => {
     let {zx303Tracker} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
-    zx303Tracker[fieldName] = e.target.value
 
     switch (fieldName) {
       case 'ownerPartyType':
+        zx303Tracker[fieldName] = e.target.value
         zx303Tracker.ownerId = new IdIdentifier()
         break
 
       case 'ownerId':
-        this.partyHolder.update(
-          e.selectionInfo.entity,
-          zx303Tracker.ownerPartyType,
-        )
+        if (e.target.value === '') {
+          zx303Tracker[fieldName] = new IdIdentifier()
+        } else {
+          zx303Tracker[fieldName] = e.target.value
+          this.partyHolder.update(
+            e.selectionInfo.entity,
+            zx303Tracker.ownerPartyType,
+          )
+        }
         break
 
       case 'assignedPartyType':
+        zx303Tracker[fieldName] = e.target.value
         zx303Tracker.assignedId = new IdIdentifier()
         break
 
       case 'assignedId':
-        this.partyHolder.update(
-          e.selectionInfo.entity,
-          zx303Tracker.assignedPartyType,
-        )
+        if (e.target.value === '') {
+          zx303Tracker[fieldName] = new IdIdentifier()
+        } else {
+          zx303Tracker[fieldName] = e.target.value
+          this.partyHolder.update(
+            e.selectionInfo.entity,
+            zx303Tracker.ownerPartyType,
+          )
+        }
         break
 
       default:
+        zx303Tracker[fieldName] = e.target.value
     }
 
     this.reasonsInvalid.clearField(fieldName)
     this.setState({zx303Tracker})
   }
+
+  handleSaveNew = async () => {
+    const {zx303Tracker} = this.state
+    const {
+      ShowGlobalLoader,
+      HideGlobalLoader,
+      NotificationSuccess,
+      NotificationFailure,
+    } = this.props
+
+    ShowGlobalLoader()
+
+    // perform validation
+    try {
+      this.reasonsInvalid.clearAll()
+      const reasonsInvalid = (await ZX303DeviceValidator.Validate({
+        zx303: zx303Tracker,
+        action: 'Create',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        this.reasonsInvalid = reasonsInvalid
+        HideGlobalLoader()
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Device', e)
+      NotificationFailure('Error Validating Device')
+      HideGlobalLoader()
+      return
+    }
+
+    // perform creation
+    try {
+      const createResponse = await ZX303DeviceAdministrator.Create({
+        zx303: zx303Tracker,
+      })
+      NotificationSuccess('Successfully Created Device')
+      this.setState({
+        zx303Tracker: createResponse.zx303,
+        activeState: events.createNewSuccess,
+      })
+    } catch (e) {
+      console.error('Error Creating Device', e)
+      NotificationFailure('Error Creating Device')
+      HideGlobalLoader()
+      return
+    }
+    HideGlobalLoader()
+  }  
 
   handleStartEditExisting = () => {
     this.reasonsInvalid.clearAll()
@@ -239,12 +304,10 @@ class Detail extends Component {
 
     // perform update
     try {
-      let {records} = this.state
-      let response = await ZX303DeviceAdministrator.UpdateAllowedFields({
+      const response = await ZX303DeviceAdministrator.UpdateAllowedFields({
         zx303: zx303Tracker,
       })
       this.setState({
-        records,
         zx303Tracker: response.zx303,
         activeState: events.finishEditExisting,
       })
@@ -281,7 +344,10 @@ class Detail extends Component {
       case activeStates.editingNew:
         return [
           (
-            <Fab size={'medium'}>
+            <Fab
+              size={'medium'}
+              onClick={this.handleSaveNew}
+            >
               <Tooltip title='Save New'>
                 <SaveIcon className={classes.buttonIcon}/>
               </Tooltip>

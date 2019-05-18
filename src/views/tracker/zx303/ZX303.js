@@ -29,28 +29,17 @@ const styles = theme => ({
 const states = {
   nop: 0,
   itemSelected: 1,
-  viewingExisting: 2,
-  editingNew: 3,
-  editingExisting: 4,
 }
 
 const events = {
   init: states.nop,
   selectRow: states.itemSelected,
-
-  selectExisting: states.viewingExisting,
-
-  startCreateNew: states.editingNew,
-  cancelCreateNew: states.nop,
-  createNewSuccess: states.nop,
-
-  startEditExisting: states.editingExisting,
-  finishEditExisting: states.viewingExisting,
-  cancelEditExisting: states.viewingExisting,
 }
 
 class ZX303 extends Component {
   state = {
+    activeState: events.init,
+
     recordCollectionInProgress: false,
     selectedRowIdx: -1,
     records: [],
@@ -123,7 +112,8 @@ class ZX303 extends Component {
     this.setState({
       selectedRowIdx: -1,
       zx303DeviceEntity: new ZX303Device(),
-      initialDetailDialogActiveState: zx303TrackerDetailDialogActiveStates.editingNew,
+      initialDetailDialogActiveState:
+      zx303TrackerDetailDialogActiveStates.editingNew,
       detailDialogOpen: true
     })
   }
@@ -132,7 +122,6 @@ class ZX303 extends Component {
     this.collectCriteria = criteria
     this.collectQuery = query
     this.collectTimeout = setTimeout(this.collect, 300)
-    this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.init,
       zx303DeviceEntity: new ZX303Device(),
@@ -141,7 +130,6 @@ class ZX303 extends Component {
   }
 
   handleSelect = (rowObj, rowIdx) => {
-    this.reasonsInvalid.clearAll()
     this.setState({
       selectedRowIdx: rowIdx,
       zx303DeviceEntity: new ZX303Device(rowObj),
@@ -171,7 +159,11 @@ class ZX303 extends Component {
     if (activeState === states.itemSelected) {
       additionalIcons.push(
         <IconButton
-          onClick={() => this.setState({detailDialogOpen: true})}
+          onClick={() => this.setState({
+            detailDialogOpen: true,
+            initialDetailDialogActiveState:
+            zx303TrackerDetailDialogActiveStates.viewingExisting,
+          })}
         >
           <Tooltip
             title={'View Details'}
