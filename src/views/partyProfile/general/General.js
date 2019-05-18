@@ -21,7 +21,9 @@ import {
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import ClientPartyValidator from 'brain/party/client/Validator'
 import CompanyPartyValidator from 'brain/party/company/Validator'
-import {PartyProfileEditing} from 'brain/security/permission/view/permission'
+import {
+  PartyProfileEditingViewPermission,
+} from 'brain/security/permission/view/permission'
 
 const styles = theme => ({
   detailCard: {},
@@ -237,7 +239,7 @@ class General extends Component {
                     justify='flex-end'
               >
                 <Grid item>
-                  {viewPermissions.includes(PartyProfileEditing) &&
+                  {viewPermissions.includes(PartyProfileEditingViewPermission) &&
                   this.renderControlIcons()}
                 </Grid>
               </Grid>

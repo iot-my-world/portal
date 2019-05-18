@@ -1,13 +1,12 @@
-export const Configuration = 'Configuration'
-export const PartyCompanyConfiguration = 'PartyCompanyConfiguration'
-export const PartyClientConfiguration = 'PartyClientConfiguration'
-export const PartyUserConfiguration = 'PartyUserConfiguration'
-export const PartyProfileEditing = 'PartyProfileEditing'
-export const DeviceConfiguration = 'DeviceConfiguration'
-export const Dashboards = 'Dashboards'
-export const LiveTrackingDashboard = 'LiveTrackingDashboard'
-export const HistoricalTrackingDashboard = 'HistoricalTrackingDashboard'
-export const APIUserConfiguration = 'APIUserConfiguration'
+export const PartyProfileEditingViewPermission = "PartyProfileEditing"
 
-export const ViewDeviceDiagnostics = 'DeviceDiagnostics'
-export const ViewZX303DeviceDiagnostics = 'ZX303DeviceDiagnostics'
+export const PartyCompanyViewPermission = "PartyCompany"
+export const PartyClientViewPermission = "PartyClient"
+export const PartyUserViewPermission = "PartyUser"
+export const PartyAPIUserViewPermission = "PartyAPIUser"
+
+export const LiveTrackingDashboardViewPermission = "LiveTrackingDashboard"
+export const HistoricalTrackingDashboardViewPermission = "HistoricalTrackingDashboard"
+
+export const TrackerZX303ViewPermission = "TrackerZX303"
+export const ZX303DeviceDiagnosticsViewPermission = "ZX303DeviceDiagnostics"

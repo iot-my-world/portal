@@ -23,13 +23,14 @@ import ZX303DeviceDiagnosticsContainer
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import {
-  APIUserConfiguration as ViewAPIUserConfiguration,
-  DeviceConfiguration,
-  HistoricalTrackingDashboard as ViewHistoricalTrackingDashboard,
-  LiveTrackingDashboard as ViewLiveTrackingDashboard,
-  PartyClientConfiguration,
-  PartyCompanyConfiguration,
-  PartyUserConfiguration, ViewZX303DeviceDiagnostics,
+  PartyCompanyViewPermission,
+  PartyClientViewPermission,
+  PartyUserViewPermission,
+  PartyAPIUserViewPermission,
+  LiveTrackingDashboardViewPermission,
+  HistoricalTrackingDashboardViewPermission,
+  TrackerZX303ViewPermission,
+  ZX303DeviceDiagnosticsViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
   ClientPartyType,
@@ -48,21 +49,21 @@ const appSideBarLinkRoutes = [
   {
     collapse: true,
     path: '/app/dashboard',
-    name: 'Dashboard',
+    name: 'Dashboards',
     state: 'openDashboard',
     icon: DashboardIcon,
     views: [
       {
         path: '/app/dashboard/liveTracking',
         name: 'Live Tracking',
-        viewPermission: ViewLiveTrackingDashboard,
+        viewPermission: LiveTrackingDashboardViewPermission,
         icon: GPSFixedIcon,
         component: LiveTrackingDashboardContainer,
       },
       {
         path: '/app/dashboard/historicalTracking',
         name: 'Historical Tracking',
-        viewPermission: ViewHistoricalTrackingDashboard,
+        viewPermission: HistoricalTrackingDashboardViewPermission,
         icon: TimelineIcon,
         component: HistoricalTrackingDashboardContainer,
       },
@@ -78,7 +79,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/party/company',
         name: 'Company',
-        viewPermission: PartyCompanyConfiguration,
+        viewPermission: PartyCompanyViewPermission,
         mini: 'CO',
         icon: DomainIcon,
         component: CompanyContainer,
@@ -86,7 +87,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/party/client',
         name: 'Client',
-        viewPermission: PartyClientConfiguration,
+        viewPermission: PartyClientViewPermission,
         mini: 'CL',
         icon: PeopleIcon,
         component: ClientContainer,
@@ -94,7 +95,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/party/user',
         name: 'User',
-        viewPermission: PartyUserConfiguration,
+        viewPermission: PartyUserViewPermission,
         mini: 'US',
         icon: PersonIcon,
         component: UserContainer,
@@ -102,7 +103,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/party/apiUser',
         name: 'API User',
-        viewPermission: ViewAPIUserConfiguration,
+        viewPermission: PartyAPIUserViewPermission,
         mini: 'AP',
         icon: PersonIcon,
         component: APIUserContainer,
@@ -119,7 +120,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/deviceDiagnostics/zx303',
         name: 'ZX303',
-        viewPermission: ViewZX303DeviceDiagnostics,
+        viewPermission: ZX303DeviceDiagnosticsViewPermission,
         icon: TrackerIcon,
         component: ZX303DeviceDiagnosticsContainer,
       },
@@ -135,7 +136,7 @@ const appSideBarLinkRoutes = [
       {
         path: '/app/tracker/zx303',
         name: 'ZX303 Tracker',
-        viewPermission: DeviceConfiguration,
+        viewPermission: TrackerZX303ViewPermission,
         icon: TrackerIcon,
         component: ZX303TrackerContainer,
       },
