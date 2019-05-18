@@ -142,6 +142,7 @@ class Live extends Component {
       pitch: 0,
     },
     mapHeight: 0,
+    mapWidth: 0,
     popupInfo: null,
     readings: [],
 
@@ -434,7 +435,11 @@ class Live extends Component {
   getMapHeight = (element) => {
     try {
       if (element) {
-        this.setState({mapHeight: element.clientHeight - 10})
+        console.log(element.parentElement.clientWidth)
+        this.setState({
+          mapHeight: element.parentElement.clientHeight + 400,
+          mapWidth: element.parentElement.clientWidth - 10,
+        })
       }
     } catch (e) {
       console.error('error getting map dimensions', e)
@@ -562,7 +567,7 @@ class Live extends Component {
 
   render() {
     const {classes} = this.props
-    const {viewport, mapHeight, showControls} = this.state
+    const {viewport, mapHeight, mapWidth, showControls} = this.state
 
     return (
         <div
@@ -593,7 +598,7 @@ class Live extends Component {
           <div className={classes.map} ref={this.getMapHeight}>
             <MapGL
                 {...viewport}
-                width={200}
+                width={mapWidth}
                 height={mapHeight}
                 mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
