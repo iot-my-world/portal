@@ -1,10 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import ZX303 from './Device'
+import ZX303 from './ZX303'
 import {NotificationFailure, NotificationSuccess} from 'actions/notification'
 import {HideGlobalLoader, ShowGlobalLoader} from 'actions/app'
 
-let FunctionalContainer = props => {
+let ZX303Container = props => {
   return <ZX303 {...props}/>
 }
 
@@ -15,7 +15,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-FunctionalContainer = connect(
+ZX303Container = connect(
   mapStateToProps,
   {
     NotificationSuccess,
@@ -23,6 +23,6 @@ FunctionalContainer = connect(
     ShowGlobalLoader,
     HideGlobalLoader,
   },
-)(FunctionalContainer)
+)(ZX303Container)
 
-export default FunctionalContainer
+  export default ZX303Container

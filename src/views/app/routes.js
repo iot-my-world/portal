@@ -2,7 +2,7 @@ import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import ConfigurationIcon from '@material-ui/icons/Settings'
-import DeviceIcon from '@material-ui/icons/DevicesOther'
+import TrackerIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
 import TimelineIcon from '@material-ui/icons/Timeline'
@@ -11,17 +11,17 @@ import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
-import UserContainer from 'views/configuration/user/UserContainer'
-import APIUserContainer from 'views/configuration/apiUser/APIUserContainer'
-import ZX303DeviceContainer from 'views/configuration/device/DeviceContainer'
+import UserContainer from 'views/party/user/UserContainer'
+import APIUserContainer from 'views/party/apiUser/APIUserContainer'
+import ZX303TrackerContainer from 'views/tracker/zx303/ZX303Container'
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
 import HistoricalTrackingDashboardContainer
   from 'views/dashboard/tracking/historical/HistoricalContainer'
 import ZX303DeviceDiagnosticsContainer
   from 'views/deviceDiagnostics/zx303/ZX303Container'
-import CompanyContainer from 'views/configuration/company/CompanyContainer'
-import ClientContainer from 'views/configuration/client/ClientContainer'
+import CompanyContainer from 'views/party/company/CompanyContainer'
+import ClientContainer from 'views/party/client/ClientContainer'
 import {
   APIUserConfiguration as ViewAPIUserConfiguration,
   DeviceConfiguration,
@@ -70,13 +70,13 @@ const appSideBarLinkRoutes = [
   },
   {
     collapse: true,
-    path: '/app/configuration',
-    name: 'Configuration',
+    path: '/app/party',
+    name: 'Parties',
     state: 'openConfiguration',
-    icon: ConfigurationIcon,
+    icon: PeopleIcon,
     views: [
       {
-        path: '/app/configuration/company',
+        path: '/app/party/company',
         name: 'Company',
         viewPermission: PartyCompanyConfiguration,
         mini: 'CO',
@@ -84,7 +84,7 @@ const appSideBarLinkRoutes = [
         component: CompanyContainer,
       },
       {
-        path: '/app/configuration/client',
+        path: '/app/party/client',
         name: 'Client',
         viewPermission: PartyClientConfiguration,
         mini: 'CL',
@@ -92,7 +92,7 @@ const appSideBarLinkRoutes = [
         component: ClientContainer,
       },
       {
-        path: '/app/configuration/user',
+        path: '/app/party/user',
         name: 'User',
         viewPermission: PartyUserConfiguration,
         mini: 'US',
@@ -100,19 +100,12 @@ const appSideBarLinkRoutes = [
         component: UserContainer,
       },
       {
-        path: '/app/configuration/apiUser',
+        path: '/app/party/apiUser',
         name: 'API User',
         viewPermission: ViewAPIUserConfiguration,
         mini: 'AP',
         icon: PersonIcon,
         component: APIUserContainer,
-      },
-      {
-        path: '/app/configuration/zx303device',
-        name: 'ZX303 Device',
-        viewPermission: DeviceConfiguration,
-        icon: DeviceIcon,
-        component: ZX303DeviceContainer,
       },
     ],
   },
@@ -127,11 +120,27 @@ const appSideBarLinkRoutes = [
         path: '/app/deviceDiagnostics/zx303',
         name: 'ZX303',
         viewPermission: ViewZX303DeviceDiagnostics,
-        icon: DeviceIcon,
+        icon: TrackerIcon,
         component: ZX303DeviceDiagnosticsContainer,
       },
     ],
   },
+  {
+    collapse: true,
+    path: '/app/tracker',
+    name: 'Trackers',
+    state: 'openTracker',
+    icon: TrackerIcon,
+    views: [
+      {
+        path: '/app/tracker/zx303',
+        name: 'ZX303 Tracker',
+        viewPermission: DeviceConfiguration,
+        icon: TrackerIcon,
+        component: ZX303TrackerContainer,
+      },
+    ],
+  },  
 ]
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
