@@ -9,7 +9,7 @@ import {
   Divider,
 } from '@material-ui/core'
 import moment from 'moment'
-import {Reading} from 'brain/tracker/reading'
+import ZX303TrackerGPSReading from 'brain/tracker/zx303/reading/gps'
 
 const styles = theme => ({
   root: {
@@ -87,7 +87,7 @@ MapPinInfo = withStyles(styles)(MapPinInfo)
 MapPinInfo.propTypes = {
   ...Popup.propTypes,
   open: PropTypes.bool.isRequired,
-  reading: PropTypes.instanceOf(Reading),
+  reading: PropTypes.instanceOf(ZX303TrackerGPSReading),
   getPartyName: PropTypes.func.isRequired,
 }
 

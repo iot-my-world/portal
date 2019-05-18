@@ -26,7 +26,7 @@ import MapGL, {
 } from 'react-map-gl'
 import 'components/mapbox/Custom.css'
 import {MapPin, MapPinPopup} from './map'
-import {Reading} from 'brain/tracker/reading'
+import ZX303TrackerGPSReading from 'brain/tracker/zx303/reading/gps'
 import {SystemRecordHandler} from 'brain/party/system'
 import {PartyIdentifier} from 'brain/search/identifier'
 import {
@@ -108,67 +108,57 @@ const filterPanels = {
 class Live extends Component {
   constructor(props) {
     super(props)
-    this.getPartyName = this.getPartyName.bind(this)
-    this.loadReport = this.loadReport.bind(this)
-    this.renderFilterShowHideIcon = this.renderFilterShowHideIcon.bind(this)
-    this.renderFiltersMenu = this.renderFiltersMenu.bind(this)
-    this.handleClientFilterChange = this.handleClientFilterChange.bind(this)
-    this.handleCompanyFilterChange = this.handleCompanyFilterChange.bind(this)
-    this.load = this.load.bind(this)
-    this.updateMapViewport = this.updateMapViewport.bind(this)
-    this.renderMapPins = this.renderMapPins.bind(this)
-    this.getMapHeight = this.getMapHeight.bind(this)
-    this.renderMapPinPopup = this.renderMapPinPopup.bind(this)
-    this.renderPartySwitch = this.renderPartySwitch.bind(this)
-    this.handlePartySwitchChange = this.handlePartySwitchChange.bind(this)
-    this.state = {
-      expanded: null,
-      showControls: false,
-      viewport: {
-        latitude: -26.046573,
-        longitude: 28.095451,
-        zoom: 5,
-        bearing: 0,
-        pitch: 0,
-      },
-      mapHeight: 0,
-      popupInfo: null,
-      readings: [],
-
-      mapPopUpOpen: false,
-      selectedReading: new Reading(),
-
-      hideUnassignedDevices: true,
-    }
     this.viewCompanyFilter =
         (props.claims.partyType === SystemPartyType)
     this.viewClientFilter =
         (props.claims.partyType === SystemPartyType) ||
         (props.claims.partyType === CompanyPartyType)
-
-    this.entityMap = {
-      Company: [],
-      Client: [],
-      System: [],
-    }
-
-    this.systemIdentifiers = []
-    this.companyIdentifiers = []
-    this.clientIdentifiers = []
-
-    this.readingPinColorMap = {}
-
-    this.loadReportTimeout = () => {
-    }
   }
 
-  getPartyName(partyType, partyId) {
+
+  entityMap = {
+    Company: [],
+    Client: [],
+    System: [],
+  }
+
+  systemIdentifiers = []
+  companyIdentifiers = []
+  clientIdentifiers = []
+
+  readingPinColorMap = {}
+
+  loadReportTimeout = () => {
+  }
+
+  state = {
+    expanded: null,
+    showControls: false,
+    viewport: {
+      latitude: -26.046573,
+      longitude: 28.095451,
+      zoom: 5,
+      bearing: 0,
+      pitch: 0,
+    },
+    mapHeight: 0,
+    mapWidth: 0,
+    popupInfo: null,
+    readings: [],
+
+    mapPopUpOpen: false,
+    selectedReading: new ZX303TrackerGPSReading(),
+
+    hideUnassignedDevices: true,
+  }  
+
+  getPartyName = (partyType, partyId) => {
     const list = this.entityMap[partyType]
     const entity = retrieveFromList(partyId, list ? list : [])
     return entity ? entity.name : ''
   }
 
-  async load() {
+  load = async () => {
     const {ShowGlobalLoader, HideGlobalLoader, claims} = this.props
     ShowGlobalLoader()
     try {
@@ -249,7 +239,7 @@ class Live extends Component {
     }
   }
 
-  async loadReport() {
+  loadReport = async () => {
     const {ShowGlobalLoader, HideGlobalLoader} = this.props
     ShowGlobalLoader()
     try {
@@ -260,7 +250,7 @@ class Live extends Component {
             ...this.clientIdentifiers,
             ...this.systemIdentifiers,
           ],
-        })).readings,
+        })).zx303TrackerGPSReadings,
       })
       let usedColors = Object.values(this.readingPinColorMap)
       this.state.readings.forEach(reading => {
@@ -278,7 +268,7 @@ class Live extends Component {
     HideGlobalLoader()
   }
 
-  handleClientFilterChange(selected) {
+  handleClientFilterChange = (selected) => {
     this.clientIdentifiers = selected.map(
         client =>
             new PartyIdentifier({
@@ -289,7 +279,7 @@ class Live extends Component {
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
-  handleCompanyFilterChange(selected) {
+  handleCompanyFilterChange = (selected) => {
     this.companyIdentifiers = selected.map(
         company =>
             new PartyIdentifier({
@@ -300,7 +290,7 @@ class Live extends Component {
     this.loadReportTimeout = setTimeout(this.loadReport, 500)
   }
 
-  handlePartySwitchChange(event) {
+  handlePartySwitchChange = (event) => {
     const {claims} = this.props
     this.setState({hideUnassignedDevices: event.target.checked})
 
@@ -340,7 +330,7 @@ class Live extends Component {
     this.loadReportTimeout = setTimeout(this.loadReport, 100)
   }
 
-  renderFiltersMenu() {
+  renderFiltersMenu = () => {
     const {classes} = this.props
     const {expanded} = this.state
 
@@ -442,17 +432,21 @@ class Live extends Component {
     this.setState({viewport})
   }
 
-  getMapHeight(element) {
+  getMapHeight = (element) => {
     try {
       if (element) {
-        this.setState({mapHeight: element.clientHeight - 10})
+        console.log(element.parentElement.clientWidth)
+        this.setState({
+          mapHeight: element.parentElement.clientHeight + 400,
+          mapWidth: element.parentElement.clientWidth - 10,
+        })
       }
     } catch (e) {
       console.error('error getting map dimensions', e)
     }
   }
 
-  renderMapPins() {
+  renderMapPins = () => {
     const {readings} = this.state
 
     return readings.map((reading, idx) => {
@@ -477,7 +471,7 @@ class Live extends Component {
     })
   }
 
-  renderMapPinPopup() {
+  renderMapPinPopup = () => {
     const {selectedReading, mapPopUpOpen} = this.state
 
     return (
@@ -497,7 +491,7 @@ class Live extends Component {
     )
   }
 
-  renderPartySwitch() {
+  renderPartySwitch = () => {
     const {claims, classes, party} = this.props
 
     let msg = ''
@@ -537,7 +531,7 @@ class Live extends Component {
     )
   }
 
-  renderFilterShowHideIcon() {
+  renderFilterShowHideIcon = () => {
     const {classes} = this.props
     const {showControls} = this.state
     if (showControls) {
@@ -573,7 +567,7 @@ class Live extends Component {
 
   render() {
     const {classes} = this.props
-    const {viewport, mapHeight, showControls} = this.state
+    const {viewport, mapHeight, mapWidth, showControls} = this.state
 
     return (
         <div
@@ -604,7 +598,7 @@ class Live extends Component {
           <div className={classes.map} ref={this.getMapHeight}>
             <MapGL
                 {...viewport}
-                width={200}
+                width={mapWidth}
                 height={mapHeight}
                 mapStyle="mapbox://styles/mapbox/dark-v9"
                 onViewportChange={this.updateMapViewport}
