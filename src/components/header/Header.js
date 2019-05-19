@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import classNames from "classnames"
 import {
   withStyles, Fab, AppBar,
-  Toolbar, Hidden,
+  Toolbar,
 } from '@material-ui/core'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 import {
