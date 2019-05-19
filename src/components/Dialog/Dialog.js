@@ -78,6 +78,7 @@ class Dialog extends Component {
       children,
       title,
       additionalTitleControls,
+      ...rest
     } = this.props
 
     if (!open) {
@@ -89,6 +90,7 @@ class Dialog extends Component {
         open={open}
         fullScreen={!isWidthUp('md', width)}
         PaperProps={{classes: {root: classes.dialogRootOverride}}}
+        {...rest}
       >
         <DialogTitle className={classes.dialogTitleWrapper}>
           <div className={classes.dialogTitle}>
