@@ -30,7 +30,7 @@ const headerStyle = theme => ({
     height: '50px',
     minHeight: '50px',
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   primary: {
     backgroundColor: theme.palette.primary.main,
@@ -45,10 +45,9 @@ const headerStyle = theme => ({
     width: '20px',
     height: '17px',
   },
-  logoWrapper: {
-    padding: '4px 10px 4px 4px',
+  logoWrapperMini: {
   },
-  logo: {
+  logoMini: {
     width: '30px',
     verticalAlign: 'middle',
     border: '0',

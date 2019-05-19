@@ -61,8 +61,8 @@ function Header({ ...props }) {
         style={{padding: 0}}
       >
         <Toolbar className={classes.toolbarMini}>
-          <div className={classes.logoWrapper}>
-            <img src={logo} alt='logo' className={classes.logo}/>
+          <div className={classes.logoWrapperMini}>
+            <img src={logo} alt='logo' className={classes.logoMini}/>
           </div>
           <div className={classes.flex}>
             {getViewName()}
