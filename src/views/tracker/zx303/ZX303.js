@@ -6,6 +6,8 @@ import {
 } from '@material-ui/core'
 import ZX303TrackerDetailDialogContainer
   from 'components/tracker/zx303/Detail/DetailContainer'
+import ZX303TrackerBatteryLifeDialogContainer
+  from 'components/tracker/zx303/BatteryLifeTrendDialog/BatteryLifeDialogContainer'
 import {activeStates as zx303TrackerDetailDialogActiveStates} from 'components/tracker/zx303/Detail/Detail'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import {ZX303 as ZX303Device} from 'brain/tracker/zx303/index'
@@ -17,6 +19,7 @@ import BEPTable from 'components/table/bepTable/BEPTable'
 import {
   FaGlasses as ViewDetailsIcon,
   FaPlus as AddNewIcon,
+  FaBatteryFull as BatteryLifeIcon,
 } from 'react-icons/fa'
 
 const styles = theme => ({
@@ -50,6 +53,8 @@ class ZX303 extends Component {
     detailDialogOpen: false,
     initialDetailDialogActiveState:
     zx303TrackerDetailDialogActiveStates.viewingExisting,
+
+    batteryLifeDialogOpen: false,
   }
 
   partyHolder = new PartyHolder()
@@ -157,8 +162,22 @@ class ZX303 extends Component {
     ]
 
     if (activeState === states.itemSelected) {
-      additionalIcons.push(
-        <IconButton
+      additionalIcons = [
+        (<IconButton
+          onClick={() => this.setState({
+            batteryLifeDialogOpen: true,
+          })}
+        >
+          <Tooltip
+            title={'Batter Life Trend'}
+            placement={'top'}
+          >
+            <Icon>
+              <BatteryLifeIcon/>
+            </Icon>
+          </Tooltip>
+        </IconButton>),
+        (<IconButton
           onClick={() => this.setState({
             detailDialogOpen: true,
             initialDetailDialogActiveState:
@@ -173,8 +192,9 @@ class ZX303 extends Component {
               <ViewDetailsIcon/>
             </Icon>
           </Tooltip>
-        </IconButton>,
-      )
+        </IconButton>),
+        ...additionalIcons,
+      ]
     }
     return additionalIcons
   }
@@ -188,6 +208,8 @@ class ZX303 extends Component {
       initialDetailDialogActiveState,
       detailDialogOpen,
       zx303DeviceEntity,
+
+      batteryLifeDialogOpen,
     } = this.state
     const {
       theme,
@@ -313,6 +335,12 @@ class ZX303 extends Component {
           closeDialog={() => this.setState({detailDialogOpen: false})}
           zx303Tracker={zx303DeviceEntity}
           initialActiveState={initialDetailDialogActiveState}
+        />}
+        {batteryLifeDialogOpen &&
+        <ZX303TrackerBatteryLifeDialogContainer
+          open={batteryLifeDialogOpen}
+          closeDialog={() => this.setState({batteryLifeDialogOpen: false})}
+          zx303Tracker={zx303DeviceEntity}
         />}
       </div>
     )
