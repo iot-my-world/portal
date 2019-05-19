@@ -5,43 +5,41 @@ import {
   withStyles, Fab, AppBar,
   Toolbar, Hidden,
 } from '@material-ui/core'
+import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 import {
   Menu, MoreVert, ViewList,
 } from "@material-ui/icons"
 
 import headerStyle from "./style"
+import logo from 'assets/images/logo.png'
 
 function Header({ ...props }) {
-  function makeBrand() {
-    var name
-    props.routes.map((prop, key) => {
-      if (prop.collapse) {
-        prop.views.map((prop, key) => {
-          if (prop.path === props.location.pathname) {
-            name = prop.name
+  function getViewName() {
+    for (let route of props.routes) {
+      if (route.collapse) {
+        for (let view of route.views) {
+          if (view.path === props.location.pathname) {
+            return view.name
           }
-          return null
-        })
+        }
+      } else if (route.path === props.location.pathname) {
+        return route.name
       }
-      if (prop.path === props.location.pathname) {
-        name = prop.name
-      }
-      return null
-    })
-    return name
+    }
+    return null
   }
-  const { classes, color} = props
-  const appBarClasses = classNames({
-    [" " + classes[color]]: color
-  })
+  const { classes, width } = props
 
-  return (
-    <AppBar className={classes.appBar + appBarClasses}>
-      <Toolbar className={classes.container}>
-        <Hidden smDown>
+  if (isWidthUp('md', width)) {
+    return (
+      <AppBar
+        className={classNames(classes.appBar, classes.primary)}
+        style={{padding: 0}}
+      >
+        <Toolbar className={classes.toolbarDesktop}>
           <div className={classes.sidebarMinimize}>
             <Fab
-              size={'medium'}
+              size={'small'}
               onClick={props.sidebarMinimize}
             >
               {props.miniActive
@@ -50,31 +48,44 @@ function Header({ ...props }) {
               }
             </Fab>
           </div>
-        </Hidden>
-        <div className={classes.flex}>
-          {makeBrand()}
-        </div>
-        <Hidden mdUp>
+          <div className={classes.desktopViewName}>
+            {getViewName()}
+          </div>
+        </Toolbar>
+      </AppBar>
+    )
+  } else {
+    return (
+      <AppBar
+        className={classNames(classes.appBar, classes.primary)}
+        style={{padding: 0}}
+      >
+        <Toolbar className={classes.toolbarMini}>
+          <div className={classes.logoWrapper}>
+            <img src={logo} alt='logo' className={classes.logo}/>
+          </div>
+          <div className={classes.flex}>
+            {getViewName()}
+          </div>
           <Fab
-            size={'medium'}
+            size={'small'}
             onClick={props.handleDrawerToggle}
           >
             <Menu/>
           </Fab>
-        </Hidden>
-      </Toolbar>
-    </AppBar>
-  )
+        </Toolbar>
+      </AppBar>
+    )
+  }
 }
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
-  color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"]),
   rtlActive: PropTypes.bool
 }
 
 Header.defaultProps = {
-  color: 'primary'
+
 }
 
-export default withStyles(headerStyle)(Header)
+export default withWidth()(withStyles(headerStyle)(Header))
