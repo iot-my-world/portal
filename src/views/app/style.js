@@ -33,12 +33,16 @@ const style = theme => ({
   },
   content: {
     marginTop: "70px",
-    padding: "30px 15px",
+    padding: "5px 2px",
 
-    minHeight: "calc(100vh - 123px)",
+    height: "calc(100vh)",
+    overflowY: "hidden",
+  },
+  container: {
+    ...containerFluid,
+    height: "calc(100vh - 75px)",
     overflowY: "scroll",
   },
-  container: { ...containerFluid },
   map: {
     marginTop: "70px"
   },
