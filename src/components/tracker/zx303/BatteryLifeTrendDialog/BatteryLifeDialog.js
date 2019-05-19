@@ -42,7 +42,7 @@ class BatteryLifeTrendDialog extends Component {
   render() {
     const {open, closeDialog} = this.props
     const {timerange} = this.state
-    console.log('aweh!', timerange)
+
     return (
       <Dialog
         fullScreen
