@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import {
-  withStyles, Button, AppBar,
+  withStyles, Fab, AppBar,
   Toolbar, Hidden,
 } from '@material-ui/core'
 import {
@@ -30,45 +30,37 @@ function Header({ ...props }) {
     })
     return name
   }
-  const { classes, color, rtlActive } = props
+  const { classes, color} = props
   const appBarClasses = classNames({
     [" " + classes[color]]: color
   })
-  const sidebarMinimize =
-    classes.sidebarMinimize +
-    " " +
-    classNames({
-      [classes.sidebarMinimizeRTL]: rtlActive
-    })
+
   return (
     <AppBar className={classes.appBar + appBarClasses}>
       <Toolbar className={classes.container}>
         <Hidden smDown>
-          <div className={sidebarMinimize}>
-            {props.miniActive ? (
-              <Button
-                onClick={props.sidebarMinimize}
-              >
-                <ViewList className={classes.sidebarMiniIcon} />
-              </Button>
-            ) : (
-              <Button
-                onClick={props.sidebarMinimize}
-              >
-                <MoreVert className={classes.sidebarMiniIcon} />
-              </Button>
-            )}
+          <div className={classes.sidebarMinimize}>
+            <Fab
+              size={'medium'}
+              onClick={props.sidebarMinimize}
+            >
+              {props.miniActive
+                ? <ViewList className={classes.sidebarMiniIcon}/>
+                : <MoreVert className={classes.sidebarMiniIcon}/>
+              }
+            </Fab>
           </div>
         </Hidden>
         <div className={classes.flex}>
           {makeBrand()}
         </div>
         <Hidden mdUp>
-          <Button
+          <Fab
+            size={'medium'}
             onClick={props.handleDrawerToggle}
           >
-            <Menu />
-          </Button>
+            <Menu/>
+          </Fab>
         </Hidden>
       </Toolbar>
     </AppBar>
@@ -79,6 +71,10 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired,
   color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"]),
   rtlActive: PropTypes.bool
+}
+
+Header.defaultProps = {
+  color: 'primary'
 }
 
 export default withStyles(headerStyle)(Header)

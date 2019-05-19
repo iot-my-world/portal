@@ -1,7 +1,6 @@
 import {
   containerFluid,
   defaultFont,
-  primaryColor,
   defaultBoxShadow,
   infoColor,
   successColor,
@@ -24,7 +23,7 @@ const headerStyle = theme => ({
     borderRadius: "3px",
     padding: "10px 0",
     transition: "all 150ms ease 0s",
-    minHeight: "50px",
+    height: "50px",
     display: "block"
   },
   container: {
@@ -48,7 +47,7 @@ const headerStyle = theme => ({
     }
   },
   primary: {
-    backgroundColor: primaryColor,
+    backgroundColor: theme.palette.primary.main,
     color: "#FFFFFF",
     ...defaultBoxShadow
   },
