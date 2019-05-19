@@ -7,13 +7,19 @@ import {
   ZX303StatusReportGenerator,
   ZX303BatteryStatusReport,
 } from 'brain/tracker/zx303/reading/status/report'
+import {
+  LineChart, Line,
+  XAxis, YAxis,
+  CartesianGrid, Tooltip,
+  Legend,
+} from 'recharts'
 
 const styles = theme => ({})
 
 class BatteryLifeTrendDialog extends Component {
 
   state = {
-    batteryStatusReport: new ZX303BatteryStatusReport()
+    batteryStatusReport: new ZX303BatteryStatusReport(),
   }
 
   componentDidMount() {
@@ -28,11 +34,12 @@ class BatteryLifeTrendDialog extends Component {
     } = this.props
     ShowGlobalLoader()
     try {
-      const batteryStatusReport = (await ZX303StatusReportGenerator.BatteryReport(
-        {
-          zx303TrackerIdentifier: zx303Tracker.identifier,
-        })).report
-
+      this.setState({
+        batteryStatusReport: (await ZX303StatusReportGenerator.BatteryReport(
+          {
+            zx303TrackerIdentifier: zx303Tracker.identifier,
+          })).report,
+      })
     } catch (e) {
       console.error('error loading zx303 battery report', e)
     }
@@ -41,7 +48,7 @@ class BatteryLifeTrendDialog extends Component {
 
   render() {
     const {open, closeDialog} = this.props
-    const {timerange} = this.state
+    const {batteryStatusReport} = this.state
 
     return (
       <Dialog
@@ -50,7 +57,15 @@ class BatteryLifeTrendDialog extends Component {
         closeDialog={closeDialog}
         title={'ZX303 Battery Life'}
       >
-        aweh
+        <LineChart width={600} height={300} data={batteryStatusReport.readings}
+                   margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+          <XAxis dataKey="timestamp"/>
+          <YAxis/>
+          <CartesianGrid strokeDasharray="3 3"/>
+          <Tooltip/>
+          <Legend/>
+          <Line type="monotone" dataKey="batteryPercentage" stroke="#8884d8"/>
+        </LineChart>
       </Dialog>
     )
   }
