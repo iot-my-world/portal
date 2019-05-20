@@ -173,7 +173,9 @@ class BatteryLifeTrendDialog extends Component {
 
 const TimeTick = props => {
   const {
-    x, y, stroke, payload,
+    x, y,
+    // stroke,
+    payload,
   } = props
 
   return (
