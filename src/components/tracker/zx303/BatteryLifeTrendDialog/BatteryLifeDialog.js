@@ -40,14 +40,25 @@ class BatteryLifeTrendDialog extends Component {
     super(props)
     this.state = {
       batteryStatusReport: new ZX303BatteryStatusReport(),
-      startDate: moment().startOf('day').utc(),
-      endDate: moment().endOf('day').utc(),
+      startDate: moment().startOf('day').utc().unix(),
+      endDate: moment().endOf('day').utc().unix(),
+    }
+    this.loadTimeout = () => {
     }
   }
 
   componentDidMount() {
     this.load()
+  }
 
+  handleStartDateChange = (newDate) => {
+    this.setState({startDate: newDate.startOf('day').utc().unix()})
+    this.loadTimeout = setTimeout(this.load, 100)
+  }
+
+  handleEndDateChange = (newDate) => {
+    this.setState({endDate: newDate.endOf('day').utc().unix()})
+    this.loadTimeout = setTimeout(this.load, 100)
   }
 
   load = async () => {
@@ -56,12 +67,15 @@ class BatteryLifeTrendDialog extends Component {
       ShowGlobalLoader,
       HideGlobalLoader,
     } = this.props
+    const {startDate, endDate} = this.state
     ShowGlobalLoader()
     try {
       this.setState({
         batteryStatusReport: (await ZX303StatusReportGenerator.BatteryReport(
           {
             zx303TrackerIdentifier: zx303Tracker.identifier,
+            startDate,
+            endDate,
           })).report,
       })
     } catch (e) {
@@ -72,7 +86,11 @@ class BatteryLifeTrendDialog extends Component {
 
   render() {
     const {open, closeDialog, classes} = this.props
-    const {batteryStatusReport} = this.state
+    const {
+      batteryStatusReport,
+      startDate,
+      endDate,
+    } = this.state
 
     return (
       <Dialog
@@ -123,8 +141,8 @@ class BatteryLifeTrendDialog extends Component {
                         <DatePicker
                           margin="normal"
                           label="Start"
-                          // value={selectedDate}
-                          // onChange={this.handleDateChange}
+                          value={moment.unix(startDate).format('YYYY-MM-DD')}
+                          onChange={this.handleStartDateChange}
                         />
                       </MuiPickersUtilsProvider>
                     </CardContent>
@@ -137,8 +155,8 @@ class BatteryLifeTrendDialog extends Component {
                         <DatePicker
                           margin="normal"
                           label="End"
-                          // value={selectedDate}
-                          // onChange={this.handleDateChange}
+                          value={moment.unix(endDate).format('YYYY-MM-DD')}
+                          onChange={this.handleEndDateChange}
                         />
                       </MuiPickersUtilsProvider>
                     </CardContent>
