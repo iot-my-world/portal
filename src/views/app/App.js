@@ -108,7 +108,6 @@ class App extends React.Component {
       user,
       party,
     )
-    console.log('app routes:', this.appRoutes)
     RouteBuildingDone()
   }
 

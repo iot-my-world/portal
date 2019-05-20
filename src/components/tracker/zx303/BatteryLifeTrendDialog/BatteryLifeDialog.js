@@ -29,6 +29,8 @@ const styles = theme => ({
   },
 })
 
+const a = '#FF0000'
+
 class BatteryLifeTrendDialog extends Component {
 
   constructor(props) {
@@ -80,12 +82,13 @@ class BatteryLifeTrendDialog extends Component {
   }
 
   render() {
-    const {open, closeDialog, classes} = this.props
+    const {open, closeDialog, classes, theme} = this.props
     const {
       batteryStatusReport,
       startDate,
       endDate,
     } = this.state
+    console.log('aweh', theme)
 
     return (
       <Dialog
@@ -141,18 +144,24 @@ class BatteryLifeTrendDialog extends Component {
                 />
                 <YAxis
                   label={{
-                    value: 'Battery %',
+                    value: <div>'Battery %'</div>,
                     angle: -90,
                     position: 'insideLeft',
                   }}
                 />
                 <CartesianGrid strokeDasharray="3 3"/>
+                <defs>
+                  <linearGradient id="areaColor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="40%"  stopColor="#10FF00" stopOpacity="8"/>
+                    <stop offset="95%" stopColor="#FF0000" stopOpacity="8"/>
+                  </linearGradient>
+                </defs>
                 <Tooltip/>
                 <Area
                   type='monotone'
                   dataKey='batteryPercentage'
-                  stroke='#8884d8'
-                  fill='#8884d8'
+                  stroke={theme.palette.grey[500]}
+                  fill='url(#areaColor)'
                 />
               </AreaChart>
             </CardContent>
@@ -187,6 +196,7 @@ const TimeTick = props => {
 }
 
 BatteryLifeTrendDialog.propTypes = {
+  theme: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   /**
    * boolean indicating if the detail dialog should be open
@@ -212,6 +222,6 @@ BatteryLifeTrendDialog.propTypes = {
 }
 BatteryLifeTrendDialog.defaultProps = {}
 
-BatteryLifeTrendDialog = withStyles(styles)(BatteryLifeTrendDialog)
+BatteryLifeTrendDialog = withStyles(styles, {withTheme: true})(BatteryLifeTrendDialog)
 
 export default BatteryLifeTrendDialog
