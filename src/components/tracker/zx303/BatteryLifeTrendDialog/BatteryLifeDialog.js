@@ -18,6 +18,7 @@ import {
   CartesianGrid, Tooltip,
 } from 'recharts'
 import moment from 'moment'
+import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 
 const styles = theme => ({
   root: {
@@ -39,6 +40,18 @@ class BatteryLifeTrendDialog extends Component {
       endDate: moment().endOf('day').utc().unix(),
     }
     this.loadTimeout = () => {
+    }
+    if (isWidthUp('md', props.width)) {
+      this.graphWidth = 800
+      this.graphHeight = 300
+    } else {
+      if (window.innerHeight > window.innerWidth) {
+        this.graphWidth = window.innerHeight - 40
+        this.graphHeight = window.innerWidth - 150
+      } else {
+        this.graphWidth =  window.innerWidth - 40
+        this.graphHeight = window.innerHeight - 150
+      }
     }
   }
 
@@ -103,13 +116,13 @@ class BatteryLifeTrendDialog extends Component {
             <Grid
               container
               spacing={8}
-              style={{padding: '0 5px 0 5px'}}
+              style={{padding: '2px'}}
               justify={'center'}
             >
               <Grid item>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
                   <DatePicker
-                    margin="normal"
+                    margin="none"
                     label="From Start Of Date"
                     value={moment.unix(startDate).format('YYYY-MM-DD')}
                     onChange={this.handleStartDateChange}
@@ -119,7 +132,7 @@ class BatteryLifeTrendDialog extends Component {
               <Grid item>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
                   <DatePicker
-                    margin="normal"
+                    margin="none"
                     label="To End Of Date"
                     value={moment.unix(endDate).format('YYYY-MM-DD')}
                     onChange={this.handleEndDateChange}
@@ -131,7 +144,7 @@ class BatteryLifeTrendDialog extends Component {
           <Card>
             <CardContent>
               <AreaChart
-                width={800} height={300}
+                width={this.graphWidth} height={this.graphHeight}
                 data={batteryStatusReport.readings}
                 margin={{top: 10, right: 20, left: 30, bottom: 40}}
               >
@@ -224,6 +237,6 @@ BatteryLifeTrendDialog.propTypes = {
 }
 BatteryLifeTrendDialog.defaultProps = {}
 
-BatteryLifeTrendDialog = withStyles(styles, {withTheme: true})(BatteryLifeTrendDialog)
+BatteryLifeTrendDialog = withWidth()(withStyles(styles, {withTheme: true})(BatteryLifeTrendDialog))
 
 export default BatteryLifeTrendDialog

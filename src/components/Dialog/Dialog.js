@@ -7,6 +7,7 @@ import {
 import {
   MdClose as CloseIcon,
 } from 'react-icons/md'
+import classNames from 'classnames'
 import logo from 'assets/images/logo.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 
@@ -17,7 +18,7 @@ const styles = theme => ({
   dialogTitleRoot: {
     padding: '0 0 0 0',
     backgroundColor: theme.palette.primary.main,
-    height: '45px'
+    height: '46px'
   },
   dialogTitle: {
     padding: '2px 5px 2px 5px',
@@ -66,8 +67,12 @@ const styles = theme => ({
     gridTemplateRows: '1fr',
     gridTemplateColumns: '1fr',
     overflow: 'hidden',
-    padding: 10,
+    padding: 5,
   },
+  contentRootFullScreen: {
+    height: "calc(100vh - 56px)",
+    overflow: 'hidden',
+  }
 })
 
 class Dialog extends Component {
@@ -80,6 +85,7 @@ class Dialog extends Component {
       children,
       title,
       additionalTitleControls,
+      fullScreen,
       ...rest
     } = this.props
 
@@ -87,10 +93,12 @@ class Dialog extends Component {
       return null
     }
 
+    const fullScreenActive = (!isWidthUp('md', width)) || fullScreen
+
     return (
       <MUIDialog
         open={open}
-        fullScreen={!isWidthUp('md', width)}
+        fullScreen={fullScreenActive}
         PaperProps={{classes: {root: classes.dialogRootOverride}}}
         {...rest}
       >
@@ -130,7 +138,14 @@ class Dialog extends Component {
             </div>
           </div>
         </DialogTitle>
-        <DialogContent classes={{root: classes.contentRoot}}>
+        <DialogContent
+          classes={{
+            root: classNames(
+              classes.contentRoot,
+              {[classes.contentRootFullScreen]: fullScreenActive}
+            )
+          }}
+        >
           {children}
         </DialogContent>
       </MUIDialog>
