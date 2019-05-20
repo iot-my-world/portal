@@ -32,15 +32,19 @@ const style = theme => ({
     overflowScrolling: "touch"
   },
   content: {
-    marginTop: "70px",
-    padding: "30px 15px",
+    marginTop: "50px",
+    padding: "8px 2px",
 
-    minHeight: "calc(100vh - 123px)",
+    height: "calc(100vh)",
+    overflowY: "hidden",
+  },
+  container: {
+    ...containerFluid,
+    height: "calc(100vh - 55px)",
     overflowY: "scroll",
   },
-  container: { ...containerFluid },
   map: {
-    marginTop: "70px"
+    marginTop: "50px"
   },
   mainPanelSidebarMini: {
     [theme.breakpoints.up("md")]: {

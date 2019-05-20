@@ -1,90 +1,63 @@
 import {
   containerFluid,
-  defaultFont,
-  primaryColor,
   defaultBoxShadow,
-  infoColor,
-  successColor,
-  warningColor,
-  dangerColor
-} from "components/style/style"
+} from 'components/style/style'
 
 const headerStyle = theme => ({
   appBar: {
-    backgroundColor: "transparent",
-    boxShadow: "none",
-    borderBottom: "0",
-    marginBottom: "0",
-    position: "absolute",
-    width: "100%",
-    paddingTop: "10px",
-    zIndex: "1029",
-    color: "#555555",
-    border: "0",
-    borderRadius: "3px",
-    padding: "10px 0",
-    transition: "all 150ms ease 0s",
-    minHeight: "50px",
-    display: "block"
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    position: 'absolute',
+    width: '100%',
+    zIndex: '1029',
+    color: '#555555',
+    border: '0',
+    transition: 'all 150ms ease 0s',
+    height: '50px',
+    display: 'flex',
+    padding: 0,
   },
   container: {
     ...containerFluid,
-    minHeight: "50px"
+    minHeight: '50px',
   },
-  flex: {
-    flex: 1
+  toolbarDesktop: {
+    height: '50px',
+    minHeight: '50px',
+    display: 'flex',
   },
-  title: {
-    ...defaultFont,
-    lineHeight: "30px",
-    fontSize: "18px",
-    borderRadius: "3px",
-    textTransform: "none",
-    color: "inherit",
-    paddingTop: "0.625rem",
-    paddingBottom: "0.625rem",
-    "&:hover,&:focus": {
-      background: "transparent"
-    }
+  toolbarMini: {
+    height: '50px',
+    minHeight: '50px',
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   primary: {
-    backgroundColor: primaryColor,
-    color: "#FFFFFF",
-    ...defaultBoxShadow
-  },
-  info: {
-    backgroundColor: infoColor,
-    color: "#FFFFFF",
-    ...defaultBoxShadow
-  },
-  success: {
-    backgroundColor: successColor,
-    color: "#FFFFFF",
-    ...defaultBoxShadow
-  },
-  warning: {
-    backgroundColor: warningColor,
-    color: "#FFFFFF",
-    ...defaultBoxShadow
-  },
-  danger: {
-    backgroundColor: dangerColor,
-    color: "#FFFFFF",
-    ...defaultBoxShadow
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    ...defaultBoxShadow,
   },
   sidebarMinimize: {
-    float: "left",
-    padding: "0 0 0 15px",
-    display: "block",
-    color: "#555555"
-  },
-  sidebarMinimizeRTL: {
-    padding: "0 15px 0 0 !important"
+    float: 'left',
+    color: '#555555',
   },
   sidebarMiniIcon: {
-    width: "20px",
-    height: "17px"
-  }
-});
+    width: '20px',
+    height: '17px',
+  },
+  logoWrapperMini: {
+  },
+  logoMini: {
+    width: '30px',
+    verticalAlign: 'middle',
+    border: '0',
+  },
+  desktopViewName: {
+    paddingLeft: '10px'
+  },
+  miniViewName: {
 
-export default headerStyle;
+  },
+})
+
+export default headerStyle

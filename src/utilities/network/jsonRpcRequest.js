@@ -41,6 +41,7 @@ export default function jsonRpcRequest({url, method, request, verbose}) {
   if (verbose) {
     try {
       console.debug('\n', JSON.parse(JSON.stringify(body.params[0])))
+      console.debug('\n', JSON.stringify(body.params[0]))
     } catch (e) {
       console.error('error parsing stringified body.params[0]')
     }

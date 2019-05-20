@@ -2,83 +2,90 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import {
-  withStyles, Button, AppBar,
-  Toolbar, Hidden,
+  withStyles, Fab, AppBar,
+  Toolbar,
 } from '@material-ui/core'
+import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 import {
   Menu, MoreVert, ViewList,
 } from "@material-ui/icons"
 
 import headerStyle from "./style"
+import logo from 'assets/images/logo.png'
 
 function Header({ ...props }) {
-  function makeBrand() {
-    var name
-    props.routes.map((prop, key) => {
-      if (prop.collapse) {
-        prop.views.map((prop, key) => {
-          if (prop.path === props.location.pathname) {
-            name = prop.name
+  function getViewName() {
+    for (let route of props.routes) {
+      if (route.collapse) {
+        for (let view of route.views) {
+          if (view.path === props.location.pathname) {
+            return view.name
           }
-          return null
-        })
+        }
+      } else if (route.path === props.location.pathname) {
+        return route.name
       }
-      if (prop.path === props.location.pathname) {
-        name = prop.name
-      }
-      return null
-    })
-    return name
+    }
+    return null
   }
-  const { classes, color, rtlActive } = props
-  const appBarClasses = classNames({
-    [" " + classes[color]]: color
-  })
-  const sidebarMinimize =
-    classes.sidebarMinimize +
-    " " +
-    classNames({
-      [classes.sidebarMinimizeRTL]: rtlActive
-    })
-  return (
-    <AppBar className={classes.appBar + appBarClasses}>
-      <Toolbar className={classes.container}>
-        <Hidden smDown>
-          <div className={sidebarMinimize}>
-            {props.miniActive ? (
-              <Button
-                onClick={props.sidebarMinimize}
-              >
-                <ViewList className={classes.sidebarMiniIcon} />
-              </Button>
-            ) : (
-              <Button
-                onClick={props.sidebarMinimize}
-              >
-                <MoreVert className={classes.sidebarMiniIcon} />
-              </Button>
-            )}
+  const { classes, width } = props
+
+  if (isWidthUp('md', width)) {
+    return (
+      <AppBar
+        className={classNames(classes.appBar, classes.primary)}
+        style={{padding: 0}}
+      >
+        <Toolbar className={classes.toolbarDesktop}>
+          <div className={classes.sidebarMinimize}>
+            <Fab
+              size={'small'}
+              onClick={props.sidebarMinimize}
+            >
+              {props.miniActive
+                ? <ViewList className={classes.sidebarMiniIcon}/>
+                : <MoreVert className={classes.sidebarMiniIcon}/>
+              }
+            </Fab>
           </div>
-        </Hidden>
-        <div className={classes.flex}>
-          {makeBrand()}
-        </div>
-        <Hidden mdUp>
-          <Button
+          <div className={classes.desktopViewName}>
+            {getViewName()}
+          </div>
+        </Toolbar>
+      </AppBar>
+    )
+  } else {
+    return (
+      <AppBar
+        className={classNames(classes.appBar, classes.primary)}
+        style={{padding: 0}}
+      >
+        <Toolbar className={classes.toolbarMini}>
+          <div className={classes.logoWrapperMini}>
+            <img src={logo} alt='logo' className={classes.logoMini}/>
+          </div>
+          <div className={classes.flex}>
+            {getViewName()}
+          </div>
+          <Fab
+            size={'small'}
             onClick={props.handleDrawerToggle}
           >
-            <Menu />
-          </Button>
-        </Hidden>
-      </Toolbar>
-    </AppBar>
-  )
+            <Menu/>
+          </Fab>
+        </Toolbar>
+      </AppBar>
+    )
+  }
 }
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
-  color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"]),
   rtlActive: PropTypes.bool
 }
 
-export default withStyles(headerStyle)(Header)
+Header.defaultProps = {
+
+}
+
+export default withWidth()(withStyles(headerStyle)(Header))
