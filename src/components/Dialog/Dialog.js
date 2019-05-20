@@ -14,12 +14,13 @@ const styles = theme => ({
   dialogRootOverride: {
     backgroundColor: theme.palette.grey[100],
   },
-  dialogTitleWrapper: {
-    padding: 5,
+  dialogTitleRoot: {
+    padding: '0 0 0 0',
     backgroundColor: theme.palette.primary.main,
+    height: '45px'
   },
   dialogTitle: {
-    padding: 5,
+    padding: '2px 5px 2px 5px',
     display: 'flex',
     justifyContent: 'space-between',
   },
@@ -33,7 +34,7 @@ const styles = theme => ({
     padding: 4,
   },
   logo: {
-    width: '40px',
+    width: '25px',
     verticalAlign: 'middle',
     border: '0',
   },
@@ -50,14 +51,15 @@ const styles = theme => ({
     paddingLeft: 4,
   },
   dialogTitleCloseButton: {
-    padding: 2,
-    minHeight: '20px',
-    minWidth: '20px',
-    height: '20px',
-    width: '20px',
+    minHeight: '25px',
+    minWidth: '25px',
+    height: '25px',
+    width: '25px',
+    backgroundColor: theme.palette.primary.dark,
   },
   dialogTitleCloseIcon: {
     fontSize: '15px',
+    color: theme.palette.primary.contrastText,
   },
   contentRoot: {
     display: 'grid',
@@ -92,7 +94,7 @@ class Dialog extends Component {
         PaperProps={{classes: {root: classes.dialogRootOverride}}}
         {...rest}
       >
-        <DialogTitle className={classes.dialogTitleWrapper}>
+        <DialogTitle classes={{root: classes.dialogTitleRoot}}>
           <div className={classes.dialogTitle}>
             <div className={classes.dialogTitleHeading}>
               <div className={classes.logoWrapper}>

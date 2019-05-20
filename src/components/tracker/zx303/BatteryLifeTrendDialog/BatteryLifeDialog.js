@@ -104,6 +104,7 @@ class BatteryLifeTrendDialog extends Component {
               container
               spacing={8}
               style={{padding: '0 5px 0 5px'}}
+              justify={'center'}
             >
               <Grid item>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
