@@ -100,37 +100,39 @@ class BatteryLifeTrendDialog extends Component {
           style={{gridRowGap: 8}}
         >
           <Card>
-            <CardContent>
-              <Grid container spacing={8}>
-                <Grid item>
-                  <MuiPickersUtilsProvider utils={MomentUtils}>
-                    <DatePicker
-                      margin="normal"
-                      label="From Start Of Date"
-                      value={moment.unix(startDate).format('YYYY-MM-DD')}
-                      onChange={this.handleStartDateChange}
-                    />
-                  </MuiPickersUtilsProvider>
-                </Grid>
-                <Grid item>
-                  <MuiPickersUtilsProvider utils={MomentUtils}>
-                    <DatePicker
-                      margin="normal"
-                      label="To End Of Date"
-                      value={moment.unix(endDate).format('YYYY-MM-DD')}
-                      onChange={this.handleEndDateChange}
-                    />
-                  </MuiPickersUtilsProvider>
-                </Grid>
+            <Grid
+              container
+              spacing={8}
+              style={{padding: '0 5px 0 5px'}}
+            >
+              <Grid item>
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <DatePicker
+                    margin="normal"
+                    label="From Start Of Date"
+                    value={moment.unix(startDate).format('YYYY-MM-DD')}
+                    onChange={this.handleStartDateChange}
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
-            </CardContent>
+              <Grid item>
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <DatePicker
+                    margin="normal"
+                    label="To End Of Date"
+                    value={moment.unix(endDate).format('YYYY-MM-DD')}
+                    onChange={this.handleEndDateChange}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
+            </Grid>
           </Card>
           <Card>
             <CardContent>
               <AreaChart
                 width={800} height={300}
                 data={batteryStatusReport.readings}
-                margin={{top: 10, right: 30, left: 50, bottom: 50}}
+                margin={{top: 10, right: 20, left: 30, bottom: 40}}
               >
                 <XAxis
                   dataKey="timestamp"
@@ -182,6 +184,7 @@ const TimeTick = props => {
       <text
         x={0}
         y={0}
+        dx={10}
         dy={16}
         textAnchor="end"
         fill="#666"
