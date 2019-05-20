@@ -29,8 +29,6 @@ const styles = theme => ({
   },
 })
 
-const a = '#FF0000'
-
 class BatteryLifeTrendDialog extends Component {
 
   constructor(props) {
@@ -88,7 +86,6 @@ class BatteryLifeTrendDialog extends Component {
       startDate,
       endDate,
     } = this.state
-    console.log('aweh', theme)
 
     return (
       <Dialog
@@ -144,9 +141,10 @@ class BatteryLifeTrendDialog extends Component {
                 />
                 <YAxis
                   label={{
-                    value: <div>'Battery %'</div>,
+                    value: 'Battery %',
                     angle: -90,
                     position: 'insideLeft',
+                    stroke: theme.palette.grey[500],
                   }}
                 />
                 <CartesianGrid strokeDasharray="3 3"/>
