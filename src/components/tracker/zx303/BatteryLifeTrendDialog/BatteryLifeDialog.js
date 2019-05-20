@@ -5,7 +5,7 @@ import {
   Grid,
 } from '@material-ui/core'
 import MomentUtils from '@date-io/moment'
-import { MuiPickersUtilsProvider, DatePicker } from 'material-ui-pickers'
+import {MuiPickersUtilsProvider, DatePicker} from 'material-ui-pickers'
 import Dialog from 'components/Dialog'
 import {ZX303 as ZX303Tracker} from 'brain/tracker/zx303/index'
 import {
@@ -13,10 +13,9 @@ import {
   ZX303BatteryStatusReport,
 } from 'brain/tracker/zx303/reading/status/report'
 import {
-  LineChart, Line,
+  AreaChart, Area,
   XAxis, YAxis,
   CartesianGrid, Tooltip,
-  Legend,
 } from 'recharts'
 import moment from 'moment'
 
@@ -24,13 +23,9 @@ const styles = theme => ({
   root: {
     display: 'grid',
     gridTemplateColumns: '1fr',
-    gridTemplateRows: '1fr',
+    gridTemplateRows: 'auto 1fr',
     justifyItems: 'center',
     overflow: 'auto',
-  },
-  gridRoot: {
-    width: 'calc(100% - 16px)',
-    margin: 0,
   },
 })
 
@@ -100,71 +95,68 @@ class BatteryLifeTrendDialog extends Component {
         fullWidth={true}
         maxWidth={'md'}
       >
-        <div className={classes.root}>
-          <Grid
-            className={classes.gridRoot}
-            container
-            direction={'column'}
-            spacing={8}
-          >
-            <Grid item>
-              <Card>
-                <CardContent>
-                  <LineChart
-                    width={800} height={300}
-                    data={batteryStatusReport.readings}
-                    margin={{top: 10, right: 30, left: 50, bottom: 50}}
-                  >
-                    <XAxis
-                      dataKey="timestamp"
-                      type={'number'}
-                      scale={'time'}
-                      domain={['dataMin', 'dataMax']}
-                      tick={TimeTick}
-                    />
-                    <YAxis/>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <Tooltip/>
-                    <Legend/>
-                    <Line type="monotone" dataKey="batteryPercentage"
-                          stroke="#8884d8"/>
-                  </LineChart>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item>
+        <div
+          className={classes.root}
+          style={{gridRowGap: 8}}
+        >
+          <Card>
+            <CardContent>
               <Grid container spacing={8}>
                 <Grid item>
-                  <Card>
-                    <CardContent>
-                      <MuiPickersUtilsProvider utils={MomentUtils}>
-                        <DatePicker
-                          margin="normal"
-                          label="Start"
-                          value={moment.unix(startDate).format('YYYY-MM-DD')}
-                          onChange={this.handleStartDateChange}
-                        />
-                      </MuiPickersUtilsProvider>
-                    </CardContent>
-                  </Card>
+                  <MuiPickersUtilsProvider utils={MomentUtils}>
+                    <DatePicker
+                      margin="normal"
+                      label="From Start Of Date"
+                      value={moment.unix(startDate).format('YYYY-MM-DD')}
+                      onChange={this.handleStartDateChange}
+                    />
+                  </MuiPickersUtilsProvider>
                 </Grid>
                 <Grid item>
-                  <Card>
-                    <CardContent>
-                      <MuiPickersUtilsProvider utils={MomentUtils}>
-                        <DatePicker
-                          margin="normal"
-                          label="End"
-                          value={moment.unix(endDate).format('YYYY-MM-DD')}
-                          onChange={this.handleEndDateChange}
-                        />
-                      </MuiPickersUtilsProvider>
-                    </CardContent>
-                  </Card>
+                  <MuiPickersUtilsProvider utils={MomentUtils}>
+                    <DatePicker
+                      margin="normal"
+                      label="To End Of Date"
+                      value={moment.unix(endDate).format('YYYY-MM-DD')}
+                      onChange={this.handleEndDateChange}
+                    />
+                  </MuiPickersUtilsProvider>
                 </Grid>
               </Grid>
-            </Grid>
-          </Grid>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <AreaChart
+                width={800} height={300}
+                data={batteryStatusReport.readings}
+                margin={{top: 10, right: 30, left: 50, bottom: 50}}
+              >
+                <XAxis
+                  dataKey="timestamp"
+                  type={'number'}
+                  scale={'time'}
+                  domain={['dataMin', 'dataMax']}
+                  tick={TimeTick}
+                />
+                <YAxis
+                  label={{
+                    value: 'Battery %',
+                    angle: -90,
+                    position: 'insideLeft',
+                  }}
+                />
+                <CartesianGrid strokeDasharray="3 3"/>
+                <Tooltip/>
+                <Area
+                  type='monotone'
+                  dataKey='batteryPercentage'
+                  stroke='#8884d8'
+                  fill='#8884d8'
+                />
+              </AreaChart>
+            </CardContent>
+          </Card>
         </div>
       </Dialog>
     )
