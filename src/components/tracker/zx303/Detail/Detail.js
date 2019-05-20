@@ -331,7 +331,7 @@ class Detail extends Component {
         return [
           (
             <Fab
-              size={'medium'}
+              size={'small'}
               onClick={this.handleStartEditExisting}
             >
               <Tooltip title='Edit'>
@@ -345,7 +345,7 @@ class Detail extends Component {
         return [
           (
             <Fab
-              size={'medium'}
+              size={'small'}
               onClick={this.handleSaveNew}
             >
               <Tooltip title='Save New'>
@@ -359,7 +359,7 @@ class Detail extends Component {
         return [
           (
             <Fab
-              size={'medium'}
+              size={'small'}
               onClick={this.handleSaveChanges}
             >
               <Tooltip title='Save Changes'>
@@ -369,7 +369,7 @@ class Detail extends Component {
           ),
           (
             <Fab
-              size={'medium'}
+              size={'small'}
               onClick={this.handleCancelEditExisting}
             >
               <Tooltip title='Cancel'>
