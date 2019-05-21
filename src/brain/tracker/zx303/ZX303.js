@@ -61,6 +61,30 @@ export default class ZX303 extends BaseDevice {
   _assignedId = new IdIdentifier()
 
   /**
+   * @type {boolean}
+   * @private
+   */
+  _loggedIn = false
+
+  /**
+   * @type {number}
+   * @private
+   */
+  _logInTimestamp = 0
+
+  /**
+   * @type {number}
+   * @private
+   */
+  _logOutTimestamp = 0
+
+  /**
+   * @type {number}
+   * @private
+   */
+  _lastHeartbeatTimestamp = 0
+
+  /**
    * construct a new ZX303 Object
    * @param {ZX303|Object} [zx303]
    */
@@ -76,6 +100,10 @@ export default class ZX303 extends BaseDevice {
         this._ownerId = new IdIdentifier(zx303.ownerId)
         this._assignedPartyType = zx303.assignedPartyType
         this._assignedId = new IdIdentifier(zx303.assignedId)
+        this._loggedIn = zx303.loggedIn
+        this._logInTimestamp = zx303.logInTimestamp
+        this._logOutTimestamp = zx303.logOutTimestamp
+        this._lastHeartbeatTimestamp = zx303.lastHeartbeatTimestamp
       } catch (e) {
         throw new Error(`error constructing zx303 object: ${e}`)
       }
@@ -142,6 +170,22 @@ export default class ZX303 extends BaseDevice {
     this._assignedId = newVal
   }
 
+  get loggedIn() {
+    return this._loggedIn
+  }
+
+  get logInTimestamp() {
+    return this._logInTimestamp
+  }
+
+  get logOutTimestamp() {
+    return this._logOutTimestamp
+  }
+
+  get lastHeartbeatTimestamp() {
+    return this._lastHeartbeatTimestamp
+  }
+
   get identifier() {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
@@ -149,5 +193,4 @@ export default class ZX303 extends BaseDevice {
       throw new Error(`cannot create identifier for zx303 if id is blank`)
     }
   }
-
 }
