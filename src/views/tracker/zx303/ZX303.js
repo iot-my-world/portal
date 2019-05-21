@@ -20,6 +20,7 @@ import {
   FaGlasses as ViewDetailsIcon,
   FaPlus as AddNewIcon,
   FaBatteryFull as BatteryLifeIcon,
+  FaSyncAlt as ReloadIcon,
 } from 'react-icons/fa'
 
 const styles = theme => ({
@@ -155,6 +156,20 @@ class ZX303 extends Component {
           >
             <Icon>
               <AddNewIcon/>
+            </Icon>
+          </Tooltip>
+        </IconButton>
+      ),
+      (
+        <IconButton
+          onClick={this.collect}
+        >
+          <Tooltip
+            title={'Reload'}
+            placement={'top'}
+          >
+            <Icon>
+              <ReloadIcon/>
             </Icon>
           </Tooltip>
         </IconButton>
