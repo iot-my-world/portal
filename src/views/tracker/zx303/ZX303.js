@@ -247,7 +247,7 @@ class ZX303 extends Component {
                 {
                   Header: 'Sim Number',
                   accessor: 'simNumber',
-                  width: 150,
+                  width: 120,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -315,7 +315,7 @@ class ZX303 extends Component {
                 {
                   Header: 'Owner Party Type',
                   accessor: 'ownerPartyType',
-                  width: 136,
+                  width: 155,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -337,7 +337,7 @@ class ZX303 extends Component {
                 {
                   Header: 'Assigned Party Type',
                   accessor: 'assignedPartyType',
-                  width: 160,
+                  width: 170,
                   config: {
                     filter: {
                       type: TextCriterionType,
