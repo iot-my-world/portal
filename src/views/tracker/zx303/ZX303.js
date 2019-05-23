@@ -20,7 +20,9 @@ import {
   FaGlasses as ViewDetailsIcon,
   FaPlus as AddNewIcon,
   FaBatteryFull as BatteryLifeIcon,
+  FaSyncAlt as ReloadIcon,
 } from 'react-icons/fa'
+import moment from 'moment'
 
 const styles = theme => ({
   root: {},
@@ -159,6 +161,20 @@ class ZX303 extends Component {
           </Tooltip>
         </IconButton>
       ),
+      (
+        <IconButton
+          onClick={this.collect}
+        >
+          <Tooltip
+            title={'Reload'}
+            placement={'top'}
+          >
+            <Icon>
+              <ReloadIcon/>
+            </Icon>
+          </Tooltip>
+        </IconButton>
+      ),
     ]
 
     if (activeState === states.itemSelected) {
@@ -229,9 +245,67 @@ class ZX303 extends Component {
               additionalControls={this.getAdditionalTableIcons()}
               columns={[
                 {
+                  Header: 'Sim Number',
+                  accessor: 'simNumber',
+                  width: 120,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
+                  },
+                },
+                {
+                  Header: 'Logged In',
+                  accessor: 'loggedIn',
+                  width: 90,
+                  Cell: rowInfo => {
+                    if (rowInfo.value) {
+                      return <div>Yes</div>
+                    }
+                    return <div>No</div>
+                  },
+                  filterable: false,
+                },
+                {
+                  Header: 'Heartbeat @',
+                  accessor: 'lastHeartbeatTimestamp',
+                  width: 105,
+                  Cell: rowInfo => {
+                    if (rowInfo.value === 0) {
+                      return '-'
+                    }
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
+                  },
+                  filterable: false,
+                },
+                {
+                  Header: 'Login @',
+                  accessor: 'logInTimestamp',
+                  width: 90,
+                  Cell: rowInfo => {
+                    if (rowInfo.value === 0) {
+                      return '-'
+                    }
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
+                  },
+                  filterable: false,
+                },
+                {
+                  Header: 'Logout @',
+                  accessor: 'logOutTimestamp',
+                  width: 90,
+                  Cell: rowInfo => {
+                    if (rowInfo.value === 0) {
+                      return '-'
+                    }
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
+                  },
+                  filterable: false,
+                },
+                {
                   Header: 'IMEI',
                   accessor: 'imei',
-                  width: 150,
+                  width: 165,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -241,7 +315,7 @@ class ZX303 extends Component {
                 {
                   Header: 'Owner Party Type',
                   accessor: 'ownerPartyType',
-                  width: 136,
+                  width: 155,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -263,7 +337,7 @@ class ZX303 extends Component {
                 {
                   Header: 'Assigned Party Type',
                   accessor: 'assignedPartyType',
-                  width: 160,
+                  width: 170,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -285,16 +359,6 @@ class ZX303 extends Component {
                 {
                   Header: 'Sim Country Code',
                   accessor: 'simCountryCode',
-                  width: 150,
-                  config: {
-                    filter: {
-                      type: TextCriterionType,
-                    },
-                  },
-                },
-                {
-                  Header: 'Sim Number',
-                  accessor: 'simNumber',
                   width: 150,
                   config: {
                     filter: {
