@@ -274,7 +274,7 @@ class ZX303 extends Component {
                     if (rowInfo.value === 0) {
                       return '-'
                     }
-                    return moment.unix(rowInfo.value).format('HH:mm MM-DD-YYYY')
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
                   },
                   filterable: false,
                 },
@@ -286,7 +286,7 @@ class ZX303 extends Component {
                     if (rowInfo.value === 0) {
                       return '-'
                     }
-                    return moment.unix(rowInfo.value).format('HH:mm MM-DD-YYYY')
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
                   },
                   filterable: false,
                 },
@@ -298,7 +298,7 @@ class ZX303 extends Component {
                     if (rowInfo.value === 0) {
                       return '-'
                     }
-                    return moment.unix(rowInfo.value).format('HH:mm MM-DD-YYYY')
+                    return moment.unix(rowInfo.value).format('HH:mm:ss MM-DD-YYYY')
                   },
                   filterable: false,
                 },
