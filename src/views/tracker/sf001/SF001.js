@@ -16,10 +16,15 @@ import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {
+  activeStates as sf001TrackerDetailDialogActiveStates,
+} from 'components/tracker/sf001/detail/Detail'
+import {
   ViewDetailsIcon,
   AddNewIcon,
   ReloadIcon,
 } from 'components/icon'
+import SF001TrackerDetailDialogContainer
+  from 'components/tracker/sf001/Detail/DetailContainer'
 
 const styles = theme => ({})
 
@@ -43,6 +48,10 @@ class SF001 extends Component {
     totalNoRecords: 0,
 
     selectedSF001Tracker: new SF001Tracker(),
+
+    detailDialogOpen: false,
+    initialDetailDialogActiveState:
+    sf001TrackerDetailDialogActiveStates.viewingExisting,
   }
 
   partyHolder = new PartyHolder()
@@ -112,12 +121,25 @@ class SF001 extends Component {
     this.setState({recordCollectionInProgress: false})
   }
 
+  handleCreateNew = () => {
+    this.setState({
+      selectedRowIdx: -1,
+      selectedSF001Tracker: new SF001Tracker(),
+      initialDetailDialogActiveState:
+      sf001TrackerDetailDialogActiveStates.editingNew,
+      detailDialogOpen: true,
+    })
+  }
+
   render() {
     const {
       recordCollectionInProgress,
       selectedRowIdx,
       records,
       totalNoRecords,
+      detailDialogOpen,
+      selectedSF001Tracker,
+      initialDetailDialogActiveState,
     } = this.state
     const {
       theme,
@@ -207,6 +229,13 @@ class SF001 extends Component {
             />
           </CardContent>
         </Card>
+        {detailDialogOpen &&
+        <SF001TrackerDetailDialogContainer
+          open={detailDialogOpen}
+          closeDialog={() => this.setState({detailDialogOpen: false})}
+          zx303Tracker={selectedSF001Tracker}
+          initialActiveState={initialDetailDialogActiveState}
+        />}
       </div>
     )
   }
@@ -215,9 +244,7 @@ class SF001 extends Component {
     const {activeState} = this.state
     let additionalIcons = [
       (
-        <IconButton
-          // onClick={this.handleCreateNew}
-        >
+        <IconButton onClick={this.handleCreateNew}>
           <Tooltip
             title={'Add New'}
             placement={'top'}
@@ -229,9 +256,7 @@ class SF001 extends Component {
         </IconButton>
       ),
       (
-        <IconButton
-          onClick={this.collect}
-        >
+        <IconButton onClick={this.collect}>
           <Tooltip
             title={'Reload'}
             placement={'top'}
@@ -248,11 +273,11 @@ class SF001 extends Component {
       additionalIcons = [
         (
           <IconButton
-            // onClick={() => this.setState({
-            //   detailDialogOpen: true,
-            //   initialDetailDialogActiveState:
-            //   zx303TrackerDetailDialogActiveStates.viewingExisting,
-            // })}
+            onClick={() => this.setState({
+              detailDialogOpen: true,
+              initialDetailDialogActiveState:
+              sf001TrackerDetailDialogActiveStates.viewingExisting,
+            })}
           >
             <Tooltip
               title={'View Details'}
