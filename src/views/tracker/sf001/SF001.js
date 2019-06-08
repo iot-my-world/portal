@@ -16,10 +16,10 @@ import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {
-  FaGlasses as ViewDetailsIcon,
-  FaPlus as AddNewIcon,
-  FaSyncAlt as ReloadIcon,
-} from 'react-icons/fa'
+  ViewDetailsIcon,
+  AddNewIcon,
+  ReloadIcon,
+} from 'components/icon'
 
 const styles = theme => ({})
 
@@ -248,21 +248,21 @@ class SF001 extends Component {
       additionalIcons = [
         (
           <IconButton
-          // onClick={() => this.setState({
-          //   detailDialogOpen: true,
-          //   initialDetailDialogActiveState:
-          //   zx303TrackerDetailDialogActiveStates.viewingExisting,
-          // })}
-        >
-          <Tooltip
-            title={'View Details'}
-            placement={'top'}
+            // onClick={() => this.setState({
+            //   detailDialogOpen: true,
+            //   initialDetailDialogActiveState:
+            //   zx303TrackerDetailDialogActiveStates.viewingExisting,
+            // })}
           >
-            <Icon>
-              <ViewDetailsIcon/>
-            </Icon>
-          </Tooltip>
-        </IconButton>
+            <Tooltip
+              title={'View Details'}
+              placement={'top'}
+            >
+              <Icon>
+                <ViewDetailsIcon/>
+              </Icon>
+            </Tooltip>
+          </IconButton>
         ),
         ...additionalIcons,
       ]
