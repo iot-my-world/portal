@@ -24,7 +24,7 @@ import {
   ReloadIcon,
 } from 'components/icon'
 import SF001TrackerDetailDialogContainer
-  from 'components/tracker/sf001/Detail/DetailContainer'
+  from 'components/tracker/sf001/detail/DetailContainer'
 
 const styles = theme => ({})
 

@@ -2,10 +2,10 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const Validator = {
-  async Validate({zx303, action}) {
+  async Validate({sf001, action}) {
     let response = await jsonRpcRequest({
       method: 'SF001TrackerValidator.Validate',
-      request: {zx303, action},
+      request: {sf001, action},
     })
     response.reasonsInvalid = new ReasonsInvalid(response.reasonsInvalid)
     return response
