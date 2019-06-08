@@ -241,7 +241,7 @@ class SF001 extends Component {
         <SF001TrackerDetailDialogContainer
           open={detailDialogOpen}
           closeDialog={() => this.setState({detailDialogOpen: false})}
-          zx303Tracker={selectedSF001Tracker}
+          sf001Tracker={selectedSF001Tracker}
           initialActiveState={initialDetailDialogActiveState}
         />}
       </div>

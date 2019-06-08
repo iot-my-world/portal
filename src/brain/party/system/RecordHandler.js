@@ -7,21 +7,16 @@ const RecordHandler = {
    * @param {Query} [query]
    * @constructor
    */
-  Collect(criteria, query) {
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: "SystemRecordHandler.Collect",
-        request: {
-          criteria,
-          query,
-        }
-      })
-        .then(result => {
-          result.records = result.records.map(system => new System(system));
-          resolve(result);
-        })
-        .catch(error => reject(error));
-    });
+  async Collect(criteria, query) {
+    let collectResponse = await jsonRpcRequest({
+      method: "SystemRecordHandler.Collect",
+      request: {
+        criteria,
+        query,
+      }
+    })
+    collectResponse.records = collectResponse.records.map(system => new System(system))
+    return collectResponse
   }
 };
 

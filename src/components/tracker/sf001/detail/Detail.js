@@ -136,8 +136,12 @@ class Detail extends Component {
   reasonsInvalid = new ReasonsInvalid()
 
   load = async () => {
-    const {party, claims, NotificationFailure} = this.props
+    const {
+      party, claims, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
+    } = this.props
     const {sf001Tracker} = this.state
+    ShowGlobalLoader()
     try {
       await this.partyHolder.load(
         [sf001Tracker],
@@ -157,6 +161,7 @@ class Detail extends Component {
       console.error('Error Loading Associated Parties', e)
       NotificationFailure('Error Loading Associated Parties')
     }
+    HideGlobalLoader()
   }
 
   handleFieldChange = e => {
@@ -449,10 +454,12 @@ class Detail extends Component {
               label={'Owner'}
               value={{
                 value: sf001Tracker.ownerId,
-                label: this.partyHolder.retrieveEntityProp(
-                  'name',
-                  sf001Tracker.ownerId,
-                ),
+                label: (() => {
+                  return this.partyHolder.retrieveEntityProp(
+                    'name',
+                    sf001Tracker.ownerId,
+                  )
+                })(),
               }}
               onChange={this.handleFieldChange}
               loadOptions={loadPartyOptions(
