@@ -75,6 +75,14 @@ class SF001 extends Component {
     })
   }
 
+  handleSelect = (rowObj, rowIdx) => {
+    this.setState({
+      selectedRowIdx: rowIdx,
+      selectedSF001Tracker: new SF001Tracker(rowObj),
+      activeState: events.selectRow,
+    })
+  }
+
   collect = async () => {
     const {
       NotificationFailure,
@@ -208,7 +216,7 @@ class SF001 extends Component {
                 return {
                   onClick: (e, handleOriginal) => {
                     if (rowInfo) {
-                      // this.handleSelect(rowInfo.original, rowInfo.index)
+                      this.handleSelect(rowInfo.original, rowInfo.index)
                     }
                     if (handleOriginal) {
                       handleOriginal()
