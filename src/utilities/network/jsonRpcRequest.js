@@ -12,7 +12,7 @@ const methodsWithoutAuthorization = [
  * @param {string} [url]
  * @param {string} method
  * @param {object} request
- * @param {boolean} verbose
+ * @param {boolean} [verbose]
  * @returns {Promise<any>}
  */
 export default function jsonRpcRequest({url, method, request, verbose}) {

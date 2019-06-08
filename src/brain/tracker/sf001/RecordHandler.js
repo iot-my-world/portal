@@ -9,7 +9,7 @@ const RecordHandler = {
    */
   async Collect(criteria, query) {
     let response = await jsonRpcRequest({
-      method: 'SF001DeviceRecordHandler.Collect',
+      method: 'SF001TrackerRecordHandler.Collect',
       request: {
         criteria,
         query,
