@@ -56,13 +56,13 @@ const styles = theme => ({
     alignItems: 'center',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
     fontSize: '20px',
   },
   taskButtonIcon: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(1),
   },
 })
 

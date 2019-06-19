@@ -73,7 +73,7 @@ class Company extends Component {
         direction='column'
     >
       <Grid item xs={12}>
-        <Grid container spacing={16}>
+        <Grid container spacing={2}>
           <Grid item>
             <TimCard>
               <TimCardHeader color='success' stats icon>
@@ -111,7 +111,7 @@ class Company extends Component {
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Grid container spacing={16}>
+        <Grid container spacing={2}>
           <Grid item>
             <TimCard
                 onClick={() => history.push('/app/dashboard/liveTracking')}>

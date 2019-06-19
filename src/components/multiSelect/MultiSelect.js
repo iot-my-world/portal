@@ -229,7 +229,7 @@ class MultiSelect extends Component {
     return <div className={classes.selectRoot}>
       <Card>
         <CardContent>
-          <Grid container spacing={8}>
+          <Grid container spacing={1}>
             <Grid item sm={6} xs={12}>
               <div className={classes.availableRoot}>
                 <TextField

@@ -115,7 +115,7 @@ class BatteryLifeTrendDialog extends Component {
           <Card>
             <Grid
               container
-              spacing={8}
+              spacing={1}
               style={{padding: '2px'}}
               justify={'center'}
             >

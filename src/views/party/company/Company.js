@@ -54,7 +54,7 @@ const styles = theme => ({
     color: theme.palette.primary.main,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
     fontSize: '20px',
@@ -508,7 +508,7 @@ class Company extends Component {
             <Grid
                 container
                 direction={'column'}
-                spacing={8}
+                spacing={1}
                 alignItems={'center'}
             >
               <Grid item>
@@ -535,7 +535,7 @@ class Company extends Component {
       case states.editingExisting:
         const {company} = this.state
         return (
-            <Grid container direction='column' spacing={8}
+            <Grid container direction='column' spacing={1}
                   alignItems={'center'}>
               <Grid item>
                 <TextField

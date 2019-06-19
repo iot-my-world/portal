@@ -403,7 +403,7 @@ class Detail extends Component {
         title={'ZX303 Tracker'}
         additionalTitleControls={this.renderControlIcons()}
       >
-        <Grid container spacing={8}>
+        <Grid container spacing={1}>
           <Grid item xs>
             <FormControl
               className={classes.formField}

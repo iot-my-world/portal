@@ -73,7 +73,7 @@ const styles = theme => ({
     alignItems: 'center',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
 })
 
@@ -355,7 +355,7 @@ class Live extends Component {
               <Grid
                   container
                   direction="column"
-                  spacing={8}
+                  spacing={1}
                   alignItems="center"
               >
                 <Grid item>
@@ -389,7 +389,7 @@ class Live extends Component {
               <Grid
                   container
                   direction="column"
-                  spacing={8}
+                  spacing={1}
                   alignItems="center"
               >
                 <Grid item>

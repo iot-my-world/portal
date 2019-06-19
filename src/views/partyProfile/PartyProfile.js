@@ -58,7 +58,7 @@ class Profile extends Component {
           className={classes.root}
           container
           direction='column'
-          spacing={8}
+          spacing={1}
           alignItems='center'
       >
         <Grid item>

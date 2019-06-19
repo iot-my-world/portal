@@ -78,7 +78,7 @@ const styles = theme => ({
     color: theme.palette.primary.main,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
     fontSize: '20px',
@@ -458,7 +458,7 @@ class APIUser extends Component {
             <Grid
                 container
                 direction={'column'}
-                spacing={8}
+                spacing={1}
                 alignItems={'center'}
             >
               <Grid item>
@@ -485,7 +485,7 @@ class APIUser extends Component {
       case states.editingExisting:
         const {apiUserEntity, availableRoles} = this.state
         return (
-            <Grid container spacing={8}>
+            <Grid container spacing={1}>
               <Grid item xs>
                 <FormControl
                     className={classes.formField}

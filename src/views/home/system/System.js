@@ -75,7 +75,7 @@ class System extends Component {
             id={'systemHomeRoot'}
         >
           <Grid item xs={12}>
-            <Grid container spacing={16}>
+            <Grid container spacing={2}>
               <Grid item>
                 <TimCard>
                   <TimCardHeader color='success' stats icon>
@@ -113,7 +113,7 @@ class System extends Component {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Grid container spacing={16}>
+            <Grid container spacing={2}>
               <Grid item>
                 <TimCard
                     onClick={() => history.push('/app/dashboard/liveTracking')}>

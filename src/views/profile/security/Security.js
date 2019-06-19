@@ -30,10 +30,10 @@ const styles = theme => ({
     paddingRight: 5,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
 })
 
@@ -267,11 +267,11 @@ class Security extends Component {
 
     const fieldValidations = this.reasonsInvalid.toMap()
 
-    return <Grid container direction='column' spacing={8} alignItems='center'>
+    return <Grid container direction='column' spacing={1} alignItems='center'>
       <Grid item>
         <Card className={classes.detailCard}>
           <CardContent>
-            <Grid container direction='column' spacing={8}
+            <Grid container direction='column' spacing={1}
                   alignItems={'center'}>
               <Grid item>
                 <div className={classes.securityItemWrapper}>

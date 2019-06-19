@@ -40,13 +40,13 @@ const styles = theme => ({
     gridTemplateColumns: 'auto auto',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   extendedButtonIcon: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   captchaFailureCard: {
     display: 'grid',

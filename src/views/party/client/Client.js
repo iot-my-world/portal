@@ -72,7 +72,7 @@ const styles = theme => ({
     color: theme.palette.primary.main,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
     fontSize: '20px',
@@ -658,7 +658,7 @@ class Client extends Component {
             className={classes.root}
             container
             direction='column'
-            spacing={8}
+            spacing={1}
             alignItems='center'
         >
           <Grid item xl={12}>
@@ -729,7 +729,7 @@ class Client extends Component {
             <Grid
                 container
                 direction={'column'}
-                spacing={8}
+                spacing={1}
                 alignItems={'center'}
             >
               <Grid item>
@@ -758,7 +758,7 @@ class Client extends Component {
         return <Grid
             container
             direction='column'
-            spacing={8}
+            spacing={1}
             alignItems={'center'}
         >
           {(claims.partyType === SystemPartyType) &&
