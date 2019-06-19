@@ -230,7 +230,7 @@ class General extends Component {
 
     //TODO add party specific rendering of details
     return (
-      <Grid container direction='column' spacing={8} alignItems='center'>
+      <Grid container direction='column' spacing={1} alignItems='center'>
         <Grid item>
           <Card className={classes.detailCard}>
             <CardHeader title={
@@ -245,7 +245,7 @@ class General extends Component {
               </Grid>
             }/>
             <CardContent>
-              <Grid container direction='column' spacing={8}
+              <Grid container direction='column' spacing={1}
                     alignItems={'center'}>
                 <Grid item>
                   <TextField

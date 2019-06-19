@@ -817,7 +817,7 @@ class User extends Component {
             id={'userConfigurationRoot'}
             className={classes.root}
             container direction='column'
-            spacing={8}
+            spacing={1}
             alignItems='center'
         >
           <Grid item xl={12}>
@@ -888,7 +888,7 @@ class User extends Component {
             <Grid
                 container
                 direction={'column'}
-                spacing={8}
+                spacing={1}
                 alignItems={'center'}
             >
               <Grid item>
@@ -919,7 +919,7 @@ class User extends Component {
         return <Grid
             container
             direction='column'
-            spacing={8}
+            spacing={1}
             alignItems={'center'}
         >
           {(claims.partyType === SystemPartyType) &&

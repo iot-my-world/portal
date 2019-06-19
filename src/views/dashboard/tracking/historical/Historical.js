@@ -526,7 +526,7 @@ class Historical extends Component {
               <Grid
                   container
                   direction="column"
-                  spacing={8}
+                  spacing={1}
                   alignItems="center"
               >
                 <Grid item>

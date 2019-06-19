@@ -391,7 +391,7 @@ class RegisterUser extends Component {
                   <CardContent>
                     <form>
                       <Grid container direction={'column'} alignItems={'center'}
-                            spacing={8}>
+                            spacing={1}>
                         <Grid item>
                           <FormControl className={classes.formField}>
                             <TextField
@@ -547,7 +547,7 @@ class RegisterUser extends Component {
                     <Grid
                         container
                         direction='column'
-                        spacing={8}
+                        spacing={1}
                         alignItems={'center'}
                     >
                       <Grid item>

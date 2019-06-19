@@ -187,7 +187,7 @@ class General extends Component {
     const fieldValidations = this.reasonsInvalid.toMap()
     const editingState = activeState === states.editing
 
-    return <Grid container direction='column' spacing={8} alignItems='center'>
+    return <Grid container direction='column' spacing={1} alignItems='center'>
       <Grid item>
         <Card className={classes.detailCard}>
           <CardHeader title={
@@ -201,7 +201,7 @@ class General extends Component {
             </Grid>
           }/>
           <CardContent>
-            <Grid container direction='column' spacing={8}
+            <Grid container direction='column' spacing={1}
                   alignItems={'center'}>
               <Grid item>
                 <TextField
