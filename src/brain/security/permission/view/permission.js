@@ -8,5 +8,4 @@ export const PartyAPIUserViewPermission = "PartyAPIUser"
 export const LiveTrackingDashboardViewPermission = "LiveTrackingDashboard"
 export const HistoricalTrackingDashboardViewPermission = "HistoricalTrackingDashboard"
 
-export const TrackerZX303ViewPermission = "TrackerZX303"
-export const ZX303DeviceDiagnosticsViewPermission = "ZX303DeviceDiagnostics"
+export const TrackerSF001ViewPermission = "TrackerSF001"

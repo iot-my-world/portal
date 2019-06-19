@@ -1,7 +1,6 @@
 import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
-import ConfigurationIcon from '@material-ui/icons/Settings'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import GPSFixedIcon from '@material-ui/icons/GpsFixed'
@@ -13,13 +12,11 @@ import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
 import APIUserContainer from 'views/party/apiUser/APIUserContainer'
-import ZX303TrackerContainer from 'views/tracker/zx303/ZX303Container'
+import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import LiveTrackingDashboardContainer
   from 'views/dashboard/tracking/live/LiveContainer'
 // import HistoricalTrackingDashboardContainer
 //   from 'views/dashboard/tracking/historical/HistoricalContainer'
-import ZX303DeviceDiagnosticsContainer
-  from 'views/deviceDiagnostics/zx303/ZX303Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import {
@@ -29,15 +26,13 @@ import {
   PartyAPIUserViewPermission,
   LiveTrackingDashboardViewPermission,
   // HistoricalTrackingDashboardViewPermission,
-  TrackerZX303ViewPermission,
-  ZX303DeviceDiagnosticsViewPermission,
+  TrackerSF001ViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
   ClientPartyType,
   CompanyPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-
 
 const appSideBarLinkRoutes = [
   // {
@@ -112,36 +107,20 @@ const appSideBarLinkRoutes = [
   },
   {
     collapse: true,
-    path: '/app/deviceDiagnostics',
-    name: 'Device Diagnostics',
-    state: 'openDeviceDiagnostics',
-    icon: ConfigurationIcon,
-    views: [
-      {
-        path: '/app/deviceDiagnostics/zx303',
-        name: 'ZX303',
-        viewPermission: ZX303DeviceDiagnosticsViewPermission,
-        icon: TrackerIcon,
-        component: ZX303DeviceDiagnosticsContainer,
-      },
-    ],
-  },
-  {
-    collapse: true,
     path: '/app/tracker',
     name: 'Trackers',
     state: 'openTracker',
     icon: TrackerIcon,
     views: [
       {
-        path: '/app/tracker/zx303',
-        name: 'ZX303 Tracker',
-        viewPermission: TrackerZX303ViewPermission,
+        path: '/app/tracker/sf001',
+        name: 'SF001 Tracker',
+        viewPermission: TrackerSF001ViewPermission,
         icon: TrackerIcon,
-        component: ZX303TrackerContainer,
+        component: SF001TrackerContainer,
       },
     ],
-  },  
+  },
 ]
 
 const appRouteBuilder = (partyType, viewPermissions, user, party) => {
@@ -219,7 +198,6 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
     component: PartyProfileContainer,
   }
 
-
   // build home route
   switch (partyType) {
     case SystemPartyType:
@@ -248,7 +226,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
 
     default:
       throw new TypeError(
-        `invalid party type given to home root builder ${partyType}`
+        `invalid party type given to home root builder ${partyType}`,
       )
   }
 
