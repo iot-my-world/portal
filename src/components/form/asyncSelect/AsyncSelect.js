@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import ReactAsyncSelect from 'react-select/lib/Async'
+import ReactAsyncSelect from 'react-select/async'
 import {withStyles, TextField as MUITextField} from '@material-ui/core'
 
 const styles = theme => ({})
