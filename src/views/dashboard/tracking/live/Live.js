@@ -73,7 +73,7 @@ const styles = theme => ({
     alignItems: 'center',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
 })
 

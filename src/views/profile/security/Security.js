@@ -30,10 +30,10 @@ const styles = theme => ({
     paddingRight: 5,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
 })
 

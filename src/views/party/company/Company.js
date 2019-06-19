@@ -54,7 +54,7 @@ const styles = theme => ({
     color: theme.palette.primary.main,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonIcon: {
     fontSize: '20px',

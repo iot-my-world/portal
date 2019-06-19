@@ -9,7 +9,7 @@ import {
   Fab, FormHelperText,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logo from 'assets/images/logo.png'
+import logo from 'assets/images/logo/logo.png'
 import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'
 import {parseToken} from 'utilities/token'
@@ -41,31 +41,26 @@ const style = theme => {
       display: 'grid',
       justifyItems: 'center',
       gridTemplateRows: 'auto auto',
+      gridRowGap: theme.spacing(1),
     },
     titleInnerWrapper: {
-      display: 'grid',
-      gridTemplateColumns: 'auto auto',
-      alignItems: 'center',
     },
     logo: {
-      justifySelf: 'end',
-      height: '50px',
-      width: '50px',
-      padding: '10px',
+      height: '200px',
     },
     title: {
       justifySelf: 'start',
       color: '#ffffff',
     },
     formField: {
-      width: '200px',
+      width: '220px',
     },
     button: {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.main,
     },
     buttonIcon: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(1),
     },
     forgotPassword: {
       cursor: 'pointer',
@@ -101,23 +96,7 @@ class Login extends Component {
     forgotPasswordUsernameOrEmailAddress: '',
   }
 
-  constructor(props) {
-    super(props)
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleLogin = this.handleLogin.bind(this)
-    this.errorMessage = this.errorMessage.bind(this)
-    this.renderLogInCard = this.renderLogInCard.bind(this)
-    this.renderForgotPasswordCaptchaCard =
-        this.renderForgotPasswordCaptchaCard.bind(this)
-    this.renderForgotPasswordDetailsEnterCard =
-        this.renderForgotPasswordDetailsEnterCard.bind(this)
-    this.handleForgotPasswordUsernameEmailInputChange =
-        this.handleForgotPasswordUsernameEmailInputChange.bind(this)
-    this.handleForgotPassword = this.handleForgotPassword.bind(this)
-    this.handleSelectForgotPassword = this.handleSelectForgotPassword.bind(this)
-  }
-
-  handleInputChange(event) {
+  handleInputChange = (event) => {
     this.reasonsInvalid.clearField(event.target.id)
     this.setState({
       [event.target.id]: event.target.value,
@@ -125,14 +104,14 @@ class Login extends Component {
     })
   }
 
-  handleForgotPasswordUsernameEmailInputChange(event) {
+  handleForgotPasswordUsernameEmailInputChange = (event) => {
     this.reasonsInvalid.clearField('forgotPasswordUsernameOrEmailAddress')
     this.setState({[event.target.id]: event.target.value})
   }
 
   reasonsInvalid = new ReasonsInvalid()
 
-  handleSelectForgotPassword() {
+  handleSelectForgotPassword = () => {
     this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.forgotPassword,
@@ -144,7 +123,7 @@ class Login extends Component {
     })
   }
 
-  async handleLogin(submitEvent) {
+  handleLogin = async (submitEvent) => {
     submitEvent.preventDefault()
     const {
       usernameOrEmailAddress,
@@ -236,7 +215,7 @@ class Login extends Component {
     LoginActionCreator()
   }
 
-  async handleForgotPassword() {
+  handleForgotPassword = async () => {
     const {forgotPasswordUsernameOrEmailAddress} = this.state
     const {
       ShowGlobalLoader,
@@ -282,7 +261,7 @@ class Login extends Component {
     HideGlobalLoader()
   }
 
-  errorMessage() {
+  errorMessage = () => {
     const {
       activeState,
     } = this.state
@@ -297,7 +276,7 @@ class Login extends Component {
     }
   }
 
-  renderLogInCard() {
+  renderLogInCard = () => {
     const {
       classes,
     } = this.props
@@ -318,8 +297,10 @@ class Login extends Component {
           />
           <CardContent>
             <form onSubmit={this.handleLogin}>
-              <Grid container direction={'column'} alignItems={'center'}
-                    spacing={8}>
+              <Grid
+                container direction={'column'}
+                alignItems={'center'} spacing={1}
+              >
                 <Grid item>
                   <FormControl className={classes.formField}>
                     <TextField
@@ -394,7 +375,7 @@ class Login extends Component {
     )
   }
 
-  renderForgotPasswordCaptchaCard() {
+  renderForgotPasswordCaptchaCard = () => {
     const {classes} = this.props
     const {cursorOverReturn, activeState} = this.state
     const showCaptcha =
@@ -408,7 +389,7 @@ class Login extends Component {
           />
           <CardContent>
             <Grid container direction={'column'} alignItems={'center'}
-                  spacing={8}>
+                  spacing={1}>
               <Grid item>
                 <MeinCaptcha
                     resetToggle={showCaptcha}
@@ -442,7 +423,7 @@ class Login extends Component {
     )
   }
 
-  renderForgotPasswordDetailsEnterCard() {
+  renderForgotPasswordDetailsEnterCard = () => {
     const {classes} = this.props
     const {
       cursorOverReturn,
@@ -460,7 +441,7 @@ class Login extends Component {
           />
           <CardContent>
             <Grid container direction={'column'} alignItems={'center'}
-                  spacing={8}>
+                  spacing={1}>
               <Grid item>
                 <Typography
                     variant={'body1'}
@@ -559,10 +540,6 @@ class Login extends Component {
         <div className={classes.contentWrapper}>
           <div className={classes.titleInnerWrapper}>
             <img className={classes.logo} src={logo} alt={'logo'}/>
-            <Typography className={classes.title} color={'primary'}
-                        variant={'h3'}>
-              SpotNav
-            </Typography>
           </div>
           <Collapse in={showLoginCard}>
             <div>
