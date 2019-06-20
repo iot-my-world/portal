@@ -16,8 +16,8 @@ export const getTheme = (themeName) => {
 const defaultTheme = {
   name: themeOptions.default,
   palette: {
-    primary: { main: '#32485c' },
-    secondary: { main: '#cbbe34' },
+    primary: { main: '#0E2F56' },
+    secondary: { main: '#FF304F' },
     error: { main: '#ff111b'},
     background: { main: '#cbcbcb'},
   },

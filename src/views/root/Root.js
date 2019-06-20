@@ -14,6 +14,7 @@ import {Logout} from 'actions/auth'
 import moment from 'moment'
 import ResetPasswordContainer
   from 'views/registrar/resetPassword/ResetPasswordContainer'
+import PublicContainer from 'views/public/PublicContainer'
 
 const styles = theme => ({})
 
@@ -134,13 +135,14 @@ class Root extends Component {
               />
               <Route
                   path='/'
-                  render={props => {
-                    if (loggedIn && claims.notExpired) {
-                      return <Redirect to='/app'/>
-                    } else {
-                      return <LoginContainer {...props} />
-                    }
-                  }}
+                  // render={props => {
+                  //   if (loggedIn && claims.notExpired) {
+                  //     return <Redirect to='/app'/>
+                  //   } else {
+                  //     return <LoginContainer {...props} />
+                  //   }
+                  // }}
+                  render={props => <PublicContainer {...props} />}
               />
             </Switch>
             <ToastNotify/>
