@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, AppBar, Toolbar, Tabs, Tab,
+  withStyles, AppBar, Toolbar, Tabs, Tab, Typography,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logoHorizontalTransparent from 'assets/images/logo/logo_horizontal_transparent.png'
+import logoHorizontalTransparent
+  from 'assets/images/logo/logo_horizontal_transparent.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
 import classNames from 'classnames'
 import {
@@ -23,7 +24,8 @@ const styles = theme => ({
     backgroundPosition: 'right top',
   },
   root: {
-    height: '100%',
+    overflow: 'hidden',
+    height: '100vh',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
   },
@@ -45,7 +47,22 @@ const styles = theme => ({
   },
   icon: {
     fontSize: 25,
-  }
+  },
+  viewContentOuterWrapper: {
+    display: 'grid',
+    overflow: 'hidden',
+    gridTemplateRows: '1fr',
+    gridTemplateColumns: '1fr',
+  },
+  viewContentInnerWrapper: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 0 8px 8px black',
+    margin: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  viewContent: {
+  },
 })
 
 const tabs = {
@@ -57,14 +74,59 @@ const tabs = {
 class Public extends Component {
   state = {
     activeTab: tabs.home,
+    headerHeight: 0,
   }
 
   handleTabChange = (event, value) => {
     this.setState({activeTab: value})
   }
 
-  render(){
+  renderPublicViews = () => {
     const {activeTab} = this.state
+
+    switch (activeTab) {
+      case tabs.home:
+        return (
+          <React.Fragment>
+            <Typography
+              variant={'h6'}
+            >
+              IOT My World
+            </Typography>
+          </React.Fragment>
+        )
+      case tabs.contributors:
+        return (
+          <React.Fragment>
+            <Typography
+              variant={'h6'}
+            >
+              Contributors
+            </Typography>
+          </React.Fragment>
+        )
+
+      case tabs.login:
+        return (
+          <React.Fragment>
+            <Typography
+              variant={'h6'}
+            >
+              Login
+            </Typography>
+          </React.Fragment>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  render() {
+    const {
+      activeTab,
+      headerHeight,
+    } = this.state
     const {
       classes,
       width,
@@ -72,19 +134,23 @@ class Public extends Component {
 
     const mobileActive = !isWidthUp('md', width)
 
+    console.log('header height', headerHeight)
+
     return (
       <div
         className={classes.loginFullPageBackground}
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
       >
         <div className={classes.root}>
-          <AppBar position="static">
+          <AppBar
+            position="static"
+          >
             <Toolbar classes={{root: classes.toolbarRoot}}>
               <div className={classes.toolBarContent}>
                 <img
                   className={classNames(
                     classes.logo,
-                    {[classes.logoMobile]: mobileActive}
+                    {[classes.logoMobile]: mobileActive},
                   )}
                   src={logoHorizontalTransparent}
                   alt={'logo'}
@@ -109,7 +175,15 @@ class Public extends Component {
               </div>
             </Toolbar>
           </AppBar>
-          <div>aweh</div>
+          <div className={classes.viewContentOuterWrapper}>
+            <div className={classes.viewContentInnerWrapper}>
+              <div
+                className={classes.viewContent}
+              >
+                {this.renderPublicViews()}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
