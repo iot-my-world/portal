@@ -1,12 +1,15 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, AppBar, Toolbar,
+  withStyles, AppBar, Toolbar, Tabs, Tab,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logoHorizontalTransparent from 'assets/images/logo/logo_horizontal_transparent.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
 import classNames from 'classnames'
+import {
+  InfoIcon, LoginIcon, GithubIcon,
+} from 'components/icon'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -31,6 +34,7 @@ const styles = theme => ({
   toolBarContent: {
     display: 'grid',
     gridTemplateRows: 'auto auto',
+    justifyItems: 'center',
   },
   logo: {
     maxWidth: '500px',
@@ -39,11 +43,28 @@ const styles = theme => ({
   logoMobile: {
     width: `calc(100% - 10px)`,
   },
+  icon: {
+    fontSize: 25,
+  }
 })
 
+const tabs = {
+  home: 0,
+  contributors: 1,
+  login: 2,
+}
+
 class Public extends Component {
+  state = {
+    activeTab: tabs.home,
+  }
+
+  handleTabChange = (event, value) => {
+    this.setState({activeTab: value})
+  }
 
   render(){
+    const {activeTab} = this.state
     const {
       classes,
       width,
@@ -68,6 +89,23 @@ class Public extends Component {
                   src={logoHorizontalTransparent}
                   alt={'logo'}
                 />
+                <Tabs
+                  value={activeTab}
+                  onChange={this.handleTabChange}
+                >
+                  <Tab
+                    value={tabs.home}
+                    icon={<InfoIcon className={classes.icon}/>}
+                  />
+                  <Tab
+                    value={tabs.contributors}
+                    icon={<GithubIcon className={classes.icon}/>}
+                  />
+                  <Tab
+                    value={tabs.login}
+                    icon={<LoginIcon className={classes.icon}/>}
+                  />
+                </Tabs>
               </div>
             </Toolbar>
           </AppBar>
