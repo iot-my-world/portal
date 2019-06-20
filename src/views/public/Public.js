@@ -74,7 +74,6 @@ const tabs = {
 class Public extends Component {
   state = {
     activeTab: tabs.home,
-    headerHeight: 0,
   }
 
   handleTabChange = (event, value) => {
@@ -125,7 +124,6 @@ class Public extends Component {
   render() {
     const {
       activeTab,
-      headerHeight,
     } = this.state
     const {
       classes,
@@ -133,8 +131,6 @@ class Public extends Component {
     } = this.props
 
     const mobileActive = !isWidthUp('md', width)
-
-    console.log('header height', headerHeight)
 
     return (
       <div
