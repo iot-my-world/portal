@@ -4,7 +4,8 @@ import {
   withStyles, AppBar, Toolbar,
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logoTransparent from 'assets/images/logo/logo_transparent.png'
+import logoHorizontalTransparent from 'assets/images/logo/logo_horizontal_transparent.png'
+import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -26,14 +27,27 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  toolBarContent: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+  },
   logo: {
-    height: '200px',
+    height: '100px',
   },
 })
 
-  class Public extends Component {
+class Public extends Component {
+
+
+
   render(){
-    const {classes} = this.props
+    const {
+      classes,
+      width,
+    } = this.props
+
+    const mobileActive = !isWidthUp('md', width)
+
     return (
       <div
         className={classes.loginFullPageBackground}
@@ -42,7 +56,13 @@ const styles = theme => ({
         <div className={classes.root}>
           <AppBar position="static">
             <Toolbar classes={{root: classes.toolbarRoot}}>
-              <img className={classes.logo} src={logoTransparent} alt={'logo'}/>
+              <div className={classes.toolBarContent}>
+                <img
+                  className={classes.logo}
+                  src={logoHorizontalTransparent}
+                  alt={'logo'}
+                />
+              </div>
             </Toolbar>
           </AppBar>
           <div>aweh</div>
@@ -52,9 +72,9 @@ const styles = theme => ({
   }
 }
 
-Public = withStyles(styles)(Public)
-
 Public.propTypes = {}
 Public.defaultProps = {}
+
+Public = withWidth()(withStyles(styles)(Public))
 
 export default Public
