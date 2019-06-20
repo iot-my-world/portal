@@ -4,7 +4,7 @@ import {withStyles} from '@material-ui/core'
 import PropTypes from 'prop-types'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
-import LoginContainer from '../login/LoginContainer'
+// import LoginContainer from '../login/LoginContainer'
 import RegisterUserContainer
   from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
@@ -94,7 +94,12 @@ class Root extends Component {
   }
 
   render() {
-    const {claims, showGlobalLoader, loggedIn, loggedOut} = this.props
+    const {
+      claims,
+      showGlobalLoader,
+      // loggedIn,
+      loggedOut
+    } = this.props
 
     return (
         <BrowserRouter>
