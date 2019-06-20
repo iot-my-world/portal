@@ -6,6 +6,7 @@ import {
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logoHorizontalTransparent from 'assets/images/logo/logo_horizontal_transparent.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
+import classNames from 'classnames'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -32,13 +33,15 @@ const styles = theme => ({
     gridTemplateRows: 'auto auto',
   },
   logo: {
-    height: '100px',
+    maxWidth: '500px',
+    padding: '5px',
+  },
+  logoMobile: {
+    width: `calc(100% - 10px)`,
   },
 })
 
 class Public extends Component {
-
-
 
   render(){
     const {
@@ -58,7 +61,10 @@ class Public extends Component {
             <Toolbar classes={{root: classes.toolbarRoot}}>
               <div className={classes.toolBarContent}>
                 <img
-                  className={classes.logo}
+                  className={classNames(
+                    classes.logo,
+                    {[classes.logoMobile]: mobileActive}
+                  )}
                   src={logoHorizontalTransparent}
                   alt={'logo'}
                 />
@@ -72,7 +78,9 @@ class Public extends Component {
   }
 }
 
-Public.propTypes = {}
+Public.propTypes = {
+  width: PropTypes.string,
+}
 Public.defaultProps = {}
 
 Public = withWidth()(withStyles(styles)(Public))
