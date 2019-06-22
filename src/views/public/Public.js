@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, AppBar, Toolbar, Tabs, Tab, Typography,
+  withStyles, AppBar, Toolbar, Tabs, Tab
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logoHorizontalTransparent
@@ -11,6 +11,15 @@ import classNames from 'classnames'
 import {
   InfoIcon, LoginIcon, GithubIcon,
 } from 'components/icon'
+import {
+  Switch, Route, Redirect,
+} from 'react-router-dom'
+import InfoContainer
+  from './info/InfoContainer'
+import LoginForgotPasswordContainer
+  from './loginForgotPassword/LoginForgotPasswordContainer'
+import ContributorsContainer
+  from './contributors/ContributorsContainer'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -25,7 +34,8 @@ const styles = theme => ({
   },
   root: {
     overflow: 'hidden',
-    height: '100vh',
+    // height: '100vh',
+    height: 'calc(100%)',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
   },
@@ -55,79 +65,77 @@ const styles = theme => ({
     gridTemplateColumns: '1fr',
   },
   viewContentInnerWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    boxShadow: '0 0 8px 8px black',
-    margin: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  viewContent: {
+    margin: '5px',
+    overflow: 'scroll',
   },
 })
 
 const tabs = {
-  home: 0,
-  contributors: 1,
-  login: 2,
+  info: {
+    idx: 0,
+    path: '/',
+  },
+  contributors: {
+    idx: 1,
+    path: '/contributors',
+  },
+  loginForgotPassword: {
+    idx: 2,
+    path: '/login',
+  },
 }
 
 class Public extends Component {
   state = {
-    activeTab: tabs.home,
+    activeTabIdx: tabs.info.idx,
+  }
+
+  componentDidMount() {
+    const {
+      location,
+    } = this.props
+    const {
+      activeTabIdx,
+    } = this.state
+    try {
+      const currentActiveTab = Object.values(tabs).find(
+        tab => tab.idx === activeTabIdx
+      )
+      const correctActiveTab = Object.values(tabs).find(
+        tab => tab.path === location.pathname
+      )
+      if (currentActiveTab.idx !== correctActiveTab.idx) {
+        this.setState({activeTabIdx: correctActiveTab.idx})
+      }
+    } catch (e) {
+      console.error('error determining active tab by location.path', e)
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      location,
+    } = this.props
+    const {
+      location: prevLocation,
+    } = prevProps
+
+    console.log('location!', location)
+    console.log('prev location!', prevLocation)
   }
 
   handleTabChange = (event, value) => {
-    this.setState({activeTab: value})
-  }
-
-  renderPublicViews = () => {
-    const {activeTab} = this.state
-
-    switch (activeTab) {
-      case tabs.home:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              IOT My World
-            </Typography>
-          </React.Fragment>
-        )
-      case tabs.contributors:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              Contributors
-            </Typography>
-          </React.Fragment>
-        )
-
-      case tabs.login:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              Login
-            </Typography>
-          </React.Fragment>
-        )
-
-      default:
-        return null
-    }
+    this.setState({activeTabIdx: value})
   }
 
   render() {
     const {
-      activeTab,
+      activeTabIdx,
     } = this.state
     const {
       classes,
       width,
+      history,
     } = this.props
 
     const mobileActive = !isWidthUp('md', width)
@@ -152,19 +160,22 @@ class Public extends Component {
                   alt={'logo'}
                 />
                 <Tabs
-                  value={activeTab}
+                  value={activeTabIdx}
                   onChange={this.handleTabChange}
                 >
                   <Tab
-                    value={tabs.home}
+                    onClick={()=>history.push(tabs.info.path)}
+                    value={tabs.info.idx}
                     icon={<InfoIcon className={classes.icon}/>}
                   />
                   <Tab
-                    value={tabs.contributors}
+                    onClick={()=>history.push(tabs.contributors.path)}
+                    value={tabs.contributors.idx}
                     icon={<GithubIcon className={classes.icon}/>}
                   />
                   <Tab
-                    value={tabs.login}
+                    onClick={()=>history.push(tabs.loginForgotPassword.path)}
+                    value={tabs.loginForgotPassword.idx}
                     icon={<LoginIcon className={classes.icon}/>}
                   />
                 </Tabs>
@@ -173,11 +184,25 @@ class Public extends Component {
           </AppBar>
           <div className={classes.viewContentOuterWrapper}>
             <div className={classes.viewContentInnerWrapper}>
-              <div
-                className={classes.viewContent}
-              >
-                {this.renderPublicViews()}
-              </div>
+              <Switch>
+                <Route
+                  exact
+                  path={tabs.info.path}
+                  component={InfoContainer}
+                />
+                <Route
+                  path={tabs.contributors.path}
+                  component={ContributorsContainer}
+                />
+                <Route
+                  path={tabs.loginForgotPassword.path}
+                  component={LoginForgotPasswordContainer}
+                />
+                <Route
+                  path={'/'}
+                  render={() => <Redirect to='/'/>}
+                />
+              </Switch>
             </div>
           </div>
         </div>
