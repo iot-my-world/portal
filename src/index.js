@@ -29,7 +29,7 @@ try {
 }
 
 switch (hostName) {
-  case 'spotnav':
+  case 'iotmyworld':
     config.set({
       brainAPIUrl: `https://${host}/api-1`,
       // webSocketUrl: `wss://${host}/ws`,

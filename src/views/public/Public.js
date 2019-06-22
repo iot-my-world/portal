@@ -112,18 +112,6 @@ class Public extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {
-      location,
-    } = this.props
-    const {
-      location: prevLocation,
-    } = prevProps
-
-    console.log('location!', location)
-    console.log('prev location!', prevLocation)
-  }
-
   handleTabChange = (event, value) => {
     this.setState({activeTabIdx: value})
   }
