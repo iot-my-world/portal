@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, AppBar, Toolbar, Tabs, Tab, Typography,
+  withStyles, AppBar, Toolbar, Tabs, Tab
 } from '@material-ui/core'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logoHorizontalTransparent
@@ -11,6 +11,9 @@ import classNames from 'classnames'
 import {
   InfoIcon, LoginIcon, GithubIcon,
 } from 'components/icon'
+import {
+  Switch, Route, Redirect,
+} from 'react-router-dom'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -72,11 +75,11 @@ const tabs = {
   },
   contributors: {
     idx: 1,
-    path: '/',
+    path: '/contributors',
   },
   login: {
     idx: 2,
-    path: '/',
+    path: '/login',
   },
 }
 
@@ -89,47 +92,6 @@ class Public extends Component {
     this.setState({activeTabIdx: value})
   }
 
-  renderPublicViews = () => {
-    const {activeTabIdx} = this.state
-
-    switch (activeTabIdx) {
-      case tabs.info.idx:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              IOT My World
-            </Typography>
-          </React.Fragment>
-        )
-      case tabs.contributors.idx:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              Contributors
-            </Typography>
-          </React.Fragment>
-        )
-
-      case tabs.login.idx:
-        return (
-          <React.Fragment>
-            <Typography
-              variant={'h6'}
-            >
-              Login
-            </Typography>
-          </React.Fragment>
-        )
-
-      default:
-        return null
-    }
-  }
-
   render() {
     const {
       activeTabIdx,
@@ -137,6 +99,7 @@ class Public extends Component {
     const {
       classes,
       width,
+      history,
     } = this.props
 
     const mobileActive = !isWidthUp('md', width)
@@ -165,14 +128,17 @@ class Public extends Component {
                   onChange={this.handleTabChange}
                 >
                   <Tab
+                    onClick={()=>history.push(tabs.info.path)}
                     value={tabs.info.idx}
                     icon={<InfoIcon className={classes.icon}/>}
                   />
                   <Tab
+                    onClick={()=>history.push(tabs.contributors.path)}
                     value={tabs.contributors.idx}
                     icon={<GithubIcon className={classes.icon}/>}
                   />
                   <Tab
+                    onClick={()=>history.push(tabs.login.path)}
                     value={tabs.login.idx}
                     icon={<LoginIcon className={classes.icon}/>}
                   />
@@ -185,7 +151,25 @@ class Public extends Component {
               <div
                 className={classes.viewContent}
               >
-                {this.renderPublicViews()}
+                <Switch>
+                  <Route
+                    exact
+                    path={tabs.info.path}
+                    component={()=><div>info</div>}
+                  />
+                  <Route
+                    path={tabs.contributors.path}
+                    component={()=><div>contributors</div>}
+                  />
+                  <Route
+                    path={tabs.login.path}
+                    component={()=><div>login</div>}
+                  />
+                  <Route
+                    path={'/'}
+                    render={() => <Redirect to='/'/>}
+                  />
+                </Switch>
               </div>
             </div>
           </div>
