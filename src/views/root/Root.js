@@ -4,7 +4,6 @@ import {withStyles} from '@material-ui/core'
 import PropTypes from 'prop-types'
 import ToastNotify from '../../components/notification/ToastNotify'
 import AppContainer from '../app/AppContainer'
-// import LoginContainer from '../login/LoginContainer'
 import RegisterUserContainer
   from 'views/registrar/registerUser/RegisterUserContainer'
 import {parseToken} from 'utilities/token/index'
@@ -97,7 +96,7 @@ class Root extends Component {
     const {
       claims,
       showGlobalLoader,
-      // loggedIn,
+      loggedIn,
       loggedOut
     } = this.props
 
@@ -140,14 +139,13 @@ class Root extends Component {
               />
               <Route
                   path='/'
-                  // render={props => {
-                  //   if (loggedIn && claims.notExpired) {
-                  //     return <Redirect to='/app'/>
-                  //   } else {
-                  //     return <LoginContainer {...props} />
-                  //   }
-                  // }}
-                  render={props => <PublicContainer {...props} />}
+                  render={props => {
+                    if (loggedIn && claims.notExpired) {
+                      return <Redirect to='/app'/>
+                    } else {
+                      return <PublicContainer {...props} />
+                    }
+                  }}
               />
             </Switch>
             <ToastNotify/>

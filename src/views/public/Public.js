@@ -90,6 +90,40 @@ class Public extends Component {
     activeTabIdx: tabs.info.idx,
   }
 
+  componentDidMount() {
+    const {
+      location,
+    } = this.props
+    const {
+      activeTabIdx,
+    } = this.state
+    try {
+      const currentActiveTab = Object.values(tabs).find(
+        tab => tab.idx === activeTabIdx
+      )
+      const correctActiveTab = Object.values(tabs).find(
+        tab => tab.path === location.pathname
+      )
+      if (currentActiveTab.idx !== correctActiveTab.idx) {
+        this.setState({activeTabIdx: correctActiveTab.idx})
+      }
+    } catch (e) {
+      console.error('error determining active tab by location.path', e)
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      location,
+    } = this.props
+    const {
+      location: prevLocation,
+    } = prevProps
+
+    console.log('location!', location)
+    console.log('prev location!', prevLocation)
+  }
+
   handleTabChange = (event, value) => {
     this.setState({activeTabIdx: value})
   }
