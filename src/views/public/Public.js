@@ -14,6 +14,12 @@ import {
 import {
   Switch, Route, Redirect,
 } from 'react-router-dom'
+import InfoContainer
+  from './info/InfoContainer'
+import LoginForgotPasswordContainer
+  from './loginForgotPassword/LoginForgotPasswordContainer'
+import ContributorsContainer
+  from './contributors/ContributorsContainer'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -28,7 +34,8 @@ const styles = theme => ({
   },
   root: {
     overflow: 'hidden',
-    height: '100vh',
+    // height: '100vh',
+    height: 'calc(100%)',
     display: 'grid',
     gridTemplateRows: 'auto 1fr',
   },
@@ -58,13 +65,8 @@ const styles = theme => ({
     gridTemplateColumns: '1fr',
   },
   viewContentInnerWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    boxShadow: '0 0 8px 8px black',
-    margin: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  viewContent: {
+    margin: '5px',
+    overflow: 'scroll',
   },
 })
 
@@ -77,7 +79,7 @@ const tabs = {
     idx: 1,
     path: '/contributors',
   },
-  login: {
+  loginForgotPassword: {
     idx: 2,
     path: '/login',
   },
@@ -138,8 +140,8 @@ class Public extends Component {
                     icon={<GithubIcon className={classes.icon}/>}
                   />
                   <Tab
-                    onClick={()=>history.push(tabs.login.path)}
-                    value={tabs.login.idx}
+                    onClick={()=>history.push(tabs.loginForgotPassword.path)}
+                    value={tabs.loginForgotPassword.idx}
                     icon={<LoginIcon className={classes.icon}/>}
                   />
                 </Tabs>
@@ -148,29 +150,25 @@ class Public extends Component {
           </AppBar>
           <div className={classes.viewContentOuterWrapper}>
             <div className={classes.viewContentInnerWrapper}>
-              <div
-                className={classes.viewContent}
-              >
-                <Switch>
-                  <Route
-                    exact
-                    path={tabs.info.path}
-                    component={()=><div>info</div>}
-                  />
-                  <Route
-                    path={tabs.contributors.path}
-                    component={()=><div>contributors</div>}
-                  />
-                  <Route
-                    path={tabs.login.path}
-                    component={()=><div>login</div>}
-                  />
-                  <Route
-                    path={'/'}
-                    render={() => <Redirect to='/'/>}
-                  />
-                </Switch>
-              </div>
+              <Switch>
+                <Route
+                  exact
+                  path={tabs.info.path}
+                  component={InfoContainer}
+                />
+                <Route
+                  path={tabs.contributors.path}
+                  component={ContributorsContainer}
+                />
+                <Route
+                  path={tabs.loginForgotPassword.path}
+                  component={LoginForgotPasswordContainer}
+                />
+                <Route
+                  path={'/'}
+                  render={() => <Redirect to='/'/>}
+                />
+              </Switch>
             </div>
           </div>
         </div>
