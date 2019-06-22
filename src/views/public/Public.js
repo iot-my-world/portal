@@ -66,25 +66,34 @@ const styles = theme => ({
 })
 
 const tabs = {
-  home: 0,
-  contributors: 1,
-  login: 2,
+  info: {
+    idx: 0,
+    path: '/',
+  },
+  contributors: {
+    idx: 1,
+    path: '/',
+  },
+  login: {
+    idx: 2,
+    path: '/',
+  },
 }
 
 class Public extends Component {
   state = {
-    activeTab: tabs.home,
+    activeTabIdx: tabs.info.idx,
   }
 
   handleTabChange = (event, value) => {
-    this.setState({activeTab: value})
+    this.setState({activeTabIdx: value})
   }
 
   renderPublicViews = () => {
-    const {activeTab} = this.state
+    const {activeTabIdx} = this.state
 
-    switch (activeTab) {
-      case tabs.home:
+    switch (activeTabIdx) {
+      case tabs.info.idx:
         return (
           <React.Fragment>
             <Typography
@@ -94,7 +103,7 @@ class Public extends Component {
             </Typography>
           </React.Fragment>
         )
-      case tabs.contributors:
+      case tabs.contributors.idx:
         return (
           <React.Fragment>
             <Typography
@@ -105,7 +114,7 @@ class Public extends Component {
           </React.Fragment>
         )
 
-      case tabs.login:
+      case tabs.login.idx:
         return (
           <React.Fragment>
             <Typography
@@ -123,7 +132,7 @@ class Public extends Component {
 
   render() {
     const {
-      activeTab,
+      activeTabIdx,
     } = this.state
     const {
       classes,
@@ -152,19 +161,19 @@ class Public extends Component {
                   alt={'logo'}
                 />
                 <Tabs
-                  value={activeTab}
+                  value={activeTabIdx}
                   onChange={this.handleTabChange}
                 >
                   <Tab
-                    value={tabs.home}
+                    value={tabs.info.idx}
                     icon={<InfoIcon className={classes.icon}/>}
                   />
                   <Tab
-                    value={tabs.contributors}
+                    value={tabs.contributors.idx}
                     icon={<GithubIcon className={classes.icon}/>}
                   />
                   <Tab
-                    value={tabs.login}
+                    value={tabs.login.idx}
                     icon={<LoginIcon className={classes.icon}/>}
                   />
                 </Tabs>
