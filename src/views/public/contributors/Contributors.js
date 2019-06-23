@@ -152,7 +152,7 @@ class Contributors extends Component {
                   target={'_blank'}
                 >
                   {' project'}
-                </a>. Loaded from github.
+                </a>.
               </Typography>
             </div>
           </Grid>
