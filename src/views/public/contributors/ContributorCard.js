@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   withStyles, Tooltip, Avatar,
+  Card, CardContent,
 } from '@material-ui/core'
 import RepoContributorInfo from 'views/public/contributors/RepoContributorInfo'
 
@@ -10,6 +11,9 @@ const styles = theme => ({
     margin: 10,
     width: 60,
     height: 60,
+  },
+  cardRoot: {
+    margin: '5px 0px 5px 0px'
   },
 })
 
@@ -23,15 +27,15 @@ class ContributorCard extends Component {
     console.log('card for:', repoContributorInfo)
 
     return (
-      <div>
-        <Tooltip title={repoContributorInfo.githubLoginName}>
+      <Card classes={{root: classes.cardRoot}}>
+        <CardContent>
           <Avatar
             alt={repoContributorInfo.githubLoginName}
             src={repoContributorInfo.authorInfo.avatar_url}
             className={classes.avatar}
           />
-        </Tooltip>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 }
