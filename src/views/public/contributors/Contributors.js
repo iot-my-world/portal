@@ -76,6 +76,7 @@ class Contributors extends Component {
 
   render() {
     const {classes} = this.props
+
     return (
       <div
         className={classes.root}
@@ -83,10 +84,13 @@ class Contributors extends Component {
           height: 1000,
         }}
       >
-        {Object.values(this.repoContributors).map((contributorInfo, idx) => (
+        {Object.values(this.repoContributors).sort(
+          (a,b) => b.commitTotal - a.commitTotal
+        ).map((contributorInfo, idx) => (
           <ContributorCard
             key={idx}
             repoContributorInfo={contributorInfo}
+            rank={idx+1}
           />
         ))}
       </div>

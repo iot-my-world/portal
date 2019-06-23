@@ -46,6 +46,7 @@ class ContributorCard extends Component {
 ContributorCard.propTypes = {
   classes: PropTypes.object.isRequired,
   repoContributorInfo: PropTypes.instanceOf(RepoContributorInfo).isRequired,
+  rank: PropTypes.number.isRequired,
 }
 ContributorCard.defaultProps = {}
 
