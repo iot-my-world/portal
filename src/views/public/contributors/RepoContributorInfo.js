@@ -339,6 +339,35 @@ class RepoContributorInfo {
       0,
     )
   }
+
+  get repoContributions() {
+    return this._repoContributions
+  }
+
+  get weeklyTotals() {
+    let weekTotals = {}
+    for (let repoContribInfo of Object.values(this._repoContributions)) {
+      for (let weekContrib of repoContribInfo.weeks) {
+        if (!weekTotals.hasOwnProperty(weekContrib.w)) {
+          weekTotals[weekContrib.w] = {
+            a: 0,
+            d: 0,
+            c: 0,
+          }
+        }
+        weekTotals[weekContrib.w] = {
+          a: weekTotals[weekContrib.w].a + weekContrib.a,
+          d: weekTotals[weekContrib.w].d + weekContrib.d,
+          c: weekTotals[weekContrib.w].c + weekContrib.c,
+        }
+      }
+    }
+
+    return Object.keys(weekTotals).map(week => ({
+      weekTimestamp: parseInt(week, 10),
+      total: weekTotals[week]
+    }))
+  }
 }
 
 export default RepoContributorInfo

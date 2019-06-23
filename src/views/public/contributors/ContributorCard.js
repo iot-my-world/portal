@@ -1,10 +1,15 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  withStyles, Tooltip, Avatar,
+  withStyles, Avatar,
   Card, CardContent,
 } from '@material-ui/core'
 import RepoContributorInfo from 'views/public/contributors/RepoContributorInfo'
+import {
+  AreaChart, Area,
+  XAxis, YAxis,
+  CartesianGrid, Tooltip,
+} from 'recharts'
 
 const styles = theme => ({
   avatar: {
@@ -55,6 +60,8 @@ const styles = theme => ({
   },
 })
 
+// 250 x 100
+
 class ContributorCard extends Component {
   render() {
     const {
@@ -62,6 +69,9 @@ class ContributorCard extends Component {
       repoContributorInfo,
       rank,
     } = this.props
+
+    console.log(repoContributorInfo.repoContributions)
+    console.log(repoContributorInfo.weeklyTotals)
 
     return (
       <Card classes={{root: classes.cardRoot}}>
