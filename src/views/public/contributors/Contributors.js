@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import {
   Typography,
   withStyles,
@@ -7,12 +7,26 @@ import {
 } from '@material-ui/core'
 import RepoContributorInfo from './RepoContributorInfo'
 import ContributorCard from './ContributorCard'
+import {RingLoader as Spinner} from 'react-spinners'
 
 const styles = theme => ({
   root: {
     display: 'flex',
-    margin: '10px',
     flexDirection: 'column',
+    margin: '10px',
+  },
+  loadingRoot: {
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '10px',
+  },
+  loadingLayout: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    boxShadow: '0 0 5px 5px black',
+    padding: '5px',
   },
   heading: {
     color: theme.palette.primary.contrastText,
@@ -21,7 +35,7 @@ const styles = theme => ({
     color: theme.palette.primary.contrastText,
   },
   info: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     boxShadow: '0 0 5px 5px black',
     padding: '5px',
   },
@@ -88,29 +102,55 @@ class Contributors extends Component {
   }
 
   render() {
-    const {classes} = this.props
+    const {
+      classes, theme,
+    } = this.props
+    const {loading} = this.state
+
+    if (loading) {
+      return (
+        <div className={classes.loadingRoot}>
+          <div className={classes.loadingLayout}>
+            <Typography
+              variant={'body1'}
+              align={'center'}
+              className={classes.body}
+            >
+              Loading Contribution Data From Github
+            </Typography>
+            <Spinner
+              isLoading
+              color={theme.palette.primary.contrastText}
+            />
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className={classes.root}>
-        <div className={classes.info}>
-          <Typography
-            variant={'h5'}
-            align={'center'}
-            className={classes.heading}
-          >
-            Contributors
-          </Typography>
-          <Typography
-            variant={'body1'}
-            align={'justify'}
-            className={classes.body}
-            paragraph
-          >
-            Cumulative contributions to the master branch (excluding merge
-            commits) of each repository in the IOT My World project.
-          </Typography>
-        </div>
         <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <div className={classes.info}>
+              <Typography
+                variant={'h5'}
+                align={'center'}
+                className={classes.heading}
+              >
+                Contributors
+              </Typography>
+              <Typography
+                variant={'body1'}
+                align={'justify'}
+                className={classes.body}
+                paragraph
+              >
+                Cumulative contributions to the master branch (excluding merge
+                commits) of each repository in the IOT My World project. Loaded
+                from github.
+              </Typography>
+            </div>
+          </Grid>
           {Object.values(this.repoContributors).sort(
             (a, b) => b.commitTotal - a.commitTotal,
           ).map((contributorInfo, idx) => (
@@ -132,9 +172,13 @@ class Contributors extends Component {
   }
 }
 
-Contributors = withStyles(styles)(Contributors)
 
-Contributors.propTypes = {}
+Contributors.propTypes = {
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
+}
 Contributors.defaultProps = {}
+
+Contributors = withStyles(styles, {withTheme: true})(Contributors)
 
 export default Contributors

@@ -24,12 +24,13 @@ const styles = theme => ({
   cardContentRoot: {
     display: 'grid',
     gridTemplateRows: 'auto auto',
-    gridRowGap: '20px',
+    gridRowGap: '15px',
   },
   infoLayout: {
     display: 'grid',
     gridTemplateRows: 'auto',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: 'auto 1fr',
+    gridColumnGap: '5px',
     alignItems: 'center',
   },
   contributionInfoLayout: {
@@ -113,7 +114,6 @@ class ContributorCard extends Component {
   render() {
     const {
       classes,
-      theme,
       repoContributorInfo,
       rank,
     } = this.props
