@@ -57,6 +57,11 @@ const styles = theme => ({
     color: '#ff0c0e',
   },
   chartLayout: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gridTemplateRows: 'auto auto',
+    justifyItems: 'center',
+    gridRowGap: '5px',
   },
 })
 
@@ -128,9 +133,13 @@ class ContributorCard extends Component {
             className={classes.chartLayout}
             ref={this.setChartWidth}
           >
+            <div>
+              Weekly Additions
+            </div>
             <AreaChart
               width={chartWidth} height={200}
               data={repoContributorInfo.weeklyTotals}
+              margin={{top: 0, right: 0, left: -8, bottom: 0}}
             >
               <XAxis
                 dataKey={'weekTimestamp'}
@@ -172,7 +181,7 @@ const TimeTick = props => {
         fill="#666"
         // transform="rotate(-25)"
       >
-        {moment.unix(payload.value).format('MMM')}
+        {moment.unix(payload.value).format('MMM-YY')}
       </text>
     </g>
   )
