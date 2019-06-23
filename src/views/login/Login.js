@@ -8,7 +8,7 @@ import {
   Collapse, Tooltip, Input,
   Fab, FormHelperText,
 } from '@material-ui/core'
-import backgroundImage from 'assets/images/websiteBackground.jpg'
+import backgroundImage from 'assets/images/largeWebsiteBackground.jpg'
 import logo from 'assets/images/logo/logo.png'
 import SendIcon from '@material-ui/icons/Send'
 import LoginService from 'brain/security/auth/Service'

@@ -6,8 +6,8 @@ import {
   TextField, Button,
   FormControl, CardHeader,
 } from '@material-ui/core'
-import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logo from 'assets/images/logo.png'
+import backgroundImage from 'assets/images/largeWebsiteBackground.jpg'
+import logo from 'assets/images/logo/logo_emblem.png'
 import {parseToken} from 'utilities/token'
 import {
   User as UserEntity,
@@ -376,7 +376,7 @@ class RegisterUser extends Component {
             <img className={classes.logo} src={logo} alt={'logo'}/>
             <Typography className={classes.title} color={'primary'}
                         variant={'h3'}>
-              SpotNav
+              IOT My World
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
@@ -531,7 +531,7 @@ class RegisterUser extends Component {
             <img className={classes.logo} src={logo} alt={'logo'}/>
             <Typography className={classes.title} color={'primary'}
                         variant={'h3'}>
-              SpotNav
+              IOT My World
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>

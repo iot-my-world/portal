@@ -131,43 +131,43 @@ class General extends Component {
     switch (activeState) {
       case states.editing:
         return (
-            <React.Fragment>
+          <React.Fragment>
+            <Tooltip title='Save Changes'>
               <Fab
-                  color={'primary'}
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleSaveChanges}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleSaveChanges}
               >
-                <Tooltip title='Save Changes'>
-                  <SaveIcon className={classes.buttonIcon}/>
-                </Tooltip>
+                <SaveIcon className={classes.buttonIcon}/>
               </Fab>
+            </Tooltip>
+            <Tooltip title='Cancel'>
               <Fab
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleCancel}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleCancel}
               >
-                <Tooltip title='Cancel'>
-                  <CancelIcon className={classes.buttonIcon}/>
-                </Tooltip>
+                <CancelIcon className={classes.buttonIcon}/>
               </Fab>
-            </React.Fragment>
+            </Tooltip>
+          </React.Fragment>
         )
 
       case states.nop:
         return (
-            <React.Fragment>
+          <React.Fragment>
+            <Tooltip title='Edit'>
               <Fab
-                  color={'primary'}
-                  className={classes.button}
-                  size={'small'}
-                  onClick={this.handleStartEditing}
+                color={'primary'}
+                className={classes.button}
+                size={'small'}
+                onClick={this.handleStartEditing}
               >
-                <Tooltip title='Edit'>
-                  <EditIcon/>
-                </Tooltip>
+                <EditIcon/>
               </Fab>
-            </React.Fragment>
+            </Tooltip>
+          </React.Fragment>
         )
       default:
         return null
@@ -205,79 +205,79 @@ class General extends Component {
                   alignItems={'center'}>
               <Grid item>
                 <TextField
-                    className={classes.formField}
-                    id='name'
-                    label='Name'
-                    value={user.name}
-                    InputProps={{
-                      disableUnderline: !editingState,
-                      readOnly: !editingState,
-                    }}
-                    onChange={this.handleFieldChange}
-                    helperText={
-                      fieldValidations.name ?
-                          fieldValidations.name.help :
-                          undefined
-                    }
-                    error={!!fieldValidations.name}
+                  className={classes.formField}
+                  id='name'
+                  label='Name'
+                  value={user.name}
+                  InputProps={{
+                    disableUnderline: !editingState,
+                    readOnly: !editingState,
+                  }}
+                  onChange={this.handleFieldChange}
+                  helperText={
+                    fieldValidations.name ?
+                      fieldValidations.name.help :
+                      undefined
+                  }
+                  error={!!fieldValidations.name}
                 />
               </Grid>
               <Grid item>
                 <TextField
-                    className={classes.formField}
-                    id='surname'
-                    label='Surname'
-                    value={user.surname}
-                    InputProps={{
-                      disableUnderline: !editingState,
-                      readOnly: !editingState,
-                    }}
-                    onChange={this.handleFieldChange}
-                    helperText={
-                      fieldValidations.surname
-                          ? fieldValidations.surname.help
-                          : undefined
-                    }
-                    error={!!fieldValidations.surname}
+                  className={classes.formField}
+                  id='surname'
+                  label='Surname'
+                  value={user.surname}
+                  InputProps={{
+                    disableUnderline: !editingState,
+                    readOnly: !editingState,
+                  }}
+                  onChange={this.handleFieldChange}
+                  helperText={
+                    fieldValidations.surname
+                      ? fieldValidations.surname.help
+                      : undefined
+                  }
+                  error={!!fieldValidations.surname}
                 />
               </Grid>
               <Grid item>
                 <TextField
-                    className={classes.formField}
-                    id='username'
-                    label='Username'
-                    value={user.username}
-                    InputProps={{
-                      disableUnderline: !editingState,
-                      readOnly: !editingState,
-                    }}
-                    onChange={this.handleFieldChange}
-                    helperText={
-                      fieldValidations.username
-                          ? fieldValidations.username.help
-                          : undefined
-                    }
-                    error={!!fieldValidations.username}
+                  className={classes.formField}
+                  id='username'
+                  label='Username'
+                  value={user.username}
+                  InputProps={{
+                    disableUnderline: !editingState,
+                    readOnly: !editingState,
+                  }}
+                  onChange={this.handleFieldChange}
+                  helperText={
+                    fieldValidations.username
+                      ? fieldValidations.username.help
+                      : undefined
+                  }
+                  error={!!fieldValidations.username}
                 />
               </Grid>
               <Grid item>
                 <TextField
-                    className={classes.formField}
-                    id='emailAddress'
-                    label='EmailAddress'
-                    value={user.emailAddress}
-                    InputProps={{
-                      disableUnderline: true,
-                      readOnly: true,
-                    }}
-                    // onChange={this.handleFieldChange}
-                    // disabled={disableFields}
-                    // helperText={
-                    //   fieldValidations.emailAddress
-                    //       ? fieldValidations.emailAddress.help
-                    //       : undefined
-                    // }
-                    // error={!!fieldValidations.emailAddress}
+                  className={classes.formField}
+                  id='emailAddress'
+                  label='EmailAddress'
+                  value={user.emailAddress}
+                  InputProps={{
+                    disableUnderline: true,
+                    readOnly: true,
+                  }}
+                  // onChange={this.handleFieldChange}
+                  // disabled={disableFields}
+                  // helperText={
+                  //   fieldValidations.emailAddress
+                  //       ? fieldValidations.emailAddress.help
+                  //       : undefined
+                  // }
+                  // error={!!fieldValidations.emailAddress}
                 />
               </Grid>
             </Grid>

@@ -11,7 +11,7 @@ import {
 } from "@material-ui/icons"
 
 import headerStyle from "./style"
-import logo from 'assets/images/logo.png'
+import logo from 'assets/images/logo/logo_emblem.png'
 
 function Header({ ...props }) {
   function getViewName() {

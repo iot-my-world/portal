@@ -8,7 +8,7 @@ import {
   MdClose as CloseIcon,
 } from 'react-icons/md'
 import classNames from 'classnames'
-import logo from 'assets/images/logo.png'
+import logo from 'assets/images/logo/logo_emblem.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 
 const styles = theme => ({

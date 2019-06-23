@@ -95,7 +95,6 @@ const sidebarStyle = theme => ({
     transition: "all 300ms linear",
     opacity: "1",
     transform: "translate3d(0px, 0, 0)",
-    textTransform: "uppercase",
     padding: "5px 0px",
     fontSize: "18px",
     whiteSpace: "nowrap",
