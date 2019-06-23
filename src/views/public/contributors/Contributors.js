@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {
   withStyles, Avatar, Tooltip,
 } from '@material-ui/core'
+import RepoContributorInfo from './RepoContributorInfo'
 
 const styles = theme => ({
   root: {
@@ -36,8 +37,14 @@ class Contributors extends Component {
     this.load()
   }
 
+  /**
+   * Repo contributor info objects mapped by
+   * github login name
+   * @type {{string, ContributorInfo[]}}
+   */
+  repoContributors = {}
+
   repoContributorData = {}
-  contributorSummary = {}
 
   load = async () => {
     this.setState({loading: true})
@@ -57,11 +64,14 @@ class Contributors extends Component {
       // build contributor summary
       for (let repo in this.repoContributorData) {
         for (let contributorData of this.repoContributorData[repo]) {
-          if (!this.contributorSummary.hasOwnProperty(contributorData.author.login)) {
-            this.contributorSummary[contributorData.author.login] = {
-              author: contributorData.author,
-            }
+          if (!this.repoContributors[contributorData.author.login]) {
+            this.repoContributors[contributorData.author.login] =
+              new RepoContributorInfo(contributorData.author.login)
           }
+          this.repoContributors[contributorData.author.login].addRepoContributionInfo(
+            repo,
+            contributorData,
+          )
         }
       }
     } catch (e) {
@@ -72,6 +82,7 @@ class Contributors extends Component {
 
   render() {
     const {classes} = this.props
+    console.log(this.repoContributors)
     return (
       <div
         className={classes.root}
@@ -79,19 +90,20 @@ class Contributors extends Component {
           height: 1000,
         }}
       >
-        {Object.values(this.contributorSummary).map((summary, idx) => (
-          <div key={idx}>
-            <Tooltip
-              title={summary.author.login}
-            >
-              <Avatar
-                alt={summary.author.login}
-                src={summary.author.avatar_url}
-                className={classes.avatar}
-              />
-            </Tooltip>
-          </div>
-        ))}
+        aweh
+        {/*{Object.values(this.contributorSummary).map((summary, idx) => (*/}
+        {/*  <div key={idx}>*/}
+        {/*    <Tooltip*/}
+        {/*      title={summary.author.login}*/}
+        {/*    >*/}
+        {/*      <Avatar*/}
+        {/*        alt={summary.author.login}*/}
+        {/*        src={summary.author.avatar_url}*/}
+        {/*        className={classes.avatar}*/}
+        {/*      />*/}
+        {/*    </Tooltip>*/}
+        {/*  </div>*/}
+        {/*))}*/}
       </div>
     )
   }
