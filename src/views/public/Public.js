@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {
   withStyles, AppBar, Toolbar, Tabs, Tab
 } from '@material-ui/core'
+import PerfectScrollbar from 'perfect-scrollbar'
 import backgroundImage from 'assets/images/websiteBackground.jpg'
 import logoHorizontalTransparent
   from 'assets/images/logo/logo_horizontal_transparent.png'
@@ -23,6 +24,7 @@ import ContributorsContainer
 
 const styles = theme => ({
   loginFullPageBackground: {
+    overflow: 'hidden',
     position: 'absolute',
     height: '100%',
     width: '100%',
@@ -66,7 +68,8 @@ const styles = theme => ({
   },
   viewContentInnerWrapper: {
     margin: '5px',
-    overflow: 'scroll',
+    overflowY: 'scroll',
+    overflowX: 'hidden',
   },
 })
 
@@ -85,9 +88,16 @@ const tabs = {
   },
 }
 
+let perfectScrollbarInst
+
 class Public extends Component {
   state = {
     activeTabIdx: tabs.info.idx,
+  }
+
+  constructor(props) {
+    super(props)
+    this.viewContentRef = React.createRef()
   }
 
   componentDidMount() {
@@ -97,6 +107,18 @@ class Public extends Component {
     const {
       activeTabIdx,
     } = this.state
+
+    // set perfect scrollbar if we are on windows
+    if (navigator.platform.indexOf('Win') > -1) {
+      if (this.viewContentRef && this.viewContentRef.current) {
+        perfectScrollbarInst = new PerfectScrollbar(this.viewContentRef.current, {
+          suppressScrollX: true,
+          suppressScrollY: false,
+        })
+        document.body.style.overflow = 'hidden'
+      }
+    }
+
     try {
       const currentActiveTab = Object.values(tabs).find(
         tab => tab.idx === activeTabIdx
@@ -109,6 +131,14 @@ class Public extends Component {
       }
     } catch (e) {
       console.error('error determining active tab by location.path', e)
+    }
+  }
+
+  componentWillUnmount() {
+    if (navigator.platform.indexOf('Win') > -1) {
+      try {
+        perfectScrollbarInst.destroy()
+      } catch (e) {}
     }
   }
 
@@ -134,9 +164,7 @@ class Public extends Component {
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
       >
         <div className={classes.root}>
-          <AppBar
-            position="static"
-          >
+          <AppBar position="static">
             <Toolbar classes={{root: classes.toolbarRoot}}>
               <div className={classes.toolBarContent}>
                 <img
@@ -171,7 +199,10 @@ class Public extends Component {
             </Toolbar>
           </AppBar>
           <div className={classes.viewContentOuterWrapper}>
-            <div className={classes.viewContentInnerWrapper}>
+            <div
+              className={classes.viewContentInnerWrapper}
+              ref={this.viewContentRef}
+            >
               <Switch>
                 <Route
                   exact
