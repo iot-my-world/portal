@@ -66,7 +66,7 @@ class Contributors extends Component {
         for (let contributorData of this.repoContributorData[repo]) {
           if (!this.repoContributors[contributorData.author.login]) {
             this.repoContributors[contributorData.author.login] =
-              new RepoContributorInfo(contributorData.author.login)
+              new RepoContributorInfo(contributorData.author)
           }
           this.repoContributors[contributorData.author.login].addRepoContributionInfo(
             repo,

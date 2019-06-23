@@ -1,79 +1,4 @@
-/**
- * @typedef {{
- *      avatar_url: String,
- *      events_url: String,
- *      followers_url: String,
- *      following_url: String,
- *      gists_url: String,
- *      gravatar_id: String,
- *      html_url: String,
- *      id: Number,
- *      login: String,
- *      node_id: String,
- *      organizations_url: String,
- *      received_events_url: String,
- *      repos_url: String,
- *      site_admin: Boolean,
- *      starred_url: String,
- *      subscriptions_url: String,
- *      type: String,
- *      url: String,
- * }} AuthorInfo
- */
-
 import {isObject} from 'utilities/type/type'
-import {IdIdentifier} from 'brain/search/identifier/index'
-
-/**
- * @typedef {{
- *      author: AuthorInfo,
- *      total: Number,
- *      weeks: {
- *        w: Number,
- *        a: Number,
- *        d: Number,
- *        c: Number,
- *      }[],
- * }} RepoContributorEntry
- */
-
-export default class ContributorInfo {
-  /**
-   * Github Login Name of Contributor
-   * @type {string}
-   * @private
-   */
-  _githubLoginName = ''
-
-  /**
-   * Map of repo name to contributions
-   * @type {{string: RepoContributorEntry}}
-   * @private
-   */
-  _repoContributions = {}
-
-  /**
-   * constructs a new contributor info
-   * object for user with githubLoginName
-   * @param {String} githubLoginName
-   */
-  constructor(githubLoginName) {
-    this._githubLoginName = githubLoginName
-  }
-
-  /**
-   * add contribution information for a particular repo
-   * @param {String} repoName
-   * @param {RepoContributorEntry} info
-   */
-  addRepoContributionInfo(repoName, info) {
-    this._repoContributions[repoName] = info
-  }
-
-  get githubLoginName() {
-    return this._githubLoginName
-  }
-}
 
 class AuthorInfo {
   /**
@@ -293,4 +218,100 @@ class AuthorInfo {
   get url() {
     return this._url
   }
+}
+
+class AuthorRepoContributionEntry {
+  /**
+   * @type {number}
+   * @private
+   */
+  _total = 0
+
+  /**
+   * @type {{
+   * w: Number,
+   * a: Number,
+   * d: Number,
+   * c: Number,
+   * }[]}
+   * @private
+   */
+  _weeks = []
+
+  /**
+   * construct a new AuthorRepoContributionEntry Object
+   * @param {AuthorRepoContributionEntry|Object} [authorRepoContributionEntry]
+   */
+  constructor(authorRepoContributionEntry) {
+    if (
+      (authorRepoContributionEntry !== undefined) &&
+      (
+        (authorRepoContributionEntry instanceof AuthorRepoContributionEntry) ||
+        isObject(authorRepoContributionEntry)
+      )
+    ) {
+      try {
+        this._total = authorRepoContributionEntry.total
+        this._weeks = authorRepoContributionEntry.weeks.map(week => ({
+          ...week,
+        }))
+      } catch (e) {
+        console.error('error creating new authorRepoContributionEntry object')
+      }
+    }
+  }
+
+  get total() {
+    return this._total
+  }
+
+  get weeks() {
+    return this._weeks
+  }
+}
+
+class RepoContributorInfo {
+
+  /**
+   * Map of repo name to contributions
+   * @type {{string: AuthorRepoContributionEntry}}
+   * @private
+   */
+  _repoContributions = {}
+
+  /**
+   * Github Author Information
+   * @type {AuthorInfo}
+   * @private
+   */
+  _authorInfo = new AuthorInfo()
+
+  /**
+   * constructs a new contributor info
+   * object for user with githubLoginName
+   * @param {AuthorInfo} authorInfo
+   */
+  constructor(authorInfo) {
+    this._authorInfo = new AuthorInfo(authorInfo)
+  }
+
+  /**
+   * add contribution information for a particular repo
+   * @param {String} repoName
+   * @param {AuthorRepoContributionEntry} authorRepoContributionEntry
+   */
+  addRepoContributionInfo(repoName, authorRepoContributionEntry) {
+    this._repoContributions[repoName] =
+      new AuthorRepoContributionEntry(authorRepoContributionEntry)
+  }
+
+  get githubLoginName() {
+    return this._authorInfo.login
+  }
+}
+
+export default RepoContributorInfo
+export {
+  AuthorInfo,
+  AuthorRepoContributionEntry,
 }
