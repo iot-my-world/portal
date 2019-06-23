@@ -3,8 +3,8 @@ import {
   withStyles, Typography,
   Card, CardContent, CardHeader,
 } from '@material-ui/core'
-import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logo from 'assets/images/logo.png'
+import backgroundImage from 'assets/images/largeWebsiteBackground.jpg'
+import logo from 'assets/images/logo/logo_emblem.png'
 import {ScaleLoader as Spinner} from 'react-spinners'
 
 const style = theme => {

@@ -4,7 +4,7 @@ import {
   withStyles, AppBar, Toolbar, Tabs, Tab
 } from '@material-ui/core'
 import PerfectScrollbar from 'perfect-scrollbar'
-import backgroundImage from 'assets/images/websiteBackground.jpg'
+import backgroundImage from 'assets/images/websiteBackground-min.jpg'
 import logoHorizontalTransparent
   from 'assets/images/logo/logo_horizontal_transparent.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'

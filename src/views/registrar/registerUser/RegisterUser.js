@@ -6,8 +6,8 @@ import {
   TextField, Button,
   FormControl, CardHeader,
 } from '@material-ui/core'
-import backgroundImage from 'assets/images/websiteBackground.jpg'
-import logo from 'assets/images/logo.png'
+import backgroundImage from 'assets/images/largeWebsiteBackground.jpg'
+import logo from 'assets/images/logo/logo_emblem.png'
 import {parseToken} from 'utilities/token'
 import {
   User as UserEntity,
