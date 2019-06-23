@@ -75,7 +75,7 @@ let LoadingScreen = props => {
             <img className={classes.logo} src={logo} alt={'logo'}/>
             <Typography className={classes.title} color={'primary'}
                         variant={'h3'}>
-              SpotNav
+              IOT My World
             </Typography>
           </div>
           <div className={classes.loginCardWrapper}>
