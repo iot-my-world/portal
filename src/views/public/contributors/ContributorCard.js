@@ -172,7 +172,12 @@ class ContributorCard extends Component {
               />
               <YAxis/>
               <CartesianGrid strokeDasharray="3 3"/>
-              <Tooltip/>
+              <Tooltip
+                labelFormatter={value =>
+                  moment.unix(value).format('MMM Do YYYY')
+                }
+                formatter={(value) => ([value, 'Additions'])}
+              />
               <Area
                 type='monotone'
                 dataKey='total.a'
