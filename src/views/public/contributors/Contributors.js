@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {
   Typography,
   withStyles,
+  Grid,
 } from '@material-ui/core'
 import RepoContributorInfo from './RepoContributorInfo'
 import ContributorCard from './ContributorCard'
@@ -105,19 +106,27 @@ class Contributors extends Component {
             className={classes.body}
             paragraph
           >
-            Cumulative Contributions to the master branch (excluding merge
+            Cumulative contributions to the master branch (excluding merge
             commits) of each repository in the IOT My World project.
           </Typography>
         </div>
-        {Object.values(this.repoContributors).sort(
-          (a, b) => b.commitTotal - a.commitTotal,
-        ).map((contributorInfo, idx) => (
-          <ContributorCard
-            key={idx}
-            repoContributorInfo={contributorInfo}
-            rank={idx + 1}
-          />
-        ))}
+        <Grid container spacing={1}>
+          {Object.values(this.repoContributors).sort(
+            (a, b) => b.commitTotal - a.commitTotal,
+          ).map((contributorInfo, idx) => (
+            <Grid
+              item
+              key={idx}
+              md={6}
+              xs={12}
+            >
+              <ContributorCard
+                repoContributorInfo={contributorInfo}
+                rank={idx + 1}
+              />
+            </Grid>
+          ))}
+        </Grid>
       </div>
     )
   }

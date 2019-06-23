@@ -4,6 +4,7 @@ import {
   withStyles, Avatar,
   Card, CardContent,
 } from '@material-ui/core'
+import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
 import RepoContributorInfo from 'views/public/contributors/RepoContributorInfo'
 import {
   AreaChart, Area,
@@ -68,22 +69,42 @@ const styles = theme => ({
 class ContributorCard extends Component {
 
   state = {
+    // chart width and height set to safe minimums
     chartWidth: 200,
+    chartHeight: 150,
   }
 
-  setChartWidth = element => {
+  setChartDimensions = element => {
     const {
       chartWidth,
+      chartHeight,
     } = this.state
     const {
      theme,
+     width,
     } = this.props
-    if (chartWidth !== 200) {
+
+    if (!(chartWidth === 200 || chartHeight === 100)) {
+      // chart width and height already set, don't do it
+      // again
       return
     }
+
+    // check if NOT mobile
+    if (isWidthUp('md', width)) {
+      // if not mobile, set with to max allowed
+      this.setState({
+        chartWidth: (window.innerWidth / 2) - 4*theme.spacing(2),
+        chartHeight: window.innerHeight / 4,
+      })
+      return
+    }
+
+    // otherwise this is mobile, auto set the width and height
     try {
       this.setState({
         chartWidth: element.parentElement.clientWidth - 2*theme.spacing(2),
+        chartHeight: window.innerHeight / 4,
       })
     } catch (e) {
     }
@@ -98,6 +119,7 @@ class ContributorCard extends Component {
     } = this.props
     const {
       chartWidth,
+      chartHeight,
     } = this.state
 
     return (
@@ -131,13 +153,13 @@ class ContributorCard extends Component {
           </div>
           <div
             className={classes.chartLayout}
-            ref={this.setChartWidth}
+            ref={this.setChartDimensions}
           >
             <div>
               Weekly Additions
             </div>
             <AreaChart
-              width={chartWidth} height={200}
+              width={chartWidth} height={chartHeight}
               data={repoContributorInfo.weeklyTotals}
               margin={{top: 0, right: 0, left: -8, bottom: 0}}
             >
@@ -188,6 +210,7 @@ const TimeTick = props => {
 }
 
 ContributorCard.propTypes = {
+  width: PropTypes.string,
   theme: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   repoContributorInfo: PropTypes.instanceOf(RepoContributorInfo).isRequired,
@@ -195,6 +218,5 @@ ContributorCard.propTypes = {
 }
 ContributorCard.defaultProps = {}
 
-const StyledContributorCard = withStyles(styles, {withTheme: true})(
-  ContributorCard)
+const StyledContributorCard = withWidth()(withStyles(styles, {withTheme: true})(ContributorCard))
 export default StyledContributorCard
