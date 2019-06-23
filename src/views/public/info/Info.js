@@ -6,7 +6,7 @@ import {
 
 const styles = theme => ({
   root: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     boxShadow: '0 0 5px 5px black',
     display: 'grid',
     margin: '10px',

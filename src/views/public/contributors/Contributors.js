@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 // import PropTypes from 'prop-types'
 import {
+  Typography,
   withStyles,
 } from '@material-ui/core'
 import RepoContributorInfo from './RepoContributorInfo'
@@ -11,6 +12,17 @@ const styles = theme => ({
     display: 'flex',
     margin: '10px',
     flexDirection: 'column',
+  },
+  heading: {
+    color: theme.palette.primary.contrastText,
+  },
+  body: {
+    color: theme.palette.primary.contrastText,
+  },
+  info: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 0 5px 5px black',
+    padding: '5px',
   },
 })
 
@@ -79,13 +91,31 @@ class Contributors extends Component {
 
     return (
       <div className={classes.root}>
+        <div className={classes.info}>
+          <Typography
+            variant={'h5'}
+            align={'center'}
+            className={classes.heading}
+          >
+            Contributors
+          </Typography>
+          <Typography
+            variant={'body1'}
+            align={'justify'}
+            className={classes.body}
+            paragraph
+          >
+            Cumulative Contributions to the master branch (excluding merge
+            commits) of each repository in the IOT My World project.
+          </Typography>
+        </div>
         {Object.values(this.repoContributors).sort(
-          (a,b) => b.commitTotal - a.commitTotal
+          (a, b) => b.commitTotal - a.commitTotal,
         ).map((contributorInfo, idx) => (
           <ContributorCard
             key={idx}
             repoContributorInfo={contributorInfo}
-            rank={idx+1}
+            rank={idx + 1}
           />
         ))}
       </div>
