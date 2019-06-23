@@ -90,20 +90,19 @@ class Contributors extends Component {
           height: 1000,
         }}
       >
-        aweh
-        {/*{Object.values(this.contributorSummary).map((summary, idx) => (*/}
-        {/*  <div key={idx}>*/}
-        {/*    <Tooltip*/}
-        {/*      title={summary.author.login}*/}
-        {/*    >*/}
-        {/*      <Avatar*/}
-        {/*        alt={summary.author.login}*/}
-        {/*        src={summary.author.avatar_url}*/}
-        {/*        className={classes.avatar}*/}
-        {/*      />*/}
-        {/*    </Tooltip>*/}
-        {/*  </div>*/}
-        {/*))}*/}
+        {Object.values(this.repoContributors).map((contributorInfo, idx) => (
+          <div key={idx}>
+            <Tooltip
+              title={contributorInfo.githubLoginName}
+            >
+              <Avatar
+                alt={contributorInfo.githubLoginName}
+                src={contributorInfo.authorInfo.avatar_url}
+                className={classes.avatar}
+              />
+            </Tooltip>
+          </div>
+        ))}
       </div>
     )
   }

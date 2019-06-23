@@ -308,6 +308,10 @@ class RepoContributorInfo {
   get githubLoginName() {
     return this._authorInfo.login
   }
+
+  get authorInfo() {
+    return this._authorInfo
+  }
 }
 
 export default RepoContributorInfo
