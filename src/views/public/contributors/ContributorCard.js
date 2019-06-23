@@ -10,6 +10,7 @@ import {
   XAxis, YAxis,
   CartesianGrid, Tooltip,
 } from 'recharts'
+import moment from 'moment'
 
 const styles = theme => ({
   avatar: {
@@ -22,6 +23,7 @@ const styles = theme => ({
   cardContentRoot: {
     display: 'grid',
     gridTemplateRows: 'auto auto',
+    gridRowGap: '20px',
   },
   infoLayout: {
     display: 'grid',
@@ -34,17 +36,13 @@ const styles = theme => ({
     gridTemplateRows: 'auto auto',
     gridTemplateColumns: 'auto auto',
   },
-  gitHubName: {
-
-  },
+  gitHubName: {},
   rank: {
     justifySelf: 'end',
     fontSize: '16px',
     fontWeight: 'bold',
   },
-  commits: {
-
-  },
+  commits: {},
   additionsAndDeletionsLayout: {
     justifySelf: 'end',
     display: 'grid',
@@ -58,20 +56,44 @@ const styles = theme => ({
   deletions: {
     color: '#ff0c0e',
   },
+  chartLayout: {
+  },
 })
 
-// 250 x 100
-
 class ContributorCard extends Component {
+
+  state = {
+    chartWidth: 200,
+  }
+
+  setChartWidth = element => {
+    const {
+      chartWidth,
+    } = this.state
+    const {
+     theme,
+    } = this.props
+    if (chartWidth !== 200) {
+      return
+    }
+    try {
+      this.setState({
+        chartWidth: element.parentElement.clientWidth - 2*theme.spacing(2),
+      })
+    } catch (e) {
+    }
+  }
+
   render() {
     const {
       classes,
+      theme,
       repoContributorInfo,
       rank,
     } = this.props
-
-    console.log(repoContributorInfo.repoContributions)
-    console.log(repoContributorInfo.weeklyTotals)
+    const {
+      chartWidth,
+    } = this.state
 
     return (
       <Card classes={{root: classes.cardRoot}}>
@@ -102,8 +124,29 @@ class ContributorCard extends Component {
               </div>
             </div>
           </div>
-          <div>
-            awe
+          <div
+            className={classes.chartLayout}
+            ref={this.setChartWidth}
+          >
+            <AreaChart
+              width={chartWidth} height={200}
+              data={repoContributorInfo.weeklyTotals}
+            >
+              <XAxis
+                dataKey={'weekTimestamp'}
+                type={'number'}
+                scale={'time'}
+                domain={['dataMin', 'dataMax']}
+                tick={TimeTick}
+              />
+              <YAxis/>
+              <CartesianGrid strokeDasharray="3 3"/>
+              <Tooltip/>
+              <Area
+                type='monotone'
+                dataKey='total.a'
+              />
+            </AreaChart>
           </div>
         </CardContent>
       </Card>
@@ -111,12 +154,38 @@ class ContributorCard extends Component {
   }
 }
 
+const TimeTick = props => {
+  const {
+    x, y,
+    // stroke,
+    payload,
+  } = props
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dx={10}
+        dy={16}
+        textAnchor="end"
+        fill="#666"
+        // transform="rotate(-25)"
+      >
+        {moment.unix(payload.value).format('MMM')}
+      </text>
+    </g>
+  )
+}
+
 ContributorCard.propTypes = {
+  theme: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   repoContributorInfo: PropTypes.instanceOf(RepoContributorInfo).isRequired,
   rank: PropTypes.number.isRequired,
 }
 ContributorCard.defaultProps = {}
 
-const StyledContributorCard = withStyles(styles)(ContributorCard)
+const StyledContributorCard = withStyles(styles, {withTheme: true})(
+  ContributorCard)
 export default StyledContributorCard
