@@ -329,7 +329,7 @@ class Sidebar extends React.Component {
       >
         <img src={logo} alt="logo" className={classes.logoImg}/>
         <div className={logoNormal}>
-          SpotNav
+          IOT My World
         </div>
       </div>
     )
