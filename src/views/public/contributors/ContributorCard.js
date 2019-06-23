@@ -25,6 +25,9 @@ class ContributorCard extends Component {
     } = this.props
 
     console.log('card for:', repoContributorInfo)
+    console.log('commit total:', repoContributorInfo.commitTotal)
+    console.log('additions total:', repoContributorInfo.additionsTotal)
+    console.log('deletions total:', repoContributorInfo.deletionsTotal)
 
     return (
       <Card classes={{root: classes.cardRoot}}>

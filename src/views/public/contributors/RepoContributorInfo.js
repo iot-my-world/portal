@@ -312,6 +312,33 @@ class RepoContributorInfo {
   get authorInfo() {
     return this._authorInfo
   }
+
+  get commitTotal() {
+    return Object.values(this._repoContributions).reduce(
+      (total, current) => total + current.total,
+      0,
+    )
+  }
+
+  get additionsTotal() {
+    return Object.values(this._repoContributions).reduce(
+      (total, current) => total + current.weeks.reduce(
+        (total, current) => total + current.a,
+        0,
+      ),
+      0,
+    )
+  }
+
+  get deletionsTotal() {
+    return Object.values(this._repoContributions).reduce(
+      (total, current) => total + current.weeks.reduce(
+        (total, current) => total + current.d,
+        0,
+      ),
+      0,
+    )
+  }
 }
 
 export default RepoContributorInfo
