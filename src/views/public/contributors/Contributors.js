@@ -39,6 +39,11 @@ const styles = theme => ({
     boxShadow: '0 0 5px 5px black',
     padding: '5px',
   },
+  link: {
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  }
 })
 
 const githubRepos = [
@@ -145,13 +150,16 @@ class Contributors extends Component {
                 className={classes.body}
                 paragraph
               >
-                Cumulative weekly contributions to the master branch (excluding merge
-                commits) of each repository in the IOT My World
+                The cards here show the contributions of everyone that has
+                contributed source code to IOT My World. The total and weekly
+                numbers count contributions to the master branch (excluding
+                merge commits) of any repository in the IOT My World{' '}
                 <a
                   href={'https://github.com/iot-my-world'}
                   target={'_blank'}
+                  className={classes.link}
                 >
-                  {' project'}
+                  {'project'}
                 </a>.
               </Typography>
             </div>
@@ -176,7 +184,6 @@ class Contributors extends Component {
     )
   }
 }
-
 
 Contributors.propTypes = {
   classes: PropTypes.object.isRequired,

@@ -38,7 +38,13 @@ const styles = theme => ({
     gridTemplateRows: 'auto auto',
     gridTemplateColumns: 'auto auto',
   },
-  gitHubName: {},
+  gitHubName: {
+  },
+  link: {
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
   rank: {
     justifySelf: 'end',
     fontSize: '16px',
@@ -135,6 +141,7 @@ class ContributorCard extends Component {
                 <a
                   href={repoContributorInfo.authorInfo.html_url}
                   target={'_blank'}
+                  className={classes.link}
                 >
                   {repoContributorInfo.githubLoginName}
                 </a>
