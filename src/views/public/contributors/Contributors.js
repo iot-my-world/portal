@@ -4,6 +4,7 @@ import {
   withStyles, Avatar, Tooltip,
 } from '@material-ui/core'
 import RepoContributorInfo from './RepoContributorInfo'
+import ContributorCard from './ContributorCard'
 
 const styles = theme => ({
   root: {
@@ -12,11 +13,6 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     margin: '10px',
-  },
-  avatar: {
-    margin: 10,
-    width: 60,
-    height: 60,
   },
 })
 
@@ -82,7 +78,6 @@ class Contributors extends Component {
 
   render() {
     const {classes} = this.props
-    console.log(this.repoContributors)
     return (
       <div
         className={classes.root}
@@ -91,17 +86,10 @@ class Contributors extends Component {
         }}
       >
         {Object.values(this.repoContributors).map((contributorInfo, idx) => (
-          <div key={idx}>
-            <Tooltip
-              title={contributorInfo.githubLoginName}
-            >
-              <Avatar
-                alt={contributorInfo.githubLoginName}
-                src={contributorInfo.authorInfo.avatar_url}
-                className={classes.avatar}
-              />
-            </Tooltip>
-          </div>
+          <ContributorCard
+            key={idx}
+            repoContributorInfo={contributorInfo}
+          />
         ))}
       </div>
     )
