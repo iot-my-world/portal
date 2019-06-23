@@ -61,9 +61,8 @@ const styles = theme => ({
   chartLayout: {
     display: 'grid',
     gridTemplateColumns: '1fr',
-    gridTemplateRows: 'auto auto',
+    gridTemplateRows: 'auto',
     justifyItems: 'center',
-    gridRowGap: '5px',
   },
 })
 
@@ -133,7 +132,12 @@ class ContributorCard extends Component {
             />
             <div className={classes.contributionInfoLayout}>
               <div className={classes.gitHubName}>
-                {repoContributorInfo.githubLoginName}
+                <a
+                  href={repoContributorInfo.authorInfo.html_url}
+                  target={'_blank'}
+                >
+                  {repoContributorInfo.githubLoginName}
+                </a>
               </div>
               <div className={classes.rank}>
                 {`#${rank}`}
@@ -155,9 +159,6 @@ class ContributorCard extends Component {
             className={classes.chartLayout}
             ref={this.setChartDimensions}
           >
-            <div>
-              Weekly Additions
-            </div>
             <AreaChart
               width={chartWidth} height={chartHeight}
               data={repoContributorInfo.weeklyTotals}

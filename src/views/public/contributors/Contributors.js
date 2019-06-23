@@ -145,9 +145,14 @@ class Contributors extends Component {
                 className={classes.body}
                 paragraph
               >
-                Cumulative contributions to the master branch (excluding merge
-                commits) of each repository in the IOT My World project. Loaded
-                from github.
+                Cumulative weekly contributions to the master branch (excluding merge
+                commits) of each repository in the IOT My World
+                <a
+                  href={'https://github.com/iot-my-world'}
+                  target={'_blank'}
+                >
+                  {' project'}
+                </a>. Loaded from github.
               </Typography>
             </div>
           </Grid>
