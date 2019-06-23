@@ -78,12 +78,7 @@ class Contributors extends Component {
     const {classes} = this.props
 
     return (
-      <div
-        className={classes.root}
-        style={{
-          height: 1000,
-        }}
-      >
+      <div className={classes.root}>
         {Object.values(this.repoContributors).sort(
           (a,b) => b.commitTotal - a.commitTotal
         ).map((contributorInfo, idx) => (

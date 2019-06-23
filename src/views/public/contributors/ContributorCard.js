@@ -8,35 +8,93 @@ import RepoContributorInfo from 'views/public/contributors/RepoContributorInfo'
 
 const styles = theme => ({
   avatar: {
-    margin: 10,
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
   },
   cardRoot: {
-    margin: '5px 0px 5px 0px'
+    margin: '5px 0px 5px 0px',
+  },
+  cardContentRoot: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+  },
+  infoLayout: {
+    display: 'grid',
+    gridTemplateRows: 'auto',
+    gridTemplateColumns: 'auto auto',
+    alignItems: 'center',
+  },
+  contributionInfoLayout: {
+    display: 'grid',
+    gridTemplateRows: 'auto auto',
+    gridTemplateColumns: 'auto auto',
+  },
+  gitHubName: {
+
+  },
+  rank: {
+    justifySelf: 'end',
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  commits: {
+
+  },
+  additionsAndDeletionsLayout: {
+    justifySelf: 'end',
+    display: 'grid',
+    gridTemplateRows: 'auto',
+    gridTemplateColumns: 'auto auto',
+    gridColumnGap: '5px',
+  },
+  additions: {
+    color: '#3bff10',
+  },
+  deletions: {
+    color: '#ff0c0e',
   },
 })
 
 class ContributorCard extends Component {
-  render(){
+  render() {
     const {
       classes,
       repoContributorInfo,
+      rank,
     } = this.props
-
-    console.log('card for:', repoContributorInfo)
-    console.log('commit total:', repoContributorInfo.commitTotal)
-    console.log('additions total:', repoContributorInfo.additionsTotal)
-    console.log('deletions total:', repoContributorInfo.deletionsTotal)
 
     return (
       <Card classes={{root: classes.cardRoot}}>
-        <CardContent>
-          <Avatar
-            alt={repoContributorInfo.githubLoginName}
-            src={repoContributorInfo.authorInfo.avatar_url}
-            className={classes.avatar}
-          />
+        <CardContent classes={{root: classes.cardContentRoot}}>
+          <div className={classes.infoLayout}>
+            <Avatar
+              alt={repoContributorInfo.githubLoginName}
+              src={repoContributorInfo.authorInfo.avatar_url}
+              className={classes.avatar}
+            />
+            <div className={classes.contributionInfoLayout}>
+              <div className={classes.gitHubName}>
+                {repoContributorInfo.githubLoginName}
+              </div>
+              <div className={classes.rank}>
+                {`#${rank}`}
+              </div>
+              <div className={classes.commits}>
+                {`Commits: ${repoContributorInfo.commitTotal}`}
+              </div>
+              <div className={classes.additionsAndDeletionsLayout}>
+                <div className={classes.additions}>
+                  {`${repoContributorInfo.additionsTotal}+`}
+                </div>
+                <div className={classes.deletions}>
+                  {`${repoContributorInfo.deletionsTotal}-`}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            awe
+          </div>
         </CardContent>
       </Card>
     )
@@ -49,7 +107,6 @@ ContributorCard.propTypes = {
   rank: PropTypes.number.isRequired,
 }
 ContributorCard.defaultProps = {}
-
 
 const StyledContributorCard = withStyles(styles)(ContributorCard)
 export default StyledContributorCard
