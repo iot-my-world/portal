@@ -2,6 +2,8 @@ import {jsonRpcRequest} from 'utilities/network'
 import ZX303TrackerGPSReading from 'brain/tracker/zx303/reading/gps'
 
 const Report = {
+  serviceProvider: 'Tracking-Report',
+
   /**
    * Get the Live Tracking Report
    * @param partyIdentifiers
@@ -10,13 +12,13 @@ const Report = {
    */
   async Live({partyIdentifiers}) {
     let response = await jsonRpcRequest({
-      method: 'TrackingReport.Live',
+      method: `${this.serviceProvider}.Live`,
       request: {
         partyIdentifiers,
       },
     })
     response.zx303TrackerGPSReadings = response.zx303TrackerGPSReadings.map(
-      reading => new ZX303TrackerGPSReading(reading)
+      reading => new ZX303TrackerGPSReading(reading),
     )
     return response
   },
@@ -28,20 +30,18 @@ const Report = {
    * @returns {Promise<any>}
    * @constructor
    */
-  Historical({ companyCriteria, clientCriteria }) {
+  Historical({companyCriteria, clientCriteria}) {
     return new Promise((resolve, reject) => {
       jsonRpcRequest({
-        method: "TrackingReport.Historical",
+        method: `${this.serviceProvider}.Historical`,
         request: {
           companyCriteria,
-          clientCriteria
-        }
-      })
-        .then(result => {
-          resolve(result)
-        })
-          .catch(error => reject(error))
+          clientCriteria,
+        },
+      }).then(result => {
+        resolve(result)
+      }).catch(error => reject(error))
     })
-  }
+  },
 }
 export default Report
