@@ -2,9 +2,11 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import User from 'brain/user/api/User'
 
 const Administrator = {
+  serviceProvider: 'APIUser-Administrator',
+
   async Create({apiUser}) {
     let response = await jsonRpcRequest({
-      method: 'APIUserAdministrator.Create',
+      method: `${this.serviceProvider}.Create`,
       request: {
         apiUser,
       },
@@ -15,7 +17,7 @@ const Administrator = {
 
   async UpdateAllowedFields({apiUser}) {
     let response = await jsonRpcRequest({
-      method: 'APIUserAdministrator.UpdateAllowedFields',
+      method: `${this.serviceProvider}.UpdateAllowedFields`,
       request: {
         apiUser,
       },
