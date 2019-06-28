@@ -32,6 +32,7 @@ const Administrator = {
       default:
         throw new TypeError('invalid party type' + response.partyType)
     }
+    return response
   },
 }
 
