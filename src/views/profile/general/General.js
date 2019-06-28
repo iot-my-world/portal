@@ -201,8 +201,12 @@ class General extends Component {
             </Grid>
           }/>
           <CardContent>
-            <Grid container direction='column' spacing={1}
-                  alignItems={'center'}>
+            <Grid
+              container
+              direction='column'
+              spacing={1}
+              alignItems={'center'}
+            >
               <Grid item>
                 <TextField
                   className={classes.formField}
