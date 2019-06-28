@@ -1,12 +1,14 @@
 import {jsonRpcRequest} from 'utilities/network'
 
 const Registrar = {
+  serviceProvider: 'Party-Registrar',
+
   /**
    * @param {{companyIdentifier: object}} request
    */
-  InviteCompanyAdminUser({companyIdentifier}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.InviteCompanyAdminUser',
+  async InviteCompanyAdminUser({companyIdentifier}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.InviteCompanyAdminUser`,
       request: {
         companyIdentifier,
       },
@@ -16,9 +18,9 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  RegisterCompanyAdminUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.RegisterCompanyAdminUser',
+  async RegisterCompanyAdminUser({user}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.RegisterCompanyAdminUser`,
       request: {
         user,
       },
@@ -28,9 +30,9 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  RegisterCompanyUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.RegisterCompanyUser',
+  async RegisterCompanyUser({user}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.RegisterCompanyUser`,
       request: {
         user,
       },
@@ -40,9 +42,9 @@ const Registrar = {
   /**
    * @param {{clientIdentifier: object}} request
    */
-  InviteClientAdminUser({clientIdentifier}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.InviteClientAdminUser',
+  async InviteClientAdminUser({clientIdentifier}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.InviteClientAdminUser`,
       request: {
         clientIdentifier: clientIdentifier,
       },
@@ -52,9 +54,9 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  RegisterClientAdminUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.RegisterClientAdminUser',
+  async RegisterClientAdminUser({user}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.RegisterClientAdminUser`,
       request: {
         user,
       },
@@ -64,9 +66,9 @@ const Registrar = {
   /**
    * @param {{user: User}} request
    */
-  RegisterClientUser({user}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.RegisterClientUser',
+  async RegisterClientUser({user}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.RegisterClientUser`,
       request: {
         user,
       },
@@ -76,9 +78,9 @@ const Registrar = {
   /**
    * @param {{partyIdentifiers: [Party]}} request
    */
-  AreAdminsRegistered({partyIdentifiers}) {
-    return jsonRpcRequest({
-      method: 'PartyRegistrar.AreAdminsRegistered',
+  async AreAdminsRegistered({partyIdentifiers}) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.AreAdminsRegistered`,
       request: {
         partyIdentifiers,
       },
@@ -87,7 +89,7 @@ const Registrar = {
 
   async InviteUser({userIdentifier}) {
     return await jsonRpcRequest({
-      method: 'PartyRegistrar.InviteUser',
+      method: `${this.serviceProvider}.InviteUser`,
       request: {
         userIdentifier,
       },
