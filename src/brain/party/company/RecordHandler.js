@@ -2,24 +2,23 @@ import {jsonRpcRequest} from 'utilities/network'
 import Company from './Company'
 
 const RecordHandler = {
+  serviceProvider: 'Company-RecordHandler',
+
   /**
    * @param {array} [criteria]
    * @param {Query} [query]
    * @constructor
    */
-  Collect(criteria, query) {
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: 'CompanyRecordHandler.Collect',
-        request: {
-          criteria,
-          query,
-        },
-      }).then(result => {
-        result.records = result.records.map(company => new Company(company))
-        resolve(result)
-      }).catch(error => reject(error))
+  async Collect(criteria, query) {
+    const response = await jsonRpcRequest({
+      method: `${this.serviceProvider}.Collect`,
+      request: {
+        criteria,
+        query,
+      },
     })
+    response.records = response.records.map(company => new Company(company))
+    return response
   },
 }
 

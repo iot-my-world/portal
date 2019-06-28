@@ -2,9 +2,11 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import {Company} from 'brain/party/company'
 
 const Administrator = {
+  serviceProvider: 'Company-Administrator',
+
   async Create({company}) {
     let response = await jsonRpcRequest({
-      method: 'CompanyAdministrator.Create',
+      method: `${this.serviceProvider}.Create`,
       request: {
         company,
       },
@@ -15,7 +17,7 @@ const Administrator = {
 
   async UpdateAllowedFields({company}) {
     let response = await jsonRpcRequest({
-      method: 'CompanyAdministrator.UpdateAllowedFields',
+      method: `${this.serviceProvider}.UpdateAllowedFields`,
       request: {
         company,
       },
