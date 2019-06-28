@@ -9,32 +9,30 @@ import {Client} from 'brain/party/client'
 import {System} from 'brain/party/system'
 
 const Administrator = {
-  GetMyParty() {
-    return new Promise((resolve, reject) => {
+  serviceProvider: 'Party-Administrator',
+  async GetMyParty() {
+    const response = await
       jsonRpcRequest({
-        method: 'PartyAdministrator.GetMyParty',
+        method: `${this.serviceProvider}.GetMyParty`,
         request: {},
-      }).then(response => {
-        switch (response.partyType) {
-          case SystemPartyType:
-            response.party = new System(response.party)
-            break
+      })
+    switch (response.partyType) {
+      case SystemPartyType:
+        response.party = new System(response.party)
+        break
 
-          case CompanyPartyType:
-            response.party = new Company(response.party)
-            break
+      case CompanyPartyType:
+        response.party = new Company(response.party)
+        break
 
-          case ClientPartyType:
-            response.party = new Client(response.party)
-            break
+      case ClientPartyType:
+        response.party = new Client(response.party)
+        break
 
-          default:
-            reject('invalid party type' + response.partyType)
-            return
-        }
-        resolve(response)
-      }).catch(error => reject(error))
-    })
+      default:
+        throw new TypeError('invalid party type' + response.partyType)
+    }
+    return response
   },
 }
 

@@ -2,6 +2,7 @@ import {jsonRpcRequest} from 'utilities/network/index'
 import User from './User'
 
 const RecordHandler = {
+  serviceProvider: 'APIUser-RecordHandler',
 
   /**
    * @param {array} [criteria]
@@ -10,7 +11,7 @@ const RecordHandler = {
    */
   async Collect(criteria, query) {
     let response = await jsonRpcRequest({
-      method: 'APIUserRecordHandler.Collect',
+      method: `${this.serviceProvider}.Collect`,
       request: {
         criteria,
         query,

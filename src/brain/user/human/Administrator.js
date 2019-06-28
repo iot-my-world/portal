@@ -2,9 +2,11 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import {User} from 'brain/user/human/index'
 
 const Administrator = {
+  serviceProvider: 'HumanUser-Administrator',
+
   async GetMyUser() {
     let response = await jsonRpcRequest({
-      method: 'UserAdministrator.GetMyUser',
+      method: `${this.serviceProvider}.GetMyUser`,
       request: {},
     })
     response.user = new User(response.user)
@@ -13,7 +15,7 @@ const Administrator = {
 
   async UpdateAllowedFields({user}) {
     let response = await jsonRpcRequest({
-      method: 'UserAdministrator.UpdateAllowedFields',
+      method: `${this.serviceProvider}.UpdateAllowedFields`,
       request: {
         user,
       },
@@ -24,7 +26,7 @@ const Administrator = {
 
   async CheckPassword({password}) {
     return await jsonRpcRequest({
-      method: 'UserAdministrator.CheckPassword',
+      method: `${this.serviceProvider}.CheckPassword`,
       request: {
         password,
       },
@@ -33,7 +35,7 @@ const Administrator = {
 
   async UpdatePassword({existingPassword, newPassword}) {
     return await jsonRpcRequest({
-      method: 'UserAdministrator.UpdatePassword',
+      method: `${this.serviceProvider}.UpdatePassword`,
       request: {
         existingPassword,
         newPassword,
@@ -43,7 +45,7 @@ const Administrator = {
 
   async Create({user}) {
     let response = await jsonRpcRequest({
-      method: 'UserAdministrator.Create',
+      method: `${this.serviceProvider}.Create`,
       request: {
         user,
       },
@@ -54,7 +56,7 @@ const Administrator = {
 
   async ForgotPassword({usernameOrEmailAddress}) {
     return await jsonRpcRequest({
-      method: 'UserAdministrator.ForgotPassword',
+      method: `${this.serviceProvider}.ForgotPassword`,
       request: {
         usernameOrEmailAddress,
       },
@@ -63,7 +65,7 @@ const Administrator = {
 
   async SetPassword({identifier, newPassword}) {
     return await jsonRpcRequest({
-      method: 'UserAdministrator.SetPassword',
+      method: `${this.serviceProvider}.SetPassword`,
       request: {
         identifier,
         newPassword,

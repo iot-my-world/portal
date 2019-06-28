@@ -50,41 +50,29 @@ const events = {
 
 class Security extends Component {
 
-  constructor(props) {
-    super(props)
-    this.handleStartChangingPassword =
-        this.handleStartChangingPassword.bind(this)
-    this.renderChangePasswordControl =
-        this.renderChangePasswordControl.bind(this)
-    this.handleCancelChangingPassword =
-        this.handleCancelChangingPassword.bind(this)
-    this.handleSavePasswordChanges =
-        this.handleSavePasswordChanges.bind(this)
-    this.handleTextChange = this.handleTextChange.bind(this)
-    this.state = {
-      activeState: states.nop,
-      oldPassword: '',
-      newPassword: '',
-      confirmNewPassword: '',
-    }
+  state = {
+    activeState: states.nop,
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
   }
 
   reasonsInvalid = new ReasonsInvalid()
 
-  handleStartChangingPassword() {
+  handleStartChangingPassword = () => {
     this.setState({
       activeState: events.startChangingPassword,
     })
   }
 
-  handleCancelChangingPassword() {
+  handleCancelChangingPassword = () => {
     this.reasonsInvalid.clearAll()
     this.setState({
       activeState: events.cancelChangingPassword,
     })
   }
 
-  async handleSavePasswordChanges() {
+  handleSavePasswordChanges = async () => {
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -199,7 +187,7 @@ class Security extends Component {
     HideGlobalLoader()
   }
 
-  handleTextChange(e) {
+  handleTextChange = (e) => {
     const field = e.target.id
 
     // check if related field should be cleared
@@ -224,7 +212,7 @@ class Security extends Component {
     this.setState({[field]: e.target.value})
   }
 
-  renderChangePasswordControl() {
+  renderChangePasswordControl = () => {
     const {activeState} = this.state
     const {classes} = this.props
 
@@ -267,35 +255,36 @@ class Security extends Component {
 
     const fieldValidations = this.reasonsInvalid.toMap()
 
-    return <Grid container direction='column' spacing={1} alignItems='center'>
-      <Grid item>
-        <Card className={classes.detailCard}>
-          <CardContent>
-            <Grid container direction='column' spacing={1}
-                  alignItems={'center'}>
-              <Grid item>
-                <div className={classes.securityItemWrapper}>
-                  <KeyIcon className={classes.icon}/>
-                  <div style={{justifySelf: 'start'}}>
-                    <Typography variant={'subtitle1'} color={'textPrimary'}>
-                      Change Password
-                    </Typography>
+    return (
+      <Grid container direction='column' spacing={1} alignItems='center'>
+        <Grid item>
+          <Card className={classes.detailCard}>
+            <CardContent>
+              <Grid container direction='column' spacing={1}
+                    alignItems={'center'}>
+                <Grid item>
+                  <div className={classes.securityItemWrapper}>
+                    <KeyIcon className={classes.icon}/>
+                    <div style={{justifySelf: 'start'}}>
+                      <Typography variant={'subtitle1'} color={'textPrimary'}>
+                        Change Password
+                      </Typography>
+                    </div>
+                    <div style={{gridColumn: '1/3', gridRow: '2/3'}}>
+                      <Typography variant={'caption'} color={'textSecondary'}>
+                        It's a good idea to use a strong password that you're not
+                        using elsewhere
+                      </Typography>
+                    </div>
+                    <div style={{gridColumn: '3/4', gridRow: '1/3'}}>
+                      {this.renderChangePasswordControl()}
+                    </div>
                   </div>
-                  <div style={{gridColumn: '1/3', gridRow: '2/3'}}>
-                    <Typography variant={'caption'} color={'textSecondary'}>
-                      It's a good idea to use a strong password that you're not
-                      using elsewhere
-                    </Typography>
-                  </div>
-                  <div style={{gridColumn: '3/4', gridRow: '1/3'}}>
-                    {this.renderChangePasswordControl()}
-                  </div>
-                </div>
-              </Grid>
-              <Collapse in={activeState === states.changingPassword}>
-                <form>
-                  <Grid item>
-                    <TextField
+                </Grid>
+                <Collapse in={activeState === states.changingPassword}>
+                  <form>
+                    <Grid item>
+                      <TextField
                         className={classes.formField}
                         type='password'
                         id='oldPassword'
@@ -305,14 +294,14 @@ class Security extends Component {
                         onChange={this.handleTextChange}
                         helperText={
                           fieldValidations.oldPassword
-                              ? fieldValidations.oldPassword.help
-                              : undefined
+                            ? fieldValidations.oldPassword.help
+                            : undefined
                         }
                         error={!!fieldValidations.oldPassword}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <TextField
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
                         className={classes.formField}
                         type='password'
                         id='newPassword'
@@ -322,14 +311,14 @@ class Security extends Component {
                         onChange={this.handleTextChange}
                         helperText={
                           fieldValidations.newPassword
-                              ? fieldValidations.newPassword.help
-                              : undefined
+                            ? fieldValidations.newPassword.help
+                            : undefined
                         }
                         error={!!fieldValidations.newPassword}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <TextField
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
                         className={classes.formField}
                         type='password'
                         id='confirmNewPassword'
@@ -339,32 +328,33 @@ class Security extends Component {
                         onChange={this.handleTextChange}
                         helperText={
                           fieldValidations.confirmNewPassword
-                              ? fieldValidations.confirmNewPassword.help
-                              : undefined
+                            ? fieldValidations.confirmNewPassword.help
+                            : undefined
                         }
                         error={!!fieldValidations.confirmNewPassword}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Fab
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Fab
                         color='primary'
                         aria-label='Save'
                         size={'medium'}
                         className={classes.button}
                         onClick={this.handleSavePasswordChanges}
-                    >
-                      <Tooltip title='Save Changes'>
-                        <SaveIcon className={classes.buttonIcon}/>
-                      </Tooltip>
-                    </Fab>
-                  </Grid>
-                </form>
-              </Collapse>
-            </Grid>
-          </CardContent>
-        </Card>
+                      >
+                        <Tooltip title='Save Changes'>
+                          <SaveIcon className={classes.buttonIcon}/>
+                        </Tooltip>
+                      </Fab>
+                    </Grid>
+                  </form>
+                </Collapse>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-    </Grid>
+    )
   }
 }
 

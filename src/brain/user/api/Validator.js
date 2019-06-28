@@ -2,6 +2,7 @@ import {jsonRpcRequest} from 'utilities/network/index'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const Validator = {
+  serviceProvider: 'APIUser-Validator',
 
   /**
    * @param {APIUser} apiUser
@@ -10,7 +11,7 @@ const Validator = {
    */
   async Validate({apiUser, action}) {
     let response = await jsonRpcRequest({
-      method: 'APIUserValidator.Validate',
+      method: `${this.serviceProvider}.Validate`,
       request: {
         apiUser,
         action,
