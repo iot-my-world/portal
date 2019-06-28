@@ -2,22 +2,21 @@ import {jsonRpcRequest} from 'utilities/network/index'
 import User from './User'
 
 const RecordHandler = {
+  serviceProvider: 'HumanUser-RecordHandler',
+
   /**
    * Create a new user
    * @param {User} user
    * @constructor
    */
-  Create(user) {
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: 'UserRecordHandler.Create',
-        request: {
-          user,
-        },
-      }).then(result => {
-        resolve(new User(result.user))
-      }).catch(error => reject(error))
+  async Create(user) {
+    const response = await jsonRpcRequest({
+      method: `${this.serviceProvider}.Create`,
+      request: {
+        user,
+      },
     })
+    return new User(response.user)
   },
 
   /**
@@ -25,17 +24,13 @@ const RecordHandler = {
    * @param {Query} [query]
    * @constructor
    */
-  Collect(criteria, query) {
-    return new Promise((resolve, reject) => {
-      jsonRpcRequest({
-        method: 'UserRecordHandler.Collect',
-        request: {
-          criteria,
-          query,
-        },
-      }).then(result => {
-        resolve(result)
-      }).catch(error => reject(error))
+  async Collect(criteria, query) {
+    return await jsonRpcRequest({
+      method: `${this.serviceProvider}.Collect`,
+      request: {
+        criteria,
+        query,
+      },
     })
   },
 }

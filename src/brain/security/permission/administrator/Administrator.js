@@ -1,13 +1,15 @@
 import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 
-const Handler = {
+const Administrator = {
+  serviceProvider: 'Permission-Administrator',
+
   /**
    * @param {Object} userIdentifier - any valid search.identifier
    * @constructor
    */
   GetAllUsersViewPermissions({userIdentifier}) {
     return jsonRpcRequest({
-      method: 'PermissionHandler.GetAllUsersViewPermissions',
+      method: `${this.serviceProvider}.GetAllUsersViewPermissions`,
       request: {
         userIdentifier,
       },
@@ -15,4 +17,4 @@ const Handler = {
   },
 }
 
-export default Handler
+export default Administrator
