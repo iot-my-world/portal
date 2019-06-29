@@ -16,16 +16,16 @@ import Query from 'brain/search/Query'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
-// import {
-//   activeStates as companyDetailDialogActiveStates,
-// } from 'components/party/company/detail/Detail'
+import {
+  activeStates as companyDetailDialogActiveStates,
+} from 'components/party/company/detail/Detail'
 import {
   ViewDetailsIcon,
   AddNewIcon,
   ReloadIcon,
 } from 'components/icon'
-// import SF001TrackerDetailDialogContainer
-//   from 'components/party/company/detail/DetailContainer'
+import CompanyDetailDialogContainer
+  from 'components/party/company/detail/DetailContainer'
 
 const styles = theme => ({})
 
@@ -50,8 +50,8 @@ class Company extends Component {
     selectedCompany: new CompanyEntity(),
 
     detailDialogOpen: false,
-    // initialDetailDialogActiveState:
-    // companyDetailDialogActiveStates.viewingExisting,
+    initialDetailDialogActiveState:
+    companyDetailDialogActiveStates.viewingExisting,
   }
 
   partyHolder = new PartyHolder()
@@ -74,7 +74,7 @@ class Company extends Component {
     })
   }
 
-  handleSelect = (rowObj, rowIdx) => {
+  handleSelect = (rowObj) => {
     this.setState({
       selectedCompany: new CompanyEntity(rowObj),
       activeState: events.selectRow,
@@ -204,13 +204,13 @@ class Company extends Component {
             />
           </CardContent>
         </Card>
-        {/*{detailDialogOpen &&*/}
-        {/*<SF001TrackerDetailDialogContainer*/}
-        {/*  open={detailDialogOpen}*/}
-        {/*  closeDialog={() => this.setState({detailDialogOpen: false})}*/}
-        {/*  sf001Tracker={selectedCompany}*/}
-        {/*  initialActiveState={initialDetailDialogActiveState}*/}
-        {/*/>}*/}
+        {detailDialogOpen &&
+        <CompanyDetailDialogContainer
+          open={detailDialogOpen}
+          closeDialog={() => this.setState({detailDialogOpen: false})}
+          company={selectedCompany}
+          initialActiveState={initialDetailDialogActiveState}
+        />}
       </div>
     )
   }
@@ -250,8 +250,8 @@ class Company extends Component {
           <IconButton
             onClick={() => this.setState({
               detailDialogOpen: true,
-              // initialDetailDialogActiveState:
-              // companyDetailDialogActiveStates.viewingExisting,
+              initialDetailDialogActiveState:
+              companyDetailDialogActiveStates.viewingExisting,
             })}
           >
             <Tooltip

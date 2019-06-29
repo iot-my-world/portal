@@ -18,7 +18,7 @@ const styles = theme => ({
   dialogTitleRoot: {
     padding: '0 0 0 0',
     backgroundColor: theme.palette.primary.main,
-    height: '46px'
+    height: '46px',
   },
   dialogTitle: {
     padding: '2px 5px 2px 5px',
@@ -70,9 +70,9 @@ const styles = theme => ({
     padding: 5,
   },
   contentRootFullScreen: {
-    height: "calc(100vh - 56px)",
+    height: 'calc(100vh - 56px)',
     overflow: 'hidden',
-  }
+  },
 })
 
 class Dialog extends Component {
@@ -124,16 +124,16 @@ class Dialog extends Component {
                 )
               })}
               <div className={classes.dialogTitleControlWrapper}>
-                <Fab
-                  color='primary'
-                  aria-label='Close'
-                  className={classes.dialogTitleCloseButton}
-                  onClick={closeDialog}
-                >
-                  <Tooltip title='Close' placement='top'>
+                <Tooltip title='Close' placement='top'>
+                  <Fab
+                    color='primary'
+                    aria-label='Close'
+                    className={classes.dialogTitleCloseButton}
+                    onClick={closeDialog}
+                  >
                     <CloseIcon className={classes.dialogTitleCloseIcon}/>
-                  </Tooltip>
-                </Fab>
+                  </Fab>
+                </Tooltip>
               </div>
             </div>
           </div>
@@ -142,8 +142,8 @@ class Dialog extends Component {
           classes={{
             root: classNames(
               classes.contentRoot,
-              {[classes.contentRootFullScreen]: fullScreenActive}
-            )
+              {[classes.contentRootFullScreen]: fullScreenActive},
+            ),
           }}
         >
           {children}
