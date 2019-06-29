@@ -299,10 +299,10 @@ Company.propTypes = {
    * Login claims from redux state
    */
   claims: PropTypes.instanceOf(HumanUserLoginClaims),
-  // /**
-  //  * Party from redux state
-  //  */
-  // party: PropTypes.object.isRequired,
+  /**
+   * Party from redux state
+   */
+  party: PropTypes.object.isRequired,
 }
 Company.defaultProps = {}
 
