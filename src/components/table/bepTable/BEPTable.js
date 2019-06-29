@@ -7,7 +7,7 @@ import {
   Grid, IconButton, Tooltip, Icon,
 } from '@material-ui/core'
 import ErrorIcon from '@material-ui/icons/ErrorOutline'
-import {isString, isObject, isArray} from 'utilities/type/type'
+import {isString, isObject, isArray, isFunction} from 'utilities/type/type'
 import {
   TextFilter,
   TextOptionsFilter,
@@ -103,6 +103,7 @@ class BEPTable extends Component {
       page: 0,
       query: new Query(props.initialQuery),
       showFilters: true,
+      selectedRowIdx: -1,
     }
 
     if (!this.pageSizeOptions.includes(this.state.query.limit)) {
@@ -293,11 +294,14 @@ class BEPTable extends Component {
       page,
       query,
       showFilters,
+      selectedRowIdx,
     } = this.state
     const {
       classes,
       totalNoRecords,
       additionalControls,
+      theme,
+      handleRowSelect,
       ...rest
     } = this.props
 
@@ -349,6 +353,30 @@ class BEPTable extends Component {
               onPageSizeChange={this.handleQueryLimitChange}
               onPageChange={this.handleQueryOffsetChange}
               pageSizeOptions={this.pageSizeOptions}
+              getTdProps={(state, rowInfo) => {
+                const rowIndex = rowInfo ? rowInfo.index : undefined
+                return {
+                  onClick: (e, handleOriginal) => {
+                    if (rowInfo && isFunction(handleRowSelect)) {
+                      this.setState({selectedRowIdx: rowIndex})
+                      handleRowSelect(rowInfo.original, rowInfo.index)
+                    }
+                    if (handleOriginal) {
+                      handleOriginal()
+                    }
+                  },
+                  style: {
+                    background:
+                      rowIndex === selectedRowIdx
+                        ? theme.palette.secondary.light
+                        : 'white',
+                    color:
+                      rowIndex === selectedRowIdx
+                        ? theme.palette.secondary.contrastText
+                        : theme.palette.primary.main,
+                  },
+                }
+              }}
           />
         </div>
       case Object.values(processingStates).includes(activeState):
@@ -466,7 +494,7 @@ class BEPTable extends Component {
   }
 }
 
-BEPTable = withStyles(styles)(BEPTable)
+BEPTable = withStyles(styles, {withTheme: true})(BEPTable)
 
 BEPTable.propTypes = {
   /**
