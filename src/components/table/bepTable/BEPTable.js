@@ -242,7 +242,11 @@ class BEPTable extends Component {
     this.criteria[field] = newFilter
     query.offset = 0
     onCriteriaQueryChange(this.criteriaToArray(), query)
-    this.setState({page: 0, query})
+    this.setState({
+      page: 0,
+      query,
+      selectedRowIdx: -1,
+    })
   }
 
   handleQuerySortChange(updatedSortObjects) {
@@ -261,7 +265,10 @@ class BEPTable extends Component {
           sortObj.desc ? Query.SortOrderDescending : Query.SortOrderAscending)
     }
     onCriteriaQueryChange(this.criteriaToArray(), query)
-    this.setState({query})
+    this.setState({
+      query,
+      selectedRowIdx: -1
+    })
   }
 
   handleQueryLimitChange(newPageSize) {
@@ -273,7 +280,10 @@ class BEPTable extends Component {
     } = this.state
     query.limit = newPageSize
     onCriteriaQueryChange(this.criteriaToArray(), query)
-    this.setState({query})
+    this.setState({
+      query,
+      selectedRowIdx: -1
+    })
   }
 
   handleQueryOffsetChange(newPageIndex) {
@@ -285,7 +295,11 @@ class BEPTable extends Component {
     } = this.state
     query.offset = newPageIndex * query.limit
     onCriteriaQueryChange(this.criteriaToArray(), query)
-    this.setState({page: newPageIndex, query})
+    this.setState({
+      page: newPageIndex,
+      query,
+      selectedRowIdx: -1,
+    })
   }
 
   render() {

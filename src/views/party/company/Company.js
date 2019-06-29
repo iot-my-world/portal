@@ -44,7 +44,6 @@ class Company extends Component {
     activeState: events.init,
 
     recordCollectionInProgress: false,
-    selectedRowIdx: -1,
     records: [],
     totalNoRecords: 0,
 
@@ -72,13 +71,11 @@ class Company extends Component {
     this.setState({
       activeState: events.init,
       selectedCompany: new CompanyEntity(),
-      selectedRowIdx: -1,
     })
   }
 
   handleSelect = (rowObj, rowIdx) => {
     this.setState({
-      selectedRowIdx: rowIdx,
       selectedCompany: new CompanyEntity(rowObj),
       activeState: events.selectRow,
     })
@@ -127,7 +124,6 @@ class Company extends Component {
 
   handleCreateNew = () => {
     this.setState({
-      selectedRowIdx: -1,
       selectedCompany: new CompanyEntity(),
       // initialDetailDialogActiveState:
       // companyDetailDialogActiveStates.editingNew,
@@ -138,7 +134,6 @@ class Company extends Component {
   render() {
     const {
       recordCollectionInProgress,
-      selectedRowIdx,
       records,
       totalNoRecords,
       detailDialogOpen,
