@@ -23,7 +23,7 @@ import {
 const styles = theme => ({
   formField: {
     height: '60px',
-    width: '150px',
+    width: '300px',
   },
   buttonIcon: {
     fontSize: '20px',
@@ -92,46 +92,7 @@ class Detail extends Component {
   handleFieldChange = e => {
     let {company} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
-
-    switch (fieldName) {
-      case 'ownerPartyType':
-        company[fieldName] = e.target.value
-        company.ownerId = new IdIdentifier()
-        break
-
-      case 'ownerId':
-        if (e.target.value === '') {
-          company[fieldName] = new IdIdentifier()
-        } else {
-          company[fieldName] = e.target.value
-          this.partyHolder.update(
-            e.selectionInfo.entity,
-            company.ownerPartyType,
-          )
-        }
-        break
-
-      case 'assignedPartyType':
-        company[fieldName] = e.target.value
-        company.assignedId = new IdIdentifier()
-        break
-
-      case 'assignedId':
-        if (e.target.value === '') {
-          company[fieldName] = new IdIdentifier()
-        } else {
-          company[fieldName] = e.target.value
-          this.partyHolder.update(
-            e.selectionInfo.entity,
-            company.ownerPartyType,
-          )
-        }
-        break
-
-      default:
-        company[fieldName] = e.target.value
-    }
-
+    company[fieldName] = e.target.value
     this.reasonsInvalid.clearField(fieldName)
     this.setState({company})
   }
@@ -160,8 +121,8 @@ class Detail extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
+      console.error('Error Validating Company', e)
+      NotificationFailure('Error Validating Company')
       HideGlobalLoader()
       return
     }
@@ -171,14 +132,14 @@ class Detail extends Component {
       const createResponse = await CompanyAdministrator.Create({
         company: company,
       })
-      NotificationSuccess('Successfully Created Device')
+      NotificationSuccess('Successfully Created Company')
       this.setState({
         company: createResponse.company,
         activeState: events.createNewSuccess,
       })
     } catch (e) {
-      console.error('Error Creating Device', e)
-      NotificationFailure('Error Creating Device')
+      console.error('Error Creating Company', e)
+      NotificationFailure('Error Creating Company')
       HideGlobalLoader()
       return
     }
@@ -225,8 +186,8 @@ class Detail extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Device', e)
-      NotificationFailure('Error Validating Device')
+      console.error('Error Validating Company', e)
+      NotificationFailure('Error Validating Company')
       HideGlobalLoader()
       return
     }
@@ -241,13 +202,13 @@ class Detail extends Component {
         activeState: events.finishEditExisting,
       })
     } catch (e) {
-      console.error('Error Updating Device', e)
-      NotificationFailure('Error Updating Device')
+      console.error('Error Updating Company', e)
+      NotificationFailure('Error Updating Company')
       HideGlobalLoader()
       return
     }
 
-    NotificationSuccess('Successfully Updated Device')
+    NotificationSuccess('Successfully Updated Company')
     HideGlobalLoader()
   }
 
@@ -324,6 +285,7 @@ class Detail extends Component {
 
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === activeStates.viewingExisting
+    const stateIsCreateNew = activeState === activeStates.editingNew
 
     return (
       <Dialog
@@ -331,6 +293,7 @@ class Detail extends Component {
         closeDialog={closeDialog}
         title={'Company'}
         additionalTitleControls={this.renderControlIcons()}
+        fullScreen={false}
       >
         <Grid container spacing={1}>
           <Grid item xs>
@@ -350,6 +313,25 @@ class Detail extends Component {
                   : undefined
               }
               error={!!fieldValidations.name}
+            />
+          </Grid>
+          <Grid item xs>
+            <TextField
+              className={classes.formField}
+              id='adminEmailAddress'
+              label='Admin Email Address'
+              value={company.adminEmailAddress}
+              onChange={this.handleFieldChange}
+              InputProps={{
+                disableUnderline: !stateIsCreateNew,
+                readOnly: !stateIsCreateNew,
+              }}
+              helperText={
+                fieldValidations.adminEmailAddress
+                  ? fieldValidations.adminEmailAddress.help
+                  : undefined
+              }
+              error={!!fieldValidations.adminEmailAddress}
             />
           </Grid>
         </Grid>

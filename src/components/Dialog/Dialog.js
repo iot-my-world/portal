@@ -93,7 +93,10 @@ class Dialog extends Component {
       return null
     }
 
-    const fullScreenActive = (!isWidthUp('md', width)) || fullScreen
+    let fullScreenActive = (!isWidthUp('md', width))
+    if (fullScreen !== undefined) {
+      fullScreenActive = fullScreen
+    }
 
     return (
       <MUIDialog
