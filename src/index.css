@@ -1,37 +1,5 @@
 @charset "UTF-8";
-/*! =========================================================
- *
- Material Dashboard PRO React - v1.2.0 based on Material Dashboard PRO - V1.2.1
-*
-* =========================================================
-*
-* Copyright 2016 Creative Tim (https://www.creative-tim.com/product/material-dashboard-pro-react)
- *
- *                       _oo0oo_
- *                      o8888888o
- *                      88" . "88
- *                      (| -_- |)
- *                      0\  =  /0
- *                    ___/`---'\___
- *                  .' \|     |// '.
- *                 / \|||  :  |||// \
- *                / _||||| -:- |||||- \
- *               |   | \\  -  /// |   |
- *               | \_|  ''\---/''  |_/ |
- *               \  .-\__  '-'  ___/-. /
- *             ___'. .'  /--.--\  `. .'___
- *          ."" '<  `.___\_<|>_/___.' >' "".
- *         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
- *         \  \ `_.   \_ __\ /__ _/   .-` /  /
- *     =====`-.____`.___ \_____/___.-`___.-'=====
- *                       `=---='
- *
- *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *               Buddha Bless:  "No Bugs"
- *
- * ========================================================= */
-/*! nouislider - 10.0.0 - 2016-12-10 16:00:32 */
+/*
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -2618,7 +2586,7 @@ p {
 }
 
 body {
-    background-color: #EEEEEE;
+    background-color: #3d3d3d;
     color: #3C4858;
     font-size: 14px;
 }

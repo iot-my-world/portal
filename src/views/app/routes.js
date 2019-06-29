@@ -2,9 +2,6 @@ import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
-import DashboardIcon from '@material-ui/icons/Dashboard'
-import GPSFixedIcon from '@material-ui/icons/GpsFixed'
-// import TimelineIcon from '@material-ui/icons/Timeline'
 import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
@@ -13,10 +10,6 @@ import ClientHomeContainer from 'views/home/client/ClientContainer'
 import UserContainer from 'views/party/user/UserContainer'
 import APIUserContainer from 'views/party/apiUser/APIUserContainer'
 import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
-import LiveTrackingDashboardContainer
-  from 'views/dashboard/tracking/live/LiveContainer'
-// import HistoricalTrackingDashboardContainer
-//   from 'views/dashboard/tracking/historical/HistoricalContainer'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import {
@@ -24,8 +17,6 @@ import {
   PartyClientViewPermission,
   PartyUserViewPermission,
   PartyAPIUserViewPermission,
-  LiveTrackingDashboardViewPermission,
-  // HistoricalTrackingDashboardViewPermission,
   TrackerSF001ViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
@@ -35,85 +26,47 @@ import {
 } from 'brain/party/types'
 
 const appSideBarLinkRoutes = [
-  // {
-  //   path: '/app/dashboard',
-  //   name: 'Dashboard',
-  //   icon: ConfigurationIcon,
-  //   component: () => <div></div>,
-  // },
   {
-    collapse: true,
-    path: '/app/dashboard',
-    name: 'Dashboards',
-    state: 'openDashboard',
-    icon: DashboardIcon,
-    views: [
-      {
-        path: '/app/dashboard/liveTracking',
-        name: 'Live Tracking',
-        viewPermission: LiveTrackingDashboardViewPermission,
-        icon: GPSFixedIcon,
-        component: LiveTrackingDashboardContainer,
-      },
-      // {
-      //   path: '/app/dashboard/historicalTracking',
-      //   name: 'Historical Tracking',
-      //   viewPermission: HistoricalTrackingDashboardViewPermission,
-      //   icon: TimelineIcon,
-      //   component: HistoricalTrackingDashboardContainer,
-      // },
-    ],
+    path: '/app/party/company',
+    name: 'Companies',
+    viewPermission: PartyCompanyViewPermission,
+    mini: 'CO',
+    icon: DomainIcon,
+    component: CompanyContainer,
   },
   {
-    collapse: true,
-    path: '/app/party',
-    name: 'Parties',
-    state: 'openConfiguration',
+    path: '/app/party/client',
+    name: 'Clients',
+    viewPermission: PartyClientViewPermission,
+    mini: 'CL',
     icon: PeopleIcon,
-    views: [
-      {
-        path: '/app/party/company',
-        name: 'Company',
-        viewPermission: PartyCompanyViewPermission,
-        mini: 'CO',
-        icon: DomainIcon,
-        component: CompanyContainer,
-      },
-      {
-        path: '/app/party/client',
-        name: 'Client',
-        viewPermission: PartyClientViewPermission,
-        mini: 'CL',
-        icon: PeopleIcon,
-        component: ClientContainer,
-      },
-      {
-        path: '/app/party/user',
-        name: 'User',
-        viewPermission: PartyUserViewPermission,
-        mini: 'US',
-        icon: PersonIcon,
-        component: UserContainer,
-      },
-      {
-        path: '/app/party/apiUser',
-        name: 'API User',
-        viewPermission: PartyAPIUserViewPermission,
-        mini: 'AP',
-        icon: PersonIcon,
-        component: APIUserContainer,
-      },
-    ],
+    component: ClientContainer,
+  },
+  {
+    path: '/app/party/user',
+    name: 'Users',
+    viewPermission: PartyUserViewPermission,
+    mini: 'US',
+    icon: PersonIcon,
+    component: UserContainer,
+  },
+  {
+    path: '/app/party/apiUser',
+    name: 'API Users',
+    viewPermission: PartyAPIUserViewPermission,
+    mini: 'AP',
+    icon: PersonIcon,
+    component: APIUserContainer,
   },
   {
     collapse: true,
-    path: '/app/tracker',
-    name: 'Trackers',
-    state: 'openTracker',
+    path: '/app/devices/sigbug',
+    name: 'Sigbug',
+    state: 'opensigbug',
     icon: TrackerIcon,
     views: [
       {
-        path: '/app/tracker/sf001',
+        path: '/app/devices/sigbug/list',
         name: 'SF001 Tracker',
         viewPermission: TrackerSF001ViewPermission,
         icon: TrackerIcon,
