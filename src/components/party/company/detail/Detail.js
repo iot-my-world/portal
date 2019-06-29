@@ -1,25 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  FormControl, FormHelperText,
-  Grid, InputLabel, MenuItem, Select, TextField,
+  Grid, TextField,
   withStyles, Fab, Tooltip,
 } from '@material-ui/core'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Dialog from 'components/Dialog'
-import {
-  allPartyTypes, ClientPartyType,
-  CompanyPartyType,
-  SystemPartyType,
-} from 'brain/party/types'
-import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
 import PartyHolder from 'brain/party/holder/Holder'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
-import SystemRecordHandler from 'brain/party/system/RecordHandler'
-import TextCriterion from 'brain/search/criterion/Text'
 import IdIdentifier from 'brain/search/identifier/Id'
-import CompanyRecordHandler from 'brain/party/company/RecordHandler'
-import ClientRecordHandler from 'brain/party/client/RecordHandler'
 import {
   CancelIcon,
   EditIcon,
@@ -57,65 +46,6 @@ const events = {
   finishEditExisting: activeStates.viewingExisting,
 }
 
-const loadPartyOptions = partyType => async (inputValue, callback) => {
-  let collectResponse
-  let callbackResults = []
-  switch (partyType) {
-    case SystemPartyType:
-      collectResponse = await SystemRecordHandler.Collect(
-        [
-          new TextCriterion({
-            field: 'name',
-            text: inputValue,
-          }),
-        ],
-      )
-      callbackResults = collectResponse.records.map(system => ({
-        label: system.name,
-        value: new IdIdentifier(system.id),
-        entity: system,
-      }))
-      break
-
-    case CompanyPartyType:
-      collectResponse = await CompanyRecordHandler.Collect(
-        [
-          new TextCriterion({
-            field: 'name',
-            text: inputValue,
-          }),
-        ],
-      )
-      callbackResults = collectResponse.records.map(company => ({
-        label: company.name,
-        value: new IdIdentifier(company.id),
-        entity: company,
-      }))
-      break
-
-    case ClientPartyType:
-      collectResponse = await ClientRecordHandler.Collect(
-        [
-          new TextCriterion({
-            field: 'name',
-            text: inputValue,
-          }),
-        ],
-      )
-      callbackResults = collectResponse.records.map(client => ({
-        label: client.name,
-        value: new IdIdentifier(client.id),
-        entity: client,
-      }))
-      break
-
-    default:
-      callbackResults = []
-  }
-  callbackResults = [{label: '-', value: ''}, ...callbackResults]
-  callback(callbackResults)
-}
-
 class Detail extends Component {
 
   constructor(props) {
@@ -124,7 +54,7 @@ class Detail extends Component {
       activeState: props.initialActiveState,
 
       company: new Company(props.company),
-      sf001TrackerCopy: new Company(),
+      companyCopy: new Company(),
     }
   }
 
@@ -259,15 +189,15 @@ class Detail extends Component {
     this.reasonsInvalid.clearAll()
     const {company} = this.state
     this.setState({
-      sf001TrackerCopy: new Company(company),
+      companyCopy: new Company(company),
       activeState: events.startEditExisting,
     })
   }
   handleCancelEditExisting = () => {
-    const {sf001TrackerCopy} = this.state
+    const {companyCopy} = this.state
     this.reasonsInvalid.clearAll()
     this.setState({
-      company: new Company(sf001TrackerCopy),
+      company: new Company(companyCopy),
       activeState: events.cancelEditExisting,
     })
   }

@@ -141,7 +141,6 @@ class Company extends Component {
       initialDetailDialogActiveState,
     } = this.state
     const {
-      theme,
       classes,
     } = this.props
 
@@ -271,7 +270,7 @@ class Company extends Component {
   }
 }
 
-Company = withStyles(styles, {withTheme: true})(Company)
+Company = withStyles(styles)(Company)
 
 Company.propTypes = {
   /**
