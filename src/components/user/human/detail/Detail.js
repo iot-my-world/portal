@@ -608,7 +608,7 @@ class Detail extends Component {
             className={classes.formField}
             id='surname'
             label='Surname'
-            value={user.name}
+            value={user.surname}
             onChange={this.handleFieldChange}
             InputProps={{
               disableUnderline: stateIsViewing,
@@ -625,7 +625,7 @@ class Detail extends Component {
             className={classes.formField}
             id='emailAddress'
             label='Email Address'
-            value={user.name}
+            value={user.emailAddress}
             onChange={this.handleFieldChange}
             InputProps={{
               disableUnderline: stateIsViewing,
