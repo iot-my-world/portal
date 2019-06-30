@@ -9,7 +9,7 @@ const RecordHandler = {
    * @param {Query} [query]
    * @constructor
    */
-  async Collect(criteria, query) {
+  async Collect({criteria, query}) {
     let collectResponse = await jsonRpcRequest({
       method: `${this.serviceProvider}.Collect`,
       request: {
