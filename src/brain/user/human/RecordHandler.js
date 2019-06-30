@@ -24,14 +24,16 @@ const RecordHandler = {
    * @param {Query} [query]
    * @constructor
    */
-  async Collect(criteria, query) {
-    return await jsonRpcRequest({
+  async Collect({criteria, query}) {
+    const response = await jsonRpcRequest({
       method: `${this.serviceProvider}.Collect`,
       request: {
         criteria,
         query,
       },
     })
+    response.records = response.records.map(user => new User(user))
+    return response
   },
 }
 

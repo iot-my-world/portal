@@ -175,7 +175,7 @@ class Live extends Component {
       return
     }
     try {
-      this.entityMap.Company = (await CompanyRecordHandler.Collect()).records
+      this.entityMap.Human = (await CompanyRecordHandler.Collect()).records
       this.companyIdentifiers = this.entityMap.Company.map(
           company =>
               new PartyIdentifier({

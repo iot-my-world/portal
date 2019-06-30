@@ -47,51 +47,52 @@ export default class Holder {
     if (systemEntityIds.length > 0) {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this._entityMap.System = (await SystemRecordHandler.Collect(
-          [
+      this._entityMap.System = (await SystemRecordHandler.Collect({
+          criteria: [
             new ListTextCriterion({
               field: 'id',
               list: systemEntityIds,
             }),
           ],
-          blankQuery,
+          query: blankQuery,
+        },
       )).records
     }
     // fetch company entities
     if (companyEntityIds.length > 0) {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this._entityMap.Company = (await CompanyRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: companyEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      this._entityMap.Company = (await CompanyRecordHandler.Collect({
+        criteria: [
+          new ListTextCriterion({
+            field: 'id',
+            list: companyEntityIds,
+          }),
+        ],
+        query: blankQuery,
+      })).records
     }
     // fetch client entities
     if (clientEntityIds.length > 0) {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this._entityMap.Client = (await ClientRecordHandler.Collect(
-          [
-            new ListTextCriterion({
-              field: 'id',
-              list: clientEntityIds,
-            }),
-          ],
-          blankQuery,
-      )).records
+      this._entityMap.Client = (await ClientRecordHandler.Collect({
+        criteria: [
+          new ListTextCriterion({
+            field: 'id',
+            list: clientEntityIds,
+          }),
+        ],
+        query: blankQuery,
+      })).records
     }
   }
 
   retrieveEntity(partyIdentifier, partyType) {
     if (partyType !== undefined) {
       return retrieveFromList(
-          partyIdentifier,
-          this._entityMap[partyType] ? this._entityMap[partyType] : [],
+        partyIdentifier,
+        this._entityMap[partyType] ? this._entityMap[partyType] : [],
       )
     }
 
@@ -127,8 +128,8 @@ export default class Holder {
     switch (partyType) {
       case SystemPartyType:
         if (this.retrieveEntity(
-            newPartyEntity[partyIdAccessor],
-            this._entityMap.System,
+          newPartyEntity[partyIdAccessor],
+          this._entityMap.System,
         ) === undefined) {
           this._entityMap.System.push(newPartyEntity)
         }
@@ -136,8 +137,8 @@ export default class Holder {
 
       case CompanyPartyType:
         if (this.retrieveEntity(
-            newPartyEntity[partyIdAccessor],
-            this._entityMap.Company,
+          newPartyEntity[partyIdAccessor],
+          this._entityMap.Company,
         ) === undefined) {
           this._entityMap.Company.push(newPartyEntity)
         }
@@ -145,8 +146,8 @@ export default class Holder {
 
       case ClientPartyType:
         if (this.retrieveEntity(
-            newPartyEntity[partyIdAccessor],
-            this._entityMap.Client,
+          newPartyEntity[partyIdAccessor],
+          this._entityMap.Client,
         ) === undefined) {
           this._entityMap.Client.push(newPartyEntity)
         }

@@ -329,7 +329,7 @@ class Historical extends Component {
       if (companyEntityIds.length > 0) {
         const blankQuery = new Query()
         blankQuery.limit = 0
-        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+        this.entityMap.Human = (await CompanyRecordHandler.Collect(
             [
               new ListTextCriterion({
                 field: 'id',
@@ -340,7 +340,7 @@ class Historical extends Component {
         )).records
       }
     } catch (e) {
-      this.entityMap.Company = []
+      this.entityMap.Human = []
       console.error('error collecting company records', e)
       NotificationFailure('Failed To Fetch Company Records')
       this.setState({recordCollectionInProgress: false})

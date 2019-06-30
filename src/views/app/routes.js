@@ -7,7 +7,7 @@ import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
-import UserContainer from 'views/party/user/UserContainer'
+import HumanUserContainer from 'views/user/human/HumanContainer'
 import APIUserContainer from 'views/party/apiUser/APIUserContainer'
 import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
@@ -48,7 +48,7 @@ const appSideBarLinkRoutes = [
     viewPermission: PartyUserViewPermission,
     mini: 'US',
     icon: PersonIcon,
-    component: UserContainer,
+    component: HumanUserContainer,
   },
   {
     path: '/app/party/apiUser',

@@ -11,7 +11,7 @@ import {
   MenuItem, FormHelperText,
 } from '@material-ui/core'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
-import Dialog from 'components/Dialog'
+import Dialog from 'components/Dialog/index'
 import PartyHolder from 'brain/party/holder/Holder'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import {
@@ -19,25 +19,26 @@ import {
   EditIcon,
   SaveIcon,
   EmailIcon,
-} from 'components/icon'
+} from 'components/icon/index'
 import {
-  Client,
-  ClientValidator,
-  ClientAdministrator,
-} from 'brain/party/client'
+  User,
+  UserValidator,
+  UserAdministrator,
+} from 'brain/user/human/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import PartyIdentifier from 'brain/search/identifier/Party'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
   allPartyTypes,
-  ClientPartyType, CompanyPartyType,
+  ClientPartyType,
+  CompanyPartyType,
   SystemPartyType,
 } from 'brain/party/types'
-import {AllClientTypes} from 'brain/party/client/types'
 import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
 import SystemRecordHandler from 'brain/party/system/RecordHandler'
 import TextCriterion from 'brain/search/criterion/Text'
-import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import {
+  CompanyRecordHandler,
+} from 'brain/party/company/index'
 import ClientRecordHandler from 'brain/party/client/RecordHandler'
 
 const styles = theme => ({
@@ -143,8 +144,8 @@ class Detail extends Component {
     this.state = {
       activeState: props.initialActiveState,
 
-      client: new Client(props.client),
-      clientCopy: new Client(),
+      user: new User(props.user),
+      userCopy: new User(),
     }
   }
 
@@ -154,22 +155,24 @@ class Detail extends Component {
 
   partyHolder = new PartyHolder()
   reasonsInvalid = new ReasonsInvalid()
-  clientRegistration = false
 
   load = async () => {
     const {
       party, claims, NotificationFailure,
       ShowGlobalLoader, HideGlobalLoader,
     } = this.props
-    const {
-      client, activeState,
-    } = this.state
+    const {user} = this.state
     ShowGlobalLoader()
     try {
       await this.partyHolder.load(
-        [client],
+        [user],
         'parentPartyType',
         'parentId',
+      )
+      await this.partyHolder.load(
+        [user],
+        'partyType',
+        'partyId',
       )
       this.partyHolder.update(
         party,
@@ -182,55 +185,35 @@ class Detail extends Component {
       return
     }
 
-    if (activeState !== activeStates.editingNew) {
-      try {
-        // find the admin user registration status of these companies
-        this.clientRegistration = (await PartyRegistrar.AreAdminsRegistered({
-          partyIdentifiers: [
-            new PartyIdentifier({
-              partyIdIdentifier: new IdIdentifier(client.id),
-              partyType: ClientPartyType,
-            }),
-          ],
-        })).result[client.id]
-      } catch (e) {
-        console.error(
-          `error determining admin registration status records: ${e}`)
-        NotificationFailure('Error Determining Admin Registration Status')
-        HideGlobalLoader()
-        return
-      }
-    }
-
     HideGlobalLoader()
   }
 
   handleFieldChange = e => {
-    let {client} = this.state
+    let {user} = this.state
     const fieldName = e.target.name ? e.target.name : e.target.id
-    client[fieldName] = e.target.value
+    user[fieldName] = e.target.value
     this.reasonsInvalid.clearField(fieldName)
 
     switch (fieldName) {
       case 'parentPartyType':
-        client.parentId = new IdIdentifier()
+        user.parentId = new IdIdentifier()
         break
 
       case 'parentId':
         this.partyHolder.update(
           e.selectionInfo.entity,
-          client.parentPartyType,
+          user.parentPartyType,
         )
         break
 
       default:
     }
 
-    this.setState({client})
+    this.setState({user})
   }
 
   handleSaveNew = async () => {
-    const {client} = this.state
+    const {user} = this.state
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -243,8 +226,8 @@ class Detail extends Component {
     // perform validation
     try {
       this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ClientValidator.Validate({
-        client: client,
+      const reasonsInvalid = (await UserValidator.Validate({
+        user: user,
         action: 'Create',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -253,33 +236,33 @@ class Detail extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Client', e)
-      NotificationFailure('Error Validating Client')
+      console.error('Error Validating User', e)
+      NotificationFailure('Error Validating User')
       HideGlobalLoader()
       return
     }
 
     // perform creation
     try {
-      const createResponse = await ClientAdministrator.Create({
-        client: client,
+      const createResponse = await UserAdministrator.Create({
+        user: user,
       })
-      NotificationSuccess('Successfully Created Client')
+      NotificationSuccess('Successfully Created User')
       this.setState({
-        client: createResponse.client,
+        user: createResponse.user,
         activeState: events.createNewSuccess,
       })
     } catch (e) {
-      console.error('Error Creating Client', e)
-      NotificationFailure('Error Creating Client')
+      console.error('Error Creating User', e)
+      NotificationFailure('Error Creating User')
       HideGlobalLoader()
       return
     }
     HideGlobalLoader()
   }
 
-  handleInviteAdmin = async () => {
-    const {client} = this.state
+  handleInviteUser = async () => {
+    const {user} = this.state
     const {
       NotificationSuccess, NotificationFailure,
       ShowGlobalLoader, HideGlobalLoader,
@@ -288,35 +271,35 @@ class Detail extends Component {
     ShowGlobalLoader()
     try {
       // perform the invite
-      await PartyRegistrar.InviteClientAdminUser({
-        clientIdentifier: client.identifier,
+      await PartyRegistrar.InviteUser({
+        userIdentifier: user.identifier,
       })
-      NotificationSuccess('Client Admin User Invited')
+      NotificationSuccess('User Invited')
     } catch (e) {
-      console.error('Failed to Invite Client Admin User', e)
-      NotificationFailure('Failed to Invite Client Admin User')
+      console.error('Failed to Invite User', e)
+      NotificationFailure('Failed to Invite User')
     }
     HideGlobalLoader()
   }
 
   handleStartEditExisting = () => {
     this.reasonsInvalid.clearAll()
-    const {client} = this.state
+    const {user} = this.state
     this.setState({
-      clientCopy: new Client(client),
+      userCopy: new User(user),
       activeState: events.startEditExisting,
     })
   }
   handleCancelEditExisting = () => {
-    const {clientCopy} = this.state
+    const {userCopy} = this.state
     this.reasonsInvalid.clearAll()
     this.setState({
-      client: new Client(clientCopy),
+      user: new User(userCopy),
       activeState: events.cancelEditExisting,
     })
   }
   handleSaveChanges = async () => {
-    const {client} = this.state
+    const {user} = this.state
     const {
       ShowGlobalLoader,
       HideGlobalLoader,
@@ -329,8 +312,8 @@ class Detail extends Component {
     // perform validation
     try {
       this.reasonsInvalid.clearAll()
-      const reasonsInvalid = (await ClientValidator.Validate({
-        client: client,
+      const reasonsInvalid = (await UserValidator.Validate({
+        user: user,
         action: 'Update',
       })).reasonsInvalid
       if (reasonsInvalid.count > 0) {
@@ -339,34 +322,36 @@ class Detail extends Component {
         return
       }
     } catch (e) {
-      console.error('Error Validating Client', e)
-      NotificationFailure('Error Validating Client')
+      console.error('Error Validating User', e)
+      NotificationFailure('Error Validating User')
       HideGlobalLoader()
       return
     }
 
     // perform update
     try {
-      const response = await ClientAdministrator.UpdateAllowedFields({
-        client: client,
+      const response = await UserAdministrator.UpdateAllowedFields({
+        user: user,
       })
       this.setState({
-        client: response.client,
+        user: response.user,
         activeState: events.finishEditExisting,
       })
     } catch (e) {
-      console.error('Error Updating Client', e)
-      NotificationFailure('Error Updating Client')
+      console.error('Error Updating User', e)
+      NotificationFailure('Error Updating User')
       HideGlobalLoader()
       return
     }
 
-    NotificationSuccess('Successfully Updated Client')
+    NotificationSuccess('Successfully Updated User')
     HideGlobalLoader()
   }
 
   renderControlIcons = () => {
-    const {activeState} = this.state
+    const {
+      activeState, user,
+    } = this.state
     const {classes} = this.props
 
     let controlIcons = []
@@ -386,13 +371,13 @@ class Detail extends Component {
           ),
           ...controlIcons,
         ]
-        if (!this.clientRegistration) {
+        if (!user.registered) {
           controlIcons = [
             (
-              <Tooltip title='Invite Admin'>
+              <Tooltip title='Invite User'>
                 <Fab
                   size={'small'}
-                  onClick={this.handleInviteAdmin}
+                  onClick={this.handleInviteUser}
                 >
                   <EmailIcon className={classes.buttonIcon}/>
                 </Fab>
@@ -460,128 +445,152 @@ class Detail extends Component {
       classes,
       claims,
     } = this.props
-    const {client, activeState} = this.state
+    const {user, activeState} = this.state
 
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === activeStates.viewingExisting
-    const stateIsCreateNew = activeState === activeStates.editingNew
 
     return (
       <Dialog
         open={open}
         closeDialog={closeDialog}
-        title={'Client'}
+        title={'User'}
         additionalTitleControls={this.renderControlIcons()}
         fullScreen={false}
       >
         <div className={classes.root}>
           {(claims.partyType === SystemPartyType) &&
-          <FormControl
-            className={classes.formField}
-            error={!!fieldValidations.parentPartyType}
-            aria-describedby='parentPartyType'
-          >
-            <InputLabel htmlFor='parentPartyType'>
-              Parent Party Type
-            </InputLabel>
-            <Select
-              id='parentPartyType'
-              name='parentPartyType'
-              value={client.parentPartyType}
-              onChange={this.handleFieldChange}
-              style={{width: 150}}
-              disableUnderline={stateIsViewing}
-              inputProps={{readOnly: stateIsViewing}}
+          <React.Fragment>
+            <FormControl
+              className={classes.formField}
+              error={!!fieldValidations.parentPartyType}
+              aria-describedby='parentPartyType'
             >
-              <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              {allPartyTypes.map((partyType, idx) => {
-                return (
-                  <MenuItem key={idx} value={partyType}>
-                    {partyType}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-            {!!fieldValidations.parentPartyType && (
-              <FormHelperText id='parentPartyType'>
-                {
-                  fieldValidations.parentPartyType ?
-                    fieldValidations.parentPartyType.help :
-                    undefined
-                }
-              </FormHelperText>
-            )}
-          </FormControl>}
-          {(claims.partyType === SystemPartyType) &&
-          <AsyncSelect
-            id='parentId'
-            label={'Parent'}
-            blankValue={new IdIdentifier()}
-            value={{
-              value: client.ownerId,
-              label: (() => {
-                return this.partyHolder.retrieveEntityProp(
-                  'name',
-                  client.parentId,
-                )
-              })(),
-            }}
-            onChange={this.handleFieldChange}
-            loadOptions={loadPartyOptions(client.parentPartyType)}
-            menuPosition={'fixed'}
-            readOnly={stateIsViewing}
-            helperText={
-              fieldValidations.parentId
-                ? fieldValidations.parentId.help
-                : undefined
-            }
-            error={!!fieldValidations.parentId}
-          />}
-          <FormControl
-            className={classes.formField}
-            error={!!fieldValidations.type}
-            aria-describedby='type'
-          >
-            <InputLabel htmlFor='type'>
-              Client Type
-            </InputLabel>
-            <Select
-              id='type'
-              name='type'
-              value={client.type}
+              <InputLabel htmlFor='parentPartyType'>
+                Parent Party Type
+              </InputLabel>
+              <Select
+                id='parentPartyType'
+                name='parentPartyType'
+                value={user.parentPartyType}
+                onChange={this.handleFieldChange}
+                style={{width: 150}}
+                disableUnderline={stateIsViewing}
+                inputProps={{readOnly: stateIsViewing}}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                {allPartyTypes.map((partyType, idx) => {
+                  return (
+                    <MenuItem key={idx} value={partyType}>
+                      {partyType}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              {!!fieldValidations.parentPartyType && (
+                <FormHelperText id='parentPartyType'>
+                  {
+                    fieldValidations.parentPartyType ?
+                      fieldValidations.parentPartyType.help :
+                      undefined
+                  }
+                </FormHelperText>
+              )}
+            </FormControl>
+            <AsyncSelect
+              id='parentId'
+              label={'Parent'}
+              blankValue={new IdIdentifier()}
+              value={{
+                value: user.ownerId,
+                label: (() => {
+                  return this.partyHolder.retrieveEntityProp(
+                    'name',
+                    user.parentId,
+                  )
+                })(),
+              }}
               onChange={this.handleFieldChange}
-              style={{width: 150}}
-              disableUnderline={stateIsViewing}
-              inputProps={{readOnly: stateIsViewing}}
+              loadOptions={loadPartyOptions(user.parentPartyType)}
+              menuPosition={'fixed'}
+              readOnly={stateIsViewing}
+              helperText={
+                fieldValidations.parentId
+                  ? fieldValidations.parentId.help
+                  : undefined
+              }
+              error={!!fieldValidations.parentId}
+            />
+            <FormControl
+              className={classes.formField}
+              error={!!fieldValidations.partyType}
+              aria-describedby='partyType'
             >
-              <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              {AllClientTypes.map((partyType, idx) => {
-                return (
-                  <MenuItem key={idx} value={partyType}>
-                    {partyType}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-            {!!fieldValidations.type && (
-              <FormHelperText id='type'>
-                {
-                  fieldValidations.type ?
-                    fieldValidations.type.help :
-                    undefined
-                }
-              </FormHelperText>
-            )}
-          </FormControl>
+              <InputLabel htmlFor='partyType'>
+                Party Type
+              </InputLabel>
+              <Select
+                id='partyType'
+                name='partyType'
+                value={user.partyType}
+                onChange={this.handleFieldChange}
+                style={{width: 150}}
+                disableUnderline={stateIsViewing}
+                inputProps={{readOnly: stateIsViewing}}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                {allPartyTypes.map((partyType, idx) => {
+                  return (
+                    <MenuItem key={idx} value={partyType}>
+                      {partyType}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              {!!fieldValidations.partyType && (
+                <FormHelperText id='partyType'>
+                  {
+                    fieldValidations.partyType ?
+                      fieldValidations.partyType.help :
+                      undefined
+                  }
+                </FormHelperText>
+              )}
+            </FormControl>
+            <AsyncSelect
+              id='partyId'
+              label={'Party'}
+              blankValue={new IdIdentifier()}
+              value={{
+                value: user.ownerId,
+                label: (() => {
+                  return this.partyHolder.retrieveEntityProp(
+                    'name',
+                    user.partyId,
+                  )
+                })(),
+              }}
+              onChange={this.handleFieldChange}
+              loadOptions={loadPartyOptions(user.partyId)}
+              menuPosition={'fixed'}
+              readOnly={stateIsViewing}
+              helperText={
+                fieldValidations.partyId
+                  ? fieldValidations.partyId.help
+                  : undefined
+              }
+              error={!!fieldValidations.partyId}
+            />
+          </React.Fragment>}
           <TextField
             className={classes.formField}
             id='name'
             label='Name'
-            value={client.name}
+            value={user.name}
             onChange={this.handleFieldChange}
             InputProps={{
               disableUnderline: stateIsViewing,
@@ -596,20 +605,37 @@ class Detail extends Component {
           />
           <TextField
             className={classes.formField}
-            id='adminEmailAddress'
-            label='Admin Email Address'
-            value={client.adminEmailAddress}
+            id='surname'
+            label='Surname'
+            value={user.surname}
             onChange={this.handleFieldChange}
             InputProps={{
-              disableUnderline: !stateIsCreateNew,
-              readOnly: !stateIsCreateNew,
+              disableUnderline: stateIsViewing,
+              readOnly: stateIsViewing,
             }}
             helperText={
-              fieldValidations.adminEmailAddress
-                ? fieldValidations.adminEmailAddress.help
+              fieldValidations.surname
+                ? fieldValidations.surname.help
                 : undefined
             }
-            error={!!fieldValidations.adminEmailAddress}
+            error={!!fieldValidations.surname}
+          />
+          <TextField
+            className={classes.formField}
+            id='emailAddress'
+            label='Email Address'
+            value={user.emailAddress}
+            onChange={this.handleFieldChange}
+            InputProps={{
+              disableUnderline: stateIsViewing,
+              readOnly: stateIsViewing,
+            }}
+            helperText={
+              fieldValidations.emailAddress
+                ? fieldValidations.emailAddress.help
+                : undefined
+            }
+            error={!!fieldValidations.emailAddress}
           />
         </div>
       </Dialog>
@@ -653,9 +679,9 @@ Detail.propTypes = {
    */
   party: PropTypes.object.isRequired,
   /**
-   * the client tracker being viewed or edited
+   * the user tracker being viewed or edited
    */
-  client: PropTypes.instanceOf(Client),
+  user: PropTypes.instanceOf(User),
   initialActiveState: PropTypes.oneOf(Object.values(activeStates)),
 }
 Detail.defaultProps = {
