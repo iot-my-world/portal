@@ -201,7 +201,7 @@ class Client extends Component {
             <BEPTable
               loading={recordCollectionInProgress}
               totalNoRecords={totalNoRecords}
-              noDataText={'No Devices Found'}
+              noDataText={'No Clients Found'}
               data={records}
               onCriteriaQueryChange={this.handleCriteriaQueryChange}
               additionalControls={this.getAdditionalTableIcons()}

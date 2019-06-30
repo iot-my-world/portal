@@ -201,7 +201,7 @@ class Company extends Component {
             <BEPTable
               loading={recordCollectionInProgress}
               totalNoRecords={totalNoRecords}
-              noDataText={'No Devices Found'}
+              noDataText={'No Companies Found'}
               data={records}
               onCriteriaQueryChange={this.handleCriteriaQueryChange}
               additionalControls={this.getAdditionalTableIcons()}
@@ -256,8 +256,8 @@ class Company extends Component {
                   Cell:
                     rowCellInfo =>
                       this.companyRegistration[rowCellInfo.original.id]
-                      ? 'Yes'
-                      : 'No',
+                        ? 'Yes'
+                        : 'No',
                 },
               ]}
               handleRowSelect={this.handleSelect}
