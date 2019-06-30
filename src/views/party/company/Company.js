@@ -23,6 +23,7 @@ import {
   ViewDetailsIcon,
   AddNewIcon,
   ReloadIcon,
+  EmailIcon,
 } from 'components/icon'
 import CompanyDetailDialogContainer
   from 'components/party/company/detail/DetailContainer'
@@ -158,6 +159,27 @@ class Company extends Component {
     })
   }
 
+  handleInviteAdmin = async () => {
+    const {selectedCompany} = this.state
+    const {
+      NotificationSuccess, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
+    } = this.props
+
+    ShowGlobalLoader()
+    try {
+      // perform the invite
+      await PartyRegistrar.InviteCompanyAdminUser({
+        companyIdentifier: selectedCompany.identifier,
+      })
+      NotificationSuccess('Company Admin User Invited')
+    } catch (e) {
+      console.error('Failed to Invite Company Admin User', e)
+      NotificationFailure('Failed to Invite Company Admin User')
+    }
+    HideGlobalLoader()
+  }
+
   render() {
     const {
       recordCollectionInProgress,
@@ -253,7 +275,9 @@ class Company extends Component {
   }
 
   getAdditionalTableIcons = () => {
-    const {activeState} = this.state
+    const {
+      activeState, selectedCompany,
+    } = this.state
     let additionalIcons = [
       (
         <IconButton onClick={this.handleCreateNew}>
@@ -303,6 +327,25 @@ class Company extends Component {
         ),
         ...additionalIcons,
       ]
+      if (!this.companyRegistration[selectedCompany.id]) {
+        additionalIcons = [
+          (
+            <IconButton
+              onClick={this.handleInviteAdmin}
+            >
+              <Tooltip
+                title={'Invite Admin'}
+                placement={'top'}
+              >
+                <Icon>
+                  <EmailIcon/>
+                </Icon>
+              </Tooltip>
+            </IconButton>
+          ),
+          ...additionalIcons,
+        ]
+      }
     }
     return additionalIcons
   }
