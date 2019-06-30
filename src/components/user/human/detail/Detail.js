@@ -524,44 +524,6 @@ class Detail extends Component {
             }
             error={!!fieldValidations.parentId}
           />}
-          <FormControl
-            className={classes.formField}
-            error={!!fieldValidations.type}
-            aria-describedby='type'
-          >
-            <InputLabel htmlFor='type'>
-              User Type
-            </InputLabel>
-            <Select
-              id='type'
-              name='type'
-              value={user.type}
-              onChange={this.handleFieldChange}
-              style={{width: 150}}
-              disableUnderline={stateIsViewing}
-              inputProps={{readOnly: stateIsViewing}}
-            >
-              <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              {allPartyTypes.map((partyType, idx) => {
-                return (
-                  <MenuItem key={idx} value={partyType}>
-                    {partyType}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-            {!!fieldValidations.type && (
-              <FormHelperText id='type'>
-                {
-                  fieldValidations.type ?
-                    fieldValidations.type.help :
-                    undefined
-                }
-              </FormHelperText>
-            )}
-          </FormControl>
           <TextField
             className={classes.formField}
             id='name'
@@ -581,20 +543,37 @@ class Detail extends Component {
           />
           <TextField
             className={classes.formField}
-            id='adminEmailAddress'
-            label='Admin Email Address'
-            value={user.adminEmailAddress}
+            id='surname'
+            label='Surname'
+            value={user.name}
             onChange={this.handleFieldChange}
             InputProps={{
-              disableUnderline: !stateIsCreateNew,
-              readOnly: !stateIsCreateNew,
+              disableUnderline: stateIsViewing,
+              readOnly: stateIsViewing,
             }}
             helperText={
-              fieldValidations.adminEmailAddress
-                ? fieldValidations.adminEmailAddress.help
+              fieldValidations.surname
+                ? fieldValidations.surname.help
                 : undefined
             }
-            error={!!fieldValidations.adminEmailAddress}
+            error={!!fieldValidations.surname}
+          />
+          <TextField
+            className={classes.formField}
+            id='emailAddress'
+            label='EmailAddress'
+            value={user.name}
+            onChange={this.handleFieldChange}
+            InputProps={{
+              disableUnderline: stateIsViewing,
+              readOnly: stateIsViewing,
+            }}
+            helperText={
+              fieldValidations.emailAddress
+                ? fieldValidations.emailAddress.help
+                : undefined
+            }
+            error={!!fieldValidations.emailAddress}
           />
         </div>
       </Dialog>
