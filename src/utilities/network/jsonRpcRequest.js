@@ -15,7 +15,7 @@ const methodsWithoutAuthorization = [
  * @param {boolean} [verbose]
  * @returns {Promise<any>}
  */
-export default function jsonRpcRequest({url, method, request, verbose}) {
+export default async function jsonRpcRequest({url, method, request, verbose}) {
   const id = uuid()
   let header = new Headers({
     'Access-Control-Allow-Origin': '*',
@@ -47,29 +47,28 @@ export default function jsonRpcRequest({url, method, request, verbose}) {
     }
   }
 
-  return new Promise((resolve, reject) => {
-    fetch(
-        url ? url : config.get('brainAPIUrl'),
-        {
-          method: 'POST',
-          headers: header,
-          mode: 'cors',
-          body: JSON.stringify(body),
-        },
-    ).then(responseObject => {
-      return responseObject.json()
-    }).then(response => {
-      if (response.result) {
-        console.debug(`API Response Success: ${body.method} -->`,
-            response.result)
-        resolve(response.result)
-      } else {
-        console.error(`API Response Error: ${body.method} -->`, response.error)
-        reject(new MethodFailed(response.error, body.method))
-      }
-    }).catch(error => {
-      console.error(`API Failed: ${body.method} -->`, error)
-      reject(new ContactFailed(error, body.method))
-    })
-  })
+  let responseObjectJson
+  try {
+    const responseObject = await fetch(
+      url ? url : config.get('brainAPIUrl'),
+      {
+        method: 'POST',
+        headers: header,
+        mode: 'cors',
+        body: JSON.stringify(body),
+      },
+    )
+    responseObjectJson = await responseObject.json()
+  } catch (e) {
+    console.error(`API Failed: ${body.method} -->`, e)
+    throw new ContactFailed(e, body.method)
+  }
+
+  if (responseObjectJson.result) {
+    console.debug(`API Response Success: ${body.method} -->`, responseObjectJson.result)
+    return responseObjectJson.result
+  } else {
+    console.error(`API Response Error: ${body.method} -->`, responseObjectJson.error)
+    throw new MethodFailed(responseObjectJson.error, body.method)
+  }
 }

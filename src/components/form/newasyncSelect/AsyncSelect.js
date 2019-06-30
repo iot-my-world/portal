@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import ReactAsyncSelect from 'react-select/async'
+import classNames from 'classnames'
 import {withStyles, TextField, FormHelperText} from '@material-ui/core'
 
 const styles = theme => ({
@@ -10,7 +11,10 @@ const styles = theme => ({
   label: {
     fontFamily: theme.typography.fontFamily,
     fontSize: 13,
-    marginBottom: '12px',
+    marginBottom: theme.spacing(1),
+  },
+  labelError: {
+    color: theme.palette.error.main,
   },
   helperText: {
     marginTop: '-2px',
@@ -87,6 +91,15 @@ class AsyncSelect extends Component {
     }
   }
 
+  loadOptions = async () => {
+    const {loadOptions} = this.props
+    try {
+      return await loadOptions()
+    } catch (e) {
+      console.error('error loading options for async select', e)
+    }
+  }
+
   render() {
     const {
       onChange,
@@ -106,61 +119,72 @@ class AsyncSelect extends Component {
         ...evenMoreRest
       } = rest
       return <TextField
-          label={label}
-          className={classes.formField}
-          value={value.label}
-          InputProps={{
-            disableUnderline: true,
-            readOnly: true,
-          }}
-          helperText={helperText}
-          error={error}
-          {...evenMoreRest}
+        label={label}
+        className={classes.formField}
+        value={value.label}
+        InputProps={{
+          disableUnderline: true,
+          readOnly: true,
+        }}
+        helperText={helperText}
+        error={error}
+        {...evenMoreRest}
       />
     } else {
       return (
+        <div
+          style={{
+            height: error ? '45px' : '31px',
+            margin: '0 0 32px 0',
+            display: 'grid',
+            gridTemplateRows: 'auto auto auto',
+            gridTemplateColumns: 'auto',
+          }}
+        >
           <div
-              style={{
-                height: error ? '45px' : '31px',
-                display: 'grid',
-                // gridGap: '16px',
-                gridTemplateRows: 'auto auto auto',
-                gridTemplateColumns: 'auto',
-                // marginLeft: '40px',
-                // marginRight: '40px',
-              }}
+            className={classNames(
+              classes.label,
+              {
+                [classes.labelError]: error,
+              },
+            )}
           >
-            <div className={classes.label}>
-              {label}
-            </div>
-            <ReactAsyncSelect
-                styles={this.asyncSelectStyles}
-                onChange={this.onChange}
-                value={value}
-                defaultOptions={[
-                  {
-                    value: '',
-                    label: 'Start typing to search..',
-                  }]}
-                {...rest}
-            />
-            <div className={classes.helperText}>
-              {helperText &&
-              <FormHelperText
-                  error={error}
-                  id='helperText'
-              >
-                {helperText}
-              </FormHelperText>}
-            </div>
+            {label}
           </div>
+          <ReactAsyncSelect
+            styles={this.asyncSelectStyles}
+            onChange={this.onChange}
+            value={value}
+            defaultOptions={[
+              {
+                value: '',
+                label: 'Start typing to search...',
+              },
+              {
+                value: '',
+                label: 'Blank',
+              },
+            ]}
+            loadOptions={this.loadOptions}
+            {...rest}
+          />
+          <div className={classes.helperText}>
+            {helperText &&
+            <FormHelperText
+              error={error}
+              id='helperText'
+            >
+              {helperText}
+            </FormHelperText>}
+          </div>
+        </div>
       )
     }
   }
 }
 
 AsyncSelect.defaultProps = {
-  blankValue: ''
+  blankValue: '',
 }
 
 const StyledAsyncSelect = withStyles(styles, {withTheme: true})(AsyncSelect)

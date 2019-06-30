@@ -7,7 +7,6 @@ import {
 import {
   MdClose as CloseIcon,
 } from 'react-icons/md'
-import classNames from 'classnames'
 import logo from 'assets/images/logo/logo_emblem.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 
@@ -18,7 +17,7 @@ const styles = theme => ({
   dialogTitleRoot: {
     padding: '0 0 0 0',
     backgroundColor: theme.palette.primary.main,
-    height: '46px'
+    height: '46px',
   },
   dialogTitle: {
     padding: '2px 5px 2px 5px',
@@ -62,17 +61,6 @@ const styles = theme => ({
     fontSize: '15px',
     color: theme.palette.primary.contrastText,
   },
-  contentRoot: {
-    display: 'grid',
-    gridTemplateRows: '1fr',
-    gridTemplateColumns: '1fr',
-    overflow: 'hidden',
-    padding: 5,
-  },
-  contentRootFullScreen: {
-    height: "calc(100vh - 56px)",
-    overflow: 'hidden',
-  }
 })
 
 class Dialog extends Component {
@@ -93,7 +81,10 @@ class Dialog extends Component {
       return null
     }
 
-    const fullScreenActive = (!isWidthUp('md', width)) || fullScreen
+    let fullScreenActive = (!isWidthUp('md', width))
+    if (fullScreen !== undefined) {
+      fullScreenActive = fullScreen
+    }
 
     return (
       <MUIDialog
@@ -124,28 +115,21 @@ class Dialog extends Component {
                 )
               })}
               <div className={classes.dialogTitleControlWrapper}>
-                <Fab
-                  color='primary'
-                  aria-label='Close'
-                  className={classes.dialogTitleCloseButton}
-                  onClick={closeDialog}
-                >
-                  <Tooltip title='Close' placement='top'>
+                <Tooltip title='Close' placement='top'>
+                  <Fab
+                    color='primary'
+                    aria-label='Close'
+                    className={classes.dialogTitleCloseButton}
+                    onClick={closeDialog}
+                  >
                     <CloseIcon className={classes.dialogTitleCloseIcon}/>
-                  </Tooltip>
-                </Fab>
+                  </Fab>
+                </Tooltip>
               </div>
             </div>
           </div>
         </DialogTitle>
-        <DialogContent
-          classes={{
-            root: classNames(
-              classes.contentRoot,
-              {[classes.contentRootFullScreen]: fullScreenActive}
-            )
-          }}
-        >
+        <DialogContent>
           {children}
         </DialogContent>
       </MUIDialog>

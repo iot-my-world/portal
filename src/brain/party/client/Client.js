@@ -22,6 +22,12 @@ export default class Client extends Base {
    * @type {string}
    * @private
    */
+  _type = ''
+
+  /**
+   * @type {string}
+   * @private
+   */
   _adminEmailAddress = ''
 
   /**
@@ -51,6 +57,7 @@ export default class Client extends Base {
     ) {
       try {
         this._id = client.id
+        this._type = client.type
         this._name = client.name
         this._adminEmailAddress = client.adminEmailAddress
         this._parentPartyType = client.parentPartyType
@@ -71,6 +78,14 @@ export default class Client extends Base {
 
   set name(newVal) {
     this._name = newVal
+  }
+
+  get type() {
+    return this._type
+  }
+
+  set type(newVal) {
+    this._type = newVal
   }
 
   get adminEmailAddress() {

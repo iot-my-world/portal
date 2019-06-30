@@ -6,7 +6,7 @@ import config from 'react-global-configuration'
 import RootContainer from './views/root/RootContainer'
 import reducers from './reducers/index'
 
-import "assets/scss/material-dashboard-pro-react.css?v=1.2.0"
+import "index.css"
 
 const store = createStore(
     reducers,

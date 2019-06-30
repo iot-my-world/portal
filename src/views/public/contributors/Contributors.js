@@ -43,7 +43,7 @@ const styles = theme => ({
     '&:hover': {
       textDecoration: 'underline',
     },
-  }
+  },
 })
 
 const githubRepos = [
@@ -55,6 +55,8 @@ const githubRepos = [
 ]
 
 class Contributors extends Component {
+  retryLoadCount = 0
+
   state = {
     loading: false,
   }
@@ -71,6 +73,9 @@ class Contributors extends Component {
   repoContributors = {}
 
   repoContributorData = {}
+
+  loadTimeout = () => {
+  }
 
   load = async () => {
     this.setState({loading: true})
@@ -102,6 +107,10 @@ class Contributors extends Component {
       }
     } catch (e) {
       console.error('loading error', e)
+      if (this.retryLoadCount < 4) {
+        this.retryLoadCount++
+        this.loadTimeout = setTimeout(this.load, 500)
+      }
     }
     this.setState({loading: false})
   }

@@ -17,6 +17,7 @@ let CompanyContainer = props => {
 const mapStateToProps = (state) => {
   return {
     claims: state.auth.claims,
+    party: state.auth.party,
   }
 }
 
