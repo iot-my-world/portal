@@ -140,6 +140,7 @@ class Company extends Component {
     } catch (e) {
       console.error('Error Loading Associated Parties', e)
       NotificationFailure('Error Loading Associated Parties')
+      return
     }
     this.setState({recordCollectionInProgress: false})
   }

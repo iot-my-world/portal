@@ -11,12 +11,17 @@ import {
   CancelIcon,
   EditIcon,
   SaveIcon,
+  EmailIcon,
 } from 'components/icon'
 import {
   Company,
   CompanyValidator,
   CompanyAdministrator,
 } from 'brain/party/company'
+import PartyRegistrar from 'brain/party/registrar/Registrar'
+import PartyIdentifier from 'brain/search/identifier/Party'
+import IdIdentifier from 'brain/search/identifier/Id'
+import {CompanyPartyType} from 'brain/party/types'
 
 const styles = theme => ({
   root: {
@@ -72,13 +77,16 @@ class Detail extends Component {
 
   partyHolder = new PartyHolder()
   reasonsInvalid = new ReasonsInvalid()
+  companyRegistration = false
 
   load = async () => {
     const {
       party, claims, NotificationFailure,
       ShowGlobalLoader, HideGlobalLoader,
     } = this.props
-    const {company} = this.state
+    const {
+      company, activeState,
+    } = this.state
     ShowGlobalLoader()
     try {
       await this.partyHolder.load(
@@ -93,7 +101,29 @@ class Detail extends Component {
     } catch (e) {
       console.error('Error Loading Associated Parties', e)
       NotificationFailure('Error Loading Associated Parties')
+      HideGlobalLoader()
+      return
     }
+
+    if (activeState !== activeStates.editingNew) {
+      try {
+        // find the admin user registration status of these companies
+        this.companyRegistration = (await PartyRegistrar.AreAdminsRegistered({
+          partyIdentifiers: [
+            new PartyIdentifier({
+              partyIdIdentifier: new IdIdentifier(company.id),
+              partyType: CompanyPartyType,
+            })
+          ],
+        })).result[company.id]
+      } catch (e) {
+        console.error(`error determining admin registration status records: ${e}`)
+        NotificationFailure('Error Determining Admin Registration Status')
+        HideGlobalLoader()
+        return
+      }
+    }
+
     HideGlobalLoader()
   }
 
@@ -150,6 +180,27 @@ class Detail extends Component {
       NotificationFailure('Error Creating Company')
       HideGlobalLoader()
       return
+    }
+    HideGlobalLoader()
+  }
+
+  handleInviteAdmin = async () => {
+    const {company} = this.state
+    const {
+      NotificationSuccess, NotificationFailure,
+      ShowGlobalLoader, HideGlobalLoader,
+    } = this.props
+
+    ShowGlobalLoader()
+    try {
+      // perform the invite
+      await PartyRegistrar.InviteCompanyAdminUser({
+        companyIdentifier: company.identifier,
+      })
+      NotificationSuccess('Company Admin User Invited')
+    } catch (e) {
+      console.error('Failed to Invite Company Admin User', e)
+      NotificationFailure('Failed to Invite Company Admin User')
     }
     HideGlobalLoader()
   }
@@ -224,9 +275,11 @@ class Detail extends Component {
     const {activeState} = this.state
     const {classes} = this.props
 
+    let controlIcons = []
+
     switch (activeState) {
       case activeStates.viewingExisting:
-        return [
+        controlIcons = [
           (
             <Tooltip title='Edit'>
               <Fab
@@ -237,10 +290,27 @@ class Detail extends Component {
               </Fab>
             </Tooltip>
           ),
+          ...controlIcons,
         ]
+        if (!this.companyRegistration) {
+          controlIcons = [
+            (
+              <Tooltip title='Invite Admin'>
+                <Fab
+                  size={'small'}
+                  onClick={this.handleInviteAdmin}
+                >
+                  <EmailIcon className={classes.buttonIcon}/>
+                </Fab>
+              </Tooltip>
+            ),
+            ...controlIcons,
+          ]
+        }
+        break
 
       case activeStates.editingNew:
-        return [
+        controlIcons = [
           (
             <Tooltip title='Save New'>
               <Fab
@@ -251,10 +321,12 @@ class Detail extends Component {
               </Fab>
             </Tooltip>
           ),
+          ...controlIcons
         ]
+        break
 
       case activeStates.editingExisting:
-        return [
+        controlIcons = [
           (
             <Tooltip title='Save Changes'>
               <Fab
@@ -275,12 +347,16 @@ class Detail extends Component {
               </Fab>
             </Tooltip>
           ),
+          ...controlIcons,
         ]
+        break
 
       case activeStates.nop:
       default:
         return []
     }
+
+    return controlIcons
   }
 
   render() {
