@@ -7,7 +7,6 @@ import {
 import {
   MdClose as CloseIcon,
 } from 'react-icons/md'
-import classNames from 'classnames'
 import logo from 'assets/images/logo/logo_emblem.png'
 import withWidth, {isWidthUp} from '@material-ui/core/withWidth'
 
@@ -61,17 +60,6 @@ const styles = theme => ({
   dialogTitleCloseIcon: {
     fontSize: '15px',
     color: theme.palette.primary.contrastText,
-  },
-  contentRoot: {
-    display: 'grid',
-    gridTemplateRows: '1fr',
-    gridTemplateColumns: '1fr',
-    overflow: 'hidden',
-    padding: 5,
-  },
-  contentRootFullScreen: {
-    height: 'calc(100vh - 56px)',
-    overflow: 'hidden',
   },
 })
 
@@ -141,14 +129,7 @@ class Dialog extends Component {
             </div>
           </div>
         </DialogTitle>
-        <DialogContent
-          classes={{
-            root: classNames(
-              classes.contentRoot,
-              {[classes.contentRootFullScreen]: fullScreenActive},
-            ),
-          }}
-        >
+        <DialogContent>
           {children}
         </DialogContent>
       </MUIDialog>

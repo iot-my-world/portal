@@ -1,14 +1,12 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  Grid, TextField,
-  withStyles, Fab, Tooltip,
+  TextField, withStyles, Fab, Tooltip,
 } from '@material-ui/core'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Dialog from 'components/Dialog'
 import PartyHolder from 'brain/party/holder/Holder'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
-import IdIdentifier from 'brain/search/identifier/Id'
 import {
   CancelIcon,
   EditIcon,
@@ -21,9 +19,19 @@ import {
 } from 'brain/party/company'
 
 const styles = theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
   formField: {
     height: '60px',
-    width: '300px',
+    marginBottom: theme.spacing(1),
+    [theme.breakpoints.down('sm')]: {
+      width: `calc(100% - ${theme.spacing(1)}px)`,
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '300px',
+    },
   },
   buttonIcon: {
     fontSize: '20px',
@@ -295,46 +303,42 @@ class Detail extends Component {
         additionalTitleControls={this.renderControlIcons()}
         fullScreen={false}
       >
-        <Grid container spacing={1}>
-          <Grid item xs>
-            <TextField
-              className={classes.formField}
-              id='name'
-              label='Name'
-              value={company.name}
-              onChange={this.handleFieldChange}
-              InputProps={{
-                disableUnderline: stateIsViewing,
-                readOnly: stateIsViewing,
-              }}
-              helperText={
-                fieldValidations.name
-                  ? fieldValidations.name.help
-                  : undefined
-              }
-              error={!!fieldValidations.name}
-            />
-          </Grid>
-          <Grid item xs>
-            <TextField
-              className={classes.formField}
-              id='adminEmailAddress'
-              label='Admin Email Address'
-              value={company.adminEmailAddress}
-              onChange={this.handleFieldChange}
-              InputProps={{
-                disableUnderline: !stateIsCreateNew,
-                readOnly: !stateIsCreateNew,
-              }}
-              helperText={
-                fieldValidations.adminEmailAddress
-                  ? fieldValidations.adminEmailAddress.help
-                  : undefined
-              }
-              error={!!fieldValidations.adminEmailAddress}
-            />
-          </Grid>
-        </Grid>
+        <div className={classes.root}>
+          <TextField
+            className={classes.formField}
+            id='name'
+            label='Name'
+            value={company.name}
+            onChange={this.handleFieldChange}
+            InputProps={{
+              disableUnderline: stateIsViewing,
+              readOnly: stateIsViewing,
+            }}
+            helperText={
+              fieldValidations.name
+                ? fieldValidations.name.help
+                : undefined
+            }
+            error={!!fieldValidations.name}
+          />
+          <TextField
+            className={classes.formField}
+            id='adminEmailAddress'
+            label='Admin Email Address'
+            value={company.adminEmailAddress}
+            onChange={this.handleFieldChange}
+            InputProps={{
+              disableUnderline: !stateIsCreateNew,
+              readOnly: !stateIsCreateNew,
+            }}
+            helperText={
+              fieldValidations.adminEmailAddress
+                ? fieldValidations.adminEmailAddress.help
+                : undefined
+            }
+            error={!!fieldValidations.adminEmailAddress}
+          />
+        </div>
       </Dialog>
     )
 

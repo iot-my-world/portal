@@ -26,6 +26,10 @@ import {
 } from 'components/icon'
 import CompanyDetailDialogContainer
   from 'components/party/company/detail/DetailContainer'
+import PartyRegistrar from 'brain/party/registrar/Registrar'
+import PartyIdentifier from 'brain/search/identifier/Party'
+import IdIdentifier from 'brain/search/identifier/Id'
+import {CompanyPartyType} from 'brain/party/types'
 
 const styles = theme => ({})
 
@@ -59,6 +63,7 @@ class Company extends Component {
   }
   collectCriteria = []
   collectQuery = new Query()
+  companyRegistration = {}
 
   componentDidMount() {
     this.collect()
@@ -106,6 +111,22 @@ class Company extends Component {
     }
 
     try {
+      // find the admin user registration status of these companies
+      this.companyRegistration = (await PartyRegistrar.AreAdminsRegistered({
+        partyIdentifiers: collectResponse.records.map(company => {
+          return new PartyIdentifier({
+            partyIdIdentifier: new IdIdentifier(company.id),
+            partyType: CompanyPartyType,
+          })
+        }),
+      })).result
+    } catch (e) {
+      console.error(`error collecting records: ${e}`)
+      NotificationFailure('Error Fetching Companies')
+      return
+    }
+
+    try {
       await this.partyHolder.load(
         collectResponse.records,
         'parentPartyType',
@@ -123,10 +144,16 @@ class Company extends Component {
   }
 
   handleCreateNew = () => {
+    const {
+      claims,
+    } = this.props
+    const newCompany = new CompanyEntity()
+    newCompany.parentId = claims.partyId
+    newCompany.parentPartyType = claims.partyType
     this.setState({
-      selectedCompany: new CompanyEntity(),
-      // initialDetailDialogActiveState:
-      // companyDetailDialogActiveStates.editingNew,
+      selectedCompany: newCompany,
+      initialDetailDialogActiveState:
+      companyDetailDialogActiveStates.editingNew,
       detailDialogOpen: true,
     })
   }
@@ -197,6 +224,17 @@ class Company extends Component {
                   },
                   width: 150,
                   filterable: false,
+                },
+                {
+                  Header: 'Admin Registered',
+                  accessor: '',
+                  filterable: false,
+                  sortable: false,
+                  Cell:
+                    rowCellInfo =>
+                      this.companyRegistration[rowCellInfo.original.id]
+                      ? 'Yes'
+                      : 'No',
                 },
               ]}
               handleRowSelect={this.handleSelect}
