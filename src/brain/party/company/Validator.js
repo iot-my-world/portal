@@ -5,7 +5,7 @@ const Validator = {
   serviceProvider: 'Company-Validator',
 
   /**
-   * @param {Company} company
+   * @param {Human} company
    * @param {string} action
    * @returns {Promise<any>}
    */

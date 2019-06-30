@@ -61,7 +61,7 @@ export default class Holder {
     if (companyEntityIds.length > 0) {
       const blankQuery = new Query()
       blankQuery.limit = 0
-      this._entityMap.Company = (await CompanyRecordHandler.Collect(
+      this._entityMap.Human = (await CompanyRecordHandler.Collect(
           [
             new ListTextCriterion({
               field: 'id',

@@ -532,7 +532,7 @@ class User extends Component {
       if (companyEntityIds.length > 0) {
         const blankQuery = new Query()
         blankQuery.limit = 0
-        this.entityMap.Company = (await CompanyRecordHandler.Collect(
+        this.entityMap.Human = (await CompanyRecordHandler.Collect(
             [
               new ListTextCriterion({
                 field: 'id',
@@ -560,7 +560,7 @@ class User extends Component {
     } catch (e) {
       this.entityMap.System = []
       this.entityMap.Client = []
-      this.entityMap.Company = []
+      this.entityMap.Human = []
       console.error('Failed Getting Associated Party Entities', e)
       NotificationFailure('Failed Getting Associated Party Entities')
       return
