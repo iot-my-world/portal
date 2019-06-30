@@ -135,8 +135,10 @@ class Human extends Component {
       claims,
     } = this.props
     const newUser = new UserEntity()
-    newUser.parentId = claims.partyId
-    newUser.parentPartyType = claims.partyType
+    newUser.parentId = claims.parentId
+    newUser.parentPartyType = claims.parentPartyType
+    newUser.partyId = claims.partyId
+    newUser.partyType = claims.partyType
     this.setState({
       selectedUser: newUser,
       initialDetailDialogActiveState:
@@ -145,7 +147,7 @@ class Human extends Component {
     })
   }
 
-  handleInviteAdmin = async () => {
+  handleInviteUser = async () => {
     const {selectedUser} = this.state
     const {
       NotificationSuccess, NotificationFailure,
@@ -349,10 +351,10 @@ class Human extends Component {
         additionalIcons = [
           (
             <IconButton
-              onClick={this.handleInviteAdmin}
+              onClick={this.handleInviteUser}
             >
               <Tooltip
-                title={'Invite Admin'}
+                title={'Invite User'}
                 placement={'top'}
               >
                 <Icon>

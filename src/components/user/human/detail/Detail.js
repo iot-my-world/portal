@@ -24,7 +24,6 @@ import {
   User,
   UserValidator,
   UserAdministrator,
-  UserRecordHandler,
 } from 'brain/user/human/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import IdIdentifier from 'brain/search/identifier/Id'
@@ -262,7 +261,7 @@ class Detail extends Component {
     HideGlobalLoader()
   }
 
-  handleInviteAdmin = async () => {
+  handleInviteUser = async () => {
     const {user} = this.state
     const {
       NotificationSuccess, NotificationFailure,
@@ -272,13 +271,13 @@ class Detail extends Component {
     ShowGlobalLoader()
     try {
       // perform the invite
-      await PartyRegistrar.InviteUserAdminUser({
+      await PartyRegistrar.InviteUser({
         userIdentifier: user.identifier,
       })
-      NotificationSuccess('User Admin User Invited')
+      NotificationSuccess('User Invited')
     } catch (e) {
-      console.error('Failed to Invite User Admin User', e)
-      NotificationFailure('Failed to Invite User Admin User')
+      console.error('Failed to Invite User', e)
+      NotificationFailure('Failed to Invite User')
     }
     HideGlobalLoader()
   }
@@ -375,10 +374,10 @@ class Detail extends Component {
         if (!user.registered) {
           controlIcons = [
             (
-              <Tooltip title='Invite Admin'>
+              <Tooltip title='Invite User'>
                 <Fab
                   size={'small'}
-                  onClick={this.handleInviteAdmin}
+                  onClick={this.handleInviteUser}
                 >
                   <EmailIcon className={classes.buttonIcon}/>
                 </Fab>
