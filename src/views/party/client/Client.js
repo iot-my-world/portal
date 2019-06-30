@@ -219,6 +219,16 @@ class Client extends Component {
                 {
                   Header: 'Admin Email Address',
                   accessor: 'adminEmailAddress',
+                  width: 160,
+                  config: {
+                    filter: {
+                      type: TextCriterionType,
+                    },
+                  },
+                },
+                {
+                  Header: 'Type',
+                  accessor: 'type',
                   width: 155,
                   config: {
                     filter: {
