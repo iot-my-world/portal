@@ -1,7 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
-  TextField, withStyles, Fab, Tooltip,
+  TextField,
+  withStyles,
+  Fab,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem, FormHelperText,
 } from '@material-ui/core'
 import HumanUserLoginClaims from 'brain/security/claims/login/user/human/Login'
 import Dialog from 'components/Dialog'
@@ -21,7 +28,17 @@ import {
 import PartyRegistrar from 'brain/party/registrar/Registrar'
 import PartyIdentifier from 'brain/search/identifier/Party'
 import IdIdentifier from 'brain/search/identifier/Id'
-import {ClientPartyType} from 'brain/party/types'
+import {
+  allPartyTypes,
+  ClientPartyType, CompanyPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
+import {AllClientTypes} from 'brain/party/client/types'
+import AsyncSelect from 'components/form/newasyncSelect/AsyncSelect'
+import SystemRecordHandler from 'brain/party/system/RecordHandler'
+import TextCriterion from 'brain/search/criterion/Text'
+import CompanyRecordHandler from 'brain/party/company/RecordHandler'
+import ClientRecordHandler from 'brain/party/client/RecordHandler'
 
 const styles = theme => ({
   root: {
@@ -42,6 +59,65 @@ const styles = theme => ({
     fontSize: '20px',
   },
 })
+
+const loadPartyOptions = partyType => async (inputValue, callback) => {
+  let collectResponse
+  let callbackResults = []
+  switch (partyType) {
+    case SystemPartyType:
+      collectResponse = await SystemRecordHandler.Collect(
+        [
+          new TextCriterion({
+            field: 'name',
+            text: inputValue,
+          }),
+        ],
+      )
+      callbackResults = collectResponse.records.map(system => ({
+        label: system.name,
+        value: new IdIdentifier(system.id),
+        entity: system,
+      }))
+      break
+
+    case CompanyPartyType:
+      collectResponse = await CompanyRecordHandler.Collect(
+        [
+          new TextCriterion({
+            field: 'name',
+            text: inputValue,
+          }),
+        ],
+      )
+      callbackResults = collectResponse.records.map(company => ({
+        label: company.name,
+        value: new IdIdentifier(company.id),
+        entity: company,
+      }))
+      break
+
+    case ClientPartyType:
+      collectResponse = await ClientRecordHandler.Collect(
+        [
+          new TextCriterion({
+            field: 'name',
+            text: inputValue,
+          }),
+        ],
+      )
+      callbackResults = collectResponse.records.map(client => ({
+        label: client.name,
+        value: new IdIdentifier(client.id),
+        entity: client,
+      }))
+      break
+
+    default:
+      callbackResults = []
+  }
+  callbackResults = [{label: '-', value: ''}, ...callbackResults]
+  callback(callbackResults)
+}
 
 const activeStates = {
   viewingExisting: 1,
@@ -133,6 +209,15 @@ class Detail extends Component {
     const fieldName = e.target.name ? e.target.name : e.target.id
     client[fieldName] = e.target.value
     this.reasonsInvalid.clearField(fieldName)
+
+    switch (fieldName) {
+      case 'parentPartyType':
+        client.parentId = new IdIdentifier()
+        break
+
+      default:
+    }
+
     this.setState({client})
   }
 
@@ -365,6 +450,7 @@ class Detail extends Component {
       open,
       closeDialog,
       classes,
+      claims,
     } = this.props
     const {client, activeState} = this.state
 
@@ -381,6 +467,108 @@ class Detail extends Component {
         fullScreen={false}
       >
         <div className={classes.root}>
+          {(claims.partyType === SystemPartyType) &&
+          <FormControl
+            className={classes.formField}
+            error={!!fieldValidations.parentPartyType}
+            aria-describedby='parentPartyType'
+          >
+            <InputLabel htmlFor='parentPartyType'>
+              Parent Party Type
+            </InputLabel>
+            <Select
+              id='parentPartyType'
+              name='parentPartyType'
+              value={client.parentPartyType}
+              onChange={this.handleFieldChange}
+              style={{width: 150}}
+              disableUnderline={stateIsViewing}
+              inputProps={{readOnly: stateIsViewing}}
+            >
+              <MenuItem value=''>
+                <em>None</em>
+              </MenuItem>
+              {allPartyTypes.map((partyType, idx) => {
+                return (
+                  <MenuItem key={idx} value={partyType}>
+                    {partyType}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+            {!!fieldValidations.parentPartyType && (
+              <FormHelperText id='parentPartyType'>
+                {
+                  fieldValidations.parentPartyType ?
+                    fieldValidations.parentPartyType.help :
+                    undefined
+                }
+              </FormHelperText>
+            )}
+          </FormControl>}
+          {(claims.partyType === SystemPartyType) &&
+          <AsyncSelect
+            id='parentId'
+            label={'Parent'}
+            blankValue={new IdIdentifier()}
+            value={{
+              value: client.ownerId,
+              label: (() => {
+                return this.partyHolder.retrieveEntityProp(
+                  'name',
+                  client.parentId,
+                )
+              })(),
+            }}
+            onChange={this.handleFieldChange}
+            loadOptions={loadPartyOptions(client.parentPartyType)}
+            menuPosition={'fixed'}
+            readOnly={stateIsViewing}
+            helperText={
+              fieldValidations.parentId
+                ? fieldValidations.parentId.help
+                : undefined
+            }
+            error={!!fieldValidations.parentId}
+          />}
+          <FormControl
+            className={classes.formField}
+            error={!!fieldValidations.type}
+            aria-describedby='type'
+          >
+            <InputLabel htmlFor='type'>
+              Client Type
+            </InputLabel>
+            <Select
+              id='type'
+              name='type'
+              value={client.type}
+              onChange={this.handleFieldChange}
+              style={{width: 150}}
+              disableUnderline={stateIsViewing}
+              inputProps={{readOnly: stateIsViewing}}
+            >
+              <MenuItem value=''>
+                <em>None</em>
+              </MenuItem>
+              {AllClientTypes.map((partyType, idx) => {
+                return (
+                  <MenuItem key={idx} value={partyType}>
+                    {partyType}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+            {!!fieldValidations.type && (
+              <FormHelperText id='type'>
+                {
+                  fieldValidations.type ?
+                    fieldValidations.type.help :
+                    undefined
+                }
+              </FormHelperText>
+            )}
+          </FormControl>
           <TextField
             className={classes.formField}
             id='name'
