@@ -27,7 +27,6 @@ import {
   UserRecordHandler,
 } from 'brain/user/human/index'
 import PartyRegistrar from 'brain/party/registrar/Registrar'
-import PartyIdentifier from 'brain/search/identifier/Party'
 import IdIdentifier from 'brain/search/identifier/Id'
 import {
   allPartyTypes,
@@ -41,6 +40,7 @@ import TextCriterion from 'brain/search/criterion/Text'
 import {
   CompanyRecordHandler,
 } from 'brain/party/company/index'
+import ClientRecordHandler from 'brain/party/client/RecordHandler'
 
 const styles = theme => ({
   root: {
@@ -67,14 +67,14 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
   let callbackResults = []
   switch (partyType) {
     case SystemPartyType:
-      collectResponse = await SystemRecordHandler.Collect(
-        [
+      collectResponse = await SystemRecordHandler.Collect({
+        criteria: [
           new TextCriterion({
             field: 'name',
             text: inputValue,
           }),
         ],
-      )
+      })
       callbackResults = collectResponse.records.map(system => ({
         label: system.name,
         value: new IdIdentifier(system.id),
@@ -83,13 +83,14 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
       break
 
     case CompanyPartyType:
-      collectResponse = await CompanyRecordHandler.Collect(
-        [
-          new TextCriterion({
-            field: 'name',
-            text: inputValue,
-          }),
-        ],
+      collectResponse = await CompanyRecordHandler.Collect({
+          criteria: [
+            new TextCriterion({
+              field: 'name',
+              text: inputValue,
+            }),
+          ],
+        },
       )
       callbackResults = collectResponse.records.map(company => ({
         label: company.name,
@@ -99,18 +100,18 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
       break
 
     case ClientPartyType:
-      collectResponse = await UserRecordHandler.Collect(
-        [
+      collectResponse = await ClientRecordHandler.Collect({
+        criteria: [
           new TextCriterion({
             field: 'name',
             text: inputValue,
           }),
         ],
-      )
-      callbackResults = collectResponse.records.map(user => ({
-        label: user.name,
-        value: new IdIdentifier(user.id),
-        entity: user,
+      })
+      callbackResults = collectResponse.records.map(client => ({
+        label: client.name,
+        value: new IdIdentifier(client.id),
+        entity: client,
       }))
       break
 
@@ -623,7 +624,7 @@ class Detail extends Component {
           <TextField
             className={classes.formField}
             id='emailAddress'
-            label='EmailAddress'
+            label='Email Address'
             value={user.name}
             onChange={this.handleFieldChange}
             InputProps={{

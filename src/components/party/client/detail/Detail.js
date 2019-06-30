@@ -65,14 +65,14 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
   let callbackResults = []
   switch (partyType) {
     case SystemPartyType:
-      collectResponse = await SystemRecordHandler.Collect(
-        [
+      collectResponse = await SystemRecordHandler.Collect({
+        criteria: [
           new TextCriterion({
             field: 'name',
             text: inputValue,
           }),
         ],
-      )
+      })
       callbackResults = collectResponse.records.map(system => ({
         label: system.name,
         value: new IdIdentifier(system.id),
@@ -81,13 +81,14 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
       break
 
     case CompanyPartyType:
-      collectResponse = await CompanyRecordHandler.Collect(
-        [
-          new TextCriterion({
-            field: 'name',
-            text: inputValue,
-          }),
-        ],
+      collectResponse = await CompanyRecordHandler.Collect({
+          criteria: [
+            new TextCriterion({
+              field: 'name',
+              text: inputValue,
+            }),
+          ],
+        },
       )
       callbackResults = collectResponse.records.map(company => ({
         label: company.name,
@@ -97,14 +98,14 @@ const loadPartyOptions = partyType => async (inputValue, callback) => {
       break
 
     case ClientPartyType:
-      collectResponse = await ClientRecordHandler.Collect(
-        [
+      collectResponse = await ClientRecordHandler.Collect({
+        criteria: [
           new TextCriterion({
             field: 'name',
             text: inputValue,
           }),
         ],
-      )
+      })
       callbackResults = collectResponse.records.map(client => ({
         label: client.name,
         value: new IdIdentifier(client.id),
