@@ -1,34 +1,42 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import Client from './Client'
+import Detail from './Detail'
 import {
-  NotificationSuccess,
   NotificationFailure,
+  NotificationSuccess,
 } from 'actions/notification'
 import {
-  ShowGlobalLoader,
   HideGlobalLoader,
+  ShowGlobalLoader,
 } from 'actions/app'
 
-let ClientContainer = props => {
-  return <Client {...props}/>
+let DetailContainer = props => {
+  return <Detail {...props}/>
 }
 
 const mapStateToProps = (state) => {
   return {
-    claims: state.auth.claims,
     party: state.auth.party,
+    claims: state.auth.claims,
   }
 }
 
-ClientContainer = connect(
+DetailContainer = connect(
   mapStateToProps,
   {
     NotificationSuccess,
     NotificationFailure,
     ShowGlobalLoader,
     HideGlobalLoader,
-  },
-)(ClientContainer)
+  }
+)(DetailContainer)
 
-export default ClientContainer
+DetailContainer.propTypes = {
+  ...Detail.propTypes,
+}
+
+DetailContainer.defaultProps = {
+  ...Detail.defaultProps,
+}
+
+export default DetailContainer
