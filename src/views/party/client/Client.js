@@ -219,7 +219,7 @@ class Client extends Component {
                 {
                   Header: 'Admin Email Address',
                   accessor: 'adminEmailAddress',
-                  width: 160,
+                  width: 170,
                   config: {
                     filter: {
                       type: TextCriterionType,
@@ -229,7 +229,7 @@ class Client extends Component {
                 {
                   Header: 'Type',
                   accessor: 'type',
-                  width: 155,
+                  width: 88,
                   config: {
                     filter: {
                       type: TextCriterionType,
