@@ -449,7 +449,6 @@ class Detail extends Component {
 
     const fieldValidations = this.reasonsInvalid.toMap()
     const stateIsViewing = activeState === activeStates.viewingExisting
-    const stateIsCreateNew = activeState === activeStates.editingNew
 
     return (
       <Dialog
@@ -461,69 +460,132 @@ class Detail extends Component {
       >
         <div className={classes.root}>
           {(claims.partyType === SystemPartyType) &&
-          <FormControl
-            className={classes.formField}
-            error={!!fieldValidations.parentPartyType}
-            aria-describedby='parentPartyType'
-          >
-            <InputLabel htmlFor='parentPartyType'>
-              Parent Party Type
-            </InputLabel>
-            <Select
-              id='parentPartyType'
-              name='parentPartyType'
-              value={user.parentPartyType}
-              onChange={this.handleFieldChange}
-              style={{width: 150}}
-              disableUnderline={stateIsViewing}
-              inputProps={{readOnly: stateIsViewing}}
+          <React.Fragment>
+            <FormControl
+              className={classes.formField}
+              error={!!fieldValidations.parentPartyType}
+              aria-describedby='parentPartyType'
             >
-              <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              {allPartyTypes.map((partyType, idx) => {
-                return (
-                  <MenuItem key={idx} value={partyType}>
-                    {partyType}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-            {!!fieldValidations.parentPartyType && (
-              <FormHelperText id='parentPartyType'>
-                {
-                  fieldValidations.parentPartyType ?
-                    fieldValidations.parentPartyType.help :
-                    undefined
-                }
-              </FormHelperText>
-            )}
-          </FormControl>}
-          {(claims.partyType === SystemPartyType) &&
-          <AsyncSelect
-            id='parentId'
-            label={'Parent'}
-            blankValue={new IdIdentifier()}
-            value={{
-              value: user.ownerId,
-              label: (() => {
-                return this.partyHolder.retrieveEntityProp(
-                  'name',
-                  user.parentId,
-                )
-              })(),
-            }}
-            onChange={this.handleFieldChange}
-            loadOptions={loadPartyOptions(user.parentPartyType)}
-            menuPosition={'fixed'}
-            readOnly={stateIsViewing}
-            helperText={
-              fieldValidations.parentId
-                ? fieldValidations.parentId.help
-                : undefined
-            }
-            error={!!fieldValidations.parentId}
-          />}
+              <InputLabel htmlFor='parentPartyType'>
+                Parent Party Type
+              </InputLabel>
+              <Select
+                id='parentPartyType'
+                name='parentPartyType'
+                value={user.parentPartyType}
+                onChange={this.handleFieldChange}
+                style={{width: 150}}
+                disableUnderline={stateIsViewing}
+                inputProps={{readOnly: stateIsViewing}}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                {allPartyTypes.map((partyType, idx) => {
+                  return (
+                    <MenuItem key={idx} value={partyType}>
+                      {partyType}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              {!!fieldValidations.parentPartyType && (
+                <FormHelperText id='parentPartyType'>
+                  {
+                    fieldValidations.parentPartyType ?
+                      fieldValidations.parentPartyType.help :
+                      undefined
+                  }
+                </FormHelperText>
+              )}
+            </FormControl>
+            <AsyncSelect
+              id='parentId'
+              label={'Parent'}
+              blankValue={new IdIdentifier()}
+              value={{
+                value: user.ownerId,
+                label: (() => {
+                  return this.partyHolder.retrieveEntityProp(
+                    'name',
+                    user.parentId,
+                  )
+                })(),
+              }}
+              onChange={this.handleFieldChange}
+              loadOptions={loadPartyOptions(user.parentPartyType)}
+              menuPosition={'fixed'}
+              readOnly={stateIsViewing}
+              helperText={
+                fieldValidations.parentId
+                  ? fieldValidations.parentId.help
+                  : undefined
+              }
+              error={!!fieldValidations.parentId}
+            />
+            <FormControl
+              className={classes.formField}
+              error={!!fieldValidations.partyType}
+              aria-describedby='partyType'
+            >
+              <InputLabel htmlFor='partyType'>
+                Party Type
+              </InputLabel>
+              <Select
+                id='partyType'
+                name='partyType'
+                value={user.partyType}
+                onChange={this.handleFieldChange}
+                style={{width: 150}}
+                disableUnderline={stateIsViewing}
+                inputProps={{readOnly: stateIsViewing}}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                {allPartyTypes.map((partyType, idx) => {
+                  return (
+                    <MenuItem key={idx} value={partyType}>
+                      {partyType}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              {!!fieldValidations.partyType && (
+                <FormHelperText id='partyType'>
+                  {
+                    fieldValidations.partyType ?
+                      fieldValidations.partyType.help :
+                      undefined
+                  }
+                </FormHelperText>
+              )}
+            </FormControl>
+            <AsyncSelect
+              id='partyId'
+              label={'Party'}
+              blankValue={new IdIdentifier()}
+              value={{
+                value: user.ownerId,
+                label: (() => {
+                  return this.partyHolder.retrieveEntityProp(
+                    'name',
+                    user.partyId,
+                  )
+                })(),
+              }}
+              onChange={this.handleFieldChange}
+              loadOptions={loadPartyOptions(user.partyId)}
+              menuPosition={'fixed'}
+              readOnly={stateIsViewing}
+              helperText={
+                fieldValidations.partyId
+                  ? fieldValidations.partyId.help
+                  : undefined
+              }
+              error={!!fieldValidations.partyId}
+            />
+          </React.Fragment>}
           <TextField
             className={classes.formField}
             id='name'
