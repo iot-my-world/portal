@@ -1,50 +1,122 @@
 kind: pipeline
 name: default
 
+workspace:
+  base: /projects
+  path: portal
+
+services:
+  - name: db
+    image: mongo
+    ports:
+      - 27017
+
+volumes:
+  - name: iot-my-world
+    temp: {}
+
+  - name: chamber
+    temp: {}
+
 steps:
-  - name: build
+  - name: build portal
     image: node
     commands:
       - yarn install
       - yarn build
 
-  - name: deploy
-    image: centos
-    environment:
-      SSH_PRIVATE_KEY:
-        from_secret: ssh_pvt_key
-      SSH_KNOWN_HOSTS:
-        from_secret: ssh_known_hosts
+  - name: clone chamber
+    image: docker:git
+    volumes:
+      - name: chamber
+        path: /projects/chamber
     commands:
-      # Install ssh-agent if not already installed this is required by Docker
-      - 'which || yum -y install which'
-      - 'which ssh-agent || yum -y install openssh openssh-clients '
+      - cd /projects
+      - git clone https://github.com/iot-my-world/chamber.git
 
-      # Run ssh-agent (inside the build environment)
-      - eval $(ssh-agent -s)
+  - name: clone brain
+    image: docker:git
+    volumes:
+      - name: iot-my-world
+        path: /go/src/github.com/iot-my-world
+    commands:
+      - cd /go/src/github.com/iot-my-world
+      - git clone https://github.com/iot-my-world/brain.git
 
-      # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-      # We're using tr to fix line endings which makes ed25519 keys work
-      # without extra base64 encoding
-      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - name: build brain
+    image: golang
+    volumes:
+      - name: iot-my-world
+        path: /go/src/github.com/iot-my-world
+    commands:
+      - cd /go/src/github.com/iot-my-world/brain/start
+      - go get
+      - cd ../build
+      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
 
-      # Create the SSH directory and give it the right permissions
-      - mkdir -p ~/.ssh
-      - chmod 700 ~/.ssh
+  - name: test
+    image: node
+    volumes:
+      - name: iot-my-world
+        path: /go/src/github.com/iot-my-world
+      - name: chamber
+        path: /projects/chamber
+    ports:
+      - 9010
+    commands:
+      - cd /go/src/github.com/iot-my-world/brain/build
+      - ./brain --pathToConfigFile=config-build.toml &
+      - echo "waiting for brain to start..."
+      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
+      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
+      - echo "brain started"
+      - cd /projects/portal
+      - yarn global add serve
+      - serve -s build &
+      - echo "waiting for portal server to start..."
+      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 5000
+      - echo "portal server started"
+      - cd /projects/chamber
+      - yarn install
+      - yarn testBuild
 
-      # update known hosts
-      - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      - chmod 644 ~/.ssh/known_hosts
-
-      - tar cvf portal.tar build
-      - scp ./portal.tar ciMan@brain01.iotmyworld.com:/home/ciMan
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/tar -xvf  portal.tar"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /var/www/*"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/cp -r build/* /var/www/"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /home/ciMan/*"
+  #  - name: deploy
+  #    image: centos
+  #    environment:
+  #      SSH_PRIVATE_KEY:
+  #        from_secret: ssh_pvt_key
+  #      SSH_KNOWN_HOSTS:
+  #        from_secret: ssh_known_hosts
+  #    commands:
+  #      # Install ssh-agent if not already installed this is required by Docker
+  #      - 'which || yum -y install which'
+  #      - 'which ssh-agent || yum -y install openssh openssh-clients '
+  #
+  #      # Run ssh-agent (inside the build environment)
+  #      - eval $(ssh-agent -s)
+  #
+  #      # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  #      # We're using tr to fix line endings which makes ed25519 keys work
+  #      # without extra base64 encoding
+  #      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  #
+  #      # Create the SSH directory and give it the right permissions
+  #      - mkdir -p ~/.ssh
+  #      - chmod 700 ~/.ssh
+  #
+  #      # update known hosts
+  #      - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  #      - chmod 644 ~/.ssh/known_hosts
+  #
+  #      - tar cvf portal.tar build
+  #      - scp ./portal.tar ciMan@brain01.iotmyworld.com:/home/ciMan
+  #      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/tar -xvf  portal.tar"
+  #      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /var/www/*"
+  #      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/cp -r build/* /var/www/"
+  #      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /home/ciMan/*"
 
 trigger:
   branch:
     - master
-#  event:
-#    - push
+  event:
+    - push
