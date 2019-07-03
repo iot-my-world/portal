@@ -24,8 +24,8 @@ steps:
     commands:
       - ls
       - pwd
-  #      - yarn install
-  #      - yarn build
+      - yarn install
+      - yarn build
 
   - name: clone chamber
     image: docker:git
