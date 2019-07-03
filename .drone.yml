@@ -78,6 +78,7 @@ steps:
       - echo "portal server started"
       - cd /projects/chamber
       - yarn install
+      - yarn testBuild
 
   #  - name: deploy
   #    image: centos
@@ -117,5 +118,5 @@ steps:
 trigger:
   branch:
     - master
-#  event:
-#    - push
+  event:
+    - push

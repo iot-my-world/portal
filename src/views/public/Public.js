@@ -76,14 +76,17 @@ const styles = theme => ({
 const tabs = {
   info: {
     idx: 0,
+    id: 'infoTab',
     path: '/',
   },
   contributors: {
     idx: 1,
+    id: 'contributorsTab',
     path: '/contributors',
   },
   loginForgotPassword: {
     idx: 2,
+    id: 'loginForgotPasswordTab',
     path: '/login',
   },
 }
@@ -160,6 +163,7 @@ class Public extends Component {
 
     return (
       <div
+        id={'publicPageRoot'}
         className={classes.loginFullPageBackground}
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
       >
@@ -180,16 +184,19 @@ class Public extends Component {
                   onChange={this.handleTabChange}
                 >
                   <Tab
+                    id={tabs.info.id}
                     onClick={()=>history.push(tabs.info.path)}
                     value={tabs.info.idx}
                     icon={<InfoIcon className={classes.icon}/>}
                   />
                   <Tab
+                    id={tabs.contributors.id}
                     onClick={()=>history.push(tabs.contributors.path)}
                     value={tabs.contributors.idx}
                     icon={<GithubIcon className={classes.icon}/>}
                   />
                   <Tab
+                    id={tabs.loginForgotPassword.id}
                     onClick={()=>history.push(tabs.loginForgotPassword.path)}
                     value={tabs.loginForgotPassword.idx}
                     icon={<LoginIcon className={classes.icon}/>}
