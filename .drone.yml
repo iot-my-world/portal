@@ -23,7 +23,7 @@ steps:
       - pwd
   #      - yarn install
   #      - yarn build
-  -
+
   - name: clone brain
     image: docker:git
     volumes:
@@ -57,7 +57,7 @@ steps:
       - echo "waiting for brain to start..."
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
-      - echo "brain starteds"
+      - echo "brain started"
   #
   #  - name: chamber
   #    image: docker:git
