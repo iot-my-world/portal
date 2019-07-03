@@ -11,8 +11,8 @@ steps:
     commands:
       - ls
       - pwd
-#      - yarn install
-#      - yarn build
+  #      - yarn install
+  #      - yarn build
 
   #  - name: deploy
   #    image: centos
@@ -54,11 +54,14 @@ steps:
       - mkdir -p /go/src/github.com/iot-my-world
       - cd /go/src/github.com/iot-my-world
       - git clone https://github.com/iot-my-world/brain.git
+      - cd brain
+      - ls
+      - pwd
 
   - name: clone chamber
     image: docker:git
     commands:
-      - /projects
+      - cd /projects
       - git clone https://github.com/iot-my-world/chamber.git
       - ls
 
