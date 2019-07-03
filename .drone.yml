@@ -60,14 +60,20 @@ steps:
       - mkdir -p /go/src/github.com/iot-my-world
       - cd /go/src/github.com/iot-my-world
       - git clone https://github.com/iot-my-world/brain.git
+      - cd brain
+      - pwd
 
   - name: build brain
     image: golang
     commands:
+      - ls
+      - pwd
+      - cd ..
+      - pwd
       - cd /go/src/github.com/iot-my-world/brain/start
       - go get
       - cd ../build
-      - env GOOD=linux GOARCH=amd64 go build -o=popcorn /go/src/github.com/andile-innovation/popcorn/assembly
+      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
 
   - name: brain
     image: centos
