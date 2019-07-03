@@ -1,6 +1,10 @@
 kind: pipeline
 name: default
 
+workspace:
+  base: /
+  path: portal
+
 steps:
   - name: build
     image: node
