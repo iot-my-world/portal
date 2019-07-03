@@ -5,43 +5,52 @@ steps:
   - name: build
     image: node
     commands:
-      - yarn install
-      - yarn build
+      - ls
+      - pwd
+#      - yarn install
+#      - yarn build
 
-  - name: deploy
-    image: centos
-    environment:
-      SSH_PRIVATE_KEY:
-        from_secret: ssh_pvt_key
-      SSH_KNOWN_HOSTS:
-        from_secret: ssh_known_hosts
+#  - name: deploy
+#    image: centos
+#    environment:
+#      SSH_PRIVATE_KEY:
+#        from_secret: ssh_pvt_key
+#      SSH_KNOWN_HOSTS:
+#        from_secret: ssh_known_hosts
+#    commands:
+#      # Install ssh-agent if not already installed this is required by Docker
+#      - 'which || yum -y install which'
+#      - 'which ssh-agent || yum -y install openssh openssh-clients '
+#
+#      # Run ssh-agent (inside the build environment)
+#      - eval $(ssh-agent -s)
+#
+#      # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+#      # We're using tr to fix line endings which makes ed25519 keys work
+#      # without extra base64 encoding
+#      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+#
+#      # Create the SSH directory and give it the right permissions
+#      - mkdir -p ~/.ssh
+#      - chmod 700 ~/.ssh
+#
+#      # update known hosts
+#      - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+#      - chmod 644 ~/.ssh/known_hosts
+#
+#      - tar cvf portal.tar build
+#      - scp ./portal.tar ciMan@brain01.iotmyworld.com:/home/ciMan
+#      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/tar -xvf  portal.tar"
+#      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /var/www/*"
+#      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/cp -r build/* /var/www/"
+#      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /home/ciMan/*"
+
+  - name: clone chamber
+    image: docker:git
     commands:
-      # Install ssh-agent if not already installed this is required by Docker
-      - 'which || yum -y install which'
-      - 'which ssh-agent || yum -y install openssh openssh-clients '
-
-      # Run ssh-agent (inside the build environment)
-      - eval $(ssh-agent -s)
-
-      # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-      # We're using tr to fix line endings which makes ed25519 keys work
-      # without extra base64 encoding
-      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-
-      # Create the SSH directory and give it the right permissions
-      - mkdir -p ~/.ssh
-      - chmod 700 ~/.ssh
-
-      # update known hosts
-      - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      - chmod 644 ~/.ssh/known_hosts
-
-      - tar cvf portal.tar build
-      - scp ./portal.tar ciMan@brain01.iotmyworld.com:/home/ciMan
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/tar -xvf  portal.tar"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /var/www/*"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/cp -r build/* /var/www/"
-      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /home/ciMan/*"
+      - cd ..
+      - git clone https://github.com/iot-my-world/chamber.git
+      - ls
 
 trigger:
   branch:
