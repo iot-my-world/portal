@@ -2,7 +2,7 @@ kind: pipeline
 name: default
 
 workspace:
-  base: /
+  base: /projects
   path: portal
 
 steps:
