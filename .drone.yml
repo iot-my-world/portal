@@ -5,14 +5,17 @@ workspace:
   base: /projects
   path: portal
 
-#services:
-#  - name: db
-#    image: mongo
-#    ports:
-#      - 27017
+services:
+  - name: db
+    image: mongo
+    ports:
+      - 27017
 
 volumes:
   - name: iot-my-world
+    temp: {}
+
+  - name: chamber
     temp: {}
 
 steps:
@@ -23,6 +26,15 @@ steps:
       - pwd
   #      - yarn install
   #      - yarn build
+
+  - name: clone chamber
+    image: docker:git
+    volumes:
+      - name: chamber
+        path: /projects/chamber
+    commands:
+      - cd /projects
+      - git clone https://github.com/iot-my-world/chamber.git
 
   - name: clone brain
     image: docker:git
@@ -44,11 +56,13 @@ steps:
       - cd ../build
       - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
 
-  - name: brain
-    image: centos
+  - name: test
+    image: node
     volumes:
       - name: iot-my-world
         path: /go/src/github.com/iot-my-world
+      - name: chamber
+        path: /projects/chamber
     ports:
       - 9010
     commands:
@@ -58,16 +72,8 @@ steps:
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
       - echo "brain started"
-  #
-  #  - name: chamber
-  #    image: docker:git
-  #    commands:
-  #      - echo "confirming brain is reachable..."
-  #      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' brain 9010
-  #      - echo "brain reachable"
-  #      - cd /projects
-  #      - git clone https://github.com/iot-my-world/chamber.git
-  #      - ls
+      - cd /projects
+      - ls
 
   #  - name: deploy
   #    image: centos
