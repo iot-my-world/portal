@@ -58,7 +58,7 @@ steps:
     image: docker:git
     ports:
       - 9010
-    detach: true
+#    detach: true
     commands:
       - mkdir -p /go/src/github.com/iot-my-world
       - cd /go/src/github.com/iot-my-world
