@@ -22,8 +22,6 @@ steps:
   - name: build portal
     image: node
     commands:
-      - ls
-      - pwd
       - yarn install
       - yarn build
 
@@ -74,10 +72,12 @@ steps:
       - echo "brain started"
       - cd /projects/portal
       - yarn global add serve
-      - serve -s build
+      - serve -s build &
       - echo "waiting for portal server to start..."
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 5000
       - echo "portal server started"
+      - cd /projects/chamber
+      - yarn install
 
   #  - name: deploy
   #    image: centos
