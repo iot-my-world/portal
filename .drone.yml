@@ -11,6 +11,10 @@ workspace:
 #    ports:
 #      - 27017
 
+volumes:
+  - name: iot-my-world
+    temp: {}
+
 steps:
   - name: build portal
     image: node
@@ -56,8 +60,11 @@ steps:
   #      - ssh ciMan@brain01.iotmyworld.com "sudo /bin/rm -rf /home/ciMan/*"
   - name: clone brain
     image: docker:git
+    volumes:
+      - name: iot-my-world
+        path: /go/src/github.com/iot-my-world
     commands:
-      - mkdir -p /go/src/github.com/iot-my-world
+#      - mkdir -p /go/src/github.com/iot-my-world
       - cd /go/src/github.com/iot-my-world
       - git clone https://github.com/iot-my-world/brain.git
       - cd brain
@@ -67,37 +74,32 @@ steps:
     image: golang
     commands:
       - cd /
-      - cd go
-      - ls
-      - cd src
-      - ls
-      - pwd
-      - cd /go/src/github.com/iot-my-world/brain/start
-      - go get
-      - cd ../build
-      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
+  #      - cd /go/src/github.com/iot-my-world/brain/start
+  #      - go get
+  #      - cd ../build
+  #      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
 
-  - name: brain
-    image: centos
-    ports:
-      - 9010
-    commands:
-      - cd /go/src/github.com/iot-my-world/brain/build
-      - ./brain --pathToConfigFile=config-build.toml &
-      - echo "waiting for brain to start..."
-      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
-      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
-      - echo "brain started"
-
-  - name: chamber
-    image: docker:git
-    commands:
-      - echo "confirming brain is reachable..."
-      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' brain 9010
-      - echo "brain reachable"
-      - cd /projects
-      - git clone https://github.com/iot-my-world/chamber.git
-      - ls
+#  - name: brain
+#    image: centos
+#    ports:
+#      - 9010
+#    commands:
+#      - cd /go/src/github.com/iot-my-world/brain/build
+#      - ./brain --pathToConfigFile=config-build.toml &
+#      - echo "waiting for brain to start..."
+#      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
+#      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
+#      - echo "brain started"
+#
+#  - name: chamber
+#    image: docker:git
+#    commands:
+#      - echo "confirming brain is reachable..."
+#      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' brain 9010
+#      - echo "brain reachable"
+#      - cd /projects
+#      - git clone https://github.com/iot-my-world/chamber.git
+#      - ls
 
 trigger:
   branch:
