@@ -55,7 +55,7 @@ steps:
       - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
 
   - name: test
-    image: node
+    image: buildkite/puppeteer
     volumes:
       - name: iot-my-world
         path: /go/src/github.com/iot-my-world
