@@ -5,11 +5,11 @@ workspace:
   base: /projects
   path: portal
 
-services:
-  - name: db
-    image: mongo
-    ports:
-      - 27017
+#services:
+#  - name: db
+#    image: mongo
+#    ports:
+#      - 27017
 
 steps:
   - name: build portal
@@ -67,6 +67,9 @@ steps:
     image: golang
     commands:
       - cd /
+      - cd go
+      - ls
+      - cd src
       - ls
       - pwd
       - cd /go/src/github.com/iot-my-world/brain/start
