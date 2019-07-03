@@ -72,8 +72,12 @@ steps:
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9010
       - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 9011
       - echo "brain started"
-      - cd /projects
-      - ls
+      - cd /projects/portal
+      - yarn global add serve
+      - serve -s build
+      - echo "waiting for portal server to start..."
+      - timeout 10 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 5000
+      - echo "portal server started"
 
   #  - name: deploy
   #    image: centos
