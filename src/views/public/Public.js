@@ -21,6 +21,8 @@ import LoginForgotPasswordContainer
   from './loginForgotPassword/LoginForgotPasswordContainer'
 import ContributorsContainer
   from './contributors/ContributorsContainer'
+import PrivacyPolicy from './privacyPolicy/PrivacyPolicy'
+import TermsAndConditions from './termsAndConditions/TermsAndConditions'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -88,6 +90,16 @@ const tabs = {
     idx: 2,
     id: 'loginForgotPasswordTab',
     path: '/login',
+  },
+  termsAndConditions: {
+    idx: 3,
+    id: 'termsAndConditionsTab',
+    path: '/termsAndConditions',
+  },
+  privacyPolicy: {
+    idx: 4,
+    id: 'privacyPolicyTab',
+    path: '/privacyPolicy',
   },
 }
 
@@ -201,6 +213,18 @@ class Public extends Component {
                     value={tabs.loginForgotPassword.idx}
                     icon={<LoginIcon className={classes.icon}/>}
                   />
+                  <Tab
+                    id={tabs.termsAndConditions.id}
+                    onClick={()=>history.push(tabs.termsAndConditions.path)}
+                    value={tabs.termsAndConditions.idx}
+                    icon={<LoginIcon className={classes.icon}/>}
+                  />
+                  <Tab
+                    id={tabs.privacyPolicy.id}
+                    onClick={()=>history.push(tabs.privacyPolicy.path)}
+                    value={tabs.privacyPolicy.idx}
+                    icon={<LoginIcon className={classes.icon}/>}
+                  />
                 </Tabs>
               </div>
             </Toolbar>
@@ -223,6 +247,14 @@ class Public extends Component {
                 <Route
                   path={tabs.loginForgotPassword.path}
                   component={LoginForgotPasswordContainer}
+                />
+                <Route
+                  path={tabs.termsAndConditions.path}
+                  component={TermsAndConditions}
+                />
+                <Route
+                  path={tabs.privacyPolicy.path}
+                  component={PrivacyPolicy}
                 />
                 <Route
                   path={'/'}
