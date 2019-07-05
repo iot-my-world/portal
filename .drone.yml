@@ -49,10 +49,10 @@ steps:
       - name: iot-my-world
         path: /go/src/github.com/iot-my-world
     commands:
-      - cd /go/src/github.com/iot-my-world/brain/start
+      - cd /go/src/github.com/iot-my-world/brain/cmd/brain
       - go get
-      - cd ../build
-      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/start
+      - cd ../../build
+      - env GOOD=linux GOARCH=amd64 go build -o=brain /go/src/github.com/iot-my-world/brain/cmd/brain
 
   - name: test
     image: buildkite/puppeteer
