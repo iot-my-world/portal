@@ -11,6 +11,7 @@ import withWidth, {isWidthUp} from '@material-ui/core/withWidth/withWidth'
 import classNames from 'classnames'
 import {
   InfoIcon, LoginIcon, GithubIcon,
+  TCSIcon,
 } from 'components/icon'
 import {
   Switch, Route, Redirect,
@@ -21,8 +22,7 @@ import LoginForgotPasswordContainer
   from './loginForgotPassword/LoginForgotPasswordContainer'
 import ContributorsContainer
   from './contributors/ContributorsContainer'
-import PrivacyPolicy from './privacyPolicy/PrivacyPolicy'
-import TermsAndConditions from './termsAndConditions/TermsAndConditions'
+import TermsConditionsAndPrivacy from 'views/public/termsConditionsAndPrivacy/TermsConditionsAndPrivacy'
 
 const styles = theme => ({
   loginFullPageBackground: {
@@ -91,10 +91,10 @@ const tabs = {
     id: 'loginForgotPasswordTab',
     path: '/login',
   },
-  termsAndConditions: {
+  termsConditionsAndPrivacy: {
     idx: 3,
     id: 'termsAndConditionsTab',
-    path: '/termsAndConditions',
+    path: '/termsConditionsAndPrivacy',
   },
   privacyPolicy: {
     idx: 4,
@@ -214,16 +214,10 @@ class Public extends Component {
                     icon={<LoginIcon className={classes.icon}/>}
                   />
                   <Tab
-                    id={tabs.termsAndConditions.id}
-                    onClick={()=>history.push(tabs.termsAndConditions.path)}
-                    value={tabs.termsAndConditions.idx}
-                    icon={<LoginIcon className={classes.icon}/>}
-                  />
-                  <Tab
-                    id={tabs.privacyPolicy.id}
-                    onClick={()=>history.push(tabs.privacyPolicy.path)}
-                    value={tabs.privacyPolicy.idx}
-                    icon={<LoginIcon className={classes.icon}/>}
+                    id={tabs.termsConditionsAndPrivacy.id}
+                    onClick={()=>history.push(tabs.termsConditionsAndPrivacy.path)}
+                    value={tabs.termsConditionsAndPrivacy.idx}
+                    icon={<TCSIcon className={classes.icon}/>}
                   />
                 </Tabs>
               </div>
@@ -249,12 +243,8 @@ class Public extends Component {
                   component={LoginForgotPasswordContainer}
                 />
                 <Route
-                  path={tabs.termsAndConditions.path}
-                  component={TermsAndConditions}
-                />
-                <Route
-                  path={tabs.privacyPolicy.path}
-                  component={PrivacyPolicy}
+                  path={tabs.termsConditionsAndPrivacy.path}
+                  component={TermsConditionsAndPrivacy}
                 />
                 <Route
                   path={'/'}
