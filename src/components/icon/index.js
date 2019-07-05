@@ -12,6 +12,7 @@ import {
   MdLockOpen as LoginIcon,
   MdInfo as InfoIcon,
   MdEmail as EmailIcon,
+  MdBook as TCSIcon,
 } from 'react-icons/md'
 
 export {
@@ -26,4 +27,5 @@ export {
   GithubIcon,
   InfoIcon,
   EmailIcon,
+  TCSIcon,
 }
