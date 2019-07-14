@@ -283,7 +283,9 @@ class LoginForgotPassword extends Component {
     const fieldValidations = this.reasonsInvalid.toMap()
 
     return (
-      <Card>
+      <Card
+        id={'loginCardRoot'}
+      >
         <CardHeader
           title={'Login'}
           titleTypographyProps={{color: 'primary', align: 'center'}}
@@ -347,6 +349,7 @@ class LoginForgotPassword extends Component {
               </Grid>}
               <Grid item>
                 <Typography
+                  id={'forgotPasswordLabel'}
                   className={classes.forgotPassword}
                   onMouseEnter={() => this.setState({
                     cursorOverForgotPassword: true,
@@ -375,7 +378,9 @@ class LoginForgotPassword extends Component {
     const showCaptcha =
       (activeState === states.forgotPasswordCaptcha)
     return (
-      <Card>
+      <Card
+        id={'forgotPasswordCaptchaCardRoot'}
+      >
         <CardHeader
           title={'Forgot Password'}
           titleTypographyProps={{color: 'primary', align: 'center'}}
@@ -394,6 +399,7 @@ class LoginForgotPassword extends Component {
             </Grid>
             <Grid item>
               <Typography
+                id={'returnToLoginCardLabel'}
                 className={classes.forgotPassword}
                 onMouseEnter={() => this.setState({
                   cursorOverReturn: true,
