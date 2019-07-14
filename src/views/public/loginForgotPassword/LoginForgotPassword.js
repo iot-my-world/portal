@@ -542,7 +542,10 @@ class LoginForgotPassword extends Component {
       (activeState === states.forgotPasswordDetailsEnter)
 
     return (
-      <div className={classes.root}>
+      <div
+        className={classes.root}
+        id={'loginForgotPasswordRoot'}
+      >
         <Collapse in={showLoginCard}>
           <div>
             {showLoginCard && this.renderLogInCard()}
