@@ -123,7 +123,10 @@ class Contributors extends Component {
 
     if (loading) {
       return (
-        <div className={classes.loadingRoot}>
+        <div
+          className={classes.loadingRoot}
+          id={'contributorsRoot'}
+        >
           <div className={classes.loadingLayout}>
             <Typography
               variant={'body1'}
@@ -142,7 +145,10 @@ class Contributors extends Component {
     }
 
     return (
-      <div className={classes.root}>
+      <div
+        className={classes.root}
+        id={'contributorsRoot'}
+      >
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <div className={classes.info}>

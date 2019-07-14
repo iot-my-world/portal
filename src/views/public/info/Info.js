@@ -27,7 +27,10 @@ class Info extends Component {
       classes,
     } = this.props
     return (
-      <div className={classes.root}>
+      <div
+        className={classes.root}
+        id={'infoRoot'}
+      >
         <Typography
           variant={'h5'}
           className={classes.heading}
