@@ -1,5 +1,4 @@
-import React, {useState, useEffect} from 'react'
-import PropTypes from 'prop-types'
+import React, {useState, useEffect, useReducer} from 'react'
 import {
   Card, CardContent,
   makeStyles,
@@ -17,9 +16,9 @@ const states = {
   itemSelected: 1,
 }
 
-const events = {
-  init: states.nop,
-  selectRow: states.itemSelected,
+const actionTypes = {
+  init: 0,
+  selectRow: 1,
 }
 
 function useBackendRecordHandlerCollect() {
@@ -36,11 +35,12 @@ function useBackendRecordHandlerCollect() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       try {
-        setLoading(true)
         setCollectResponse(await BackendRecordHandler.Collect(collectRequest))
       } catch (e) {
-        console.error('error collecting backend records', e)
+        console.error('Error Collecting Backend Records', e)
+        setError('Error Collecting Backend Records')
       }
       setLoading(false)
     }
@@ -55,13 +55,36 @@ const useStyles = makeStyles(theme => ({}))
 const partyHolder = new PartyHolder()
 const collectTimeout = () => {
 }
-const companyRegistration = {}
+
+function initialState() {
+  return {
+    activeState: states.nop,
+    selectedBackend: new Backend(),
+    detailDialogOpen: false,
+  }
+}
+
+function stateReducer(state, action) {
+  switch (action.type) {
+    case actionTypes.selectRow:
+      return {
+        activeState: states.itemSelected,
+        selectedBackend: new Backend(action.selectedBackend),
+        detailDialogOpen: false,
+      }
+
+    case actionTypes.init:
+    default:
+      return initialState()
+  }
+}
 
 function BackendManagement(props) {
-  const [activeState, setActiveState] = useState(states.nop)
-  const [selectedBackend, setSelectedBackend] = useState(new Backend())
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [{collectResponse, loading, error}, setCollectRequest] = useBackendRecordHandlerCollect()
+  const [state, actionDispatcher] = useReducer(
+    stateReducer,
+    initialState(),
+  )
 
   useEffect(() => setCollectRequest({
     records: [],
@@ -73,6 +96,7 @@ function BackendManagement(props) {
       <Card>
         <CardContent>
           <BEPTable
+            error={error}
             loading={loading}
             totalNoRecords={collectResponse.total}
             noDataText={'No Backends Found'}
@@ -94,8 +118,10 @@ function BackendManagement(props) {
                 },
               },
             ]}
-            handleRowSelect={() => {
-            }}
+            handleRowSelect={selectedBackend => actionDispatcher({
+              type: actionTypes.selectRow,
+              selectedBackend,
+            })}
           />
         </CardContent>
       </Card>

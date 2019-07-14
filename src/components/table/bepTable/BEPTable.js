@@ -316,10 +316,31 @@ class BEPTable extends Component {
       additionalControls,
       theme,
       handleRowSelect,
+      error,
       ...rest
     } = this.props
 
     switch (true) {
+      case error !== '':
+        return <div className={classes.errorDisplay}>
+          <div>
+            <Typography color={'error'}>
+              <b>Error</b>
+            </Typography>
+          </div>
+          <div>
+            <ErrorIcon
+              color={'error'}
+              className={classes.errorIcon}
+            />
+          </div>
+          <div>
+            <Typography color={'error'}>
+              {error}
+            </Typography>
+          </div>
+        </div>
+
       case activeState === states.nop:
         return <div>
           <div className={classes.controlsWrapper}>
@@ -539,10 +560,15 @@ BEPTable.propTypes = {
    *   </IconButton>
    */
   additionalControls: PropTypes.array,
+  /**
+   * optionally pass an error to render instead of the table
+   */
+  error: PropTypes.string,
   ...Table.propTypes,
 }
 
 BEPTable.defaultProps = {
+  error: '',
   additionalControls: [],
 }
 
