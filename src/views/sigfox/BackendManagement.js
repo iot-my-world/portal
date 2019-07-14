@@ -6,11 +6,10 @@ import {
 import {
   Backend, useBackendRecordHandlerCollect,
 } from 'brain/sigfox/backend'
-import PartyHolder from 'brain/party/holder/Holder'
 import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
-import {ReloadIcon} from 'components/icon/index'
+import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
 
 const states = {
   nop: 0,
@@ -21,8 +20,6 @@ const actionTypes = {
   init: 0,
   selectRow: 1,
 }
-
-const partyHolder = new PartyHolder()
 
 function initialState() {
   return {
@@ -66,6 +63,51 @@ function BackendManagement(props) {
     query: new Query(),
   }), [setCollectRequest])
 
+  let additionalTableControls = [
+    <IconButton>
+      <Tooltip
+        title={'Add New'}
+        placement={'top'}
+      >
+        <Icon>
+          <AddNewIcon/>
+        </Icon>
+      </Tooltip>
+    </IconButton>,
+    <IconButton
+      onClick={() => setCollectRequest({
+        criteria: [],
+        query: new Query(),
+      })}
+    >
+      <Tooltip
+        title={'Reload'}
+        placement={'top'}
+      >
+        <Icon>
+          <ReloadIcon/>
+        </Icon>
+      </Tooltip>
+    </IconButton>,
+  ]
+
+  if (state.activeState === states.itemSelected) {
+    additionalTableControls = [
+      <IconButton
+      >
+        <Tooltip
+          title={'View Details'}
+          placement={'top'}
+        >
+          <Icon>
+            <ViewDetailsIcon/>
+          </Icon>
+        </Tooltip>
+      </IconButton>,
+      ...additionalTableControls,
+    ]
+  }
+
   return (
     <div>
       <Card>
@@ -80,23 +122,7 @@ function BackendManagement(props) {
               criteria,
               query,
             })}
-            additionalControls={[
-              <IconButton
-                onClick={() => setCollectRequest({
-                  criteria: [],
-                  query: new Query(),
-                })}
-              >
-                <Tooltip
-                  title={'Reload'}
-                  placement={'top'}
-                >
-                  <Icon>
-                    <ReloadIcon/>
-                  </Icon>
-                </Tooltip>
-              </IconButton>,
-            ]}
+            additionalControls={additionalTableControls}
             columns={[
               {
                 Header: 'Name',

@@ -27,6 +27,7 @@ const RecordHandler = {
 
 export default RecordHandler
 
+let collectTimeout = null
 function useBackendRecordHandlerCollect() {
   const [collectResponse, setCollectResponse] = useState({
     records: [],
@@ -38,7 +39,6 @@ function useBackendRecordHandlerCollect() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [collectTimeout, setCollectTimeout] = useState(()=>{})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,7 +52,7 @@ function useBackendRecordHandlerCollect() {
       setLoading(false)
     }
     clearTimeout(collectTimeout)
-    setCollectTimeout(setTimeout(fetchData, 300))
+    collectTimeout = setTimeout(fetchData, 300)
   }, [collectRequest])
 
   return [{collectRequest, collectResponse, loading, error}, setCollectRequest]
