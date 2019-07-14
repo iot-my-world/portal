@@ -73,7 +73,6 @@ const states = {
 
 const events = {
   init: states.loggingIn,
-  // init: states.forgotPasswordCaptcha,
   logInFail: states.logInFail,
   errorContactingServer: states.errorContactingServer,
   forgotPassword: states.forgotPasswordCaptcha,
@@ -391,6 +390,7 @@ class LoginForgotPassword extends Component {
                 spacing={1}>
             <Grid item>
               <MeinCaptcha
+                id={'forgotPasswordCaptcha'}
                 resetToggle={showCaptcha}
                 onSuccess={() => this.setState({
                   activeState: events.captchaSuccess,

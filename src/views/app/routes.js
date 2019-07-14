@@ -33,6 +33,7 @@ const appSideBarLinkRoutes = [
     mini: 'CO',
     icon: DomainIcon,
     component: CompanyContainer,
+    sidebarLinkID: 'sidebarCompanyPartyManagementLink'
   },
   {
     path: '/app/party/client',
@@ -41,6 +42,7 @@ const appSideBarLinkRoutes = [
     mini: 'CL',
     icon: PeopleIcon,
     component: ClientContainer,
+    sidebarLinkID: 'sidebarClientPartyManagementLink'
   },
   {
     path: '/app/party/user',
@@ -49,6 +51,7 @@ const appSideBarLinkRoutes = [
     mini: 'US',
     icon: PersonIcon,
     component: HumanUserContainer,
+    sidebarLinkID: 'sidebarHumanUserPartyManagementLink'
   },
   {
     path: '/app/party/apiUser',
@@ -57,6 +60,7 @@ const appSideBarLinkRoutes = [
     mini: 'AP',
     icon: PersonIcon,
     component: APIUserContainer,
+    sidebarLinkID: 'sidebarApiUserPartyManagementLink'
   },
   {
     collapse: true,
@@ -64,6 +68,7 @@ const appSideBarLinkRoutes = [
     name: 'Sigbug',
     state: 'opensigbug',
     icon: TrackerIcon,
+    sidebarLinkID: 'sidebarSigbugDeviceMenuOpenLink',
     views: [
       {
         path: '/app/devices/sigbug/list',
@@ -71,6 +76,7 @@ const appSideBarLinkRoutes = [
         viewPermission: TrackerSF001ViewPermission,
         icon: TrackerIcon,
         component: SF001TrackerContainer,
+        sidebarLinkID: 'sidebarSigbugDeviceListManagementLink'
       },
     ],
   },
@@ -83,6 +89,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
       icon: PersonIcon,
       path: '/app/profile/user',
       component: ProfileContainer,
+      sidebarLinkID: 'sidebarUserProfileLink',
     },
     partyProfileRoute: {},
     partyHomeViewRoute: {},
@@ -149,6 +156,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
     name: party.name,
     icon: partyProfileIcon,
     component: PartyProfileContainer,
+    sidebarLinkID: 'sidebarPartyProfileLink',
   }
 
   // build home route
@@ -158,6 +166,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
         text: 'Home',
         path: '/app',
         component: SystemHomeContainer,
+        sidebarLinkID: 'sidebarSystemHomeLink',
       }
       break
 
@@ -166,6 +175,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
         text: 'Home',
         path: '/app',
         component: CompanyHomeContainer,
+        sidebarLinkID: 'sidebarCompanyHomeLink',
       }
       break
 
@@ -174,6 +184,7 @@ const appRouteBuilder = (partyType, viewPermissions, user, party) => {
         text: 'Home',
         path: '/app',
         component: ClientHomeContainer,
+        sidebarLinkID: 'sidebarClientHomeLink',
       }
       break
 
