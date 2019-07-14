@@ -73,6 +73,7 @@ class Company extends Component {
   handleCriteriaQueryChange = (criteria, query) => {
     this.collectCriteria = criteria
     this.collectQuery = query
+    clearTimeout(this.collectTimeout)
     this.collectTimeout = setTimeout(this.collect, 300)
     this.setState({
       activeState: events.init,

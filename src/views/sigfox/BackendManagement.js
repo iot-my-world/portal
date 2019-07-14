@@ -1,15 +1,16 @@
-import React, {useState, useEffect, useReducer} from 'react'
+import React, {useEffect, useReducer} from 'react'
 import {
-  Card, CardContent,
-  makeStyles,
+  Card, CardContent, Icon, IconButton,
+  Tooltip,
 } from '@material-ui/core'
 import {
-  Backend, BackendRecordHandler,
+  Backend, useBackendRecordHandlerCollect,
 } from 'brain/sigfox/backend'
 import PartyHolder from 'brain/party/holder/Holder'
 import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
+import {ReloadIcon} from 'components/icon/index'
 
 const states = {
   nop: 0,
@@ -21,40 +22,7 @@ const actionTypes = {
   selectRow: 1,
 }
 
-function useBackendRecordHandlerCollect() {
-  const [collectResponse, setCollectResponse] = useState({
-    records: [],
-    total: 0,
-  })
-  const [collectRequest, setCollectRequest] = useState({
-    criteria: [],
-    query: new Query(),
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        setCollectResponse(await BackendRecordHandler.Collect(collectRequest))
-      } catch (e) {
-        console.error('Error Collecting Backend Records', e)
-        setError('Error Collecting Backend Records')
-      }
-      setLoading(false)
-    }
-    fetchData()
-  }, [collectRequest])
-
-  return [{collectResponse, loading, error}, setCollectRequest]
-}
-
-const useStyles = makeStyles(theme => ({}))
-
 const partyHolder = new PartyHolder()
-const collectTimeout = () => {
-}
 
 function initialState() {
   return {
@@ -80,16 +48,23 @@ function stateReducer(state, action) {
 }
 
 function BackendManagement(props) {
-  const [{collectResponse, loading, error}, setCollectRequest] = useBackendRecordHandlerCollect()
+  const [
+    {
+      collectResponse,
+      loading,
+      error,
+    },
+    setCollectRequest,
+  ] = useBackendRecordHandlerCollect()
   const [state, actionDispatcher] = useReducer(
     stateReducer,
     initialState(),
   )
 
   useEffect(() => setCollectRequest({
-    records: [],
-    total: 0,
-  }), [])
+    criteria: [],
+    query: new Query(),
+  }), [setCollectRequest])
 
   return (
     <div>
@@ -105,7 +80,23 @@ function BackendManagement(props) {
               criteria,
               query,
             })}
-            additionalControls={[]}
+            additionalControls={[
+              <IconButton
+                onClick={() => setCollectRequest({
+                  criteria: [],
+                  query: new Query(),
+                })}
+              >
+                <Tooltip
+                  title={'Reload'}
+                  placement={'top'}
+                >
+                  <Icon>
+                    <ReloadIcon/>
+                  </Icon>
+                </Tooltip>
+              </IconButton>,
+            ]}
             columns={[
               {
                 Header: 'Name',
