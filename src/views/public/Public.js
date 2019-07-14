@@ -93,13 +93,8 @@ const tabs = {
   },
   termsConditionsAndPrivacy: {
     idx: 3,
-    id: 'termsAndConditionsTab',
+    id: 'termsConditionsAndPrivacyTab',
     path: '/termsConditionsAndPrivacy',
-  },
-  privacyPolicy: {
-    idx: 4,
-    id: 'privacyPolicyTab',
-    path: '/privacyPolicy',
   },
 }
 
@@ -180,7 +175,7 @@ class Public extends Component {
         style={{backgroundImage: 'url(' + backgroundImage + ')'}}
       >
         <div className={classes.root}>
-          <AppBar position="static">
+          <AppBar id={'publicAppBar'} position="static">
             <Toolbar classes={{root: classes.toolbarRoot}}>
               <div className={classes.toolBarContent}>
                 <img
@@ -194,6 +189,7 @@ class Public extends Component {
                 <Tabs
                   value={activeTabIdx}
                   onChange={this.handleTabChange}
+                  id={'publicNavTabBar'}
                 >
                   <Tab
                     id={tabs.info.id}

@@ -106,6 +106,7 @@ class Sidebar extends React.Component {
           <ListItem className={classes.item + ' ' + classes.userItem}>
             <NavLink
               to={'#'}
+              id={'sidebarProfileMenuLink'}
               className={classes.itemLink + ' ' + classes.userCollapseButton}
               onClick={() => this.openCollapse('openAvatar')}
             >
@@ -131,6 +132,7 @@ class Sidebar extends React.Component {
                 <ListItem className={classes.collapseItem}>
                   <NavLink
                     to={appRoutes.userProfileRoute.path}
+                    id={appRoutes.userProfileRoute.sidebarLinkID}
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
@@ -148,6 +150,7 @@ class Sidebar extends React.Component {
                 <ListItem className={classes.collapseItem}>
                   <NavLink
                     to={appRoutes.partyProfileRoute.path}
+                    id={appRoutes.partyProfileRoute.sidebarLinkID}
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
@@ -165,6 +168,7 @@ class Sidebar extends React.Component {
                 <ListItem className={classes.collapseItem}>
                   <NavLink
                     to={'#'}
+                    id={'sidebarLogoutLink'}
                     className={
                       classes.itemLink + ' ' + classes.userCollapseLinks
                     }
@@ -217,6 +221,7 @@ class Sidebar extends React.Component {
             return (
               <ListItem key={key} className={classes.item}>
                 <NavLink
+                  id={prop.sidebarLinkID}
                   to={'#'}
                   className={navLinkClasses}
                   onClick={() => this.openCollapse(prop.state)}
@@ -250,6 +255,7 @@ class Sidebar extends React.Component {
                       return (
                         <ListItem key={key} className={classes.collapseItem}>
                           <NavLink
+                            id={prop.sidebarLinkID}
                             to={prop.path}
                             className={classNames(
                               classes.collapseItemLink,
@@ -297,7 +303,11 @@ class Sidebar extends React.Component {
             })
           return (
             <ListItem key={key} className={classes.item}>
-              <NavLink to={prop.path} className={navLinkClasses}>
+              <NavLink
+                id={prop.sidebarLinkID}
+                to={prop.path}
+                className={navLinkClasses}
+              >
                 <ListItemIcon className={classes.itemIcon}>
                   <prop.icon/>
                 </ListItemIcon>
@@ -350,7 +360,10 @@ class Sidebar extends React.Component {
         navigator.platform.indexOf('Win') > -1,
       })
     return (
-      <div ref={this.mainPanelRef}>
+      <div
+        ref={this.mainPanelRef}
+        id={'sidebarRoot'}
+      >
         <Hidden mdUp>
           <Drawer
             variant="temporary"
@@ -423,4 +436,5 @@ Sidebar.propTypes = {
   Logout: PropTypes.func.isRequired,
 }
 
-export default withStyles(sidebarStyle)(Sidebar)
+const StyledSidebar = withStyles(sidebarStyle)(Sidebar)
+export default StyledSidebar

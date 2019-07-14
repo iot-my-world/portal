@@ -27,7 +27,10 @@ const styles = theme => ({
 function TermsConditionsAndPrivacy(props) {
   const {classes} = props
   return (
-    <div className={classes.root}>
+    <div
+      id={'termsConditionsAndPrivacyRoot'}
+      className={classes.root}
+    >
       <h3 className={classes.heading}>
         Terms and Conditions
       </h3>

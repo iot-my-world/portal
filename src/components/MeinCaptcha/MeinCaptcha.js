@@ -230,8 +230,12 @@ class MeinCaptcha extends Component {
       notARobotAnswer,
     } = this.state
     return (
-        <div className={classes.askingForCaptchaCard}>
+        <div
+          id={'askingForCaptchaRoot'}
+          className={classes.askingForCaptchaCard}
+        >
           <Checkbox
+              id={'notARobotCheckbox'}
               onChange={this.handleNotARobot}
               checked={notARobotAnswer}
               classes={{
@@ -255,7 +259,10 @@ class MeinCaptcha extends Component {
       captchaAnswer,
     } = this.state
     return (
-        <div className={classes.captchaCard}>
+        <div
+          className={classes.captchaCard}
+          id={'captchaImageRoot'}
+        >
           <canvas
               style={{gridColumn: '1/3'}}
               className={classes.canvas}
@@ -270,6 +277,7 @@ class MeinCaptcha extends Component {
             />
           </div>
           <Fab
+              id={'submitCaptchaButton'}
               style={{alignSelf: 'end'}}
               color='primary'
               aria-label='Save'
@@ -291,6 +299,7 @@ class MeinCaptcha extends Component {
         <div className={classes.captchaFailureCard}>
           <ErrorIcon className={classes.errorIcon}/>
           <Fab
+              id={'tryAgainButton'}
               variant='extended'
               size='small'
               color='primary'
@@ -306,7 +315,11 @@ class MeinCaptcha extends Component {
   }
 
   render() {
-    const {classes, width} = this.props
+    const {
+      classes,
+      width,
+      id,
+    } = this.props
     const {
       activeState,
     } = this.state
@@ -338,6 +351,7 @@ class MeinCaptcha extends Component {
                 Enter the characters
               </Typography>
               <Fab
+                  id={'regenerateCaptchaButton'}
                   color='primary'
                   aria-label='Refresh'
                   size={'small'}
@@ -355,6 +369,7 @@ class MeinCaptcha extends Component {
       case states.captchaFailure:
         msg = (
             <Typography
+                id={'incorrectMessage'}
                 variant={'body1'}
                 color={'error'}
             >
@@ -366,7 +381,10 @@ class MeinCaptcha extends Component {
       default:
     }
     return (
-        <Card style={{width: width + 32}}>
+        <Card
+          id={id}
+          style={{width: width + 32}}
+        >
           <CardContent>
             <div className={classes.root}>
               {msg}
@@ -389,6 +407,7 @@ class MeinCaptcha extends Component {
 MeinCaptcha = withStyles(styles)(MeinCaptcha)
 
 MeinCaptcha.propTypes = {
+  id: PropTypes.string,
   width: PropTypes.number,
   height: PropTypes.number,
   captchaLength: PropTypes.number,
@@ -402,6 +421,7 @@ MeinCaptcha.propTypes = {
   onSuccess: PropTypes.func.isRequired,
 }
 MeinCaptcha.defaultProps = {
+  id: 'meinCaptcha',
   width: 250,
   height: 80,
   captchaLength: 5,
