@@ -8,7 +8,6 @@ import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
 import HumanUserContainer from 'views/user/human/HumanContainer'
-import APIUserContainer from 'views/party/apiUser/APIUserContainer'
 import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
@@ -16,7 +15,6 @@ import {
   PartyCompanyViewPermission,
   PartyClientViewPermission,
   PartyUserViewPermission,
-  PartyAPIUserViewPermission,
   TrackerSF001ViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
@@ -52,15 +50,6 @@ const appSideBarLinkRoutes = [
     icon: PersonIcon,
     component: HumanUserContainer,
     sidebarLinkID: 'sidebarHumanUserPartyManagementLink'
-  },
-  {
-    path: '/app/party/apiUser',
-    name: 'API Users',
-    viewPermission: PartyAPIUserViewPermission,
-    mini: 'AP',
-    icon: PersonIcon,
-    component: APIUserContainer,
-    sidebarLinkID: 'sidebarApiUserPartyManagementLink'
   },
   {
     collapse: true,
