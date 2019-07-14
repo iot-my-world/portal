@@ -5,7 +5,7 @@ const Validator = {
   serviceProvider: 'SigfoxBackend-Validator',
 
   /**
-   * @param {Backend} backend
+   * @param {BackendManagement} backend
    * @param {string} action
    * @returns {Promise<any>}
    * @constructor

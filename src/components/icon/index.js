@@ -3,6 +3,7 @@ import {
   FaPlus as AddNewIcon,
   FaSyncAlt as ReloadIcon,
   FaGithub as GithubIcon,
+  FaServer as ServerIcon,
 } from 'react-icons/fa'
 import {
   MdClear as CancelIcon,
@@ -28,4 +29,5 @@ export {
   InfoIcon,
   EmailIcon,
   TCSIcon,
+  ServerIcon,
 }

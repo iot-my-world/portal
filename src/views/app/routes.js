@@ -2,6 +2,7 @@ import PeopleIcon from '@material-ui/icons/People'
 import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
+import BackendIcon from '@material-ui/icons/BusinessCenter'
 import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
@@ -11,11 +12,13 @@ import HumanUserContainer from 'views/user/human/HumanContainer'
 import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
+import SigfoxBackendManagement from 'views/sigfox/BackendManagement'
 import {
   PartyCompanyViewPermission,
   PartyClientViewPermission,
   PartyUserViewPermission,
   TrackerSF001ViewPermission,
+  SigfoxBackendManagementViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
   ClientPartyType,
@@ -31,7 +34,7 @@ const appSideBarLinkRoutes = [
     mini: 'CO',
     icon: DomainIcon,
     component: CompanyContainer,
-    sidebarLinkID: 'sidebarCompanyPartyManagementLink'
+    sidebarLinkID: 'sidebarCompanyPartyManagementLink',
   },
   {
     path: '/app/party/client',
@@ -40,7 +43,7 @@ const appSideBarLinkRoutes = [
     mini: 'CL',
     icon: PeopleIcon,
     component: ClientContainer,
-    sidebarLinkID: 'sidebarClientPartyManagementLink'
+    sidebarLinkID: 'sidebarClientPartyManagementLink',
   },
   {
     path: '/app/party/user',
@@ -49,7 +52,16 @@ const appSideBarLinkRoutes = [
     mini: 'US',
     icon: PersonIcon,
     component: HumanUserContainer,
-    sidebarLinkID: 'sidebarHumanUserPartyManagementLink'
+    sidebarLinkID: 'sidebarHumanUserPartyManagementLink',
+  },
+  {
+    path: '/app/sigfox/backend',
+    name: 'Sigfox Backend',
+    viewPermission: SigfoxBackendManagementViewPermission,
+    mini: 'SB',
+    icon: BackendIcon,
+    component: SigfoxBackendManagement,
+    sidebarLinkID: 'sidebarSigfoxBackendManagementLink',
   },
   {
     collapse: true,
@@ -65,7 +77,7 @@ const appSideBarLinkRoutes = [
         viewPermission: TrackerSF001ViewPermission,
         icon: TrackerIcon,
         component: SF001TrackerContainer,
-        sidebarLinkID: 'sidebarSigbugDeviceListManagementLink'
+        sidebarLinkID: 'sidebarSigbugDeviceListManagementLink',
       },
     ],
   },

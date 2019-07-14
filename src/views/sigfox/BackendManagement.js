@@ -6,7 +6,7 @@ import {
 
 const useStyles = makeStyles(theme => ({}))
 
-function Backend(props) {
+function BackendManagement(props) {
   return (
     <div>
       Backend!
@@ -14,8 +14,8 @@ function Backend(props) {
   )
 }
 
-Backend.propTypes = {}
+BackendManagement.propTypes = {}
 
-Backend.defaultProps = {}
+BackendManagement.defaultProps = {}
 
-export default Backend
+export default BackendManagement
