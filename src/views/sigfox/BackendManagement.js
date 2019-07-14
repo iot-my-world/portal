@@ -9,6 +9,8 @@ import {
 } from 'brain/sigfox/backend'
 import PartyHolder from 'brain/party/holder/Holder'
 import Query from 'brain/search/Query'
+import BEPTable from 'components/table/bepTable/BEPTable'
+import {TextCriterionType} from 'brain/search/criterion/types'
 
 const states = {
   nop: 0,
@@ -21,7 +23,10 @@ const events = {
 }
 
 function useBackendRecordHandlerCollect() {
-  const [records, setRecords] = useState([])
+  const [collectResponse, setCollectResponse] = useState({
+    records: [],
+    total: 0,
+  })
   const [collectRequest, setCollectRequest] = useState({
     criteria: [],
     query: new Query(),
@@ -31,12 +36,18 @@ function useBackendRecordHandlerCollect() {
 
   useEffect(() => {
     const fetchData = async () => {
-
+      try {
+        setLoading(true)
+        setCollectResponse(await BackendRecordHandler.Collect(collectRequest))
+      } catch (e) {
+        console.error('error collecting backend records', e)
+      }
+      setLoading(false)
     }
     fetchData()
-  })
+  }, [collectRequest])
 
-  return [{records, loading, error}, setCollectRequest]
+  return [{collectResponse, loading, error}, setCollectRequest]
 }
 
 const useStyles = makeStyles(theme => ({}))
@@ -50,13 +61,42 @@ function BackendManagement(props) {
   const [activeState, setActiveState] = useState(states.nop)
   const [selectedBackend, setSelectedBackend] = useState(new Backend())
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
-  const [{records, loading, error}, setCollectRequest] = useBackendRecordHandlerCollect()
+  const [{collectResponse, loading, error}, setCollectRequest] = useBackendRecordHandlerCollect()
+
+  useEffect(() => setCollectRequest({
+    records: [],
+    total: 0,
+  }), [])
 
   return (
     <div>
       <Card>
         <CardContent>
-          stuff
+          <BEPTable
+            loading={loading}
+            totalNoRecords={collectResponse.total}
+            noDataText={'No Backends Found'}
+            data={collectResponse.records}
+            onCriteriaQueryChange={(criteria, query) => setCollectRequest({
+              criteria,
+              query,
+            })}
+            additionalControls={[]}
+            columns={[
+              {
+                Header: 'Name',
+                accessor: 'name',
+                width: 155,
+                config: {
+                  filter: {
+                    type: TextCriterionType,
+                  },
+                },
+              },
+            ]}
+            handleRowSelect={() => {
+            }}
+          />
         </CardContent>
       </Card>
     </div>
