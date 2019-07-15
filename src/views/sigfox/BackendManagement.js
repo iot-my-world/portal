@@ -44,7 +44,7 @@ function stateReducer(state, action) {
   }
 }
 
-function BackendManagement(props) {
+function BackendManagement() {
   const [
     {
       collectResponse,
