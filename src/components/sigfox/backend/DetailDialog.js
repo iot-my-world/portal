@@ -1,4 +1,5 @@
-import React, {useReducer} from 'react'
+import React, {useReducer, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import PropTypes from 'prop-types'
 import {
   Fab,
@@ -8,7 +9,20 @@ import {
 } from '@material-ui/core'
 import Dialog from 'components/Dialog'
 import {Backend} from 'brain/sigfox/backend'
-import {CancelIcon, EditIcon, SaveIcon} from 'components/icon/index'
+import {CancelIcon, EditIcon, SaveIcon} from 'components/icon'
+import {
+  NotificationFailure,
+  NotificationSuccess,
+} from 'actions/notification'
+import {
+  HideGlobalLoader,
+  ShowGlobalLoader,
+} from 'actions/app'
+
+import {
+  BackendValidator,
+} from 'brain/sigfox/backend'
+import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -96,11 +110,35 @@ function DetailDialog(props) {
     initialState,
     backend,
   } = props
+  const dispatch = useDispatch()
   const classes = useStyles()
+  const [reasonsInvalid, setReasonsInvalid] = useState(new ReasonsInvalid())
   const [state, actionDispatcher] = useReducer(
     stateReducer,
     initialiseState(initialState, backend),
   )
+
+  const handleSaveNew = async () => {
+    try {
+      dispatch(ShowGlobalLoader())
+      const reasonsInvalid = (await BackendValidator.Validate({
+        backend: state.selectedBackend,
+        action: 'Create',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        setReasonsInvalid(reasonsInvalid)
+        dispatch(HideGlobalLoader())
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating backend', e)
+      dispatch(NotificationFailure('Error Validating backend'))
+      dispatch(HideGlobalLoader())
+      return
+    }
+
+    dispatch(HideGlobalLoader())
+  }
 
   let additionalTitleControls = []
   switch (state.activeState) {
@@ -131,7 +169,6 @@ function DetailDialog(props) {
         >
           <Fab
             size={'small'}
-            // onClick={this.handleSaveChanges}
           >
             <SaveIcon className={classes.buttonIcon}/>
           </Fab>
@@ -161,7 +198,7 @@ function DetailDialog(props) {
         >
           <Fab
             size={'small'}
-            // onClick={this.handleSaveNew}
+            onClick={handleSaveNew}
           >
             <SaveIcon className={classes.buttonIcon}/>
           </Fab>
