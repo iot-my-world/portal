@@ -14,6 +14,7 @@ import {
   MdInfo as InfoIcon,
   MdEmail as EmailIcon,
   MdBook as TCSIcon,
+  MdContentCopy as CopyIcon,
 } from 'react-icons/md'
 
 export {
@@ -30,4 +31,5 @@ export {
   EmailIcon,
   TCSIcon,
   ServerIcon,
+  CopyIcon,
 }

@@ -10,6 +10,7 @@ import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
+import HoverCopy from 'components/HoverCopy'
 
 const states = {
   nop: 0,
@@ -128,6 +129,21 @@ function BackendManagement() {
                 Header: 'Name',
                 accessor: 'name',
                 width: 155,
+                config: {
+                  filter: {
+                    type: TextCriterionType,
+                  },
+                },
+              },
+              {
+                Header: 'Token',
+                accessor: 'token',
+                width: 155,
+                Cell: rowCellInfo => {
+                  if (rowCellInfo) {
+                    return <HoverCopy value={rowCellInfo.value}/>
+                  }
+                },
                 config: {
                   filter: {
                     type: TextCriterionType,
