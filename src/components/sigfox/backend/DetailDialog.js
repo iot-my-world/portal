@@ -56,6 +56,7 @@ const actionTypes = {
   startEditExisting: 0,
   cancelEditExisting: 1,
   fieldChange: 2,
+  createNewSuccess: 3,
 }
 
 function initialiseState(initialState, backend) {
@@ -90,6 +91,13 @@ function stateReducer(state, action) {
         selectedBackend: state.selectedBackend,
       }
 
+    case actionTypes.createNewSuccess:
+      return {
+        ...state,
+        activeState: states.viewingExisting,
+        selectedBackend: action.backend,
+      }
+
     default:
       return state
   }
@@ -101,6 +109,7 @@ function DetailDialog(props) {
     closeDialog,
     initialState,
     backend,
+    onCreateSuccess,
   } = props
   const dispatch = useDispatch()
   const claims = useSelector(state => state.auth.claims)
@@ -113,8 +122,10 @@ function DetailDialog(props) {
   const fieldValidations = reasonsInvalid.toMap()
 
   const handleSaveNew = async () => {
+    dispatch(ShowGlobalLoader())
+
+    // perform validation
     try {
-      dispatch(ShowGlobalLoader())
       state.selectedBackend.ownerId = new IdIdentifier(claims.partyId)
       state.selectedBackend.ownerPartyType = claims.partyType
       const reasonsInvalid = (await BackendValidator.Validate({
@@ -129,6 +140,24 @@ function DetailDialog(props) {
     } catch (e) {
       console.error('Error Validating backend', e)
       dispatch(NotificationFailure('Error Validating backend'))
+      dispatch(HideGlobalLoader())
+      return
+    }
+
+    // perform creation
+    try {
+      const createResponse = await BackendAdministrator.Create({
+        backend: state.selectedBackend,
+      })
+      actionDispatcher({
+        type: actionTypes.createNewSuccess,
+        backend: createResponse.backend,
+      })
+      dispatch(NotificationSuccess('Successfully Created Backend'))
+      onCreateSuccess(createResponse.backend)
+    } catch (e) {
+      console.error('Error Creating backend', e)
+      dispatch(NotificationFailure('Error Creating backend'))
       dispatch(HideGlobalLoader())
       return
     }
@@ -267,11 +296,23 @@ DetailDialog.propTypes = {
    * Initial state with which the detail dialog should open
    */
   initialState: PropTypes.oneOf(Object.values(states)),
+  /**
+   * Function will will be called on create success with newly created
+   * backend
+   */
+  onCreateSuccess: PropTypes.func,
+  /**
+   * Function will will be called on update success with updated
+   * backend
+   */
+  onUpdateSuccess: PropTypes.func,
 }
 
 DetailDialog.defaultProps = {
   initialState: states.viewingExisting,
   backend: new Backend(),
+  onCreateSuccess: ()=>{},
+  onUpdateSuccess: ()=>{},
 }
 
 export default DetailDialog

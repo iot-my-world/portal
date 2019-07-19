@@ -203,6 +203,10 @@ function BackendManagement() {
         })}
         backend={state.selectedBackend}
         initialState={state.detailDialogState}
+        onCreateSuccess={() => setCollectRequest({
+          criteria: [],
+          query: new Query(),
+        })}
       />}
     </div>
   )
