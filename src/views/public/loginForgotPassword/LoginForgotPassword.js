@@ -16,13 +16,13 @@ import {
   withStyles,
 } from '@material-ui/core'
 import {ReasonInvalid, ReasonsInvalid} from 'brain/validate/index'
-import LoginService from 'brain/security/auth/Service'
 import {ContactFailed, MethodFailed} from 'brain/apiError/index'
 import {parseToken} from 'utilities/token/parseToken'
 import {HumanUserLoginClaimsType} from 'brain/security/claims/types'
 import {UserAdministrator} from 'brain/user/human/index'
 import MeinCaptcha from 'components/MeinCaptcha/MeinCaptcha'
 import SendIcon from '@material-ui/core/SvgIcon/SvgIcon'
+import {ServerAuthenticator} from 'brain/api/server'
 
 const styles = theme => {
   return {
@@ -38,8 +38,7 @@ const styles = theme => {
       gridTemplateRows: 'auto auto',
       gridRowGap: theme.spacing(1),
     },
-    titleInnerWrapper: {
-    },
+    titleInnerWrapper: {},
     logo: {
       height: '200px',
     },
@@ -159,7 +158,10 @@ class LoginForgotPassword extends Component {
     // login
     let loginResult
     try {
-      loginResult = await LoginService.Login(usernameOrEmailAddress, password)
+      loginResult = await ServerAuthenticator.Login({
+        usernameOrEmailAddress,
+        password,
+      })
     } catch (error) {
       switch (true) {
         case error instanceof MethodFailed:
@@ -530,7 +532,7 @@ class LoginForgotPassword extends Component {
     }
   }
 
-  render(){
+  render() {
     const {
       classes,
     } = this.props
