@@ -13,21 +13,22 @@ const useStyles = makeStyles(theme => ({
   },
   value: {
     textOverflow: 'ellipsis',
-    maxWidth: '80px',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
   },
   buttonRoot: {
     padding: 0,
-    margin: 0,
+    margin: `${theme.spacing(0.5)} 0 0 ${theme.spacing(0.5)}`,
   },
 }))
 
 function HoverCopy(props) {
   const {
     value,
+    maxWidth,
   } = props
   const [showCopy, setShowCopy] = useState(false)
+  const [showCopiedText, setShowCopiedText] = useState(false)
   const classes = useStyles()
   const textElementRef = useRef(null)
 
@@ -47,6 +48,9 @@ function HoverCopy(props) {
 
         // clear all selections
         window.getSelection().removeAllRanges()
+
+        setShowCopiedText(true)
+        setTimeout(()=>setShowCopiedText(false), 1000)
       } catch (e) {
         console.error('error copying value', e)
       }
@@ -59,6 +63,9 @@ function HoverCopy(props) {
         className={classes.root}
         onMouseEnter={()=>setShowCopy(true)}
         onMouseLeave={()=>setShowCopy(false)}
+        style={{
+          maxWidth,
+        }}
       >
         <div
           className={classes.value}
@@ -73,7 +80,7 @@ function HoverCopy(props) {
           size={'small'}
         >
           <Tooltip
-            title={'Copy'}
+            title={showCopiedText ? 'Copied!' : 'Copy'}
             placement={'top-end'}
           >
             <Icon>
@@ -93,11 +100,21 @@ function HoverCopy(props) {
 }
 
 HoverCopy.propTypes = {
-  value: PropTypes.any,
+  /**
+   * textual value to be shown and
+   * copied
+   */
+  value: PropTypes.string,
+  /**
+   * max width of text before truncation
+   * with ellipses
+   */
+  maxWidth: PropTypes.number,
 }
 
 HoverCopy.defaultProps = {
   value: '',
+  maxValue: 100,
 }
 
 export default HoverCopy
