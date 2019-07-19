@@ -2,7 +2,6 @@ import React, {useReducer} from 'react'
 import PropTypes from 'prop-types'
 import {
   Fab,
-  IconButton,
   makeStyles,
   TextField,
   Tooltip,
@@ -40,6 +39,7 @@ const states = {
 const actionTypes = {
   startEditExisting: 0,
   cancelEditExisting: 1,
+  fieldChange: 2,
 }
 
 function initialiseState(initialState, backend) {
@@ -67,9 +67,26 @@ function stateReducer(state, action) {
         backendCopy: new Backend(),
       }
 
+    case actionTypes.fieldChange:
+      state.selectedBackend[action.field] = action.value
+      return {
+        ...state,
+        selectedBackend: state.selectedBackend,
+      }
+
     default:
       return state
   }
+}
+
+const fieldChange = actionDispatcher => e => {
+  actionDispatcher({
+    type: actionTypes.fieldChange,
+    field: e.target.name
+      ? e.target.name
+      : e.target.id,
+    value: e.target.value,
+  })
 }
 
 function DetailDialog(props) {
@@ -170,7 +187,7 @@ function DetailDialog(props) {
           id='name'
           label='Name'
           value={state.selectedBackend.name}
-          // onChange={this.handleFieldChange}
+          onChange={fieldChange(actionDispatcher)}
           InputProps={{
             disableUnderline: stateIsViewing,
             readOnly: stateIsViewing,
