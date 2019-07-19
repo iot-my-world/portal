@@ -122,6 +122,19 @@ class BEPTable extends Component {
     this.constructTable()
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      clearRowSelectionToggle: prevClearRowSelectionToggle,
+    } = prevProps
+    const {clearRowSelectionToggle} = this.props
+
+    if (prevClearRowSelectionToggle !== clearRowSelectionToggle) {
+      this.setState({
+        selectedRowIdx: -1,
+      })
+    }
+  }
+
   constructTable() {
     const {
       errors,
@@ -564,12 +577,18 @@ BEPTable.propTypes = {
    * optionally pass an error to render instead of the table
    */
   error: PropTypes.string,
+  /**
+   * optionally pass a togglable boolean to clear selected
+   * row state
+   */
+  clearRowSelectionToggle: PropTypes.bool,
   ...Table.propTypes,
 }
 
 BEPTable.defaultProps = {
   error: '',
   additionalControls: [],
+  clearRowSelectionToggle: false,
 }
 
 export default BEPTable

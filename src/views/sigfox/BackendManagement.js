@@ -11,9 +11,9 @@ import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
 import HoverCopy from 'components/HoverCopy'
-import {
-  DetailDialog as BackendDetailDialog,
-} from 'components/sigfox/backend'
+import BackendDetailDialog, {
+  states as backendDetailDialogStates,
+} from 'components/sigfox/backend/DetailDialog'
 
 const states = {
   nop: 0,
@@ -23,8 +23,9 @@ const states = {
 const actionTypes = {
   init: 0,
   selectRow: 1,
-  closeDetailDialog: 2,
-  openDetailDialog: 3,
+  viewDetail: 2,
+  startCreateNew: 3,
+  closeDetailDialog: 4,
 }
 
 function initialState() {
@@ -32,6 +33,8 @@ function initialState() {
     activeState: states.nop,
     selectedBackend: new Backend(),
     detailDialogOpen: false,
+    detailDialogState: backendDetailDialogStates.creating,
+    clearRowSelectionToggle: false,
   }
 }
 
@@ -44,15 +47,24 @@ function stateReducer(state, action) {
         detailDialogOpen: false,
       }
 
-    case actionTypes.openDetailDialog:
+    case actionTypes.viewDetail:
       return {
         ...state,
+        detailDialogState: backendDetailDialogStates.viewingExisting,
+        detailDialogOpen: true,
+      }
+
+    case actionTypes.startCreateNew:
+      return {
+        ...state,
+        clearRowSelectionToggle: !state.clearRowSelectionToggle,
+        detailDialogState: backendDetailDialogStates.creating,
+        selectedBackend: new Backend(),
         detailDialogOpen: true,
       }
 
     case actionTypes.closeDetailDialog:
       return {
-        ...state,
         detailDialogOpen: false,
       }
 
@@ -82,7 +94,11 @@ function BackendManagement() {
   }), [setCollectRequest])
 
   let additionalTableControls = [
-    <IconButton>
+    <IconButton
+      onClick={() => actionDispatcher({
+        type: actionTypes.startCreateNew,
+      })}
+    >
       <Tooltip
         title={'Add New'}
         placement={'top'}
@@ -113,7 +129,7 @@ function BackendManagement() {
     additionalTableControls = [
       <IconButton
         onClick={() => actionDispatcher({
-          type: actionTypes.openDetailDialog,
+          type: actionTypes.viewDetail,
         })}
       >
         <Tooltip
@@ -136,6 +152,7 @@ function BackendManagement() {
           <BEPTable
             error={error}
             loading={loading}
+            clearRowSelectionToggle={state.clearRowSelectionToggle}
             totalNoRecords={collectResponse.total}
             noDataText={'No Backends Found'}
             data={collectResponse.records}
@@ -185,6 +202,7 @@ function BackendManagement() {
           type: actionTypes.closeDetailDialog,
         })}
         backend={state.selectedBackend}
+        initialState={state.detailDialogState}
       />}
     </div>
   )
