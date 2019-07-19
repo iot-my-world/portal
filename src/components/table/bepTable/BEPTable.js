@@ -122,6 +122,19 @@ class BEPTable extends Component {
     this.constructTable()
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      clearRowSelectionToggle: prevClearRowSelectionToggle,
+    } = prevProps
+    const {clearRowSelectionToggle} = this.props
+
+    if (prevClearRowSelectionToggle !== clearRowSelectionToggle) {
+      this.setState({
+        selectedRowIdx: -1,
+      })
+    }
+  }
+
   constructTable() {
     const {
       errors,
@@ -316,10 +329,31 @@ class BEPTable extends Component {
       additionalControls,
       theme,
       handleRowSelect,
+      error,
       ...rest
     } = this.props
 
     switch (true) {
+      case error !== '':
+        return <div className={classes.errorDisplay}>
+          <div>
+            <Typography color={'error'}>
+              <b>Error</b>
+            </Typography>
+          </div>
+          <div>
+            <ErrorIcon
+              color={'error'}
+              className={classes.errorIcon}
+            />
+          </div>
+          <div>
+            <Typography color={'error'}>
+              {error}
+            </Typography>
+          </div>
+        </div>
+
       case activeState === states.nop:
         return <div>
           <div className={classes.controlsWrapper}>
@@ -539,11 +573,22 @@ BEPTable.propTypes = {
    *   </IconButton>
    */
   additionalControls: PropTypes.array,
+  /**
+   * optionally pass an error to render instead of the table
+   */
+  error: PropTypes.string,
+  /**
+   * optionally pass a togglable boolean to clear selected
+   * row state
+   */
+  clearRowSelectionToggle: PropTypes.bool,
   ...Table.propTypes,
 }
 
 BEPTable.defaultProps = {
+  error: '',
   additionalControls: [],
+  clearRowSelectionToggle: false,
 }
 
 export default BEPTable

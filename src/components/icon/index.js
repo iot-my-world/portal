@@ -3,6 +3,7 @@ import {
   FaPlus as AddNewIcon,
   FaSyncAlt as ReloadIcon,
   FaGithub as GithubIcon,
+  FaServer as ServerIcon,
 } from 'react-icons/fa'
 import {
   MdClear as CancelIcon,
@@ -13,6 +14,7 @@ import {
   MdInfo as InfoIcon,
   MdEmail as EmailIcon,
   MdBook as TCSIcon,
+  MdContentCopy as CopyIcon,
 } from 'react-icons/md'
 
 export {
@@ -28,4 +30,6 @@ export {
   InfoIcon,
   EmailIcon,
   TCSIcon,
+  ServerIcon,
+  CopyIcon,
 }
