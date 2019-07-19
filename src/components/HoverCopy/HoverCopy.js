@@ -7,10 +7,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
   },
-  inputField: {
-    // display: 'none',
-    // visibility: 'hidden',
-  },
   value: {
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',

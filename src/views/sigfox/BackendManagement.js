@@ -11,6 +11,9 @@ import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
 import HoverCopy from 'components/HoverCopy'
+import {
+  DetailDialog as BackendDetailDialog,
+} from 'components/sigfox/backend'
 
 const states = {
   nop: 0,
@@ -20,6 +23,8 @@ const states = {
 const actionTypes = {
   init: 0,
   selectRow: 1,
+  closeDetailDialog: 2,
+  openDetailDialog: 3,
 }
 
 function initialState() {
@@ -36,6 +41,18 @@ function stateReducer(state, action) {
       return {
         activeState: states.itemSelected,
         selectedBackend: new Backend(action.selectedBackend),
+        detailDialogOpen: false,
+      }
+
+    case actionTypes.openDetailDialog:
+      return {
+        ...state,
+        detailDialogOpen: true,
+      }
+
+    case actionTypes.closeDetailDialog:
+      return {
+        ...state,
         detailDialogOpen: false,
       }
 
@@ -95,6 +112,9 @@ function BackendManagement() {
   if (state.activeState === states.itemSelected) {
     additionalTableControls = [
       <IconButton
+        onClick={() => actionDispatcher({
+          type: actionTypes.openDetailDialog,
+        })}
       >
         <Tooltip
           title={'View Details'}
@@ -158,6 +178,12 @@ function BackendManagement() {
           />
         </CardContent>
       </Card>
+      {<BackendDetailDialog
+        open={state.detailDialogOpen}
+        closeDialog={() => actionDispatcher({
+          type: actionTypes.closeDetailDialog,
+        })}
+      />}
     </div>
   )
 }
