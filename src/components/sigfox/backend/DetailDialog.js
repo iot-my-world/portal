@@ -57,6 +57,7 @@ const actionTypes = {
   cancelEditExisting: 1,
   fieldChange: 2,
   createNewSuccess: 3,
+  updateSuccess: 4,
 }
 
 function initialiseState(initialState, backend) {
@@ -96,6 +97,15 @@ function stateReducer(state, action) {
         ...state,
         activeState: states.viewingExisting,
         selectedBackend: action.backend,
+        backendCopy: new Backend(),
+      }
+
+    case actionTypes.updateSuccess:
+      return {
+        ...state,
+        activeState: states.viewingExisting,
+        selectedBackend: action.backend,
+        backendCopy: new Backend(),
       }
 
     default:
@@ -110,6 +120,7 @@ function DetailDialog(props) {
     initialState,
     backend,
     onCreateSuccess,
+    onUpdateSuccess,
   } = props
   const dispatch = useDispatch()
   const claims = useSelector(state => state.auth.claims)
@@ -138,8 +149,8 @@ function DetailDialog(props) {
         return
       }
     } catch (e) {
-      console.error('Error Validating backend', e)
-      dispatch(NotificationFailure('Error Validating backend'))
+      console.error('Error Validating Backend', e)
+      dispatch(NotificationFailure('Error Validating Backend'))
       dispatch(HideGlobalLoader())
       return
     }
@@ -156,8 +167,50 @@ function DetailDialog(props) {
       dispatch(NotificationSuccess('Successfully Created Backend'))
       onCreateSuccess(createResponse.backend)
     } catch (e) {
-      console.error('Error Creating backend', e)
-      dispatch(NotificationFailure('Error Creating backend'))
+      console.error('Error Creating Backend', e)
+      dispatch(NotificationFailure('Error Creating Backend'))
+      dispatch(HideGlobalLoader())
+      return
+    }
+
+    dispatch(HideGlobalLoader())
+  }
+
+  const handleSaveChanges = async () => {
+    dispatch(ShowGlobalLoader())
+
+    // perform validation
+    try {
+      const reasonsInvalid = (await BackendValidator.Validate({
+        backend: state.selectedBackend,
+        action: 'UpdateAllowedFields',
+      })).reasonsInvalid
+      if (reasonsInvalid.count > 0) {
+        setReasonsInvalid(reasonsInvalid)
+        dispatch(HideGlobalLoader())
+        return
+      }
+    } catch (e) {
+      console.error('Error Validating Backend', e)
+      dispatch(NotificationFailure('Error Validating Backend'))
+      dispatch(HideGlobalLoader())
+      return
+    }
+
+    // perform update
+    try {
+      const updateResponse = await BackendAdministrator.UpdateAllowedFields({
+        backend: state.selectedBackend,
+      })
+      actionDispatcher({
+        type: actionTypes.u,
+        backend: updateResponse.backend,
+      })
+      dispatch(NotificationSuccess('Successfully Updated Backend'))
+      onUpdateSuccess(updateResponse.backend)
+    } catch (e) {
+      console.error('Error Updating Backend', e)
+      dispatch(NotificationFailure('Error Updating backend'))
       dispatch(HideGlobalLoader())
       return
     }
@@ -206,6 +259,7 @@ function DetailDialog(props) {
         >
           <Fab
             size={'small'}
+            onClick={handleSaveChanges}
           >
             <SaveIcon className={classes.buttonIcon}/>
           </Fab>
@@ -243,6 +297,8 @@ function DetailDialog(props) {
         ...additionalTitleControls,
       ]
       break
+
+    default:
   }
 
   const stateIsViewing = state.activeState === states.viewingExisting
@@ -311,8 +367,10 @@ DetailDialog.propTypes = {
 DetailDialog.defaultProps = {
   initialState: states.viewingExisting,
   backend: new Backend(),
-  onCreateSuccess: ()=>{},
-  onUpdateSuccess: ()=>{},
+  onCreateSuccess: () => {
+  },
+  onUpdateSuccess: () => {
+  },
 }
 
 export default DetailDialog
