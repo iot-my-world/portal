@@ -178,11 +178,13 @@ function BackendManagement() {
           />
         </CardContent>
       </Card>
-      {<BackendDetailDialog
+      {state.detailDialogOpen &&
+      <BackendDetailDialog
         open={state.detailDialogOpen}
         closeDialog={() => actionDispatcher({
           type: actionTypes.closeDetailDialog,
         })}
+        backend={state.selectedBackend}
       />}
     </div>
   )
