@@ -22,6 +22,18 @@ export default class Backend extends Base {
   _token = ''
 
   /**
+   * @type {string}
+   * @private
+   */
+  _ownerPartyType = ''
+
+  /**
+   * @type {Id}
+   * @private
+   */
+  _ownerId = new IdIdentifier()
+
+  /**
    * construct a new Backend Object
    * @param {Backend|Object} [backend]
    */
@@ -32,6 +44,8 @@ export default class Backend extends Base {
         this._id = backend.id
         this._name = backend.name
         this._token = backend.token
+        this._ownerPartyType = backend.ownerPartyType
+        this._ownerId = new IdIdentifier(backend.ownerId)
       } catch (e) {
         throw new Error(`error constructing backend object: ${e}`)
       }
@@ -52,6 +66,22 @@ export default class Backend extends Base {
 
   get token() {
     return this._token
+  }
+
+  get ownerPartyType() {
+    return this._ownerPartyType
+  }
+
+  set ownerPartyType(newVal) {
+    this._ownerPartyType = newVal
+  }
+
+  get ownerId() {
+    return this._ownerId
+  }
+
+  set ownerId(newVal) {
+    this._ownerId = newVal
   }
 
   get identifier() {

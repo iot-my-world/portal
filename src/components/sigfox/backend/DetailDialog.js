@@ -1,5 +1,5 @@
 import React, {useReducer, useState} from 'react'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import PropTypes from 'prop-types'
 import {
   Fab,
@@ -20,9 +20,11 @@ import {
 } from 'actions/app'
 
 import {
+  BackendAdministrator,
   BackendValidator,
 } from 'brain/sigfox/backend'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
+import {IdIdentifier} from 'brain/search/identifier/index'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -93,16 +95,6 @@ function stateReducer(state, action) {
   }
 }
 
-const fieldChange = actionDispatcher => e => {
-  actionDispatcher({
-    type: actionTypes.fieldChange,
-    field: e.target.name
-      ? e.target.name
-      : e.target.id,
-    value: e.target.value,
-  })
-}
-
 function DetailDialog(props) {
   const {
     open,
@@ -111,16 +103,20 @@ function DetailDialog(props) {
     backend,
   } = props
   const dispatch = useDispatch()
+  const claims = useSelector(state => state.auth.claims)
   const classes = useStyles()
   const [reasonsInvalid, setReasonsInvalid] = useState(new ReasonsInvalid())
   const [state, actionDispatcher] = useReducer(
     stateReducer,
     initialiseState(initialState, backend),
   )
+  const fieldValidations = reasonsInvalid.toMap()
 
   const handleSaveNew = async () => {
     try {
       dispatch(ShowGlobalLoader())
+      state.selectedBackend.ownerId = new IdIdentifier(claims.partyId)
+      state.selectedBackend.ownerPartyType = claims.partyType
       const reasonsInvalid = (await BackendValidator.Validate({
         backend: state.selectedBackend,
         action: 'Create',
@@ -138,6 +134,18 @@ function DetailDialog(props) {
     }
 
     dispatch(HideGlobalLoader())
+  }
+
+  const handleFieldChange = e => {
+    const field = e.target.name
+      ? e.target.name
+      : e.target.id
+    reasonsInvalid.clearField(field)
+    actionDispatcher({
+      type: actionTypes.fieldChange,
+      field,
+      value: e.target.value,
+    })
   }
 
   let additionalTitleControls = []
@@ -224,17 +232,17 @@ function DetailDialog(props) {
           id='name'
           label='Name'
           value={state.selectedBackend.name}
-          onChange={fieldChange(actionDispatcher)}
+          onChange={handleFieldChange}
           InputProps={{
             disableUnderline: stateIsViewing,
             readOnly: stateIsViewing,
           }}
-          // helperText={
-          //   fieldValidations.name
-          //     ? fieldValidations.name.help
-          //     : undefined
-          // }
-          // error={!!fieldValidations.name}
+          helperText={
+            fieldValidations.name
+              ? fieldValidations.name.help
+              : undefined
+          }
+          error={!!fieldValidations.name}
         />
       </div>
     </Dialog>
