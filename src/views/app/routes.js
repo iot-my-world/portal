@@ -3,21 +3,22 @@ import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
 import BackendIcon from '@material-ui/icons/BusinessCenter'
+import ListIcon from '@material-ui/icons/List'
 import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
 import HumanUserContainer from 'views/user/human/HumanContainer'
-import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import SigfoxBackendManagement from 'views/sigfox/BackendManagement'
+import DeviceSigbugManagement from 'views/device/sigbug/Management'
 import {
   PartyCompanyViewPermission,
   PartyClientViewPermission,
   PartyUserViewPermission,
-  TrackerSF001ViewPermission,
+  DeviceSigbugManagementViewPermission,
   SigfoxBackendManagementViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
@@ -72,11 +73,11 @@ const appSideBarLinkRoutes = [
     sidebarLinkID: 'sidebarSigbugDeviceMenuOpenLink',
     views: [
       {
-        path: '/app/devices/sigbug/list',
-        name: 'SF001 Tracker',
-        viewPermission: TrackerSF001ViewPermission,
-        icon: TrackerIcon,
-        component: SF001TrackerContainer,
+        path: '/app/devices/sigbug/management',
+        name: 'Management',
+        viewPermission: DeviceSigbugManagementViewPermission,
+        icon: ListIcon,
+        component: DeviceSigbugManagement,
         sidebarLinkID: 'sidebarSigbugDeviceListManagementLink',
       },
     ],

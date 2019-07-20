@@ -217,10 +217,12 @@ class Detail extends Component {
         break
 
       case 'parentId':
-        this.partyHolder.update(
-          e.selectionInfo.entity,
-          client.parentPartyType,
-        )
+        if (e.selectionInfo.value !== '') {
+          this.partyHolder.update(
+            e.selectionInfo.entity,
+            client.parentPartyType,
+          )
+        }
         break
 
       default:

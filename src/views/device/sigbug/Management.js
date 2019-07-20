@@ -4,17 +4,16 @@ import {
   Tooltip,
 } from '@material-ui/core'
 import {
-  Backend, useBackendRecordHandlerCollect,
-} from 'brain/sigfox/backend'
+  Sigbug, useSigbugRecordHandlerCollect,
+} from 'brain/device/sigbug'
 import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
-import HoverCopy from 'components/HoverCopy'
 import {
-  BackendDetailDialog,
-  backendDetailDialogStates,
-} from 'components/sigfox/backend'
+  SigbugDetailDialog,
+  sigbugDetailDialogStates,
+} from 'components/device/sigbug'
 
 const states = {
   nop: 0,
@@ -32,9 +31,9 @@ const actionTypes = {
 function initialState() {
   return {
     activeState: states.nop,
-    selectedBackend: new Backend(),
+    selectedSigbug: new Sigbug(),
     detailDialogOpen: false,
-    detailDialogState: backendDetailDialogStates.creating,
+    detailDialogState: sigbugDetailDialogStates.creating,
     clearRowSelectionToggle: false,
   }
 }
@@ -44,14 +43,14 @@ function stateReducer(state, action) {
     case actionTypes.selectRow:
       return {
         activeState: states.itemSelected,
-        selectedBackend: new Backend(action.selectedBackend),
+        selectedSigbug: new Sigbug(action.selectedSigbug),
         detailDialogOpen: false,
       }
 
     case actionTypes.viewDetail:
       return {
         ...state,
-        detailDialogState: backendDetailDialogStates.viewingExisting,
+        detailDialogState: sigbugDetailDialogStates.viewingExisting,
         detailDialogOpen: true,
       }
 
@@ -59,8 +58,8 @@ function stateReducer(state, action) {
       return {
         ...state,
         clearRowSelectionToggle: !state.clearRowSelectionToggle,
-        detailDialogState: backendDetailDialogStates.creating,
-        selectedBackend: new Backend(),
+        detailDialogState: sigbugDetailDialogStates.creating,
+        selectedSigbug: new Sigbug(),
         detailDialogOpen: true,
       }
 
@@ -75,7 +74,7 @@ function stateReducer(state, action) {
   }
 }
 
-function BackendManagement() {
+function SigbugManagement() {
   const [
     {
       collectResponse,
@@ -83,7 +82,7 @@ function BackendManagement() {
       error,
     },
     setCollectRequest,
-  ] = useBackendRecordHandlerCollect()
+  ] = useSigbugRecordHandlerCollect()
   const [state, actionDispatcher] = useReducer(
     stateReducer,
     initialState(),
@@ -160,7 +159,7 @@ function BackendManagement() {
             loading={loading}
             clearRowSelectionToggle={state.clearRowSelectionToggle}
             totalNoRecords={collectResponse.total}
-            noDataText={'No Backends Found'}
+            noDataText={'No Sigbugs Found'}
             data={collectResponse.records}
             onCriteriaQueryChange={(criteria, query) => setCollectRequest({
               criteria,
@@ -169,8 +168,8 @@ function BackendManagement() {
             additionalControls={additionalTableControls}
             columns={[
               {
-                Header: 'Name',
-                accessor: 'name',
+                Header: 'Device ID',
+                accessor: 'deviceId',
                 width: 155,
                 config: {
                   filter: {
@@ -179,35 +178,26 @@ function BackendManagement() {
                 },
               },
               {
-                Header: 'Token',
-                accessor: 'token',
+                Header: 'Last Message @',
+                accessor: 'lastMessageTimestamp',
                 width: 155,
-                Cell: rowCellInfo => {
-                  if (rowCellInfo) {
-                    return <HoverCopy value={rowCellInfo.value}/>
-                  }
-                },
-                config: {
-                  filter: {
-                    type: TextCriterionType,
-                  },
-                },
+                filterable: false,
               },
             ]}
-            handleRowSelect={selectedBackend => actionDispatcher({
+            handleRowSelect={selectedSigbug => actionDispatcher({
               type: actionTypes.selectRow,
-              selectedBackend,
+              selectedSigbug,
             })}
           />
         </CardContent>
       </Card>
       {state.detailDialogOpen &&
-      <BackendDetailDialog
+      <SigbugDetailDialog
         open={state.detailDialogOpen}
         closeDialog={() => actionDispatcher({
           type: actionTypes.closeDetailDialog,
         })}
-        backend={state.selectedBackend}
+        sigbug={state.selectedSigbug}
         initialState={state.detailDialogState}
         onCreateSuccess={() => setCollectRequest({
           criteria: [],
@@ -218,8 +208,8 @@ function BackendManagement() {
   )
 }
 
-BackendManagement.propTypes = {}
+SigbugManagement.propTypes = {}
 
-BackendManagement.defaultProps = {}
+SigbugManagement.defaultProps = {}
 
-export default BackendManagement
+export default SigbugManagement

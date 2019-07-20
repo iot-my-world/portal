@@ -2,7 +2,7 @@ import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import {IdIdentifier} from 'brain/search/identifier/index'
 
-export default class SF001 extends Base {
+export default class Sigbug extends Base {
   /**
    * @type {string}
    * @private
@@ -46,22 +46,23 @@ export default class SF001 extends Base {
   _lastMessageTimestamp = 0
 
   /**
-   * construct a new SF001 Object
-   * @param {SF001|Object} [sf001]
+   * construct a new Sigbug Object
+   * @param {Sigbug|Object} [sigbug]
    */
-  constructor(sf001) {
+  constructor(sigbug) {
     super()
-    if (sf001 !== undefined && (sf001 instanceof SF001 || isObject(sf001))) {
+    if (sigbug !== undefined &&
+      (sigbug instanceof Sigbug || isObject(sigbug))) {
       try {
-        this._id = sf001.id
-        this._deviceId = sf001.deviceId
-        this._ownerPartyType = sf001.ownerPartyType
-        this._ownerId = new IdIdentifier(sf001.ownerId)
-        this._assignedPartyType = sf001.assignedPartyType
-        this._assignedId = new IdIdentifier(sf001.assignedId)
-        this._lastMessageTimestamp = sf001.lastMessageTimestamp
+        this._id = sigbug.id
+        this._deviceId = sigbug.deviceId
+        this._ownerPartyType = sigbug.ownerPartyType
+        this._ownerId = new IdIdentifier(sigbug.ownerId)
+        this._assignedPartyType = sigbug.assignedPartyType
+        this._assignedId = new IdIdentifier(sigbug.assignedId)
+        this._lastMessageTimestamp = sigbug.lastMessageTimestamp
       } catch (e) {
-        throw new Error(`error constructing sf001 object: ${e}`)
+        throw new Error(`error constructing sigbug object: ${e}`)
       }
     }
   }
@@ -118,7 +119,7 @@ export default class SF001 extends Base {
     if (this._id !== '') {
       return new IdIdentifier(this._id)
     } else {
-      throw new Error(`cannot create identifier for sf001 if id is blank`)
+      throw new Error(`cannot create identifier for sigbug if id is blank`)
     }
   }
 }

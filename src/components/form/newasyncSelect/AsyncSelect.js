@@ -152,6 +152,7 @@ class AsyncSelect extends Component {
             {label}
           </div>
           <ReactAsyncSelect
+            menuPosition={'fixed'}
             styles={this.asyncSelectStyles}
             onChange={this.onChange}
             value={value}
