@@ -2,8 +2,8 @@ import React, {useReducer, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import PropTypes from 'prop-types'
 import {
-  Fab,
-  makeStyles,
+  Fab, FormControl, FormHelperText, InputLabel,
+  makeStyles, MenuItem, Select,
   TextField,
   Tooltip,
 } from '@material-ui/core'
@@ -25,6 +25,7 @@ import {
 } from 'brain/device/sigbug'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import {IdIdentifier} from 'brain/search/identifier/index'
+import {allPartyTypes, SystemPartyType} from 'brain/party/types'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -137,8 +138,12 @@ function DetailDialog(props) {
 
     // perform validation
     try {
-      state.selectedSigbug.ownerId = new IdIdentifier(claims.partyId)
-      state.selectedSigbug.ownerPartyType = claims.partyType
+      if (claims.partyType !== SystemPartyType) {
+        // users other than system do not have the option of
+        // selecting an owner, it is automatically set to them
+        state.selectedSigbug.ownerId = new IdIdentifier(claims.partyId)
+        state.selectedSigbug.ownerPartyType = claims.partyType
+      }
       const reasonsInvalid = (await SigbugValidator.Validate({
         sigbug: state.selectedSigbug,
         action: 'Create',
@@ -329,6 +334,48 @@ function DetailDialog(props) {
           }
           error={!!fieldValidations.deviceId}
         />
+        {(claims.partyType === SystemPartyType) &&
+          <React.Fragment>
+            <FormControl
+              className={classes.formField}
+              error={!!fieldValidations.ownerPartyType}
+              aria-describedby='ownerPartyType'
+            >
+              <InputLabel htmlFor='ownerPartyType'>
+                Owner Party Type
+              </InputLabel>
+              <Select
+                id='ownerPartyType'
+                name='ownerPartyType'
+                value={state.selectedSigbug.ownerPartyType}
+                onChange={handleFieldChange}
+                style={{width: 150}}
+                disableUnderline={stateIsViewing}
+                inputProps={{readOnly: stateIsViewing}}
+              >
+                <MenuItem value=''>
+                  <em>None</em>
+                </MenuItem>
+                {allPartyTypes.map((partyType, idx) => {
+                  return (
+                    <MenuItem key={idx} value={partyType}>
+                      {partyType}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+              {!!fieldValidations.ownerPartyType && (
+                <FormHelperText id='ownerPartyType'>
+                  {
+                    fieldValidations.ownerPartyType ?
+                      fieldValidations.ownerPartyType.help :
+                      undefined
+                  }
+                </FormHelperText>
+              )}
+            </FormControl>
+          </React.Fragment>
+        }
       </div>
     </Dialog>
   )
