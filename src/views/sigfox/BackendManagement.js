@@ -11,9 +11,10 @@ import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
 import HoverCopy from 'components/HoverCopy'
-import BackendDetailDialog, {
-  states as backendDetailDialogStates,
-} from 'components/sigfox/backend/DetailDialog'
+import {
+  BackendDetailDialog,
+  backendDetailDialogStates,
+} from 'components/sigfox/backend'
 
 const states = {
   nop: 0,

@@ -2,10 +2,18 @@ import jsonRpcRequest from 'utilities/network/jsonRpcRequest'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 
 const Validator = {
-  async Validate({zx303, action}) {
+  serviceProvider: 'SigbugDevice-Validator',
+
+  /**
+   * @param {SigbugManagement} sigbug
+   * @param {string} action
+   * @returns {Promise<any>}
+   * @constructor
+   */
+  async Validate({sigbug, action}) {
     let response = await jsonRpcRequest({
-      method: 'ZX303DeviceValidator.Validate',
-      request: {zx303, action},
+      method: `${Validator.serviceProvider}.Validate`,
+      request: {sigbug, action},
     })
     response.reasonsInvalid = new ReasonsInvalid(response.reasonsInvalid)
     return response

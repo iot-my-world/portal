@@ -1,5 +1,7 @@
-import DetailDialog from './DetailDialog'
+import BackendDetailDialog from './DetailDialog'
+import {states as backendDetailDialogStates} from './DetailDialog'
 
 export {
-  DetailDialog,
+  BackendDetailDialog,
+  backendDetailDialogStates,
 }

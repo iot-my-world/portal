@@ -10,9 +10,10 @@ import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
-// import SigbugDetailDialog, {
-//   states as sigbugDetailDialogStates,
-// } from 'components/sigfox/sigbug/DetailDialog'
+import {
+  SigbugDetailDialog,
+  sigbugDetailDialogStates,
+} from 'components/device/sigbug'
 
 const states = {
   nop: 0,
@@ -32,7 +33,7 @@ function initialState() {
     activeState: states.nop,
     selectedSigbug: new Sigbug(),
     detailDialogOpen: false,
-    // detailDialogState: sigbugDetailDialogStates.creating,
+    detailDialogState: sigbugDetailDialogStates.creating,
     clearRowSelectionToggle: false,
   }
 }
@@ -49,7 +50,7 @@ function stateReducer(state, action) {
     case actionTypes.viewDetail:
       return {
         ...state,
-        // detailDialogState: sigbugDetailDialogStates.viewingExisting,
+        detailDialogState: sigbugDetailDialogStates.viewingExisting,
         detailDialogOpen: true,
       }
 
@@ -57,7 +58,7 @@ function stateReducer(state, action) {
       return {
         ...state,
         clearRowSelectionToggle: !state.clearRowSelectionToggle,
-        // detailDialogState: sigbugDetailDialogStates.creating,
+        detailDialogState: sigbugDetailDialogStates.creating,
         selectedSigbug: new Sigbug(),
         detailDialogOpen: true,
       }
@@ -190,23 +191,22 @@ function SigbugManagement() {
           />
         </CardContent>
       </Card>
+      {state.detailDialogOpen &&
+      <SigbugDetailDialog
+        open={state.detailDialogOpen}
+        closeDialog={() => actionDispatcher({
+          type: actionTypes.closeDetailDialog,
+        })}
+        sigbug={state.selectedSigbug}
+        initialState={state.detailDialogState}
+        onCreateSuccess={() => setCollectRequest({
+          criteria: [],
+          query: new Query(),
+        })}
+      />}
     </div>
   )
 }
-
-//   state.detailDialogOpen &&
-// <SigbugDetailDialog
-//   open={state.detailDialogOpen}
-//   closeDialog={() => actionDispatcher({
-//     type: actionTypes.closeDetailDialog,
-//   })}
-//   sigbug={state.selectedSigbug}
-//   initialState={state.detailDialogState}
-//   onCreateSuccess={() => setCollectRequest({
-//     criteria: [],
-//     query: new Query(),
-//   })}
-// />
 
 SigbugManagement.propTypes = {}
 
