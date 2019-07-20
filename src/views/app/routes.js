@@ -3,6 +3,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import DomainIcon from '@material-ui/icons/Domain'
 import TrackerIcon from '@material-ui/icons/DevicesOther'
 import BackendIcon from '@material-ui/icons/BusinessCenter'
+import ListIcon from '@material-ui/icons/List'
 import PartyProfileContainer from 'views/partyProfile/PartyProfileContainer'
 import ProfileContainer from 'views/profile/ProfileContainer'
 import SystemHomeContainer from 'views/home/system/SystemContainer'
@@ -75,7 +76,7 @@ const appSideBarLinkRoutes = [
         path: '/app/devices/sigbug/management',
         name: 'Management',
         viewPermission: DeviceSigbugManagementViewPermission,
-        icon: TrackerIcon,
+        icon: ListIcon,
         component: DeviceSigbugManagement,
         sidebarLinkID: 'sidebarSigbugDeviceListManagementLink',
       },
