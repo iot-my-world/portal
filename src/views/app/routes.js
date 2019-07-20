@@ -9,15 +9,15 @@ import SystemHomeContainer from 'views/home/system/SystemContainer'
 import CompanyHomeContainer from 'views/home/company/CompanyContainer'
 import ClientHomeContainer from 'views/home/client/ClientContainer'
 import HumanUserContainer from 'views/user/human/HumanContainer'
-import SF001TrackerContainer from 'views/tracker/sf001/SF001Container'
 import CompanyContainer from 'views/party/company/CompanyContainer'
 import ClientContainer from 'views/party/client/ClientContainer'
 import SigfoxBackendManagement from 'views/sigfox/BackendManagement'
+import DeviceSigbugManagement from 'views/device/sigbug/Management'
 import {
   PartyCompanyViewPermission,
   PartyClientViewPermission,
   PartyUserViewPermission,
-  TrackerSF001ViewPermission,
+  DeviceSigbugManagementViewPermission,
   SigfoxBackendManagementViewPermission,
 } from 'brain/security/permission/view/permission'
 import {
@@ -72,11 +72,11 @@ const appSideBarLinkRoutes = [
     sidebarLinkID: 'sidebarSigbugDeviceMenuOpenLink',
     views: [
       {
-        path: '/app/devices/sigbug/list',
-        name: 'SF001 Tracker',
-        viewPermission: TrackerSF001ViewPermission,
+        path: '/app/devices/sigbug/management',
+        name: 'Management',
+        viewPermission: DeviceSigbugManagementViewPermission,
         icon: TrackerIcon,
-        component: SF001TrackerContainer,
+        component: DeviceSigbugManagement,
         sidebarLinkID: 'sidebarSigbugDeviceListManagementLink',
       },
     ],
