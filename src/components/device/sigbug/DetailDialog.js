@@ -25,7 +25,11 @@ import {
 } from 'brain/device/sigbug'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
 import {IdIdentifier} from 'brain/search/identifier'
-import {allPartyTypes, SystemPartyType} from 'brain/party/types'
+import {
+  allPartyTypes,
+  ClientPartyType,
+  SystemPartyType,
+} from 'brain/party/types'
 import {AsyncPartySelect} from 'components/party'
 
 const useStyles = makeStyles(theme => ({
@@ -146,12 +150,21 @@ function DetailDialog(props) {
         state.selectedSigbug.ownerId = new IdIdentifier(claims.partyId)
         state.selectedSigbug.ownerPartyType = claims.partyType
       }
-      const reasonsInvalid = (await SigbugValidator.Validate({
+      if (claims.partyType === ClientPartyType) {
+        // clients do not have the option of selecting who the device is
+        // assigned to, it is always assigned to them
+        state.selectedSigbug.assignedId = new IdIdentifier(claims.partyId)
+        state.selectedSigbug.assignedPartyType = claims.partyType
+      }
+      // clear reasons invalid before validation
+      reasonsInvalid.clearAll()
+      setReasonsInvalid(reasonsInvalid)
+      const newReasonsInvalid = (await SigbugValidator.Validate({
         sigbug: state.selectedSigbug,
         action: 'Create',
       })).reasonsInvalid
-      if (reasonsInvalid.count > 0) {
-        setReasonsInvalid(reasonsInvalid)
+      if (newReasonsInvalid.count > 0) {
+        setReasonsInvalid(newReasonsInvalid)
         dispatch(HideGlobalLoader())
         return
       }
@@ -403,6 +416,65 @@ function DetailDialog(props) {
               error={!!fieldValidations.ownerId}
             />
           </React.Fragment>
+        }
+        {(claims.partyType !== ClientPartyType) &&
+        <React.Fragment>
+          <FormControl
+            className={classes.formField}
+            error={!!fieldValidations.assignedPartyType}
+            aria-describedby='assignedPartyType'
+          >
+            <InputLabel htmlFor='assignedPartyType'>
+              Assigned Party Type
+            </InputLabel>
+            <Select
+              id='assignedPartyType'
+              name='assignedPartyType'
+              value={state.selectedSigbug.assignedPartyType}
+              onChange={handleFieldChange}
+              style={{width: 150}}
+              disableUnderline={stateIsViewing}
+              inputProps={{readOnly: stateIsViewing}}
+            >
+              <MenuItem value=''>
+                <em>None</em>
+              </MenuItem>
+              {allPartyTypes.map((partyType, idx) => {
+                return (
+                  <MenuItem key={idx} value={partyType}>
+                    {partyType}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+            {!!fieldValidations.assignedPartyType && (
+              <FormHelperText id='assignedPartyType'>
+                {
+                  fieldValidations.assignedPartyType ?
+                    fieldValidations.assignedPartyType.help :
+                    undefined
+                }
+              </FormHelperText>
+            )}
+          </FormControl>
+          <AsyncPartySelect
+            id={'assignedId'}
+            label={'Assigned To'}
+            partyType={state.selectedSigbug.assignedPartyType}
+            onChange={handleFieldChange}
+            blankValue={new IdIdentifier()}
+            entity={state.selectedSigbug}
+            entityPartyTypeAccessor={'assignedPartyType'}
+            entityPartyIdAccessor={'assignedId'}
+            readOnly={stateIsViewing}
+            helperText={
+              fieldValidations.assignedId
+                ? fieldValidations.assignedId.help
+                : undefined
+            }
+            error={!!fieldValidations.assignedId}
+          />
+        </React.Fragment>
         }
       </div>
     </Dialog>
