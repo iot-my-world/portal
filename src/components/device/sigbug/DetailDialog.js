@@ -24,8 +24,9 @@ import {
   SigbugValidator,
 } from 'brain/device/sigbug'
 import ReasonsInvalid from 'brain/validate/reasonInvalid/ReasonsInvalid'
-import {IdIdentifier} from 'brain/search/identifier/index'
+import {IdIdentifier} from 'brain/search/identifier'
 import {allPartyTypes, SystemPartyType} from 'brain/party/types'
+import {AsyncPartySelect} from 'components/party'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -127,6 +128,7 @@ function DetailDialog(props) {
   const claims = useSelector(state => state.auth.claims)
   const classes = useStyles()
   const [reasonsInvalid, setReasonsInvalid] = useState(new ReasonsInvalid())
+
   const [state, actionDispatcher] = useReducer(
     stateReducer,
     initialiseState(initialState, sigbug),
@@ -228,6 +230,15 @@ function DetailDialog(props) {
       ? e.target.name
       : e.target.id
     reasonsInvalid.clearField(field)
+
+    if (field === 'ownerPartyType') {
+      actionDispatcher({
+        type: actionTypes.fieldChange,
+        field: 'ownerId',
+        value: new IdIdentifier(),
+      })
+    }
+
     actionDispatcher({
       type: actionTypes.fieldChange,
       field,
@@ -374,6 +385,23 @@ function DetailDialog(props) {
                 </FormHelperText>
               )}
             </FormControl>
+            <AsyncPartySelect
+              id={'ownerId'}
+              label={'Owner'}
+              partyType={state.selectedSigbug.ownerPartyType}
+              onChange={handleFieldChange}
+              blankValue={new IdIdentifier()}
+              entity={state.selectedSigbug}
+              entityPartyTypeAccessor={'ownerPartyType'}
+              entityPartyIdAccessor={'ownerId'}
+              readOnly={stateIsViewing}
+              helperText={
+                fieldValidations.ownerId
+                  ? fieldValidations.ownerId.help
+                  : undefined
+              }
+              error={!!fieldValidations.ownerId}
+            />
           </React.Fragment>
         }
       </div>
