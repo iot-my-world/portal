@@ -10,7 +10,6 @@ import Query from 'brain/search/Query'
 import BEPTable from 'components/table/bepTable/BEPTable'
 import {TextCriterionType} from 'brain/search/criterion/types'
 import {AddNewIcon, ReloadIcon, ViewDetailsIcon} from 'components/icon/index'
-import HoverCopy from 'components/HoverCopy'
 // import SigbugDetailDialog, {
 //   states as sigbugDetailDialogStates,
 // } from 'components/sigfox/sigbug/DetailDialog'
@@ -109,10 +108,15 @@ function SigbugManagement() {
       </Tooltip>
     </IconButton>,
     <IconButton
-      onClick={() => setCollectRequest({
-        criteria: [],
-        query: new Query(),
-      })}
+      onClick={() => {
+        setCollectRequest({
+          criteria: [],
+          query: new Query(),
+        })
+        actionDispatcher({
+          type: actionTypes.init,
+        })
+      }}
     >
       <Tooltip
         title={'Reload'}

@@ -109,10 +109,15 @@ function BackendManagement() {
       </Tooltip>
     </IconButton>,
     <IconButton
-      onClick={() => setCollectRequest({
-        criteria: [],
-        query: new Query(),
-      })}
+      onClick={() => {
+        setCollectRequest({
+          criteria: [],
+          query: new Query(),
+        })
+        actionDispatcher({
+          type: actionTypes.init,
+        })
+      }}
     >
       <Tooltip
         title={'Reload'}
