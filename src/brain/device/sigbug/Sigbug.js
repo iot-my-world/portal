@@ -1,6 +1,7 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 import {IdIdentifier} from 'brain/search/identifier/index'
+import {SigfoxBackendDataCallbackMessage} from 'brain/sigfox/backend/callback/data/message'
 
 export default class Sigbug extends Base {
   /**
@@ -40,10 +41,10 @@ export default class Sigbug extends Base {
   _assignedId = new IdIdentifier()
 
   /**
-   * @type {number}
+   * @type {Message}
    * @private
    */
-  _lastMessageTimestamp = 0
+  _lastMessage = new SigfoxBackendDataCallbackMessage()
 
   /**
    * construct a new Sigbug Object
@@ -60,7 +61,7 @@ export default class Sigbug extends Base {
         this._ownerId = new IdIdentifier(sigbug.ownerId)
         this._assignedPartyType = sigbug.assignedPartyType
         this._assignedId = new IdIdentifier(sigbug.assignedId)
-        this._lastMessageTimestamp = sigbug.lastMessageTimestamp
+        this._lastMessage = new SigfoxBackendDataCallbackMessage(sigbug.lastMessage)
       } catch (e) {
         throw new Error(`error constructing sigbug object: ${e}`)
       }
@@ -111,8 +112,8 @@ export default class Sigbug extends Base {
     this._assignedId = newVal
   }
 
-  get lastMessageTimestamp() {
-    return this._lastMessageTimestamp
+  get lastMessage() {
+    return this._lastMessage
   }
 
   get identifier() {

@@ -1,7 +1,7 @@
 import Base from 'brain/Base'
 import {isObject} from 'utilities/type/index'
 
-class Message extends Base {
+export default class Message extends Base {
   /**
    * @type {string}
    * @private
