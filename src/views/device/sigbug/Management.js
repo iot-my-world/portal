@@ -14,6 +14,7 @@ import {
   SigbugDetailDialog,
   sigbugDetailDialogStates,
 } from 'components/device/sigbug'
+import moment from 'moment'
 
 const states = {
   nop: 0,
@@ -179,7 +180,17 @@ function SigbugManagement() {
               },
               {
                 Header: 'Last Message @',
-                accessor: 'lastMessageTimestamp',
+                accessor: 'lastMessage.timeStamp',
+                Cell: rowCellData => {
+                  try {
+                    if (rowCellData.value > 0) {
+                      return moment.unix(rowCellData.value).format('HH:mm:ss - YYYY-MM-DD')
+                    }
+                  } catch (e) {
+                    console.error('error rendering last message timestamp', e)
+                  }
+                  return '-'
+                },
                 width: 155,
                 filterable: false,
               },
